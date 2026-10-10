@@ -6,12 +6,17 @@
 
 ## 目录
 
-- `paper/`：ACL 模板的 LaTeX。`main.tex` 引入 `sections/*.tex`；`tables/` 和 `figures/curve.pdf`、`figures/category.pdf`
-  由脚本生成，`figures/overview.tex` 是手写的 TikZ 总图。`main.pdf` 是当前版本编译出来的。
+仓库根目录就是 Overleaf 项目：在 Overleaf 里 New Project → Import from GitHub（或上传 zip），主文件 `main.tex`，编译器 pdfLaTeX。
+
+- 根目录：`main.tex`、`references.bib`、`acl.sty`、`acl_natbib.bst`。
+- `sections/`：正文各节和附录，`main.tex` 逐个 `\input`。
+- `tables/`：表格和正文用的数字宏（`tables/numbers.tex`），由 `analysis/make_tables.py` 生成；不要手改，改数据后重新生成。
+- `figures/`：`curve.pdf`、`category.pdf` 由脚本生成；`overview.tex` 是手写的 TikZ 总图。
+- `preview/paper.pdf`：当前版本编译出来的 PDF，方便不开 Overleaf 时看。
 - `data/`：从 SkillParseUMR 抽出来的小文件（分数、逐句 Smatch、每个版本的 skill 大小、每轮的编辑统计、130 条建议的人工编码）。
   来源和 commit 见 `data/PROVENANCE.md`。
 - `analysis/extract_umr.py`：从 SkillParseUMR 的检出里把上面这些抽到 `data/`。
-- `analysis/make_tables.py`：从 `data/` 生成表格、图和正文用的数字宏（`paper/tables/numbers.tex`），并做统计检验。
+- `analysis/make_tables.py`：从 `data/` 生成 `tables/`、`figures/` 里的表、图和数字宏，并做统计检验。
 - `notes/GAPS.md`：**数据空缺清单**，论文里每个红色 `[G…]` / `TBD` 要跑什么、怎么跑、填到哪里。
 - `notes/references_verification.md`：参考文献逐条核实的记录（arXiv、ACL Anthology、Crossref、OpenReview）。
 - `archive/`：旧的 B 篇（中文引言和 LaTeX 稿）。
@@ -19,11 +24,12 @@
 ## 编译
 
 ```bash
-python3 analysis/make_tables.py            # 需要 numpy、scipy、matplotlib
-cd paper && latexmk -pdf main.tex          # 或者把 paper/ 上传到 Overleaf（pdfLaTeX + BibTeX）
+python3 analysis/make_tables.py            # 需要 numpy、scipy、matplotlib；数据没变就不用跑
+latexmk -pdf main.tex                      # 本地；或者用 Overleaf
 ```
 
-更新数据：`python3 analysis/extract_umr.py --src ../SkillParseUMR [--bold <bold-curie 分支的检出>]`，再跑 `make_tables.py`。
+更新数据：`python3 analysis/extract_umr.py --src ../SkillParseUMR [--bold <bold-curie 分支的检出>]`，再跑 `make_tables.py`，
+把新生成的 `tables/`、`figures/` 一起提交（Overleaf 不跑 Python）。
 
 ## 实验故事（一句话版）
 

@@ -2,7 +2,7 @@
 
     python analysis/make_tables.py
 
-Writes paper/tables/*.tex, paper/figures/*.pdf and paper/tables/numbers.tex (\\newcommand macros the text uses,
+Writes tables/*.tex, figures/*.pdf and tables/numbers.tex (\\newcommand macros the text uses,
 so the numbers in the prose follow the data). A cell without data is written as \\gapcell and listed in
 notes/GAPS.md; when the experiment is done, put its numbers into data/ and add them here.
 """
@@ -18,8 +18,8 @@ from scipy import stats
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA = os.path.join(ROOT, "data")
-TABLES = os.path.join(ROOT, "paper", "tables")
-FIGURES = os.path.join(ROOT, "paper", "figures")
+TABLES = os.path.join(ROOT, "tables")
+FIGURES = os.path.join(ROOT, "figures")
 GAP = r"\gapcell{}"
 RNG = np.random.default_rng(20261010)
 

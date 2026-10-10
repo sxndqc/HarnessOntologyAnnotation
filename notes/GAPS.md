@@ -4,9 +4,9 @@
 命令里的 `run.sh` 都指 SkillParseUMR 里对应实验目录的脚本；Sonnet 解析、Opus 反思（默认值）。
 
 数字怎么进论文：跑完的结果放进 SkillParseUMR 对应实验目录，`python analysis/extract_umr.py --src <SkillParseUMR>` 重新抽数据到 `data/`，
-`python analysis/make_tables.py` 重新生成 `paper/tables/*.tex`、`paper/figures/*.pdf` 和正文用的数字宏 `paper/tables/numbers.tex`。
+`python analysis/make_tables.py` 重新生成 `tables/*.tex`、`figures/*.pdf` 和正文用的数字宏 `tables/numbers.tex`。
 正文里的数字都是宏（`\gainF` 之类），数据变了不用手改正文。新类型的实验（G1–G4、G9）要在 `make_tables.py` 里加一个读数和出表的函数，
-现在这几张表（`tab:heldout`、`tab:ablation`）是手写在 `paper/sections/results.tex` 里的，填好后也可以直接手改。
+现在这几张表（`tab:heldout`、`tab:ablation`）是手写在 `sections/results.tex` 里的，填好后也可以直接手改。
 
 ## 优先级
 
