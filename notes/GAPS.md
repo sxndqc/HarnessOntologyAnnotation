@@ -120,7 +120,8 @@
 ## G14 跨模型 generate / critique，四块改进，每轮压缩（SkillParseUMR `experiment/rsi-zh-cross`）
 
 - 两组：gpt-6.1-sol generate + Sonnet 5.5 critique（`gpt-sonnet`），Sonnet 5.5 generate + gpt-6.1-sol critique（`sonnet-gpt`）；
-  document 跟 generate 同一个模型，builder 都是 Opus。0001–0010 顺序跑，每篇三轮，每篇都有 R0 配对对照。
+  document 跟 generate 同一个模型，builder 都是 Opus。0001–0010 顺序跑，每篇**两轮**（R11 → R12 → R21 …，论文是三轮），
+  每篇先跑 R0 配对对照，最后一轮之后再测 after。每组约 5400 次 skill 调用（GPT 两组合计 4527 次）。
 - 反思（`rsi/rsi_compact.py`）：分析错误（find + 归成模式）→ 四块改进（generate 文本、critique 常见错误、
   带关键词的例子、最多一个工具）→ 工具被拒可修改一次再审 → 每轮压缩 generate 和 critique（合并共性、删细节、细节挪进例子）。
   例子用 `search_examples` 按关键词取（关键词出现在句子里就返回）。
