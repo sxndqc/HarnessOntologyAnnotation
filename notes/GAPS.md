@@ -117,14 +117,15 @@
 - `data/umr/suggestions_coded.csv` 里 130 条建议是我（写稿时）一个人按 gold / rule_code / context / evaluator / other 编的码。
   请再找一个人独立编一遍，报 Cohen's kappa；有分歧的条目改码，`make_tables.py` 会自动更新论文里的数字。
 
-## G14 跨模型 generate / critique，四块改进，每轮压缩（SkillParseUMR `experiment/rsi-zh-cross`）
+## G14 跨模型 generate / critique，按整篇文档反思，每轮压缩（SkillParseUMR `experiment/rsi-zh-cross`）
 
 - 两组：gpt-6.1-sol generate + Sonnet 5.5 critique（`gpt-sonnet`），Sonnet 5.5 generate + gpt-6.1-sol critique（`sonnet-gpt`）；
   document 跟 generate 同一个模型，builder 都是 Opus。0001–0010 顺序跑，每篇**两轮**（R11 → R12 → R21 …，论文是三轮），
-  每篇先跑 R0 配对对照，最后一轮之后再测 after。每组约 5400 次 skill 调用（GPT 两组合计 4527 次）。
-- 反思（`rsi/rsi_compact.py`）：分析错误（find + 归成模式）→ 四块改进（generate 文本、critique 常见错误、
-  带关键词的例子、最多一个工具）→ 工具被拒可修改一次再审 → 每轮压缩 generate 和 critique（合并共性、删细节、细节挪进例子）。
-  例子用 `search_examples` 按关键词取（关键词出现在句子里就返回）。
+  每篇先跑 R0 配对对照，最后一轮之后再测 after。每组约 4650 次 skill 调用（GPT 两组合计 4527 次，反思每轮 4～8 次）。
+- 反思（`rsi/rsi_compact.py`）按整篇文档做，不再每句调一次 find：整篇所有句子的全部错误放在一起（judge 单元、两边的图、
+  critique 的改动）→ 先总结成模式 → 再提建议（generate 文本、critique 常见错误、带关键词的例子、最多一个工具、最多一个新 skill，
+  新 skill 用链上前一步的模型）→ 改 skill，工具和新 skill 过机器检查和审核（被拒可修改一次再审）→ 每轮压缩 generate 和 critique
+  （合并共性、删细节、细节挪进例子）。例子用 `search_examples` 按关键词取（关键词出现在句子里就返回）。
 - 对应论文：§5.3（换一个模型做检查是否比同模型的 +0.5 F 有用）、§5.5 / G6（压缩能否挡住只增不删、增益是否随文档数增长）、
   §5.4 / G7（修改一次后有没有工具能进来）、G8 的一部分（标注和检查用不同模型）。
 - 状态：代码和测试已就绪；OpenAI 账户没有额度（429 `credit_balance_exhausted`），充值后按 README 跑。
