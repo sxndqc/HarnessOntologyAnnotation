@@ -117,6 +117,18 @@
 - `data/umr/suggestions_coded.csv` 里 130 条建议是我（写稿时）一个人按 gold / rule_code / context / evaluator / other 编的码。
   请再找一个人独立编一遍，报 Cohen's kappa；有分歧的条目改码，`make_tables.py` 会自动更新论文里的数字。
 
+## G14 跨模型 generate / critique，四块改进，每轮压缩（SkillParseUMR `experiment/rsi-zh-cross`）
+
+- 两组：gpt-6.1-sol generate + Sonnet 5.5 critique（`gpt-sonnet`），Sonnet 5.5 generate + gpt-6.1-sol critique（`sonnet-gpt`）；
+  document 跟 generate 同一个模型，builder 都是 Opus。0001–0010 顺序跑，每篇三轮，每篇都有 R0 配对对照。
+- 反思（`rsi/rsi_compact.py`）：分析错误（find + 归成模式）→ 四块改进（generate 文本、critique 常见错误、
+  带关键词的例子、最多一个工具）→ 工具被拒可修改一次再审 → 每轮压缩 generate 和 critique（合并共性、删细节、细节挪进例子）。
+  例子用 `search_examples` 按关键词取（关键词出现在句子里就返回）。
+- 对应论文：§5.3（换一个模型做检查是否比同模型的 +0.5 F 有用）、§5.5 / G6（压缩能否挡住只增不删、增益是否随文档数增长）、
+  §5.4 / G7（修改一次后有没有工具能进来）、G8 的一部分（标注和检查用不同模型）。
+- 状态：代码和测试已就绪；OpenAI 账户没有额度（429 `credit_balance_exhausted`），充值后按 README 跑。
+  结果在 `experiment/rsi-zh-cross/scores.md`；进论文要在 `analysis/extract_umr.py`、`make_tables.py` 里加读数和表。
+
 ## G-var 方差
 
 - 解析方差：同一个版本（R0 和 H4）在 3 篇文档上用新缓存各跑两次（Qwen 那边两次种子平均差 2.3 F，Sonnet 还没有）。
