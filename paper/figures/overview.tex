@@ -1,0 +1,45 @@
+\begin{figure*}[t]
+\centering
+\footnotesize
+\begin{tikzpicture}[
+  >=Stealth,
+  box/.style={draw=black!65, rounded corners=2pt, align=center, inner sep=2.5pt, fill=white, minimum height=0.6cm},
+  skill/.style={box, minimum width=2.6cm, fill=blue!10},
+  rulebox/.style={box, minimum width=2.6cm, fill=black!7},
+  tool/.style={box, minimum width=2.6cm, fill=green!10},
+  edited/.style={ultra thick, draw=orange!85!black},
+  loop/.style={box, text width=7.9cm, align=left, minimum height=0.86cm, fill=orange!7},
+  head/.style={font=\footnotesize\bfseries}]
+% harness before
+\node[head] at (0,3.85) {Harness $H_{i-1}$};
+\node[skill] (g0) at (0,3.05) {\skill{generate}};
+\node[skill] (c0) at (0,2.30) {\skill{critique}};
+\node[rulebox] (r0) at (0,1.55) {rule: repair graph};
+\node[skill] (d0) at (0,0.80) {\skill{document}};
+\node[tool] (t0) at (0,0.05) {tools: lookup, examples};
+\draw[->] (g0)--(c0); \draw[->] (c0)--(r0); \draw[->] (r0)--(d0);
+% loop
+\node[head] at (6.15,3.85) {One improvement round on document $(x_i, y_i)$};
+\node[loop] (s1) at (6.15,3.05) {\textbf{1 Annotate} $x_i$ with $H_{i-1}$ and keep the trace of every step. Score it: the document is unseen.};
+\node[loop] (s2) at (6.15,2.05) {\textbf{2 Align} prediction and gold $y_i$; the evaluator returns per-check units.};
+\node[loop] (s3) at (6.15,1.05) {\textbf{3 Find} every divergence: kind, scheme category, step of origin, \emph{responsible skill}, cause.};
+\node[loop] (s4) at (6.15,0.05) {\textbf{4 Plan} typed edits per skill (modify / add / delete, anchored); propose at most one tool and one step.};
+\node[loop] (s5) at (6.15,-0.95) {\textbf{5 Admit and apply} edits that copy no gold text; tools and steps only after checks and a reviewer.};
+\foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5} {\draw[->] (\a)--(\b);}
+% harness after
+\node[head] at (12.3,3.85) {Harness $H_i$};
+\node[skill,edited] (g1) at (12.3,3.05) {\skill{generate}};
+\node[skill,edited] (c1) at (12.3,2.30) {\skill{critique}};
+\node[rulebox] (r1) at (12.3,1.55) {rule: repair graph};
+\node[skill,edited] (d1) at (12.3,0.80) {\skill{document}};
+\node[tool] (t1) at (12.3,0.05) {tools: lookup, examples};
+\draw[->] (g1)--(c1); \draw[->] (c1)--(r1); \draw[->] (r1)--(d1);
+% flows
+\draw[->,thick] (g0.east) -- (s1.west);
+\draw[->,thick] (s5.east) -| (t1.south);
+\draw[->,dashed] (t1.east) -- ++(0.45,0) |- (6.15,-1.75) -| (0,-0.35) -- (t0.south);
+\node[font=\scriptsize\itshape, fill=white, inner sep=1.5pt] at (6.15,-1.75) {$H_i$ annotates $x_{i+1}$ before $x_{i+1}$ is used: test-then-train};
+\end{tikzpicture}
+\caption{\sys. A harness is a chain of skills (instruction text with optional examples), shared tools and deterministic rule steps. One round annotates a gold document, attributes each divergence from gold to the responsible skill and scheme category, and edits those skills (orange borders). The next document is annotated by the new harness before it is used to improve it.}
+\label{fig:overview}
+\end{figure*}

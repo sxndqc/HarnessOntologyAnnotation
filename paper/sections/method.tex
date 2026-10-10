@@ -1,0 +1,27 @@
+\section{\sys}
+\label{sec:method}
+
+\subsection{Harness representation}
+\label{sec:harness}
+
+Every part of a harness is a file that a builder can read, edit and diff. A skill is a Markdown instruction whose last section holds the per-call input, so the part above it is identical across calls and cached; it may have worked examples in a separate file read through the shared \texttt{get\_example} tool. Tools are typed Python functions with a docstring. A registry declares skills, output schemas and the chain; rule steps are Python functions that call no model. Versions are directories never edited after their round: round $y$ on document $x$ produces $R_{xy}$, and $H_n = R_{n3}$ is the version after document $n$.
+
+\paragraph{The UMR harness.}
+Per sentence, three model calls (Figure~\ref{fig:overview}). \skill{generate} writes the whole sentence graph from a 2\,KB description of what a UMR graph contains and how it is written, with no examples. \skill{critique} checks the draft one evaluator group at a time (nodes, senses, attributes, arguments, role labels, names, reentrancy); each group says what the evaluator checks and lists \emph{common errors}, a few generic ones in the seed. It returns findings and a corrected graph. A rule step repairs the last parseable graph (duplicate or undefined variables, self-loops, disconnected parts).\footnote{When $R_{12}$ annotated document 0001, one sentence lost all credit to a missing bracket, and we added bracket balancing to this rule from $R_{13}$ on: the only change a person made to any harness during the run.} \skill{document} sees the graph and the five before it and writes the sentence's temporal, modal and coreference relations. All skills can call \texttt{propbank\_lookup} and \texttt{get\_example}. The seed has \sizeSeed{}\,KB of instructions.
+
+\subsection{One improvement round}
+\label{sec:round}
+
+\paragraph{1. Annotate and trace.} The current harness annotates the gold document; the trace holds each sentence's draft, each later step's findings and the triples it added or removed, the rule repairs, and the document-level calls.
+
+\paragraph{2. Align.} The evaluator aligns prediction and gold and lists the units it did not count as correct.
+
+\paragraph{3. Find.} For every sentence with an error, the builder model sees the sentence, both graphs, the alignment, the incorrect units, both sides' document-level relations, and the trace. It lists every divergence, merging those with one cause, and labels each with its kind, its evaluator check, the step it came from, the skill whose instructions \emph{should change}, its cause, and, if gold follows a convention, that convention in general terms. The prompt gives the rule for blame: what \skill{critique} should catch in its group is \skill{critique}'s; a draft no check can repair, or a misleading instruction of \skill{generate}, is \skill{generate}'s; document-level errors are \skill{document}'s.
+
+\paragraph{4. Plan.} One call reads up to 250 problems (taken in turn from each sentence), grouped by responsible skill and, for \skill{critique}, by evaluator group, together with every skill's full text. It returns edits, each naming a skill, a file, an action, an anchor, a text and the problems it addresses: \emph{modify} replaces an instruction, common error or example that is wrong or too narrow; \emph{add} inserts a missing rule, example or common error after an anchor; \emph{delete} removes text that causes an error or contradicts gold. Edits must be general and checkable, one edit should fix many problems, and one-offs and gold errors get no edit; changes outside the instructions go to a list of suggestions the loop does not apply.
+
+\paragraph{5. Admit and apply.} An edit applies only if its anchor occurs exactly once, and is rejected if it shares eight consecutive characters with any sentence of the corpus, training or held-out. A round may also propose one tool (a Python function every skill can call) and one step (a skill inserted in the chain). A proposal must pass machine checks (the registry loads; a tool imports only whitelisted modules, touches no files, has one typed public function, and passes at least three tests of its own in an isolated process) and then a reviewer, a separate builder call that approves only if six criteria clearly hold: the problem recurs and is costly, no edit could fix it as well, the part has one narrow responsibility, it is worth its cost, it is correct, and it leaks nothing (Appendix~\ref{app:review}). Edits that depend on a rejected proposal are dropped.
+
+\paragraph{Schedule.} Documents are processed in order, three rounds each; each round re-annotates the document with the previous round's version. $H_n$ then annotates document $n{+}1$, unchanged; that is its test score.
+
+Attribution (step 3) and typed, anchored edits (step 4) are our answer to credit assignment and auditability: each edit touches one place and leaves a diff, instead of a rewritten guideline. Tools and steps are gated because they persist across documents. In this version the loop does not test an edit before keeping it, and nothing prompts it to consolidate; \S\ref{sec:results} shows the consequences. For TimeML and manifesto coding the harness has the same shape (Appendix~\ref{app:other}).

@@ -1,0 +1,14 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\paragraph{Data.}
+Chinese UMR \citep{bonn2024building}, 31 documents with sentence graphs and document-level relations, in a cleaned version of the gold \gap{cite the cleanup}. The sequential run takes documents 0001--0011 in numerical order (\nSentences{} sentences, 10--82 per document) and stopped after the first round on 0011, so \nPaired{} documents (0002--0010) have both a learned and a seed annotation. The other 20 documents (297 sentences) were never shown to a builder and form the held-out set.
+
+\paragraph{Models and metrics.}
+Claude Sonnet 5.5 annotates and Claude Opus 5.5 builds (find, plan, review), with adaptive thinking at default effort; \S\ref{sec:models} varies them. AnCast++ \citep{sun2025ancastpp} aligns each predicted sentence graph with gold and gives F over sentence graphs (\emph{F}) and a comprehensive score that adds document-level modal, temporal and coreference relations (\emph{C}). For analysis we use the judge's per-check scores and per-sentence Smatch.
+
+\paragraph{Baselines.}
+Each sees the same gold documents as the builder, or none. \textbf{Zero-shot prompt}: one call per sentence naming the language and the scheme and pointing to its guidelines; sentence graphs only. \textbf{Seed harness} $H_0$. \textbf{Few-shot} \gap{to run}: $H_0$ with the gold graphs of the $k$ most similar training sentences (character TF-IDF) in \skill{generate}, $k\in\{10,30\}$. \textbf{Guideline-only refinement} \gap{to run}: the closest analogue of earlier work \citep{kim2026refining}, with the same builder and gold, but a single guideline prompt rewritten in full each round from the dominant error pattern and kept only if the training document improves. \textbf{Procedural harness}: a hand-designed harness that follows the human annotation procedure \citep{anon2026orchestration}, with dozens of narrow decisions per sentence, improved by the same builder with edits confined to the skill that made each decision.
+
+\paragraph{Statistics.}
+We report the mean paired difference over documents with a bootstrap 95\% interval (20{,}000 resamples), the exact Wilcoxon signed-rank test, and the number of documents that improve; sentence-level intervals resample documents, then sentences. Each configuration was run once \gap{G-var}.
