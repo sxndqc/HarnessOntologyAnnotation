@@ -13,10 +13,10 @@
 \subsection{The learned harness is better on unseen documents}
 \label{sec:main}
 
-On the documents that also have the zero-shot prompt (0002--0007; Table~\ref{tab:prequential}), the systems form a ladder: \zeroMeanZ{} F for one call per sentence, \seedMeanZ{} for the seed harness, \firstMeanZ{} for the learned harness. Over the \nPaired{} documents with a seed control, the learned harness gains \gainF{} F (95\% CI \gainFLo--\gainFHi; Wilcoxon $p=$~\gainFWilcoxon) and improves \gainFPos{} of them; on the comprehensive score it gains \gainC{} (\gainCLo--\gainCHi) and improves all \gainCPos{} ($p=$~\gainCWilcoxon). Of \nSentPaired{} paired sentences, \sentBetter\% get higher Smatch and \sentWorse\% lower (mean +\sentGain, \sentGainLo--\sentGainHi). The one document that does not improve, 0008 (\gainMin), has ten sentences.
+On the documents that also have the zero-shot prompt (0002--0007; Table~\ref{tab:prequential}), the systems form a ladder: \zeroMeanZ{} F for one call per sentence, \seedMeanZ{} for the seed harness, \firstMeanZ{} for the learned harness. Over the \nPaired{} documents with a seed control, the learned harness gains \gainF{} F (95\% CI \gainFLo--\gainFHi; Wilcoxon $p=$~\gainFWilcoxon) and improves \gainFPos{} of them; on the comprehensive score it gains \gainC{} (\gainCLo--\gainCHi) and improves all \gainCPos{} ($p=$~\gainCWilcoxon). Of \nSentPaired{} complete-case paired sentences, \sentBetter\% improve and \sentWorse\% decline by more than one Smatch point (mean +\sentGain, \sentGainLo--\sentGainHi). The one document that does not improve, 0008 (\gainMin), has ten sentences.
 
 \paragraph{Training fit is not generalization.}
-Three rounds on a document raise its own F by \trainFitGain{} points, to \afterMean{} on average and up to \afterMax, against \gainF{} on the next, unseen document (Figure~\ref{fig:curve}a). The leakage guard stops copying, not learning one document's particular conventions. Evaluated on its training documents, the same loop would look three times better.
+Three rounds on a document raise its own F by \trainFitGain{} points, to \afterMean{} on average and up to \afterMax, against \gainF{} on the next, unseen document (Figure~\ref{fig:curve}a). The leakage guard restricts some verbatim overlap, not learning one document's particular conventions. Evaluated on its training documents, the same loop would look three times better.
 
 \subsection{Against baselines with the same gold}
 \label{sec:baselines}
@@ -37,7 +37,7 @@ Seed harness $H_0$ & \gapcell & \gapcell & 3 \\
 Learned $H_4$ (and $H_1$, $H_{10}$) & \gapcell & \gapcell & 3 \\
 \bottomrule
 \end{tabular}
-\caption{Held-out set (20 documents no builder saw), same gold budget for all trained systems. \gap{G1--G4}}
+\caption{Planned held-out set (20 documents not used to train this harness), same gold budget for all trained systems. \gap{G1--G4}}
 \label{tab:heldout}
 \end{table}
 
@@ -46,8 +46,8 @@ The held-out comparison is pending (Table~\ref{tab:heldout}). One matched compar
 \subsection{Where the gains come from}
 \label{sec:where}
 
-\paragraph{The generator, not the checker.}
-Scoring the graph after each step (Appendix Table~\ref{tab:critique}) shows that the learned \skill{generate} alone is \genGain{} F better than the seed's on unseen documents, and \skill{critique} adds \critFirst{} on top (\critFirstMin{} to +\critFirstMax), less than the \critSeed{} it adds to the seed's draft; on the document it was trained on it adds \critAfter. The common-error lists learn to fix their own document; what transfers is in the generator's instructions. A variant with five specialized checks shows this more sharply: the checks add +\refineTrainMin{} to +\refineTrainMax{} on their training documents and \refineUnseen{} on unseen ones (Appendix Table~\ref{tab:refine}). At annotation time a checker has no gold, only what it was told, as self-correction studies would predict \citep{huang2024large,kamoi2024when}.
+\paragraph{Stage-wise generator and checker scores.}
+Scoring the graph after each step (Appendix Table~\ref{tab:critique}) shows that the learned \skill{generate} alone is \genGain{} F better than the seed's on unseen documents, and \skill{critique} adds \critFirst{} on top (\critFirstMin{} to +\critFirstMax), less than the \critSeed{} it adds to the seed's draft; on the document it was trained on it adds \critAfter. Most of the observed sequential gain is already present at the generator stage. These stage-wise comparisons do not isolate the causal contribution of updating each skill, because the generator and checker were revised jointly. A variant with five specialized checks shows this more sharply: the checks add +\refineTrainMin{} to +\refineTrainMax{} on their training documents and \refineUnseen{} on unseen ones (Appendix Table~\ref{tab:refine}). At annotation time a checker has no gold, only what it was told, as self-correction studies would predict \citep{huang2024large,kamoi2024when}.
 
 \begin{figure}[t]
 \centering
@@ -56,25 +56,25 @@ Scoring the graph after each step (Appendix Table~\ref{tab:critique}) shows that
 \label{fig:category}
 \end{figure}
 
-\paragraph{Convention, not competence.}
-By judge check (Figure~\ref{fig:category}), the largest gains are on the scheme's conventions: pronoun person and number (+\catRefer{} points), the author's modal strength (+\catModal), non-core role labels (+\catPeriph), arguments of abstract rolesets such as \texttt{have-org-role-91} (+\catAbstract), non-core arguments of events (+\catPeriphEvent), entity concepts (+\catEntity). Checks that need a semantic judgment the model already makes as well as it can do not move: PropBank sense (+\catSense), aspect (+\catAspect), core arguments of events (+\catCoreEvent). Coreference (+\catCoref) gains little and polarity falls (\catPolarity, few units). The builder mostly teaches the annotator how the scheme writes things down, which is what a guideline is for.
+\paragraph{Gains by evaluator check.}
+By judge check (Figure~\ref{fig:category}), the largest gains are on the scheme's conventions: pronoun person and number (+\catRefer{} points), the author's modal strength (+\catModal), non-core role labels (+\catPeriph), arguments of abstract rolesets such as \texttt{have-org-role-91} (+\catAbstract), non-core arguments of events (+\catPeriphEvent), entity concepts (+\catEntity). Little change is observed on several checks involving semantic judgments: PropBank sense (+\catSense), aspect (+\catAspect), core arguments of events (+\catCoreEvent). Coreference (+\catCoref) gains little and polarity falls (\catPolarity, few units). This pattern is consistent with learning scheme conventions, but these checks also involve semantic judgments. It does not establish an unchanged semantic capability or a capability ceiling; category counts and repeated, targeted comparisons are needed to test that interpretation.
 
 \subsection{Tools are proposed rarely and admitted never}
 \label{sec:tools}
 
 In \nRounds{} rounds the builder proposed \nProposals{} tools and no steps; the reviewer rejected all three. \texttt{check\_umr\_graph} checked attribute values, entity types and role names; the reviewer kept the purely mechanical checks (colon-prefixed or misspelled closed-list values, parse failures, duplicate variables) and judged the rest to be missing conventions that belong in the instructions. \texttt{check\_umr\_form} flagged bare constants and aspect on discourse rolesets; the second part contradicted the builder's own earlier rule. \texttt{check\_doc\_relations} checked coreference on name nodes and double temporal parents, but one test contradicted a convention of \skill{document}. Each time a sound core was lost, because rejected proposals are not revised. Without the reviewer (the TimeML and manifesto runs), the builder changes tools or rules in most rounds \gap{G7: does admitting them help?}.
 
-\subsection{More documents, more text, the same gain}
+\subsection{Instruction growth without a clear increase in sequential gains}
 \label{sec:growth}
 
-The gain does not grow with the number of documents behind it (Figure~\ref{fig:curve}b): +\gainFirstHalf{} on average for documents 2--6, +\gainSecondHalf{} for 7--10 (Spearman $\rho=$~\gainRho, $p=$~\gainRhoP). The harness grows from \sizeSeed{} to \sizeLast{}\,KB (\sizeGen{} in \skill{generate}, \sizeCrit{} in \skill{critique}, \sizeDoc{} in \skill{document}), \sizePerRound{}\,KB per round. Of \nEditsApplied{} applied edits, \nModify{} modify, \nAdd{} add and \nDelete{} delete (Appendix Table~\ref{tab:edits}): nothing rewards a shorter harness. Whether the plateau comes from what one document can teach, from interference among accumulated rules, or from length is open; held-out scores of $H_1$ to $H_{10}$ and a consolidation pass under a size budget would separate these \gap{G5, G6}.
+This trajectory shows no clear increase in gain with the number of preceding documents (Figure~\ref{fig:curve}b): +\gainFirstHalf{} on average for documents 2--6, +\gainSecondHalf{} for 7--10 (Spearman $\rho=$~\gainRho, $p=$~\gainRhoP). The harness grows from \sizeSeed{} to \sizeLast{}\,KB (\sizeGen{} in \skill{generate}, \sizeCrit{} in \skill{critique}, \sizeDoc{} in \skill{document}), \sizePerRound{}\,KB per round. Of \nEditsApplied{} applied edits, \nModify{} modify, \nAdd{} add and \nDelete{} delete (Appendix Table~\ref{tab:edits}): nothing rewards a shorter harness. The correlation does not establish a flat learning curve, since document difficulty and order change along with the harness. Whether this pattern reflects what one document can teach, from interference among accumulated rules, or from length is open; held-out scores of $H_1$ to $H_{10}$ and a consolidation pass under a size budget would separate these \gap{G5, G6}.
 
 \input{tables/models}
 
-\subsection{The builder must be capable}
+\subsection{A weaker joint builder--annotator configuration}
 \label{sec:models}
 
-The gain holds for the procedural harness with the same models and for DeepSeek building and annotating without thinking (Table~\ref{tab:models}). With Qwen3.5-9B building and annotating over \qwenSmallN{} documents, the learned harness is worse than the seed (\qwenSmallGain{} F on average; better on \qwenSmallPos{} documents), and the decline deepens (+\qwenSmallFirst{} in the first half, \qwenSmallSecond{} in the second); two independent seed runs differ by \qwenSeedNoise{} F per document, so single documents are within noise, the trend is not. On agentic tasks, by contrast, a 9B model's harness updates were as useful as a frontier model's \citep{lin2026harness}. Whether builder or annotator matters more here is not yet separated \gap{G8}.
+The gain holds for the procedural harness with the same models and for DeepSeek building and annotating without thinking (Table~\ref{tab:models}). With Qwen3.5-9B building and annotating over \qwenSmallN{} documents, the learned harness is worse than the seed (\qwenSmallGain{} F on average; better on \qwenSmallPos{} documents), and the decline deepens (+\qwenSmallFirst{} in the first half, \qwenSmallSecond{} in the second); two independent seed runs differ by \qwenSeedNoise{} F per document, which limits interpretation of individual changes. The available reruns do not establish the significance of the trajectory. On agentic tasks, by contrast, a 9B model's harness updates were as useful as a frontier model's \citep{lin2026harness}. Whether builder or annotator matters more here is not yet separated \gap{G8}.
 
 \subsection{Ablations of the loop}
 \label{sec:ablation}
@@ -86,7 +86,7 @@ The gain holds for the procedural harness with the same models and for DeepSeek 
 \toprule
 Variant & $\Delta$F seq. & $\Delta$F held-out & KB \\
 \midrule
-\sys & +\gainF & \gapcell & \sizeLast \\
+\sys & \gapcell & \gapcell & \gapcell \\
 \quad no attribution (one list) & \gapcell & \gapcell & \gapcell \\
 \quad whole-skill rewrites & \gapcell & \gapcell & \gapcell \\
 \quad \skill{generate} only & \gapcell & \gapcell & \gapcell \\
@@ -96,7 +96,7 @@ Variant & $\Delta$F seq. & $\Delta$F held-out & KB \\
 \quad other document orders & \gapcell & \gapcell & \gapcell \\
 \bottomrule
 \end{tabular}
-\caption{Ablations: sequential gain on 0002--0005 and gain on the held-out set. \gap{G9}}
+\caption{Planned matched-budget ablations: sequential gain on 0002--0005 and gain on the held-out set. All rows must be recomputed on this common protocol; the reported full-run gain over 0002--0010 is not a baseline for this subset. \gap{G9}}
 \label{tab:ablation}
 \end{table}
 
@@ -105,4 +105,4 @@ Table~\ref{tab:ablation} lists the ablations that test the design: whether attri
 \subsection{Beyond UMR}
 \label{sec:beyond}
 
-The same loop builds a TimeML annotator for TempEval-3 \citep{uzzaman2013semeval} and a coder that assigns manifesto sentences one of the eight policy domains of the Manifesto Project scheme \citep{lehmann2026manifesto}, with the same protocol (Appendix~\ref{app:other}; finished baselines in Tables~\ref{tab:timeml} and~\ref{tab:manifesto}). On both test sets the seed harness is below the zero-shot prompt (TimeML event F1 74.5 vs.\ 80.7; manifesto accuracy 63.8 vs.\ 65.0), so the learned harness must first make up for its own seed. \gap{G10, G11: learned harness on both test sets; sequential gains.}
+The same loop builds a TimeML annotator for TempEval-3 \citep{uzzaman2013semeval} and a coder that assigns manifesto sentences one of the eight policy domains of the Manifesto Project scheme \citep{lehmann2026manifesto}, with variant protocols that omit the model reviewer and permit rule and registry changes (Appendix~\ref{app:other}; finished baselines in Tables~\ref{tab:timeml} and~\ref{tab:manifesto}). On both test sets the seed harness is below the zero-shot prompt (TimeML event F1 74.5 vs.\ 80.7; manifesto accuracy 63.8 vs.\ 65.0), so the learned harness must first make up for its own seed. \gap{G10, G11: learned harness on both test sets; sequential gains.}

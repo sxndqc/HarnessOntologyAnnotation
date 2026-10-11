@@ -135,3 +135,14 @@
 - `anon2026orchestration` 是 A 篇（Decision Orchestration），匿名引用；如果 A 篇不投或换名字，要改。
 - 方法里说 builder 每轮"最多一个工具、一个步骤"，critique 实验是每轮都允许提；refine 变体是三篇文档一次（附录没写细，需要的话补）。
 - 人工改过一次规则（R13 起补括号），正文脚注和 Limitations 都写了。
+
+## G14 证据、数据曝光与运行参数核验（本次模拟评审新增）
+
+- 逐实验 lineage 记录人工 seed 使用的 gold、builder training、regression、dev score selection、overlap filter 访问的 test 文本和最终 test scoring。当前20篇留出仅对主 harness 而言；跨系统共同测试前排除其他训练/dev曝光。
+- 核验 gold release/license、清洗列表和文件 SHA256；不要由 checkout 存在推定公开或 API 上传权限。
+- Smatch 统计只含双方 non-None 的完整配对；改善/下降阈值为超过 ±0.01。缺失分数数量、原因、失败输出处理：**待填**。
+- 历史 backend、effort、model version、run dates、cache、并发、scorer commit：**待填**。
+- 匹配 G1–G4 的 gold 信息与调用/成本预算，说明主方法不按训练分数筛选、guideline-only 按分数筛选的差别。
+- G9 的完整方法基线须在 0002–0005 的共同子集重算，不能借用 0002–0010 的 +9.0 主结果。
+- 单轨迹 CI/Wilcoxon 是条件性描述，文档顺序/构建随机性方差仍留空。
+- 投稿前按 Responsible NLP checklist E1 披露 AI 模拟审稿与写作协助，匿名化 artifact 链接。
