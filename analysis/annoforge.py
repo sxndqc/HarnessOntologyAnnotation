@@ -375,7 +375,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol. $^\dagger$TIPSem is the organizers' reference system, not a participant: the platinum gold was made by correcting TIPSem's own output (73\%% of the gold TLINK pairs are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant), so its TLINK score is not comparable.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
@@ -864,9 +864,12 @@ def figure_curves(runs, sota):
             if v is not None:
                 ax.axhline(v, ls=style, color="grey", lw=1, label=lab)
         if b == "timeml":
+            t = sota.get("timeml", {}).get("cleartk/2-timebank-verbclause", {}).get("overall", {}).get("tlink_f1")
+            if t:
+                ax.axhline(t, ls="-.", color="#a01f1f", lw=1, label="TempEval-3 best (ClearTK-2)")
             t = sota.get("timeml", {}).get("TIPSem/key", {}).get("overall", {}).get("tlink_f1")
             if t:
-                ax.axhline(t, ls="-.", color="#a01f1f", lw=1, label="TIPSem (2013)")
+                ax.axhline(t, ls=(0, (1, 3)), color="#a01f1f", lw=1, label="TIPSem (reference, pre-labeled gold)")
         else:
             t = sota.get(b, {}).get("orange", {}).get("overall", {}).get("F")
             if t:
