@@ -49,6 +49,7 @@ def extract(src):
                 keep["tlink_counts"] = tlink_counts(src, os.path.dirname(path))
             if b != "timeml" and "/train/" not in "/" + cond + "/":
                 keep["sentences"] = umr_sentences(os.path.dirname(path))
+            keep["calls"] = call_stats(os.path.join(os.path.dirname(path), "calls.jsonl"))
             runs[b][cond] = keep
     dump(runs, "runs.json")
 
@@ -86,6 +87,29 @@ def extract(src):
     with open(os.path.join(af, "data", "splits.json"), encoding="utf-8") as f:
         dump(json.load(f), "splits.json")
     print("extracted to", DATA)
+
+
+def call_stats(path):
+    """Model calls of a run: how many, how many used a tool (a claude-sdk call with more than two turns,
+    i.e. a tool call before the answer), output tokens."""
+    if not os.path.exists(path):
+        return None
+    n = tool = out = 0
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            try:
+                d = json.loads(line)
+            except ValueError:
+                continue
+            if d.get("cached"):
+                continue
+            n += 1
+            if d.get("backend") == "claude-sdk":
+                tool += 1 if (d.get("turns") or 0) > 2 else 0
+                out += (d.get("usage") or {}).get("output_tokens") or 0
+            else:
+                out += d.get("output_tokens") or 0
+    return {"calls": n, "tool_calls": tool, "output_tokens": out}
 
 
 def version_info(v):
@@ -299,7 +323,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
-    text = text.replace("ju\\textipa{:}m\\ae{}\\textipa{tS}", "ju\\-m\\ae{}\\v{c}")
+    text = text.replace("ju\\textipa{:}m\\ae{}\\textipa{tS}", "\\jumach{}").replace("juːmæʧ", "\\jumach{}")
     write("main.tex", text)
     for b in BENCHES:
         key = MAIN[b]
