@@ -24,6 +24,7 @@ BENCHES = ["umr-zh", "umr-en", "timeml"]
 BNAME = {"umr-zh": "UMR Chinese", "umr-en": "UMR English", "timeml": "TimeML"}
 MAIN = {"umr-zh": "F", "umr-en": "F", "timeml": "tlink_f1"}
 CONFIGS = ["HH", "HG", "GH", "GG"]
+NOT_RUN = re.compile(r"^(baseline/gpt|R10/(HG|GH|GG))$")
 TRAJ = {"umr-zh": "HH", "umr-en": "HH", "timeml": "HHp"}     # the main trajectory of each benchmark
 ALT = {"timeml": ("HH", "TimeBank-trained")}                   # a second trajectory, reported alongside
 ROUNDS = 10
@@ -288,6 +289,8 @@ def table_main(runs, sota, m):
             if isinstance(c, dict):
                 v = c.get(k)
                 cells.append(num(float(v)) if isinstance(v, (int, float)) else "--")
+            elif c and c not in runs.get(b, {}) and NOT_RUN.match(c):
+                cells.append("n/a")      # stopped for the API budget (GPT-6.1-sol)
             else:
                 cells.append(num(get(runs, b, c, k)) if c else "--")
         return label + " & " + " & ".join(cells) + r" \\"
@@ -326,7 +329,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
@@ -371,12 +374,15 @@ def cfg_label(c):
 def table_seed(runs, m):
     """The 2x2 of generator and critic models at H0 and H10, main metric."""
     rows = []
-    for c in CONFIGS:
+    for c in CONFIGS + ["SS"]:
         cells = []
         for b in BENCHES:
             a = get(runs, b, "R0/" + c, MAIN[b])
             z = get(runs, b, T(b, "test/H10") if c == "HH" else "R10/" + c, MAIN[b])
-            cells += [num(a), num(z), sgn(z - a) if a is not None and z is not None else GAP]
+            if z is None and c in ("HG", "GH", "GG"):
+                cells += [num(a), "n/a", "n/a"]
+            else:
+                cells += [num(a), num(z), sgn(z - a) if a is not None and z is not None else GAP]
         rows.append(cfg_label(c) + " & " + " & ".join(cells) + r" \\")
     write("seed2x2.tex", r"""\begin{table}[t]
 \centering\small
@@ -390,7 +396,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 %s
 \bottomrule
 \end{tabular}
-\caption{Generator (G) and critic (C) models. $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is.}
+\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. n/a: not run within the API budget.}
 \label{tab:seed2x2}
 \end{table}
 """ % "\n".join(rows))
@@ -539,6 +545,17 @@ def extra_macros(runs, m):
         m["toolUse" + t] = "%.0f" % (100 * c["tool_calls"] / c["calls"]) if c.get("calls") else GAP
     for v in ("R0/SS", "R10/SS"):
         m["sonnet%sTlinkTml" % ("Seed" if v.startswith("R0") else "Learned")] = num(get(runs, "timeml", v, "tlink_f1"))
+    # English GPT/GPT transfer: run on two documents only (budget); compare on the same documents
+    sub = runs.get("umr-en", {}).get("R10/GG-sub")
+    docs = sorted(sub["docs"]) if sub else []
+    for cond, name in (("R0/GG", "SubSeedGGEn"), ("R10/GG-sub", "SubLearnedGGEn"), ("R0/HH", "SubSeedHHEn"),
+                       (T("umr-en", "test/H10"), "SubLearnedHHEn")):
+        r = runs.get("umr-en", {}).get(cond)
+        vals = [r["docs"][d]["F"] for d in docs if r and d in r["docs"] and r["docs"][d].get("F") is not None]
+        m[name] = num(sum(vals) / len(vals)) if docs and len(vals) == len(docs) else GAP
+        jv = [r["docs"][d].get("jumach") for d in docs if r and d in r["docs"]]
+        m[name + "Jumach"] = num(100 * sum(jv) / len(jv)) if docs and jv and None not in jv and len(jv) == len(docs) else GAP
+    m["subDocsEn"] = str(sum(runs["umr-en"]["R0/GG"]["docs"][d]["sentences"] for d in docs)) if docs and "R0/GG" in runs.get("umr-en", {}) else GAP
 
 
 def table_ablation(runs, m):

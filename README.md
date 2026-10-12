@@ -31,4 +31,4 @@ AnnoForge：只给 guideline 和少量例子，LLM 不经微调自己搭出标�
 （同样文档上 38.8 / 27.3）；TimeML 上学会了"哪些事件该连"，但没学会时间关系本身。实验代码、全部版本和记录在
 [sxndqc/SkillParseUMR](https://github.com/sxndqc/SkillParseUMR) 的 `experiment/annoforge/`（中文说明见那里的 README）。
 
-GPT-6.1-sol 的条件因为 OpenRouter 余额用完没跑完，论文里对应的格子是红色 TBD；充值后在实验仓库跑 `./resume_gpt.sh`，再重新 extract、make。
+GPT-6.1-sol：种子 2x2 全部完成，H10 迁移到 GPT/GPT 完成了中文和英文两篇；中英文的 GPT guideline baseline 和其余迁移因 API 余额没跑，论文里标 n/a（补跑方法见实验仓库 README）。
