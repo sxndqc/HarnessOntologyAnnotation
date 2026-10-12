@@ -347,7 +347,7 @@ def table_main(runs, sota, m):
     rows.append(r"\multicolumn{10}{@{}l}{\emph{Fine-tuned and feature-based systems (re-scored on our test documents)}} \\")
     rows.append(row("UMR shared task: Orange", {"umr-zh": sz.get("orange", {}).get("overall"), "umr-en": se.get("orange", {}).get("overall")}))
     rows.append(row("UMR shared task: Sema", {"umr-zh": sz.get("sema", {}).get("overall"), "umr-en": se.get("sema", {}).get("overall")}))
-    for name, label in (("TIPSem/key", "TempEval-3: TIPSem"), ("cleartk/2-timebank-verbclause", "TempEval-3: ClearTK-2"),
+    for name, label in (("TIPSem/key", "TempEval-3: TIPSem$^\\dagger$"), ("cleartk/2-timebank-verbclause", "TempEval-3: ClearTK-2"),
                         ("chambers/NavyTime1", "TempEval-3: NavyTime")):
         if name in st:
             rows.append(row(label, {"timeml": st[name]["overall"]}))
@@ -375,7 +375,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol. $^\dagger$TIPSem is the organizers' reference system, not a participant: the platinum gold was made by correcting TIPSem's own output (73\%% of the gold TLINK pairs are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant), so its TLINK score is not comparable.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
