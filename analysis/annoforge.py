@@ -24,6 +24,8 @@ BENCHES = ["umr-zh", "umr-en", "timeml"]
 BNAME = {"umr-zh": "UMR Chinese", "umr-en": "UMR English", "timeml": "TimeML"}
 MAIN = {"umr-zh": "F", "umr-en": "F", "timeml": "tlink_f1"}
 CONFIGS = ["HH", "HG", "GH", "GG"]
+TRAJ = {"umr-zh": "HH", "umr-en": "HH", "timeml": "HHp"}     # the main trajectory of each benchmark
+ALT = {"timeml": ("HH", "TimeBank-trained")}                   # a second trajectory, reported alongside
 ROUNDS = 10
 GAP = r"\gapcell{}"
 SEED = 20261012
@@ -61,7 +63,8 @@ def extract(src):
             if not os.path.isdir(hdir) or not os.path.exists(os.path.join(hdir, "H0")):
                 continue
             versions[b][traj] = {}
-            for v in sorted(glob.glob(os.path.join(hdir, "H*")), key=lambda p: int(p.rsplit("H", 1)[1])):
+            for v in sorted((p for p in glob.glob(os.path.join(hdir, "H*")) if re.fullmatch(r"H\d+", os.path.basename(p))),
+                            key=lambda p: int(p.rsplit("H", 1)[1])):
                 versions[b][traj][os.path.basename(v)] = version_info(v)
             rsi[b][traj] = {}
             for g in sorted(glob.glob(os.path.join(af, "runs", b, traj, "rsi", "g*")), key=lambda p: int(p.rsplit("g", 1)[1])):
@@ -244,6 +247,8 @@ def make():
     table_judge(runs, macros)
     table_ops(rsi, versions, macros)
     table_cost(cost, runs, macros)
+    table_ablation(runs, macros)
+    extra_macros(runs, macros)
     figure_curves(runs, sota)
     figure_judge(runs)
     figure_ops(rsi, versions)
@@ -301,12 +306,14 @@ def table_main(runs, sota, m):
     for mdl, label in (("haiku", "Haiku 5.5"), ("sonnet", "Sonnet 5.5"), ("gpt", "GPT-6.1-sol")):
         rows.append(row(label, {b: "baseline/" + mdl for b in BENCHES}))
     rows.append(r"\midrule \multicolumn{10}{@{}l}{\emph{Seed harness $H_0$ (generator / critic)}} \\")
-    for c in CONFIGS:
+    for c in CONFIGS + ["SS"]:
         rows.append(row(cfg_label(c), {b: "R0/" + c for b in BENCHES}))
     rows.append(r"\midrule \multicolumn{10}{@{}l}{\emph{Learned harness $H_{10}$ (\sys, built with Haiku / Haiku)}} \\")
-    rows.append(row(cfg_label("HH"), {b: "HH/test/H10" for b in BENCHES}))
-    for c in ("HG", "GH", "GG"):
+    rows.append(row(cfg_label("HH"), {b: T(b, "test/H10") for b in BENCHES}))
+    for c in ("HG", "GH", "GG", "SS"):
         rows.append(row(cfg_label(c) + " (transfer)", {b: "R10/" + c for b in BENCHES}))
+    for b, (traj, label) in ALT.items():
+        rows.append(row("Haiku / Haiku, %s" % label, {b: T(b, "test/H10", traj)}))
     text = r"""\begin{table*}[t]
 \centering\small
 \setlength{\tabcolsep}{3.6pt}
@@ -328,13 +335,13 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
     for b in BENCHES:
         key = MAIN[b]
         tag = {"umr-zh": "Zh", "umr-en": "En", "timeml": "Tml"}[b]
-        for cond, name in (("R0/HH", "Seed"), ("HH/test/H10", "Learned"), ("baseline/haiku", "BaseHaiku"),
+        for cond, name in (("R0/HH", "Seed"), (T(b, "test/H10"), "Learned"), ("baseline/haiku", "BaseHaiku"),
                            ("baseline/sonnet", "BaseSonnet"), ("baseline/gpt", "BaseGpt"), ("R0/GG", "SeedGG"),
                            ("R10/GG", "LearnedGG"), ("R0/HG", "SeedHG"), ("R0/GH", "SeedGH"), ("R10/HG", "LearnedHG"),
                            ("R10/GH", "LearnedGH")):
             m["main%s%s" % (name, tag)] = num(get(runs, b, cond, key))
         if b != "timeml":
-            for cond, name in (("R0/HH", "Seed"), ("HH/test/H10", "Learned")):
+            for cond, name in (("R0/HH", "Seed"), (T(b, "test/H10"), "Learned")):
                 m["comp%s%s" % (name, tag)] = num(get(runs, b, cond, "Comprehensive"))
                 m["jumach%s%s" % (name, tag)] = num(get(runs, b, cond, "jumach"))
             s = sota.get(b, {}).get("orange", {}).get("overall", {})
@@ -345,14 +352,19 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
             t = sota.get("timeml", {})
             m["sotaTlinkTipsem"] = num(t.get("TIPSem/key", {}).get("overall", {}).get("tlink_f1"))
             m["sotaTlinkCleartk"] = num(t.get("cleartk/2-timebank-verbclause", {}).get("overall", {}).get("tlink_f1"))
-            for cond, name in (("R0/HH", "Seed"), ("HH/test/H10", "Learned")):
+            for cond, name in (("R0/HH", "Seed"), (T(b, "test/H10"), "Learned")):
                 for k, n2 in (("event_f1", "Event"), ("timex_value", "Value"), ("timex_strict_f1", "Timex"),
                               ("event_class", "Class"), ("tlink_p", "TlinkP"), ("tlink_r", "TlinkR")):
                     m["%s%s%s" % (n2.lower(), name, tag)] = num(get(runs, b, cond, k))
 
 
+def T(b, rest, traj=None):
+    """The path of a run of benchmark b's main trajectory (or of `traj`)."""
+    return "%s/%s" % (traj or TRAJ[b], rest)
+
+
 def cfg_label(c):
-    names = {"H": "Haiku", "G": "GPT"}
+    names = {"H": "Haiku", "G": "GPT", "S": "Sonnet"}
     return "%s / %s" % (names[c[0]], names[c[1]])
 
 
@@ -363,7 +375,7 @@ def table_seed(runs, m):
         cells = []
         for b in BENCHES:
             a = get(runs, b, "R0/" + c, MAIN[b])
-            z = get(runs, b, "HH/test/H10" if c == "HH" else "R10/" + c, MAIN[b])
+            z = get(runs, b, T(b, "test/H10") if c == "HH" else "R10/" + c, MAIN[b])
             cells += [num(a), num(z), sgn(z - a) if a is not None and z is not None else GAP]
         rows.append(cfg_label(c) + " & " + " & ".join(cells) + r" \\")
     write("seed2x2.tex", r"""\begin{table}[t]
@@ -389,30 +401,33 @@ def table_rounds(runs, rsi, versions, m):
     for b in BENCHES:
         rows = []
         tag = {"umr-zh": "Zh", "umr-en": "En", "timeml": "Tml"}[b]
-        rs = rsi.get(b, {}).get("HH", {})
-        vs = versions.get(b, {}).get("HH", {})
+        rs = rsi.get(b, {}).get(TRAJ[b], {})
+        vs = versions.get(b, {}).get(TRAJ[b], {})
         for n in range(0, ROUNDS + 1):
-            test = get(runs, b, "HH/test/H%d" % n, MAIN[b])
+            test = get(runs, b, T(b, "test/H%d" % n), MAIN[b])
             if n == 0:
                 size = sum(vs.get("H0", {}).get("sizes", {}).values()) if vs.get("H0") else None
-                rows.append("$H_0$ & -- & -- & %s & -- & %s & %s \\\\" % (num(test), num(size / 1000 if size else None), "3 / 0"))
+                rows.append("$H_0$ & -- & -- & %s & -- & %s & %s \\\\" % (num(test), num(size / 1000 if size else None), "3 / 0 / 0"))
                 continue
-            before = get(runs, b, "HH/train/g%d/H%d" % (n, n - 1), MAIN[b])
-            after = get(runs, b, "HH/train/g%d/H%d" % (n, n), MAIN[b])
+            before = get(runs, b, T(b, "train/g%d/H%d" % (n, n - 1)), MAIN[b])
+            after = get(runs, b, T(b, "train/g%d/H%d" % (n, n)), MAIN[b])
             r = rs.get(str(n), {})
             ap = r.get("applied") or []
             ok = sum(1 for x in ap if x["applied"])
             v = vs.get("H%d" % n, {})
             size = sum(v.get("sizes", {}).values()) if v else None
             steps = len([s for s in v.get("steps", []) if s.get("kind") != "rule"]) if v else None
+            rules = len([s for s in v.get("steps", []) if s.get("kind") == "rule"]) if v else None
             tools = len(v.get("tools", [])) if v else None
             rows.append("$H_{%d}$ & %s & %s & %s & %s & %s & %s \\\\" % (
                 n, num(before), num(after), num(test), "%d/%d" % (ok, len(ap)) if ap else GAP,
-                num(size / 1000 if size else None), "%s / %s" % (steps if steps is not None else "?", tools if tools is not None else "?")))
+                num(size / 1000 if size else None), "%s / %s / %s" % (steps if steps is not None else "?",
+                                                                     rules if rules is not None else "?",
+                                                                     tools if tools is not None else "?")))
         write("rounds_%s.tex" % b, r"""\begin{tabular}{@{}lcccccc@{}}
 \toprule
-& \multicolumn{2}{c}{Group $n$} & Test & Ops & Skills & Steps / \\
-& $H_{n-1}$ & $H_n$ & $H_n$ & applied & (K chars) & tools \\
+& \multicolumn{2}{c}{Group $n$} & Test & Ops & Skills & Model steps / \\
+& $H_{n-1}$ & $H_n$ & $H_n$ & applied & (K chars) & rules / tools \\
 \midrule
 %s
 \bottomrule
@@ -427,7 +442,7 @@ def table_judge(runs, m):
     """Per-check judge scores of H0 and H10 (HH) on the test set."""
     for b in BENCHES:
         a = runs.get(b, {}).get("R0/HH", {}).get("judge", {})
-        z = runs.get(b, {}).get("HH/test/H10", {}).get("judge", {})
+        z = runs.get(b, {}).get(T(b, "test/H10"), {}).get("judge", {})
         rows = []
         for check in a or z:
             ra, rz = a.get(check, {}), z.get(check, {})
@@ -461,7 +476,7 @@ def table_ops(rsi, versions, m):
              "replace_tool", "delete_tool", "set_step_tools"]
     rows = []
     for b in BENCHES:
-        rs = rsi.get(b, {}).get("HH", {})
+        rs = rsi.get(b, {}).get(TRAJ[b], {})
         prop, app = Counter(), Counter()
         whys = Counter()
         for r in rs.values():
@@ -481,7 +496,7 @@ def table_ops(rsi, versions, m):
         m["stepsApplied" + tag] = str(app["add_step"])
         m["stepsProposed" + tag] = str(prop["add_step"])
         m["rewritesApplied" + tag] = str(app["rewrite_skill"])
-        vs = versions.get(b, {}).get("HH", {})
+        vs = versions.get(b, {}).get(TRAJ[b], {})
         if "H0" in vs:
             m["sizeSeed" + tag] = "%.1f" % (sum(vs["H0"]["sizes"].values()) / 1000)
         last = "H%d" % ROUNDS
@@ -506,6 +521,62 @@ Benchmark & add & modify & delete & \texttt{\_skill} & \texttt{\_step} & \texttt
 """ % "\n".join(rows))
 
 
+def extra_macros(runs, m):
+    for b, (traj, label) in ALT.items():
+        for k, n in (("tlink_f1", "Tlink"), ("tlink_p", "TlinkP"), ("tlink_r", "TlinkR"), ("event_f1", "Event"),
+                     ("timex_value", "Value")):
+            m["alt%sLearnedTml" % n] = num(get(runs, b, T(b, "test/H10", traj), k))
+    for b, t in (("umr-zh", "Zh"), ("umr-en", "En")):
+        for v, w in (("H0", "Seed"), ("H10", "Learned")):
+            a = get(runs, b, "R0/HH" if v == "H0" else T(b, "test/H10"), "F")
+            z = get(runs, b, "rep2/" + v, "F")
+            m["rep%s%s" % (w, t)] = num(z)
+            m["repDiff%s%s" % (w, t)] = num(abs(z - a)) if a is not None and z is not None else GAP
+        for v in ("R0/SS", "R10/SS"):
+            for k, n in (("F", "F"), ("Comprehensive", "Comp"), ("jumach", "Jumach")):
+                m["sonnet%s%s%s" % ("Seed" if v.startswith("R0") else "Learned", n, t)] = num(get(runs, b, v, k))
+        c = runs.get(b, {}).get(T(b, "test/H10"), {}).get("calls") or {}
+        m["toolUse" + t] = "%.0f" % (100 * c["tool_calls"] / c["calls"]) if c.get("calls") else GAP
+    for v in ("R0/SS", "R10/SS"):
+        m["sonnet%sTlinkTml" % ("Seed" if v.startswith("R0") else "Learned")] = num(get(runs, "timeml", v, "tlink_f1"))
+
+
+def table_ablation(runs, m):
+    rows = []
+    for cond, label in (("R0/HH", "$H_0$ (seed)"), (None, "$H_{10}$"), ("ablation/notools", "$H_{10}$ without tools"),
+                        ("ablation/norules", "$H_{10}$ without rule steps"),
+                        ("ablation/seedskills", "$H_{10}$ with the seed's skills")):
+        cells = []
+        for b in ("umr-zh", "umr-en"):
+            c = cond or T(b, "test/H10")
+            for k in ("F", "Comprehensive", "jumach"):
+                cells.append(num(get(runs, b, c, k)))
+        rows.append(label + " & " + " & ".join(cells) + r" \\")
+        tag = {"ablation/notools": "NoTools", "ablation/norules": "NoRules", "ablation/seedskills": "SeedSkills"}.get(cond)
+        if tag:
+            for b, t in (("umr-zh", "Zh"), ("umr-en", "En")):
+                v, z = get(runs, b, cond, "F"), get(runs, b, T(b, "test/H10"), "F")
+                m["abl%s%s" % (tag, t)] = num(v)
+                m["abl%s%sDelta" % (tag, t)] = sgn(v - z) if v is not None and z is not None else GAP
+    write("ablation.tex", r"""\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \multicolumn{3}{c}{UMR Chinese} & \multicolumn{3}{c}{UMR English} \\
+\cmidrule(lr){2-4}\cmidrule(l){5-7}
+Harness (Haiku / Haiku) & F & Comp. & \jumach & F & Comp. & \jumach \\
+\midrule
+%s
+\bottomrule
+\end{tabular}}
+\caption{What the parts of $H_{10}$ contribute: the learned harness without its tools, without its rule steps, and with the seed's instructions in place of the learned ones (tools and rules kept).}
+\label{tab:ablation}
+\end{table}
+""" % "\n".join(rows))
+
+
 def table_cost(cost, runs, m):
     if not cost:
         return
@@ -525,20 +596,27 @@ def figure_curves(runs, sota):
         key = MAIN[b]
         xs, ys = [], []
         for n in range(ROUNDS + 1):
-            v = get(runs, b, "HH/test/H%d" % n, key)
+            v = get(runs, b, T(b, "test/H%d" % n), key)
             if v is not None:
                 xs.append(n)
                 ys.append(v)
         ax.plot(xs, ys, "-o", color="#1f5fa8", lw=2, ms=4, label="test, $H_n$", zorder=3)
+        if b in ALT:
+            traj, label = ALT[b]
+            pts = [(n, get(runs, b, T(b, "test/H%d" % n, traj), key)) for n in range(ROUNDS + 1)]
+            pts = [p for p in pts if p[1] is not None]
+            if pts:
+                ax.plot([p[0] for p in pts], [p[1] for p in pts], "--s", color="#7f7f7f", lw=1.2, ms=3,
+                        label="test, %s" % label, zorder=2)
         for n in range(1, ROUNDS + 1):
-            a = get(runs, b, "HH/train/g%d/H%d" % (n, n - 1), key)
-            z = get(runs, b, "HH/train/g%d/H%d" % (n, n), key)
+            a = get(runs, b, T(b, "train/g%d/H%d" % (n, n - 1)), key)
+            z = get(runs, b, T(b, "train/g%d/H%d" % (n, n)), key)
             if a is not None and z is not None:
                 ax.plot([n - 1, n], [a, z], "-", color="#e08a1e", lw=1.2, alpha=0.9,
                         label="group $n$: $H_{n-1}\\to H_n$" if n == 1 else None)
                 ax.plot([n - 1], [a], "o", color="#e08a1e", ms=3)
                 ax.plot([n], [z], "^", color="#e08a1e", ms=4)
-        for cond, style, lab in (("baseline/haiku", ":", "guideline prompt, Haiku"), ("baseline/gpt", "--", "guideline prompt, GPT")):
+        for cond, style, lab in (("baseline/haiku", ":", "guideline prompt, Haiku"), ("baseline/sonnet", "--", "guideline prompt, Sonnet")):
             v = get(runs, b, cond, key)
             if v is not None:
                 ax.axhline(v, ls=style, color="grey", lw=1, label=lab)
@@ -573,7 +651,7 @@ def figure_judge(runs):
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2))
     for ax, b in zip(axes, BENCHES):
         a = runs.get(b, {}).get("R0/HH", {}).get("judge", {})
-        z = runs.get(b, {}).get("HH/test/H10", {}).get("judge", {})
+        z = runs.get(b, {}).get(T(b, "test/H10"), {}).get("judge", {})
         items = []
         for check in a:
             if check in z and a[check].get("score") is not None and z[check].get("score") is not None \
@@ -601,7 +679,7 @@ def figure_ops(rsi, versions):
              ("add_step", "add/delete step", "#e08a1e"), ("add_tool", "add/replace tool", "#a01f1f")]
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 2.8))
     for ax, b in zip(axes, BENCHES):
-        rs = rsi.get(b, {}).get("HH", {})
+        rs = rsi.get(b, {}).get(TRAJ[b], {})
         bottom = [0] * ROUNDS
         for k, lab, col in kinds:
             vals = []
@@ -613,7 +691,7 @@ def figure_ops(rsi, versions):
             ax.bar(range(1, ROUNDS + 1), vals, bottom=bottom, color=col, label=lab)
             bottom = [x + y for x, y in zip(bottom, vals)]
         ax2 = ax.twinx()
-        vs = versions.get(b, {}).get("HH", {})
+        vs = versions.get(b, {}).get(TRAJ[b], {})
         xs = [n for n in range(ROUNDS + 1) if "H%d" % n in vs]
         ax2.plot(xs, [sum(vs["H%d" % n]["sizes"].values()) / 1000 for n in xs], "k-o", ms=3, lw=1.2, label="skills (K chars)")
         ax2.set_ylim(bottom=0)
@@ -635,15 +713,19 @@ def figure_ops(rsi, versions):
 def stats(runs, m):
     for b in BENCHES:
         tag = {"umr-zh": "Zh", "umr-en": "En", "timeml": "Tml"}[b]
-        for a, c, name in (("R0/HH", "HH/test/H10", "Learned"), ("baseline/haiku", "HH/test/H10", "VsBase"),
+        for a, c, name in (("R0/HH", T(b, "test/H10"), "Learned"), ("baseline/haiku", T(b, "test/H10"), "VsBase"),
                            ("R0/GG", "R10/GG", "LearnedGG")):
             r = boot_docs(runs, b, a, c)
+            for suffix in ("", "Lo", "Hi", "P"):
+                m.setdefault("gain%s%s%s" % (name, tag, suffix), GAP)
             if r:
                 m["gain%s%s" % (name, tag)] = sgn(r[0])
                 m["gain%s%sLo" % (name, tag)] = sgn(r[1])
                 m["gain%s%sHi" % (name, tag)] = sgn(r[2])
                 m["gain%s%sP" % (name, tag)] = "%.3f" % r[3] if r[3] >= 0.001 else "<0.001"
             if b != "timeml":
+                for suffix in ("", "Lo", "Hi", "Better", "Worse", "N"):
+                    m.setdefault("sent%s%s%s" % (name, tag, suffix), GAP)
                 s = boot_sents(runs, b, a, c)
                 if s:
                     m["sent%s%s" % (name, tag)] = sgn(s[0])
@@ -655,10 +737,10 @@ def stats(runs, m):
         # generalization: does a round's training gain predict its test gain?
         tr, te = [], []
         for n in range(1, ROUNDS + 1):
-            a = get(runs, b, "HH/train/g%d/H%d" % (n, n - 1), MAIN[b])
-            z = get(runs, b, "HH/train/g%d/H%d" % (n, n), MAIN[b])
-            t0 = get(runs, b, "HH/test/H%d" % (n - 1), MAIN[b])
-            t1 = get(runs, b, "HH/test/H%d" % n, MAIN[b])
+            a = get(runs, b, T(b, "train/g%d/H%d" % (n, n - 1)), MAIN[b])
+            z = get(runs, b, T(b, "train/g%d/H%d" % (n, n)), MAIN[b])
+            t0 = get(runs, b, T(b, "test/H%d" % (n - 1)), MAIN[b])
+            t1 = get(runs, b, T(b, "test/H%d" % n), MAIN[b])
             if None not in (a, z, t0, t1):
                 tr.append(z - a)
                 te.append(t1 - t0)
@@ -671,7 +753,7 @@ def stats(runs, m):
             m["testStepGain" + tag] = sgn(sum(te) / len(te))
             m["roundsTestUp" + tag] = str(sum(1 for x in te if x > 0))
             m["roundsTrainUp" + tag] = str(sum(1 for x in tr if x > 0))
-        best = [(get(runs, b, "HH/test/H%d" % n, MAIN[b]), n) for n in range(ROUNDS + 1)]
+        best = [(get(runs, b, T(b, "test/H%d" % n), MAIN[b]), n) for n in range(ROUNDS + 1)]
         best = [x for x in best if x[0] is not None]
         if best:
             v, n = max(best)
