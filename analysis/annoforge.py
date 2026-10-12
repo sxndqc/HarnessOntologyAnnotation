@@ -55,6 +55,7 @@ def extract(src):
             keep["calls"] = call_stats(os.path.join(os.path.dirname(path), "calls.jsonl"))
             runs[b][cond] = keep
     dump(runs, "runs.json")
+    dump(subset_scores(af, runs), "sub.json")
 
     rsi, versions = {}, {}
     for b in BENCHES:
@@ -91,6 +92,46 @@ def extract(src):
     with open(os.path.join(af, "data", "splits.json"), encoding="utf-8") as f:
         dump(json.load(f), "splits.json")
     print("extracted to", DATA)
+
+
+# the two test documents per benchmark on which the GPT runs that the budget did not allow in full were made
+SUB = {"umr-zh": ["chinese_umr-0028", "chinese_umr-0030"], "umr-en": ["english_umr-0008", "english_umr-0005"],
+       "timeml": ["CNN_20130322_314", "WSJ_20130322_804"]}
+
+
+def subset_scores(af, runs):
+    """Every test run's scores on the SUB documents alone: UMR the mean over the documents, TimeML the official
+    scorer run on the two documents."""
+    import shutil
+    import tempfile
+    import score
+    out = {}
+    for b, docs in SUB.items():
+        out[b] = {}
+        for cond, r in runs[b].items():
+            if "/train/" in "/" + cond + "/" or not all(d in r.get("docs", {}) for d in docs):
+                continue
+            if b != "timeml":
+                v = [r["docs"][d] for d in docs]
+                out[b][cond] = {k: sum((x.get(k) or 0) * (100 if k == "jumach" else 1) for x in v) / len(v)
+                                for k in ("F", "Comprehensive", "jumach")}
+                continue
+            base = os.path.join(af, "runs", b, cond, "pred")
+            if not os.path.isdir(base):
+                continue
+            t = tempfile.mkdtemp()
+            for k in ("gold", "pred"):
+                os.makedirs(os.path.join(t, k))
+                for d in docs:
+                    if os.path.exists(os.path.join(base, k, d + ".tml")):
+                        shutil.copy(os.path.join(base, k, d + ".tml"), os.path.join(t, k))
+            try:
+                sc = score.te3(os.path.join(t, "gold"), os.path.join(t, "pred"))
+                out[b][cond] = {k: sc.get(k) for k in ("tlink_f1", "event_f1", "timex_value")}
+            except Exception as e:
+                print("subset scoring failed", cond, e)
+            shutil.rmtree(t, ignore_errors=True)
+    return out
 
 
 def call_stats(path):
@@ -249,6 +290,11 @@ def make():
     table_ops(rsi, versions, macros)
     table_cost(cost, runs, macros)
     table_ablation(runs, macros)
+    sub = load("sub.json")
+    table_controls(runs, macros)
+    table_short_ablation(runs, rsi, macros)
+    table_link(runs, macros)
+    table_transfer(sub, macros)
     extra_macros(runs, macros)
     figure_curves(runs, sota)
     figure_judge(runs)
@@ -387,6 +433,7 @@ def table_seed(runs, m):
     write("seed2x2.tex", r"""\begin{table}[t]
 \centering\small
 \setlength{\tabcolsep}{2.6pt}
+\resizebox{\columnwidth}{!}{%%
 \begin{tabular}{@{}lccccccccc@{}}
 \toprule
 & \multicolumn{3}{c}{UMR zh (F)} & \multicolumn{3}{c}{UMR en (F)} & \multicolumn{3}{c}{TimeML (TLINK)} \\
@@ -395,7 +442,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 \midrule
 %s
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. n/a: not run within the API budget.}
 \label{tab:seed2x2}
 \end{table}
@@ -590,6 +637,185 @@ Harness (Haiku / Haiku) & F & Comp. & \jumach & F & Comp. & \jumach \\
 \end{tabular}}
 \caption{What the parts of $H_{10}$ contribute: the learned harness without its tools, without its rule steps, and with the seed's instructions in place of the learned ones (tools and rules kept).}
 \label{tab:ablation}
+\end{table}
+""" % "\n".join(rows))
+
+
+def table_controls(runs, m):
+    """The guideline against the harness, Haiku in every role: in the prompt, through tools, after one round
+    of reflection that may only edit it; the seed harness, after one and after ten rounds."""
+    conds = [("baseline/haiku", "Guideline in the prompt", "Prompt"),
+             ("baseline/haiku-tools", "Guideline through tools (link only)", "Tools"),
+             ("GO/test/H1", "Guideline + 1 round (edits only)", "GuideOne"),
+             ("R0/HH", "Seed harness $H_0$", "Seed"),
+             (None, "Harness $H_1$", "HarnessOne"),
+             ("", "Harness $H_{10}$", "HarnessTen")]
+    rows = []
+    for cond, label, tag in conds:
+        cells = []
+        for b, t in (("umr-zh", "Zh"), ("umr-en", "En"), ("timeml", "Tml")):
+            c = T(b, "test/H1") if cond is None else (T(b, "test/H10") if cond == "" else cond)
+            keys = ("F", "Comprehensive", "jumach") if b != "timeml" else ("tlink_f1", "event_f1", "timex_value")
+            for k in keys:
+                cells.append(num(get(runs, b, c, k)))
+            for k, n in zip(keys, ("", "Comp", "Jumach") if b != "timeml" else ("", "Event", "Value")):
+                m["ctl%s%s%s" % (tag, n, t)] = num(get(runs, b, c, k))
+        rows.append(label + " & " + " & ".join(cells) + r" \\")
+    for b, t in (("umr-zh", "Zh"), ("umr-en", "En"), ("timeml", "Tml")):
+        c = runs.get(b, {}).get("baseline/haiku-tools", {}).get("calls") or {}
+        m["ctlToolUse" + t] = "%.0f" % (100 * c["tool_calls"] / c["calls"]) if c.get("calls") else GAP
+    write("controls.tex", r"""\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+& \multicolumn{3}{c}{UMR Chinese} & \multicolumn{3}{c}{UMR English} & \multicolumn{3}{c}{TimeML} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(l){8-10}
+Haiku in every role & F & Comp. & \jumach & F & Comp. & \jumach & TLINK & Event & Value \\
+\midrule
+%s
+\bottomrule
+\end{tabular}
+\caption{The guideline against the harness. \emph{Through tools}: the instructions give only the guideline's address; the model can search and read the guideline (and, for UMR, the resource files) with tools. \emph{+ 1 round}: one round of RSI on the first training group in which the builder may only edit the guideline prompt (no steps, tools or rules, no length limit); \emph{$H_1$}: the same round on the harness.}
+\label{tab:controls}
+\end{table*}
+""" % "\n".join(rows))
+
+
+def table_short_ablation(runs, rsi, m):
+    """RSI with restricted operations, two rounds: no tools, no rule steps."""
+    rows = []
+    for traj, label, tag in (("HH", "all operations", "All"), ("NT", "no tools", "NoTools"),
+                             ("NR", "no rule steps", "NoRules")):
+        for v in ("H1", "H2"):
+            cells = []
+            for b, t in (("umr-zh", "Zh"), ("umr-en", "En")):
+                c = "%s/test/%s" % (traj, v)
+                for k in ("F", "Comprehensive", "jumach"):
+                    cells.append(num(get(runs, b, c, k)))
+                m["sab%sH%s%s" % (tag, {"H1": "One", "H2": "Two"}[v], t)] = num(get(runs, b, c, "F"))
+            added = []
+            for b in ("umr-zh", "umr-en"):
+                n_tool = n_rule = 0
+                for g in ("1", "2") if v == "H2" else ("1",):
+                    for x in (rsi.get(b, {}).get(traj, {}).get(g, {}).get("applied") or []):
+                        o = x.get("op", {})
+                        if x.get("applied") and o.get("op") in ("add_tool", "replace_tool"):
+                            n_tool += 1
+                        if x.get("applied") and o.get("op") == "add_step" and o.get("kind") == "rule":
+                            n_rule += 1
+                added.append("%d/%d" % (n_tool, n_rule))
+            rows.append("%s & $%s$ & %s & %s \\\\" % (label if v == "H1" else "", v.replace("H", "H_"), " & ".join(cells),
+                                                   " & ".join(added)))
+        rows.append(r"\addlinespace")
+    write("shortabl.tex", r"""\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{@{}llcccccccc@{}}
+\toprule
+& & \multicolumn{3}{c}{UMR Chinese} & \multicolumn{3}{c}{UMR English} & \multicolumn{2}{c}{tools/rules} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(l){9-10}
+RSI with & & F & Comp. & \jumach & F & Comp. & \jumach & zh & en \\
+\midrule
+%s
+\bottomrule
+\end{tabular}}
+\caption{RSI with restricted operations (two rounds, Haiku / Haiku, from the same seed and training groups). tools/rules: tools and rule steps admitted so far.}
+\label{tab:shortabl}
+\end{table}
+""" % "\n".join(rows[:-1]))
+
+
+def table_link(runs, m):
+    """TimeML: an explicit TLINK step, by hand and then under RSI."""
+    conds = [("R0/HH", "$H_0$ (seed)", "Seed"), ("link/H0R", "$H_0$ + DCT rule", "Rule"),
+             ("link/H0L", "$H_0$ + link step + DCT rule", "Link"), ("link/H0L2", "$H_0$ + link step (revised)", "LinkTwo"),
+             ("HL/test/H1", "\\quad + RSI round 1", "LinkRsiOne"), ("HL/test/H2", "\\quad + RSI round 2", "LinkRsiTwo"),
+             (T("timeml", "test/H10"), "$H_{10}$", "Ten"), ("link/H10L", "$H_{10}$ + link step + DCT rule", "TenLink"),
+             ("link/H10L2", "$H_{10}$ + link step (revised)", "TenLinkTwo")]
+    rows = []
+    for c, label, tag in conds:
+        r = runs.get("timeml", {}).get(c)
+        cells = [num(get(runs, "timeml", c, k)) for k in ("tlink_f1", "tlink_p", "tlink_r")]
+        for chk in ("tlink_edct_pair", "tlink_ee_same_pair", "tlink_ee_other_pair", "tlink_tt_pair"):
+            j = (r or {}).get("judge", {}).get(chk)
+            cells.append("%d/%d" % (j["correct"], j["correct"] + j["extra"]) if j else GAP)
+        m["lnk%s" % tag] = num(get(runs, "timeml", c, "tlink_f1"))
+        m["lnk%sR" % tag] = num(get(runs, "timeml", c, "tlink_r"))
+        rows.append(label + " & " + " & ".join(cells) + r" \\")
+        if c in ("link/H0L2", "link/H10L2"):
+            pass
+    gold = {}
+    r = runs.get("timeml", {}).get("R0/HH")
+    for chk in ("tlink_edct_pair", "tlink_ee_same_pair", "tlink_ee_other_pair", "tlink_tt_pair"):
+        j = (r or {}).get("judge", {}).get(chk)
+        gold[chk] = j["correct"] + j["missing"] if j else 0
+    write("link.tex", r"""\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+& \multicolumn{3}{c}{TLINK} & E--DCT & E--E sent. & E--E across & T--DCT \\
+\cmidrule(lr){2-4}\cmidrule(l){5-8}
+Harness (Haiku) & F1 & P & R & \multicolumn{4}{c}{gold pairs / linked pairs (gold: %d, %d, %d, %d)} \\
+\midrule
+%s
+\bottomrule
+\end{tabular}
+\caption{An explicit TLINK step for TimeML. The link step rebuilds the links of each sentence as a sparse backbone (main event, one anchor per event); the DCT rule links every time expression to the document time from the normalized values. Right: of the pairs the harness links, how many the gold also links.}
+\label{tab:link}
+\end{table*}
+""" % (gold["tlink_edct_pair"], gold["tlink_ee_same_pair"], gold["tlink_ee_other_pair"], gold["tlink_tt_pair"],
+       "\n".join(rows)))
+
+
+def table_transfer(sub, m):
+    """Generator/critic pairs on two test documents per benchmark (the GPT runs the budget allowed)."""
+    rows = []
+    learned = {"umr-zh": T("umr-zh", "test/H10"), "umr-en": T("umr-en", "test/H10"), "timeml": T("timeml", "test/H10")}
+    alts = {"GG": {"umr-zh": "R10/GG", "umr-en": "R10/GG-sub", "timeml": None}}
+    for label, cond in (("Guideline in the prompt, Haiku", "baseline/haiku"), ("Guideline through tools, Haiku", "baseline/haiku-tools"),
+                        ("Guideline through tools, GPT", "baseline/gpt-tools-sub")):
+        cells = []
+        for b in BENCHES:
+            v = sub.get(b, {}).get(cond, {}).get(MAIN[b])
+            cells += ["\\multicolumn{2}{c}{%s}" % num(v)]
+        rows.append(label + " & " + " & ".join(cells) + r" \\")
+        if cond == "baseline/gpt-tools-sub":
+            for b, t in (("umr-zh", "Zh"), ("umr-en", "En"), ("timeml", "Tml")):
+                for k, n in (("F", ""), ("Comprehensive", "Comp"), ("jumach", "Jumach"), ("tlink_f1", "")):
+                    if (k == "tlink_f1") != (b == "timeml"):
+                        continue
+                    m["subGptTools%s%s" % (n, t)] = num(sub.get(b, {}).get(cond, {}).get(k))
+                    m["subLearnedHH%s%s" % (n, t)] = num(sub.get(b, {}).get(learned[b], {}).get(k))
+                    m["subLearnedGG%s%s" % (n, t)] = num(sub.get(b, {}).get((alts["GG"][b] or ""), {}).get(k))
+    rows.append(r"\midrule")
+    for c in CONFIGS:
+        cells = []
+        for b in BENCHES:
+            a = sub.get(b, {}).get("R0/" + c, {}).get(MAIN[b])
+            zc = learned[b] if c == "HH" else (alts["GG"][b] if c == "GG" else "R10/%s-sub" % c)
+            z = sub.get(b, {}).get(zc or "", {}).get(MAIN[b])
+            cells += [num(a), num(z) if z is not None else "n/a"]
+        rows.append("Harness, " + cfg_label(c) + " & " + " & ".join(cells) + r" \\")
+    for b, t in (("umr-zh", "Zh"), ("umr-en", "En"), ("timeml", "Tml")):
+        m["subSents" + t] = GAP
+    write("transfer.tex", r"""\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \multicolumn{2}{c}{UMR zh (F)} & \multicolumn{2}{c}{UMR en (F)} & \multicolumn{2}{c}{TimeML (TLINK)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+& $H_0$ & $H_{10}$ & $H_0$ & $H_{10}$ & $H_0$ & $H_{10}$ \\
+\midrule
+%s
+\bottomrule
+\end{tabular}}
+\caption{Two test documents per benchmark (22, 38 and 22 sentences), on which every generator / critic pair (Haiku, GPT-6.1-sol) was run with the seed and with $H_{10}$ (built with Haiku), and the guideline baselines. TimeML is scored by the official scorer on the two documents.}
+\label{tab:transfer}
 \end{table}
 """ % "\n".join(rows))
 
