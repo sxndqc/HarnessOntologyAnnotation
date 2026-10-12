@@ -3,43 +3,46 @@
 \footnotesize
 \begin{tikzpicture}[
   >=Stealth,
-  box/.style={draw=black!65, rounded corners=2pt, align=center, inner sep=2.5pt, fill=white, minimum height=0.6cm},
-  skill/.style={box, minimum width=2.6cm, fill=blue!10},
-  rulebox/.style={box, minimum width=2.6cm, fill=black!7},
-  tool/.style={box, minimum width=2.6cm, fill=green!10},
-  edited/.style={ultra thick, draw=orange!85!black},
-  loop/.style={box, text width=7.9cm, align=left, minimum height=0.86cm, fill=orange!7},
+  box/.style={draw=black!65, rounded corners=2pt, align=center, inner sep=2.5pt, fill=white, minimum height=0.58cm},
+  skill/.style={box, minimum width=2.7cm, fill=blue!10},
+  rulebox/.style={box, minimum width=2.7cm, fill=black!7},
+  tool/.style={box, minimum width=2.7cm, fill=green!10},
+  ctx/.style={box, minimum width=2.7cm, fill=yellow!12, text width=2.55cm},
+  added/.style={ultra thick, draw=orange!85!black},
+  loop/.style={box, text width=7.6cm, align=left, minimum height=0.82cm, fill=orange!7},
   head/.style={font=\footnotesize\bfseries}]
 % harness before
-\node[head] at (0,3.85) {Harness $H_{i-1}$};
-\node[skill] (g0) at (0,3.05) {\skill{generate}};
-\node[skill] (c0) at (0,2.30) {\skill{critique}};
-\node[rulebox] (r0) at (0,1.55) {rule: repair graph};
-\node[skill] (d0) at (0,0.80) {\skill{document}};
-\node[tool] (t0) at (0,0.05) {tools: lookup, examples};
-\draw[->] (g0)--(c0); \draw[->] (c0)--(r0); \draw[->] (r0)--(d0);
+\node[head] at (0,4.55) {Harness $H_{n-1}$ (one sentence)};
+\node[ctx] (r0) at (0,3.80) {registry: 5 previous sentences + annotations};
+\node[skill] (g0) at (0,2.95) {\skill{generate} \scriptsize(G)};
+\node[skill] (c0) at (0,2.25) {\skill{critique} \scriptsize(C)};
+\node[skill] (f0) at (0,1.55) {\skill{finalize} \scriptsize(G)};
+\node[box, minimum width=2.7cm, fill=white, dashed] (t0) at (0,0.70) {tools: none (seed)};
+\draw[->] (r0)--(g0); \draw[->] (g0)--(c0); \draw[->] (c0)--(f0);
+\node[font=\scriptsize\itshape, text width=2.8cm, align=center] at (0,-0.15) {$H_0$: written by the builder from the guideline alone};
 % loop
-\node[head] at (6.15,3.85) {One improvement round on document $(x_i, y_i)$};
-\node[loop] (s1) at (6.15,3.05) {\textbf{1 Annotate} $x_i$ with $H_{i-1}$ and keep the trace of every step. Score it: the document is unseen.};
-\node[loop] (s2) at (6.15,2.05) {\textbf{2 Align} prediction and gold $y_i$; the evaluator returns per-check units.};
-\node[loop] (s3) at (6.15,1.05) {\textbf{3 Find} every divergence: kind, scheme category, step of origin, \emph{responsible skill}, cause.};
-\node[loop] (s4) at (6.15,0.05) {\textbf{4 Plan} typed edits per skill (modify / add / delete, anchored); propose at most one tool and one step.};
-\node[loop] (s5) at (6.15,-0.95) {\textbf{5 Admit and apply} edits that copy no gold text; tools and steps only after checks and a reviewer.};
+\node[head] at (6.0,4.55) {Round $n$ on training group $n$ (5 sentences, one document)};
+\node[loop] (s1) at (6.0,3.80) {\textbf{1 Annotate} the group with $H_{n-1}$; keep every step's output.};
+\node[loop] (s2) at (6.0,2.90) {\textbf{2 Judge} against gold: per-check units (umrjudge / timemljudge).};
+\node[loop] (s3) at (6.0,2.00) {\textbf{3 Reflect} (builder): summarize problems, find their causes, propose operations on skills, steps and tools; may read resource files (PropBank, \ldots) and search the guideline.};
+\node[loop] (s4) at (6.0,1.00) {\textbf{4 Admit} by machine checks: anchors, no test text, size budget, tool tests in a sandbox.};
+\node[loop] (s5) at (6.0,0.10) {\textbf{5 Re-annotate} the group with $H_n$ (training score after) and \textbf{test} $H_n$ on held-out documents.};
 \foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5} {\draw[->] (\a)--(\b);}
 % harness after
-\node[head] at (12.3,3.85) {Harness $H_i$};
-\node[skill,edited] (g1) at (12.3,3.05) {\skill{generate}};
-\node[skill,edited] (c1) at (12.3,2.30) {\skill{critique}};
-\node[rulebox] (r1) at (12.3,1.55) {rule: repair graph};
-\node[skill,edited] (d1) at (12.3,0.80) {\skill{document}};
-\node[tool] (t1) at (12.3,0.05) {tools: lookup, examples};
-\draw[->] (g1)--(c1); \draw[->] (c1)--(r1); \draw[->] (r1)--(d1);
+\node[head] at (12.1,4.55) {Harness $H_n$};
+\node[ctx] (r1) at (12.1,3.80) {registry: 5 previous sentences + annotations};
+\node[skill] (g1) at (12.1,2.95) {\skill{generate} \scriptsize(G)\,$\pm$};
+\node[skill] (c1) at (12.1,2.25) {\skill{critique} \scriptsize(C)\,$\pm$};
+\node[skill,added] (n1) at (12.1,1.55) {new check step \scriptsize(C)};
+\node[skill] (f1) at (12.1,0.85) {\skill{finalize} \scriptsize(G)\,$\pm$};
+\node[tool,added] (t1) at (12.1,0.10) {tool: \texttt{propbank\_lookup}};
+\draw[->] (r1)--(g1); \draw[->] (g1)--(c1); \draw[->] (c1)--(n1); \draw[->] (n1)--(f1);
 % flows
 \draw[->,thick] (g0.east) -- (s1.west);
-\draw[->,thick] (s5.east) -| (t1.south);
-\draw[->,dashed] (t1.east) -- ++(0.45,0) |- (6.15,-1.75) -| (0,-0.35) -- (t0.south);
-\node[font=\scriptsize\itshape, fill=white, inner sep=1.5pt] at (6.15,-1.75) {$H_i$ annotates $x_{i+1}$ before $x_{i+1}$ is used: test-then-train};
+\draw[->,thick] (s4.east) -- ++(0.5,0) |- (n1.west);
+\draw[->,dashed] (t1.south) -- ++(0,-0.55) -| (0,-0.55) -- (0,-0.45);
+\node[font=\scriptsize\itshape, fill=white, inner sep=1.5pt] at (6.0,-0.90) {$H_n$ is the starting point of round $n{+}1$; the builder never sees test documents or scores};
 \end{tikzpicture}
-\caption{\sys. A harness is a chain of skills (instruction text with optional examples), shared tools and deterministic rule steps. One round annotates a gold document, attributes each divergence from gold to the responsible skill and scheme category, and edits those skills (orange borders). The next document is annotated by the new harness before it is used to improve it.}
+\caption{\sys. Left: the seed harness annotates one sentence at a time; each step sees the previous five sentences with their annotations. Middle: one round of recursive self-improvement on a group of five gold sentences. Right: the next version; skills are edited ($\pm$), and steps and tools may be added (orange), e.g.\ a PropBank lookup the builder writes after it learns that frame files exist. G and C are the generator and critic models of a configuration.}
 \label{fig:overview}
 \end{figure*}
