@@ -452,8 +452,8 @@ def table_judge(runs, m):
             group = ra.get("module") or ra.get("group") or rz.get("module") or rz.get("group") or ""
             rows.append("%s & \\texttt{%s} & %s & %s & %s & %s \\\\" % (
                 group.replace("_", "\\_"), check.replace("_", "\\_"), ra.get("units", "--"),
-                num(100 * sa if sa is not None else None), num(100 * sz if sz is not None else None),
-                sgn(100 * (sz - sa)) if sa is not None and sz is not None else GAP))
+                "%.1f" % (100 * sa) if sa is not None else "--", "%.1f" % (100 * sz) if sz is not None else "--",
+                sgn(100 * (sz - sa)) if sa is not None and sz is not None else "--"))
         write("judge_%s.tex" % b, r"""\begin{tabular}{@{}llcccc@{}}
 \toprule
 Group & Check & Units & $H_0$ & $H_{10}$ & $\Delta$ \\
