@@ -283,7 +283,7 @@ def make():
     macros = {}
     os.makedirs(TABLES, exist_ok=True)
     os.makedirs(FIGURES, exist_ok=True)
-    table_main(runs, sota, macros)
+    table_main(runs, sota, macros, load("sub.json"))
     table_seed(runs, macros)
     table_rounds(runs, rsi, versions, macros)
     table_judge(runs, macros)
@@ -321,8 +321,12 @@ def macro_name(*parts):
 
 # ---------------------------------------------------------------- tables
 
-def table_main(runs, sota, m):
-    """One row per system, the main metrics of every benchmark."""
+SUB_OF = {"baseline/gpt": "baseline/gpt-sub", "R10/HG": "R10/HG-sub", "R10/GH": "R10/GH-sub", "R10/GG": "R10/GG-sub"}
+
+
+def table_main(runs, sota, m, sub=None):
+    """One row per system, the main metrics of every benchmark. A GPT run that the API budget allowed only on the
+    two SUB documents of a benchmark fills its cells from those documents, marked with a double dagger."""
     rows = []
     cols = [("umr-zh", "F"), ("umr-zh", "Comprehensive"), ("umr-zh", "jumach"),
             ("umr-en", "F"), ("umr-en", "Comprehensive"), ("umr-en", "jumach"),
@@ -336,7 +340,8 @@ def table_main(runs, sota, m):
                 v = c.get(k)
                 cells.append(num(float(v)) if isinstance(v, (int, float)) else "--")
             elif c and c not in runs.get(b, {}) and NOT_RUN.match(c):
-                cells.append("n/a")      # stopped for the API budget (GPT-6.1-sol)
+                v = ((sub or {}).get(b, {}).get(SUB_OF.get(c, ""), {}) or {}).get(k)
+                cells.append(num(v) + "$^\\ddagger$" if isinstance(v, (int, float)) else "n/a")
             else:
                 cells.append(num(get(runs, b, c, k)) if c else "--")
         return label + " & " + " & ".join(cells) + r" \\"
@@ -375,7 +380,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. n/a: not run to completion within the API budget for GPT-6.1-sol. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. $^\ddagger$: GPT-6.1-sol runs that the API budget allowed only on two test documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences; Appendix Table~\ref{tab:transfer}); they are not comparable with the full-test cells. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
