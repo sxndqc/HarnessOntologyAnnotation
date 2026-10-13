@@ -1,28 +1,15 @@
 \section{Introduction}
 \label{sec:intro}
 
-A language model can understand a sentence and still annotate it incorrectly. Annotation requires judgments that follow a project's categories, boundaries, and conventions for ambiguous cases. Large language models (LLMs) offer a promising starting point \citep{gilardi2023chatgpt,he2024annollm}, but their general competence does not ensure adherence to these requirements.
+Annotating a complex ontology requires both an understanding of its structures and adherence to a given codebook. An annotator must recognize events, participants, and relations, then express them according to the project's definitions and conventions \citep{pustejovsky2012natural,kim2026refining}. This is especially difficult at the start of an annotation project, when examples are scarce. With enough annotated data, a parser can be trained; with little data, that route is difficult. Large language models (LLMs) offer a way to bootstrap: pretraining gives them a working understanding of linguistic structures and familiarity with structured output formats. Supplying the guideline can direct these capabilities toward the intended annotation scheme.
 
-Human annotators face the same problem. Guidelines turn conceptual definitions into decisions that annotators can reproduce \citep{pustejovsky2012natural,halterman2026what}. For complex ontologies, identifying structures, assigning attributes, and connecting them are interdependent decisions. Applying the guideline can also require external resources.
+Prior work has paved this route. \citet{kim2026refining} show that reasoning models can apply annotation guidelines and that an iterative moderation process can improve the guidelines from annotation errors. Their experiments, however, concern named-entity recognition, a relatively simple, direct labeling task. Bootstrapping a complex ontology brings additional demands. Guidelines can be lengthy: the TimeML manual spans 71 pages \citep{sauri2006timeml}; annotation may also require external resources, such as PropBank frames for Uniform Meaning Representation (UMR) \citep{vangysel2021designing,palmer2005propbank}. Placing a long guideline in context does not ensure that a model follows it throughout: information in the middle is used poorly \citep{liu2024lost}, and agents lose details of long procedural instructions \citep{panavas2026handbook}.
 
-Recent work incorporates guidelines into prompts and refines them against annotation errors \citep{kim2026refining,kim2026diziner}. Yet specifying the required annotation does not necessarily provide an effective procedure for producing it. Long instructions strain guideline following \citep{liu2024lost,panavas2026handbook}, and rewriting them leaves the workflow unchanged. We therefore ask whether guidelines should become an executable \emph{harness}: step instructions, a workflow, and callable tools.
-\begin{quote}
-\noindent\textbf{H1:} Organizing a guideline into a harness can improve complex annotation beyond direct guideline prompting.
-\end{quote}
+We propose decomposing the guideline into a chain of steps and equipping those steps with tools, then improving this \emph{harness} through recursive self-improvement (RSI). We call this approach \sys (Figure~\ref{fig:overview}). A builder LLM derives a seed harness from the guideline; fine-grained feedback on a few annotated examples then guides revisions to step instructions, the workflow, and tools. The harness organizes the model's linguistic judgments and supports them with resource lookups and executable rules. It thus turns instructions and limited supervision into a working annotator, without fine-tuning.
 
-A stronger annotator may follow instructions better, but its procedure also shapes its performance. This suggests a second route to better annotation:
-\begin{quote}
-\noindent\textbf{H2:} Refining the harness can yield larger gains than replacing the annotating model.
-\end{quote}
-
-In human annotation projects, \emph{moderation} uses a few annotated examples to reveal disagreements and clarify the guideline \citep{pustejovsky2012natural,kim2026refining}. We extend moderation to the harness: structured error feedback lets a builder revise instructions, reorganize steps, and write tools or rules. We ask whether these changes capture reusable decisions:
-\begin{quote}
-\noindent\textbf{H3:} Limited annotation supervision can produce harness improvements that transfer to unseen texts and other annotators.
-\end{quote}
-
-We investigate these hypotheses with \sys, which builds a seed harness from a guideline and recursively improves it through annotation, fine-grained evaluation, and reflection (Figure~\ref{fig:overview}). Our contributions are threefold:
+Our contributions are threefold:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item A framework that makes the annotation procedure itself learnable: instructions, steps, and tools are editable through recursive self-improvement, without fine-tuning (\S\ref{sec:method}).
-  \item Evidence that improving the harness can matter more than changing the model: gains transfer across annotators, and the learned procedure can surpass task-specific fine-tuned systems under matched evaluation (\S\ref{sec:main}, \S\ref{sec:general}).
-  \item An analysis of what self-improvement learns and where it stops: the builder turns recurring conventions into instructions and code and invents resource lookup tools, while difficult semantic judgments and inconsistent annotation practices remain obstacles (\S\ref{sec:how}).
+  \item A comprehensive guideline-and-harness optimization framework for bootstrapping complex annotation, with instructions, steps, and tools all open to refinement (\S\ref{sec:method}).
+  \item Evidence that an annotator bootstrapped from instructions and a few examples can match or exceed state-of-the-art fine-tuned systems in matched evaluations (\S\ref{sec:main}).
+  \item Evidence of continued evolution: harness improvements transfer to unseen texts and other annotators, while the builder creates and revises resource lookup tools and turns recurring errors into rules (\S\ref{sec:general}, \S\ref{sec:how}).
 \end{enumerate}
