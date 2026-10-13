@@ -442,7 +442,7 @@ def table_seed(runs, m, sub=None):
                 a2 = (sb.get("R0/" + c) or {}).get(MAIN[b])
                 z2 = (sb.get(SUB_OF["R10/" + c]) or {}).get(MAIN[b])
                 if a2 is not None and z2 is not None:
-                    d = r"$^\ddagger$"
+                    d = ""      # marked in Table 1 and the text, not here (authors' choice)
                     cells += [num(a2) + d, num(z2) + d, sgn(z2 - a2) + d]
                 else:
                     cells += [num(a), "n/a", "n/a"]
@@ -462,7 +462,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 %s
 \bottomrule
 \end{tabular}}
-\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. $^\ddagger$: on two test documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences), $H_0$ and $H_{10}$ on the same documents.}
+\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is.}$ on the same documents.}
 \label{tab:seed2x2}
 \end{table}
 """ % "\n".join(rows))
