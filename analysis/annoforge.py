@@ -897,7 +897,7 @@ def figure_curves(runs, sota):
                 l.append(ll)
     fig.legend(h, l, loc="lower center", ncol=6, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.04))
     fig.tight_layout(rect=(0, 0.07, 1, 1))
-    fig.savefig(os.path.join(FIGURES, "curves.pdf"), bbox_inches="tight")
+    fig.savefig(os.path.join(FIGURES, "curves.pdf"), bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -923,7 +923,7 @@ def figure_judge(runs):
         ax.set_title(BNAME[b] + ": $H_{10}-H_0$ per check", fontsize=9.5)
         ax.grid(axis="x", alpha=0.3)
     fig.tight_layout()
-    fig.savefig(os.path.join(FIGURES, "judge.pdf"), bbox_inches="tight")
+    fig.savefig(os.path.join(FIGURES, "judge.pdf"), bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -963,7 +963,7 @@ def figure_ops(rsi, versions):
     h2, l2 = ax2.get_legend_handles_labels()
     fig.legend(h + h2, l + l2, loc="lower center", ncol=7, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.06))
     fig.tight_layout(rect=(0, 0.08, 1, 1))
-    fig.savefig(os.path.join(FIGURES, "ops.pdf"), bbox_inches="tight")
+    fig.savefig(os.path.join(FIGURES, "ops.pdf"), bbox_inches="tight", metadata={"CreationDate": None})
     plt.close(fig)
 
 
