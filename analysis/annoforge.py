@@ -321,7 +321,10 @@ def macro_name(*parts):
 
 # ---------------------------------------------------------------- tables
 
-SUB_OF = {"baseline/gpt": "baseline/gpt-sub", "R10/HG": "R10/HG-sub", "R10/GH": "R10/GH-sub", "R10/GG": "R10/GG-sub"}
+# GPT runs that the API budget stopped before the whole test set: the guideline prompt is reported on the
+# documents it finished (PARTIAL_OF, its own scores), the transfer on the two SUB documents (SUB_OF, sub.json)
+PARTIAL_OF = {"baseline/gpt": "baseline/gpt-partial"}
+SUB_OF = {"R10/HG": "R10/HG-sub", "R10/GH": "R10/GH-sub", "R10/GG": "R10/GG-sub"}
 
 
 def table_main(runs, sota, m, sub=None):
@@ -340,7 +343,10 @@ def table_main(runs, sota, m, sub=None):
                 v = c.get(k)
                 cells.append(num(float(v)) if isinstance(v, (int, float)) else "--")
             elif c and c not in runs.get(b, {}) and NOT_RUN.match(c):
-                v = ((sub or {}).get(b, {}).get(SUB_OF.get(c, ""), {}) or {}).get(k)
+                if c in PARTIAL_OF:
+                    v = get(runs, b, PARTIAL_OF[c], k)
+                else:
+                    v = ((sub or {}).get(b, {}).get(SUB_OF.get(c, ""), {}) or {}).get(k)
                 cells.append(num(v) + "$^\\ddagger$" if isinstance(v, (int, float)) else "n/a")
             else:
                 cells.append(num(get(runs, b, c, k)) if c else "--")
@@ -380,7 +386,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. $^\ddagger$: GPT-6.1-sol runs that the API budget allowed only on two test documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences; Appendix Table~\ref{tab:transfer}); they are not comparable with the full-test cells. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku annotators, run with other generator/critic pairs. $^\ddagger$: GPT-6.1-sol runs stopped by the API budget, scored on the test documents they finished: the guideline prompt on 4 Chinese documents (41 sentences) and 1 English document (9 sentences), the transfer on two documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences; Appendix Table~\ref{tab:transfer}). These cells cover fewer documents than the others. n/a: no test document finished. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
