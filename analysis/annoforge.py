@@ -386,7 +386,7 @@ System & F & Comp. & ju\textipa{:}m\ae{}\textipa{tS} & F & Comp. & ju\textipa{:}
 %s
 \bottomrule
 \end{tabular}
-\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku as generator and critic, run unchanged with other generator/critic models (\S\ref{sec:general}). $^\ddagger$: GPT-6.1-sol runs stopped by the API budget, scored on the test documents they finished: the guideline prompt on 4 Chinese documents (41 sentences) and 1 English document (9 sentences), the transfer on two documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences; Appendix Table~\ref{tab:transfer}). These cells cover fewer documents than the others. n/a: no test document finished. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
+\caption{All systems on the test documents (UMR: %s Chinese and %s English sentences of the shared task's test set; TimeML: %s TempEval-3 platinum sentences). F: AnCast++ sentence-graph F; Comp.: AnCast++ comprehensive score with document-level relations; juːmæʧ: the shared task's official score against its test gold. TLINK: TempEval-3 temporal awareness F1; Event: event extent F1; Value: TIMEX3 value F1. Transfer: $H_{10}$, built with Haiku as generator and critic, run unchanged with other generator/critic models (\S\ref{sec:general}). $^\ddagger$: GPT-6.1-sol runs stopped by the API budget, scored on the test documents they finished: the guideline prompt on 4 Chinese documents (41 sentences) and 1 English document (9 sentences), the transfer on two documents per benchmark (22 Chinese, 38 English and 22 TimeML sentences; Appendix Table~\ref{tab:transfer}). These cells cover fewer documents than the others. $^\dagger$TIPSem \citep{llorens2010tipsem} is the organizers' reference, not a participant: some annotators used it to pre-label the platinum data, and the organizers separate it from the participants for that reason \citep{uzzaman2013semeval}; 73\%% of the gold TLINK pairs of our documents are pairs TIPSem links, against 26\%% for ClearTK-2, the best participant. Its TLINK score is a reference, not the state of the art.}
 \label{tab:main}
 \end{table*}
 """ % ("\n".join(rows), r"\nTestZh", r"\nTestEn", r"\nTestTml")
@@ -462,7 +462,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 %s
 \bottomrule
 \end{tabular}}
-\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. $^\ddagger$: on the two test documents per benchmark that the GPT runs finished (22 Chinese, 38 English and 22 TimeML sentences), $H_0$ and $H_{10}$ on the same documents; n/a: no test document finished.}
+\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. $^\ddagger$: on the two test documents per benchmark that the GPT runs finished (22 Chinese, 38 English and 22 TimeML sentences), $H_0$ and $H_{10}$ on the same documents;}
 \label{tab:seed2x2}
 \end{table}
 """ % "\n".join(rows))
@@ -793,7 +793,7 @@ def table_transfer(sub, m):
     """Generator/critic pairs on two test documents per benchmark (the GPT runs the budget allowed)."""
     rows = []
     learned = {"umr-zh": T("umr-zh", "test/H10"), "umr-en": T("umr-en", "test/H10"), "timeml": T("timeml", "test/H10")}
-    alts = {"GG": {"umr-zh": "R10/GG", "umr-en": "R10/GG-sub", "timeml": None}}
+    alts = {"GG": {"umr-zh": "R10/GG", "umr-en": "R10/GG-sub", "timeml": "R10/GG-sub"}}
     for label, cond in (("Guideline in the prompt, Haiku", "baseline/haiku"), ("Guideline through tools, Haiku", "baseline/haiku-tools"),
                         ("Guideline through tools, GPT", "baseline/gpt-tools-sub")):
         cells = []
