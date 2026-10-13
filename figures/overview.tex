@@ -23,8 +23,8 @@
 % loop
 \node[head] at (6.0,4.55) {Round $n$ on training group $n$ (5 sentences, one document)};
 \node[loop, anchor=north] (s1) at (6.0,4.25) {\textbf{1 Annotate} the group with $H_{n-1}$; keep every step's output.};
-\node[loop, below=0.16cm of s1] (s2) {\textbf{2 Judge} against gold: per-check units (umrjudge / timemljudge).};
-\node[loop, below=0.16cm of s2] (s3) {\textbf{3 Reflect} (builder): summarize problems, find their causes, propose operations on skills, steps and tools; it may read resource files (PropBank, \ldots) and search the guideline.};
+\node[loop, below=0.16cm of s1] (s2) {\textbf{2 Judge} against gold: units per check of the scheme.};
+\node[loop, below=0.16cm of s2] (s3) {\textbf{3 Reflect} (builder): summarize problems, find their causes, propose operations on skills, steps and tools; it may read the resource files and search the guideline.};
 \node[loop, below=0.16cm of s3] (s4) {\textbf{4 Admit} by machine checks: anchors, no test text, size budget, tool tests in a sandbox.};
 \node[loop, below=0.16cm of s4] (s5) {\textbf{5 Re-annotate} the group with $H_n$ (training score after); \textbf{test} $H_n$ on held-out documents.};
 \foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5} {\draw[->] (\a)--(\b);}
@@ -35,7 +35,7 @@
 \node[skill, below=0.25cm of g1] (c1) {\skill{critique} \scriptsize(C)\,$\pm$};
 \node[skill, added, below=0.25cm of c1] (n1) {new step (check or rule)};
 \node[skill, below=0.25cm of n1] (f1) {\skill{finalize} \scriptsize(G)\,$\pm$};
-\node[tool, added, below=0.25cm of f1] (t1) {tool: PropBank lookup};
+\node[tool, added, below=0.25cm of f1] (t1) {tool: resource lookup};
 \draw[->] (r1)--(g1); \draw[->] (g1)--(c1); \draw[->] (c1)--(n1); \draw[->] (n1)--(f1);
 % flows
 \draw[->,thick] (g0.east) -- (s1.west);
@@ -43,6 +43,6 @@
 \draw[->,dashed] (t1.south) |- ([yshift=-0.35cm]s5.south) -| (n0.south);
 \node[font=\scriptsize\itshape, fill=white, inner sep=1.5pt, below=0.22cm of s5] {$H_n$ is the starting point of round $n{+}1$; the builder never sees test documents or scores};
 \end{tikzpicture}
-\caption{\sys. Left: the seed harness annotates one sentence at a time; each step sees the previous five sentences with their annotations. Middle: one round of recursive self-improvement on a group of five gold sentences. Right: the next version; skills are edited ($\pm$), and steps and tools may be added (orange), e.g.\ the PropBank lookup tools the builders wrote after learning that frame files exist (\S\ref{sec:how}). G and C are the generator and critic models of a configuration.}
+\caption{\sys. Left: the seed harness annotates one sentence at a time; each step sees the previous five sentences with their annotations. Middle: one round of recursive self-improvement on a group of five gold sentences. Right: the next version; skills are edited ($\pm$), and steps and tools may be added (orange), e.g.\ a lookup over resource files that the builder writes on its own (\S\ref{sec:how}). G and C are the generator and critic models of a configuration.}
 \label{fig:overview}
 \end{figure*}
