@@ -3,16 +3,16 @@
 
 Each benchmark uses ten training groups of five consecutive sentences, in a fixed random order, one group per round. Training and test texts do not overlap, and the builder never sees test documents.
 
-\paragraph{UMR test documents.} The shared task's test set \citep{stepanek2026first}, released with UMR~2.2 \citep{bonn2026uniform}, has 15 Chinese and 5 English documents. We use those whose gold we have in a cleaned version. Shuffled with seed 20261012 and taken whole while the total stays at most 100 sentences, the Chinese test documents are contains \nTestZh{} sentences and the English contains \nTestEn{} sentences. Tokens are identical to the shared task's blind test files. Our cleaned gold and the shared task's own test gold (UMR~2.2) agree at \jumach{} 99.0 on the English documents but only 71.7 on the Chinese ones, which differ in alignment and in a number of annotation decisions; the main metric (AnCast++ F) uses the cleaned gold, \jumach{} the official gold. The two annotations of the same English text in the test set (en-0005 and en-0007) agree at \jumach{} 81.8 with each other, a rough ceiling for any system on that text.
+\paragraph{UMR test documents} The shared task's test set \citep{stepanek2026first}, released with UMR~2.2 \citep{bonn2026uniform}, has 15 Chinese and 5 English documents. We use those whose gold we have in a cleaned version. Shuffled with seed 20261012 and taken whole while the total stays at most 100 sentences, the Chinese test documents are contains \nTestZh{} sentences and the English contains \nTestEn{} sentences. Tokens are identical to the shared task's blind test files. Our cleaned gold and the shared task's own test gold (UMR~2.2) agree at \jumach{} 99.0 on the English documents but only 71.7 on the Chinese ones, which differ in alignment and in a number of annotation decisions; the main metric (AnCast++ F) uses the cleaned gold, \jumach{} the official gold. The two annotations of the same English text in the test set (en-0005 and en-0007) agree at \jumach{} 81.8 with each other, a rough ceiling for any system on that text.
 
-\paragraph{UMR training groups.} Chinese: ten documents of 0001--0018, one random window of five sentences each. English: the release is mostly partial AMR-to-UMR conversions (few aspect attributes, no document-level relations) or Minecraft dialogues; only three documents not sharing text with the test set have full sentence and document-level annotation (english\_umr-0578 = wsj\_0003, 0579 = wsj\_0004, 0580 = the Pear Story), and they give the ten non-overlapping windows. The shared task's clean English training files 0001 and 0003 are the texts of test documents en-0006 and en-0008, annotated again, so we exclude them.
+\paragraph{UMR training groups} Chinese: ten documents of 0001--0018, one random window of five sentences each. English: the release is mostly partial AMR-to-UMR conversions (few aspect attributes, no document-level relations) or Minecraft dialogues; only three documents not sharing text with the test set have full sentence and document-level annotation (english\_umr-0578 = wsj\_0003, 0579 = wsj\_0004, 0580 = the Pear Story), and they give the ten non-overlapping windows. The shared task's clean English training files 0001 and 0003 are the texts of test documents en-0006 and en-0008, annotated again, so we exclude them.
 
-\paragraph{TimeML.} The same whole-document sampling procedure selects \nTestDocsTml{} of the 20 TempEval-3 platinum documents \citep{uzzaman2013semeval}: CNN\_20130322\_1003, CNN\_20130322\_248, CNN\_20130322\_314, WSJ\_20130321\_1145, WSJ\_20130322\_804, bbc\_20130322\_1353 and nyt\_20130321\_cyprus (\nTestTml{} sentences, scored against the official keys). Sentences are split at sentence-final punctuation followed by a capital, a digit or a quote, and at blank lines, never inside a gold tag. Training groups come either from TBAQ-cleaned (TimeBank~1.2 \citep{pustejovsky2006timebank} and AQUAINT, the TempEval-3 training data) or from the 13 platinum documents that are not test documents. A window is scored on its own text: its tags, and TLINKs between them or to the document creation time.
+\paragraph{TimeML} The same whole-document sampling procedure selects \nTestDocsTml{} of the 20 TempEval-3 platinum documents \citep{uzzaman2013semeval}: CNN\_20130322\_1003, CNN\_20130322\_248, CNN\_20130322\_314, WSJ\_20130321\_1145, WSJ\_20130322\_804, bbc\_20130322\_1353 and nyt\_20130321\_cyprus (\nTestTml{} sentences, scored against the official keys). Sentences are split at sentence-final punctuation followed by a capital, a digit or a quote, and at blank lines, never inside a gold tag. Training groups come either from TBAQ-cleaned (TimeBank~1.2 \citep{pustejovsky2006timebank} and AQUAINT, the TempEval-3 training data) or from the 13 platinum documents that are not test documents. A window is scored on its own text: its tags, and TLINKs between them or to the document creation time.
 
 \section{The Judges}
 \label{app:judge}
 
-\paragraph{umrjudge.} AnCast++ aligns each predicted node to at most one gold node. The judge then scores 25 checks in 11 groups over the aligned graphs; each check yields units with a verdict (correct, partial, wrong, missing, extra) and a credit, and reports F over its units.
+\paragraph{umrjudge} AnCast++ aligns each predicted node to at most one gold node. The judge then scores 25 checks in 11 groups over the aligned graphs; each check yields units with a verdict (correct, partial, wrong, missing, extra) and a credit, and reports F over its units.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -35,16 +35,16 @@ h--k document & \texttt{temporal}, \texttt{modal}, \texttt{coref\_chain}, \textt
 \label{tab:judge}
 \end{table}
 
-\paragraph{timemljudge.} Predicted and gold \texttt{TIMEX3} and \texttt{EVENT} tags are matched one-to-one by character overlap, largest first. Times: \texttt{timex\_found} (relaxed extent), \texttt{timex\_extent} (exact extent of a matched pair), \texttt{timex\_type}, \texttt{timex\_value}. Events: \texttt{event\_found}, \texttt{event\_extent}, \texttt{event\_class}, and the instance attributes \texttt{event\_tense}, \texttt{event\_aspect}, \texttt{event\_polarity}, \texttt{event\_modality}. Temporal links, with predicted ends mapped to their matched gold entities and B--A links turned around: for event--time in the same sentence and in different sentences, event--document time, event--event in the same and in different sentences, and time--time, a \texttt{pair} check (are the right pairs linked) and a \texttt{label} check (the relation of a pair linked on both sides). The first group follows TempEval-3's entity measures \citep{uzzaman2013semeval}, the link categories extend those of TempEval-2's tasks C--F \citep{verhagen2010semeval} with event--time links across sentences and time--time links; unlike the official temporal-awareness score \citep{uzzaman2011temporal}, the link checks use no temporal closure.
+\paragraph{timemljudge} Predicted and gold \texttt{TIMEX3} and \texttt{EVENT} tags are matched one-to-one by character overlap, largest first. Times: \texttt{timex\_found} (relaxed extent), \texttt{timex\_extent} (exact extent of a matched pair), \texttt{timex\_type}, \texttt{timex\_value}. Events: \texttt{event\_found}, \texttt{event\_extent}, \texttt{event\_class}, and the instance attributes \texttt{event\_tense}, \texttt{event\_aspect}, \texttt{event\_polarity}, \texttt{event\_modality}. Temporal links, with predicted ends mapped to their matched gold entities and B--A links turned around: for event--time in the same sentence and in different sentences, event--document time, event--event in the same and in different sentences, and time--time, a \texttt{pair} check (are the right pairs linked) and a \texttt{label} check (the relation of a pair linked on both sides). The first group follows TempEval-3's entity measures \citep{uzzaman2013semeval}, the link categories extend those of TempEval-2's tasks C--F \citep{verhagen2010semeval} with event--time links across sentences and time--time links; unlike the official temporal-awareness score \citep{uzzaman2011temporal}, the link checks use no temporal closure.
 
 \section{Prompts}
 \label{app:prompts}
 
-\paragraph{Output format (UMR).} Every annotating step receives this system message (the TimeML one is analogous): \emph{``You annotate \{Chinese|English\} text in Uniform Meaning Representation (UMR), one sentence at a time. Output format. The annotation of sentence number N is written exactly as a .umr file writes one sentence, in three sections: \texttt{\# sentence level graph:} (a PENMAN graph; every variable is sN followed by a letter and optional digits) \texttt{\# alignment:} (one line per variable: \texttt{variable: start-end}, 1-based word positions; \texttt{0-0} when aligned to no word) \texttt{\# document level annotation:} \texttt{(sNs0 / sentence :temporal (\ldots) :modal (\ldots) :coref (\ldots))}. In the document level annotation, a and b are variables of this sentence or of earlier sentences, or constants; leave out a group that has no relation.''}
+\paragraph{Output format (UMR)} Every annotating step receives this system message (the TimeML one is analogous): \emph{``You annotate \{Chinese|English\} text in Uniform Meaning Representation (UMR), one sentence at a time. Output format. The annotation of sentence number N is written exactly as a .umr file writes one sentence, in three sections: \texttt{\# sentence level graph:} (a PENMAN graph; every variable is sN followed by a letter and optional digits) \texttt{\# alignment:} (one line per variable: \texttt{variable: start-end}, 1-based word positions; \texttt{0-0} when aligned to no word) \texttt{\# document level annotation:} \texttt{(sNs0 / sentence :temporal (\ldots) :modal (\ldots) :coref (\ldots))}. In the document level annotation, a and b are variables of this sentence or of earlier sentences, or constants; leave out a group that has no relation.''}
 
-\paragraph{Seed.} The builder receives the description of the three steps, the output format and the whole guideline, and is asked for each step's instructions, ``at most 8{,}000 characters, in English, organized as a compact checklist a model can follow: what to annotate and in which order, the decisions that matter most for this scheme and how the guidelines settle them, the closed lists of labels and values that apply, and the frequent mistakes to avoid''.
+\paragraph{Seed} The builder receives the description of the three steps, the output format and the whole guideline, and is asked for each step's instructions, ``at most 8{,}000 characters, in English, organized as a compact checklist a model can follow: what to annotate and in which order, the decisions that matter most for this scheme and how the guidelines settle them, the closed lists of labels and values that apply, and the frequent mistakes to avoid''.
 
-\paragraph{Reflection.} The reflection prompt (\texttt{af/rsi.py} in the code) describes the annotator, the resource files and the operations with their constraints, then gives the current harness, the history of earlier rounds (training scores, applied and rejected operations), and the group's sentences with gold, every step's output and the judge's incorrect units. It ends: ``problems: the error patterns of this group, most costly first, each with the step it should be fixed in. reflection: why they happen, and what you will change and why. operations: the changes, in the order to apply them. suggestions: anything else.'' Suggestions are never implemented, and the prompt says so.
+\paragraph{Reflection} The reflection prompt (\texttt{af/rsi.py} in the code) describes the annotator, the resource files and the operations with their constraints, then gives the current harness, the history of earlier rounds (training scores, applied and rejected operations), and the group's sentences with gold, every step's output and the judge's incorrect units. It ends: ``problems: the error patterns of this group, most costly first, each with the step it should be fixed in. reflection: why they happen, and what you will change and why. operations: the changes, in the order to apply them. suggestions: anything else.'' Suggestions are never implemented, and the prompt says so.
 
 \section{Reproduction}
 \label{app:reproduction}
@@ -53,10 +53,20 @@ All code, harness versions, per-round reflections, operations, diffs and scores 
 \section{Additional Results}
 \label{app:more}
 
-Table~\ref{tab:transfer} compares every generator/critic pair on two test documents per benchmark, with the guideline baselines on the same documents; Table~\ref{tab:shortabl} gives the two-round RSI runs with restricted operations (\S\ref{sec:how}).
+Table~\ref{tab:seed2x2} gives every generator/critic pair with $H_0$ and $H_{10}$, and Table~\ref{tab:transfer} compares the pairs on two test documents per benchmark, with the guideline baselines on the same documents (\S\ref{sec:general}). Table~\ref{tab:shortabl} gives the two-round RSI runs with restricted operations, Figure~\ref{fig:judge} the change of each judge check, and Table~\ref{tab:ops} every operation of the three main trajectories (\S\ref{sec:how}).
 
+\input{tables/seed2x2}
 \input{tables/transfer}
 \input{tables/shortabl}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/judge.pdf}
+\caption{Change of each judge check from $H_0$ to $H_{10}$ on the test documents (checks with at least six units; Haiku / Haiku; TimeML: platinum-trained trajectory).}
+\label{fig:judge}
+\end{figure*}
+
+\input{tables/ops}
 
 \section{Round-by-Round Records}
 \label{app:rounds}
@@ -117,13 +127,13 @@ Tables~\ref{tab:roundszh}--\ref{tab:roundstml} list every round of the three mai
 \section{Case Study Excerpts}
 \label{app:case}
 
-\paragraph{The builder's reflection, English round 1 (verbatim, abridged).}
+\paragraph{The builder's reflection, English round 1 (verbatim, abridged)}
 \begin{quote}\small
 ``Most of the lost score is format, not understanding. The skills taught a vocabulary (\texttt{:ref-person}, \texttt{Singular}, \texttt{:modstr}, \texttt{:modpred}, \texttt{:Str}, \texttt{DCT}) that the gold and the judge do not use. The critique step then reinforced it, and it even moved the temporal relation the wrong way. I will change four things. (1) I rewrite all three skills to use the gold conventions [\ldots] (2) I add a deterministic rule step [\ldots] that normalises attribute names and cases, converts \texttt{:modstr} into the document-level modal labels and then drops it [\ldots] (3) I add a \texttt{roleset\_lookup} tool over \texttt{propbank-en-args.txt}, so haiku picks real senses and roles instead of guessing [\ldots] (4) I rewrite the critic to check against the same conventions.''
 \end{quote}
 The rule steps of (2) were rejected: after one repair attempt they still came with fewer than three tests. The builder added rule steps that passed in later rounds.
 
-\paragraph{A tool and its revision (English).} Round 1, the whole tool:
+\paragraph{A tool and its revision (English)} Round 1, the whole tool:
 \begin{quote}\scriptsize\ttfamily\raggedright
 def roleset\_lookup(lemma: str) -> str:\\
 \ \ """Look up English PropBank rolesets for a lemma [\ldots]. Returns lines like 'dump-01 ARG0: ... ARG1: ...' with all senses and their numbered roles [\ldots]."""\\
@@ -134,7 +144,7 @@ def roleset\_lookup(lemma: str) -> str:\\
 \end{quote}
 Round 9, reason given: ``Show sense names (meaning) and roles from the XML, with fallback to base verb for derived nouns/adjectives, so the model can choose the right sense (consider-01 vs -02).'' The new version reads \texttt{propbank-en/<lemma>.xml}, prints each roleset as \texttt{consider-02 [name] ARG0: \ldots}, and tries \emph{-ers}, \emph{-ion}, \emph{-ing} and other suffix variants when the lemma has no file.
 
-\paragraph{A rule step (Chinese, round 10, the whole function).}
+\paragraph{A rule step (Chinese, round 10, the whole function)}
 \begin{quote}\scriptsize\ttfamily\raggedright
 def run(annotation: str, sentence: dict) -> str:\\
 \ \ """Ensure the document-level :modal group contains (root :modal author), creating the group if absent."""\\
@@ -144,4 +154,4 @@ def run(annotation: str, sentence: dict) -> str:\\
 \ \ else: [add a :modal group with it] \ldots
 \end{quote}
 
-\paragraph{A Chinese tool answering with a convention.} \texttt{lookup\_frame(lemma)} returns the rolesets of a Chinese PropBank frame file, and when there is none: ``NO FRAME for \textit{lemma}: use \textit{lemma}-00 with \texttt{:actor} (agent) / \texttt{:undergoer} (patient) instead of ARGn'', the UMR guideline's convention for predicates without a frame file, attached by the builder to the tool's answer.
+\paragraph{A Chinese tool answering with a convention} \texttt{lookup\_frame(lemma)} returns the rolesets of a Chinese PropBank frame file, and when there is none: ``NO FRAME for \textit{lemma}: use \textit{lemma}-00 with \texttt{:actor} (agent) / \texttt{:undergoer} (patient) instead of ARGn'', the UMR guideline's convention for predicates without a frame file, attached by the builder to the tool's answer.
