@@ -284,7 +284,7 @@ def make():
     os.makedirs(TABLES, exist_ok=True)
     os.makedirs(FIGURES, exist_ok=True)
     table_main(runs, sota, macros, load("sub.json"))
-    table_seed(runs, macros)
+    table_seed(runs, macros, load("sub.json"))
     table_rounds(runs, rsi, versions, macros)
     table_judge(runs, macros)
     table_ops(rsi, versions, macros)
@@ -428,8 +428,9 @@ def cfg_label(c):
     return "%s / %s" % (names[c[0]], names[c[1]])
 
 
-def table_seed(runs, m):
-    """The 2x2 of generator and critic models at H0 and H10, main metric."""
+def table_seed(runs, m, sub=None):
+    """The 2x2 of generator and critic models at H0 and H10, main metric. A GPT pair whose H10 run the API budget
+    stopped is given on the two SUB documents, H0 and H10 alike, marked with a double dagger."""
     rows = []
     for c in CONFIGS + ["SS"]:
         cells = []
@@ -437,7 +438,14 @@ def table_seed(runs, m):
             a = get(runs, b, "R0/" + c, MAIN[b])
             z = get(runs, b, T(b, "test/H10") if c == "HH" else "R10/" + c, MAIN[b])
             if z is None and c in ("HG", "GH", "GG"):
-                cells += [num(a), "n/a", "n/a"]
+                sb = (sub or {}).get(b, {})
+                a2 = (sb.get("R0/" + c) or {}).get(MAIN[b])
+                z2 = (sb.get(SUB_OF["R10/" + c]) or {}).get(MAIN[b])
+                if a2 is not None and z2 is not None:
+                    d = r"$^\ddagger$"
+                    cells += [num(a2) + d, num(z2) + d, sgn(z2 - a2) + d]
+                else:
+                    cells += [num(a), "n/a", "n/a"]
             else:
                 cells += [num(a), num(z), sgn(z - a) if a is not None and z is not None else GAP]
         rows.append(cfg_label(c) + " & " + " & ".join(cells) + r" \\")
@@ -454,7 +462,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 %s
 \bottomrule
 \end{tabular}}
-\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. n/a: not run within the API budget.}
+\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is. $^\ddagger$: on the two test documents per benchmark that the GPT runs finished (22 Chinese, 38 English and 22 TimeML sentences), $H_0$ and $H_{10}$ on the same documents; n/a: no test document finished.}
 \label{tab:seed2x2}
 \end{table}
 """ % "\n".join(rows))
