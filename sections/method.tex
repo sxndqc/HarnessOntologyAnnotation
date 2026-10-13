@@ -6,11 +6,11 @@
 \subsection{Harness structure}
 \label{sec:overview}
 
-An annotator is a harness $H=(S,T,G,R)$ run by language models: \emph{skills} $S$ provide step instructions, \emph{tools} $T$ are callable Python functions, a \emph{chain} $G$ specifies step order and model assignments, and \emph{rule steps} $R$ rewrite annotations through code. The chain is stored in YAML, skills in Markdown, and tools and rules in Python.
+An annotator is a harness $H=(S,T,G,R)$ run by language models: \emph{skills} $S$ provide step instructions, \emph{tools} $T$ are callable Python functions, a \emph{chain} $G$ specifies step order and model assignments, and \emph{rule steps} $R$ rewrite annotations through code.
 
-\paragraph{Execution.} Each step receives the input text, the current annotation, and unresolved findings from earlier steps. A \emph{rewrite} step produces a complete annotation; a \emph{check} step identifies problems and proposes fixes for the next rewrite; a rule step runs code. The final annotation is the last one that parses. All steps share the output format; their instructions are learned.
+\paragraph{Execution} Each step receives the input text, the current annotation, and unresolved findings from earlier steps. A \emph{rewrite} step produces a complete annotation; a \emph{check} step identifies problems and proposes fixes for the next rewrite; a rule step runs code. All steps share the output format; their instructions are learned.
 
-\paragraph{Resources.} Model steps access resource files through tools. Tools use a shared module to read resources such as lexicons, label lists, and the guideline. The tools themselves are written by the builder as the harness evolves.
+\paragraph{Resources} Model steps access resource files through tools. Tools use a shared module to read resources such as lexicons, label lists, and the guideline. The tools themselves are written by the builder as the harness evolves.
 
 \subsection{Initialization}
 \label{sec:seed}
@@ -22,7 +22,7 @@ The builder LLM reads the guideline and writes a seed harness $H_0$ with three s
 
 Round $n$ turns $H_{n-1}$ into $H_n$ using the next training group (Figure~\ref{fig:overview}). Changes are made to a copy of the harness, preserving earlier versions.
 
-\paragraph{Annotation and feedback.} $H_{n-1}$ annotates a group of five consecutive sentences, with preceding gold annotations as context. The trace records each step's output and findings. A fine-grained judge aligns predictions with gold and checks individual parts of the annotation scheme, such as concepts, argument roles, attributes, and links. It returns units containing a verdict and the gold and predicted elements, together with the sentence they belong to. Incorrect units identify which decisions need improvement. The judges used in our experiments are described in \S\ref{sec:evaluation}.
+\paragraph{Annotation and feedback.} $H_{n-1}$ annotates a group of cases. The trace records each step's output and findings. A fine-grained judge aligns predictions with gold and checks individual parts of the annotation scheme, such as concepts, argument roles, attributes, and links. It returns units containing a verdict and the gold and predicted elements, together with the sentence they belong to. Incorrect units identify which decisions need improvement. The judges used in our experiments are described in \S\ref{sec:evaluation}.
 
 \paragraph{Reflection.} In one call, the builder receives the current harness, the resource manifest, the changes and training scores from earlier rounds, and the training group's gold annotations, step outputs, and incorrect units. It may inspect resource files and search the guideline. It returns error patterns, their causes, proposed operations, and suggestions outside the available operations. Suggestions are recorded but not applied.
 
