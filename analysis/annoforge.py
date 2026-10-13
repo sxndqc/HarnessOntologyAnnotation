@@ -462,7 +462,7 @@ G / C & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{10}$ & $\Delta$ & $H_0$ & $H_{
 %s
 \bottomrule
 \end{tabular}}
-\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is.}$ on the same documents.}
+\caption{Generator (G) and critic (C) models (H: Haiku, G: GPT-6.1-sol, S: Sonnet). $H_{10}$ was built with Haiku in both roles; for the other pairs it is used as it is.}
 \label{tab:seed2x2}
 \end{table}
 """ % "\n".join(rows))
