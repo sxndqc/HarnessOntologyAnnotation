@@ -11,50 +11,47 @@
 - What we learn
 - Contributions
 
-## 2 UMR and Related Work
-### 2.1 What UMR represents
+## 2 Uniform Meaning Representation
 - What UMR adds to AMR
-- Eleven layers and four kinds of difficulty
-- Figure 1: a UMR annotation and its layers
-- Table 1: layers, difficulty types, judge checks
-
-### 2.2 Data and prior systems
-- Shared task
-
-### 2.3 Related work
-- AMR parsing with language models
-- LLMs as annotators and guideline refinement
-- Self-improvement
+- 11 fine-grained judges
+- 4 possible sources of difficulty
+- The shared task and prior systems
+- Figure 1: a UMR annotation
+- Table 1: the 11 judges and their possible sources of difficulty
 
 ## 3 Method
-- Seed annotator
-- Feedback per layer
-- Edits
-- Admission
-- One round
-- Figure 2: one round of revision
+### 3.1 Seed
+- Seed annotator written from the guideline
 
-## 4 Experimental Setup
+### 3.2 Improvement
+- Feedback from the fine-grained judges
+- Edits that improve the existing generator
+- Edits that add steps
+- Admission
+- Figure 2: seed and improvement
+
+## 4 Experiments
 - Data
-- Metrics
+- Metrics: AnCast++ and juːmæʧ
 - Models and baselines
-- Reproducibility
 
 ## 5 Results
-### 5.1 Reading the guideline is not enough
+### 5.1 Comparison with the baselines
+- Table 2: main results
+
+### 5.2 Errors of the baselines
 - Where the guideline-prompt baseline loses
 - A Chinese-specific failure
 - The seed from the guideline
 
-### 5.2 Main results
-- Table 2: main results
+### 5.3 Our results
 - Seed to learned annotator
 - Against the fine-tuned systems
 - Against the guideline in the prompt
 - Variation between runs
 - Ruling out simpler explanations
 
-### 5.3 How many sentences are needed
+### 5.4 RSI learning curves
 - Figure 3: learning curves
 - The gain comes in the first rounds
 
@@ -70,13 +67,13 @@
 - Table 4: edits by type
 - Most edits state conventions
 
-### 6.3 Which layers moved, and why
-- Table 5: per-layer scores
+### 6.3 Which judges moved, and why
+- Table 5: scores per judge
 - Conventions transfer almost fully
 - Lookups transfer in part
 - Rule code fixes format, not meaning
 
-### 6.4 Why some layers do not move
+### 6.4 Why some judges do not move
 - Criteria fit the training group, not the test
 - Temporal anchoring: rules that contradict each other
 - Side effects of consolidation
@@ -90,7 +87,12 @@
 - Table 6: ablations
 - The instructions carry the gain
 
-## 7 Conclusion
+## 7 Related Work
+- AMR and UMR parsing with language models
+- LLMs as annotators and guideline refinement
+- Self-improvement
+
+## 8 Conclusion
 - Answers
 - For UMR annotation projects
 
@@ -104,7 +106,7 @@
 
 ## Appendix
 - A Data and splits
-- B The judge and the layers
+- B The fine-grained judges
 - C Prompts
 - D Round-by-round records
 - E Edit coding
