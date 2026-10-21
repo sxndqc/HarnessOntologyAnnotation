@@ -2,6 +2,8 @@
 
 依据：2026-10-21 和导师谈话录音中关于"另外一篇"（本文）的部分（00:00–16:30，27:30–28:20）。目标是投 TACL（月投，越早越好），下周前把大纲给导师。
 
+> **2026-10-21 更新**：结构以 `outline_umr.tex` 为准（7 节：Introduction、UMR and Related Work、Method、Experimental Setup、Results、Analysis、Conclusion）。Smatch、skill 前后对照、168 个操作的编码、按层归因和人工一致性都已经算出来写进去了（数据在 `data/annoforge/smatch.json`、`layers.json`、`edit_codes.tsv`）。下面第 3 节的十节结构已作废，第 0、4、5 节仍然有效。
+
 标记：**[有]** 数据和数字已有；**[析]** 原始数据已有（units.csv、CHANGES.md、每轮测试结果），需要做分析；**[实]** 要补实验；**[核]** 要自己用官方脚本重新核对。
 
 ---

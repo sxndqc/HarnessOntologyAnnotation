@@ -1,0 +1,169 @@
+bench	round	k	op	step	action	type	layers	chars	reason
+umr-zh	1	0	rewrite_skill	generate		CONV	MOD+TMP+ATT+CON	6871	Align with gold conventions: modality only at document level with full label names, author, overlap-based temporal chains, refer-* attributes, Chinese lemmas for ordinary words, gold role names, have-reason-91, aspect conventions.
+umr-zh	1	1	rewrite_skill	critique		CONV	MOD+TMP+ATT+CON	3554	Make critique enforce gold conventions (doc-level modality only, labels, single temporal parent, Chinese lemmas, role names) instead of the old FullAff scheme.
+umr-zh	1	2	rewrite_skill	finalize		CONV	MOD	2613	Apply findings under the gold conventions and keep stable format; remove obsolete modstr rules.
+umr-zh	1	3	add_step	normalize		CODE	MOD+ATT+FMT	5415	Deterministically normalise document-level vocabulary and graph attributes to the gold conventions: strip :modstr/:modpred/:quot (turning modstr into author edges), map modal labels to full names, author/document-creation-time, drop tense metanodes, one temporal parent per child, lowercase aspect/refer values, author edge for every event.
+umr-zh	2	0	add_tool	lookup_frame		TOOL	SEN	1408	Exact lookup of whether a predicate has a PropBank-zh frame (-01 + ARGn) or not (-00 + :actor/:undergoer) and what its numbered roles mean.
+umr-zh	2	1	rewrite_skill	generate		TOOLUSE	SEN+CON	6404	
+umr-zh	2	2	rewrite_skill	critique		CONV	MOD+TMP+CON	2754	
+umr-zh	2	3	rewrite_skill	finalize		CONV	MOD+TMP+CON	2797	
+umr-zh	3	0	edit_skill	generate	modify	CONV	TMP	457	Gold temporal structure is local, not all-DCT.
+umr-zh	3	1	edit_skill	generate	modify	CONV	MOD	116	Gold gives states modal edges.
+umr-zh	3	2	edit_skill	generate	modify	CONV	SEN	61	Gold uses 有-01.
+umr-zh	3	3	edit_skill	generate	modify	CRIT	COR	205	Coref chain/subset checks scored 0-0.16.
+umr-zh	3	4	edit_skill	generate	add	CONV	CON+ARG	1469	
+umr-zh	3	5	edit_skill	critique	modify	CRITIC	MOD	132	Critique removed gold-required modals.
+umr-zh	3	6	edit_skill	critique	add	CRITIC	TMP+FMT	998	
+umr-zh	3	7	edit_skill	finalize	modify	CONV	MOD	48	Gold gives states modal edges.
+umr-zh	3	8	edit_skill	finalize	add	CRITIC	MOD+TMP+FMT	444	
+umr-zh	3	9	add_step	fix_alignment		CODE	FMT	1521	Repair alignment section: one a-b span per declared variable, comma lists reduced to first span, missing lines 0-0, stray lines dropped.
+umr-zh	4	0	edit_skill	generate	modify	CONV	TMP	129	Gold anchors dated events to the date, not to DCT.
+umr-zh	4	1	edit_skill	generate	add	CONV	CON+REE+COR	1047	Covers the ordinal, entity type, implicit-argument, exist-91, adverb and sense errors.
+umr-zh	4	2	add_step	local_fixes		CODE	TMP+REE	3192	Deterministically fixes date-anchored temporal edges and replaces earlier-sentence variables with implicit-argument plus coref.
+umr-zh	4	3	edit_skill	critique	add	CRITIC	TMP+CON	773	Stops the critique from reverting gold conventions and adds new gold checks.
+umr-zh	4	4	edit_skill	finalize	modify	CONV	TMP+CON+REE	432	Aligns finalize with the gold date, adverb and implicit-argument conventions.
+umr-zh	5	1	edit_skill	generate	delete	SPACE	-	0	free space; fix_alignment enforces it
+umr-zh	5	2	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	5	3	edit_skill	critique	add	CONV	FMT+CON	628	
+umr-zh	5	4	edit_skill	finalize	add	CONV	FMT+REE	570	
+umr-zh	5	5	add_step	fix_variables		CODE	FMT	2476	Rename invalid (word-like) variable names to sN+letter+digits consistently in graph, alignment and document level so the graph parses and coref/temporal links match; remove duplicate :aspect on a node.
+umr-zh	6	0	edit_skill	generate	delete	SPACE	-	0	free space (format is in the system message)
+umr-zh	6	1	edit_skill	generate	delete	SPACE	-	0	free space; normalize drops them
+umr-zh	6	2	edit_skill	generate	delete	SPACE	-	0	free space; duplicate of the consecutive rule
+umr-zh	6	3	edit_skill	generate	modify	CONV	ARG	50	gold uses :mod for 中国X and :place for the region of N
+umr-zh	6	4	edit_skill	generate	add	CRIT	SEN	121	exist-91 only for 中有; pivot 有
+umr-zh	6	5	edit_skill	generate	modify	CONV	CON	88	generic 政府 stays a plain noun
+umr-zh	6	6	edit_skill	generate	modify	CONV	ARG	14	时 clause gets a 时 node with :op1 event, under :temporal
+umr-zh	6	7	edit_skill	generate	add	CRIT	ARG	105	S4 给予 embedded as :mod
+umr-zh	6	8	edit_skill	generate	add	CONV	CON+ARG	84	S3 have-org-role-92
+umr-zh	6	9	edit_skill	generate	modify	CRIT	ASP	53	habitual was lost
+umr-zh	6	10	edit_skill	generate	modify	CRIT	COR	87	j_coref_chain extras
+umr-zh	6	11	edit_skill	critique	add	CRITIC	ASP	67	critique stripped habitual
+umr-zh	6	12	edit_skill	critique	modify	CRITIC	TMP	137	wrong :depends-on advice and direction
+umr-zh	6	13	edit_skill	critique	modify	CRITIC	SEN	55	exist-91 was forced on every 有 clause
+umr-zh	6	14	edit_skill	critique	add	CRITIC	ARG	144	critique reversed the gold relations
+umr-zh	6	15	edit_skill	finalize	add	CRITIC	ASP	50	habitual was lost
+umr-zh	6	16	edit_skill	finalize	modify	CONV	TMP	111	reversed DCT edge
+umr-zh	6	17	add_step	dct_direction		CODE	TMP	692	Event-as-parent edges against document-creation-time are reversed deterministically
+umr-zh	7	1	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	2	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	3	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	4	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	5	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	6	edit_skill	generate	delete	SPACE	-	0	free space
+umr-zh	7	8	edit_skill	critique	add	CRITIC	CON+ARG	590	Stop critique from introducing errors and add the new checks.
+umr-zh	7	9	edit_skill	finalize	add	CRITIC	CON+ARG	351	Stop finalize from re-introducing wrong forms.
+umr-zh	7	10	add_step	role_fixes		CODE	ARG	615	Deterministic label normalisation to the gold vocabulary.
+umr-zh	8	0	rewrite_skill	generate		CONV	TMP+REE+ARG+COR	9378	Make room and add: temporal direction + narrative chaining, explicit-pronoun person node, but-91, 因此 placeholder, 当…时/之后, manner/place/instrument, have-degree-91, whole-word verbs, 二人.
+umr-zh	8	1	edit_skill	critique	modify	CONV	ARG	294	align with gold connectives
+umr-zh	8	2	edit_skill	critique	modify	CONV	TMP	216	gold temporal convention
+umr-zh	8	3	edit_skill	critique	modify	CONV	REE+COR	276	gold explicit pronoun convention
+umr-zh	8	4	edit_skill	critique	modify	CONV	REE+COR	107	consistency
+umr-zh	8	5	edit_skill	finalize	modify	CONV	ARG+COR	320	gold connectives
+umr-zh	8	6	edit_skill	finalize	modify	CONV	TMP	253	gold temporal convention
+umr-zh	8	7	edit_skill	finalize	modify	CONV	REE+COR+ARG	309	gold explicit pronoun convention and roles
+umr-zh	8	8	add_step	root_modal		CODE	MOD	764	Gold document level starts the modal group with (root :modal author); every sentence lost a unit without it.
+umr-zh	9	0	edit_skill	generate	delete	SPACE	-	0	free space for new conventions
+umr-zh	9	1	edit_skill	generate	delete	SPACE	-	0	free space; covered by general reentrancy rule
+umr-zh	9	2	edit_skill	generate	modify	CONV	TMP	284	Gold anchors each sentence's main event to DCT; the model reinforced its own chaining.
+umr-zh	9	3	edit_skill	generate	modify	CRIT	ASP	150	Gold uses habitual for production descriptions.
+umr-zh	9	4	edit_skill	generate	modify	CONV	NAM	114	Name tokens were split inside one input word.
+umr-zh	9	5	edit_skill	generate	modify	CONV	CON	167	Missing entity types.
+umr-zh	9	6	edit_skill	generate	add	CONV	CON+ARG	116	Gold identity-91 for titles.
+umr-zh	9	8	add_step	strip_noun_aspect		CODE	ASP+MOD	1356	Aspect on plain nouns causes spurious modal edges and aspect errors.
+umr-zh	9	9	edit_skill	critique	modify	CONV	TMP	144	Gold temporal convention.
+umr-zh	9	10	edit_skill	critique	add	CONV	ASP+CON+NAM	656	Targeted checks for the recurring gold conventions.
+umr-zh	9	11	edit_skill	finalize	modify	CONV	TMP	194	Gold temporal convention.
+umr-zh	9	12	edit_skill	finalize	add	CONV	ASP+CON+NAM	610	Make finalize apply the same conventions.
+umr-zh	10	0	edit_skill	generate	delete	SPACE	-	0	free space for new conventions
+umr-zh	10	1	edit_skill	generate	modify	CONV	ATT	102	keep polarity next to full-negative modal (c_polarity 0.00)
+umr-zh	10	2	edit_skill	generate	modify	CRIT	ASP	71	gold has no 开始 node; inceptive aspect
+umr-zh	10	3	edit_skill	finalize	add	CONV	ATT+ASP+CON	1676	gold conventions that critique/generate violated
+umr-zh	10	4	edit_skill	critique	modify	CRITIC	TMP+ARG	186	critique wrongly forced consecutive on s10
+umr-zh	10	5	edit_skill	critique	add	CRITIC	ATT+TMP	969	stop the critique from reverting gold conventions
+umr-zh	10	6	add_step	time_nodes		CODE	CON	1063	clock-time nodes zero-padded as in gold (a_entity_concept/found, c_other_attributes)
+umr-zh	10	7	add_step	polarity_sync		CODE	ATT	1164	gold pairs :polarity - with full-negative modal; critique/finalize kept dropping it (c_polarity 0.00)
+umr-en	1	0	add_tool	roleset_lookup		TOOL	SEN	853	Exact sense/role lookup that small models do badly (full-09, important-01, get-05, dump-01 roles vs :goal).
+umr-en	1	1	rewrite_skill	generate		CONV	MOD+TMP+ATT+SEN	7484	
+umr-en	1	2	rewrite_skill	critique		CONV	MOD+TMP+ATT	3386	
+umr-en	1	3	rewrite_skill	finalize		CONV	MOD+TMP+ATT+SEN	3490	
+umr-en	2	0	edit_skill	generate	modify	CRIT	SEN	51	Gold keeps stop-01 :ARG1 use-01.
+umr-en	2	1	edit_skill	generate	modify	CONV	ATT+NAM+CON	315	Gold has no singular refer-number, real wikis and company/product/journal types.
+umr-en	2	2	edit_skill	generate	add	CONV	CON+REE	1081	Decomposition of agent/deverbal nouns, adjective senses, time expressions, reports.
+umr-en	2	3	edit_skill	generate	modify	CONV	TMP	74	Gold uses document-creation-time.
+umr-en	2	4	edit_skill	generate	add	CONV	TMP	161	h_temporal near 0.
+umr-en	2	5	edit_skill	generate	add	CONV	MOD	233	i_modal and k_doc_format.
+umr-en	2	6	edit_skill	generate	add	CRIT	COR	138	j_coref_chain.
+umr-en	2	7	edit_skill	critique	modify	CRITIC	ATT	204	Critic was pushing the harmful singular refer-number.
+umr-en	2	8	edit_skill	critique	modify	CONV	TMP	119	Gold uses document-creation-time.
+umr-en	2	9	edit_skill	critique	add	CONV	COR+MOD+CON	345	Make the critic look for gold-consistent omissions.
+umr-en	2	10	edit_skill	finalize	modify	CONV	ATT	136	c_refer extras.
+umr-en	2	11	edit_skill	finalize	modify	CONV	TMP	54	Gold uses it.
+umr-en	2	12	edit_skill	finalize	modify	CONV	NAM+CON	130	f_wiki and entity concepts.
+umr-en	2	13	edit_skill	finalize	modify	CRIT	SEN	56	Consistency with generate.
+umr-en	3	0	add_step	normalize_doc		CODE	MOD+FMT+NAM	1512	k_doc_format missing (root :modal author) in all 5 sentences and unquoted names/wiki.
+umr-en	3	1	edit_skill	generate	modify	CRIT	SEN	103	gold keeps continue-01 as event; finalize dropped it
+umr-en	3	2	edit_skill	generate	modify	CONV	MOD	85	gold has no modal-predicate reentrancy for think/expect/assume
+umr-en	3	3	edit_skill	generate	delete	SPACE	-	0	make room
+umr-en	3	4	edit_skill	generate	delete	SPACE	-	0	make room
+umr-en	3	5	edit_skill	generate	add	TOOLUSE	SEN+ASP	621	sense ids, aspect, comparatives, quantities, say-91, agent compounds
+umr-en	3	6	edit_skill	finalize	modify	CRIT	SEN	65	continue-01 is an event in gold
+umr-en	3	7	edit_skill	finalize	modify	CONV	MOD	77	no modal-predicate in gold for think-type
+umr-en	3	8	edit_skill	finalize	add	CONV	MOD+ASP+SEN	391	finalize removed or ignored these
+umr-en	3	9	edit_skill	critique	modify	CRITIC	MOD	149	gold has none for think-type; critic extended it to assume
+umr-en	3	10	edit_skill	critique	add	CONV	ASP+SEN+NAM	522	critic's wrong advice in s3/s5
+umr-en	4	0	edit_skill	generate	delete	SPACE	-	0	free space; duplicated by the spokeswoman example
+umr-en	4	1	edit_skill	generate	delete	SPACE	-	0	free space
+umr-en	4	3	edit_skill	finalize	add	CRIT	REE+CON+ARG	702	s27, s30, s31 patterns
+umr-en	4	4	edit_skill	critique	add	CRITIC	REE+ARG	350	stop harmful critique fixes
+umr-en	5	0	edit_skill	generate	modify	CONV	ATT	123	Gold gives :refer-number only to pronoun/implicit persons.
+umr-en	5	1	edit_skill	finalize	modify	CONV	ATT	173	Remove spurious refer-number.
+umr-en	5	2	edit_skill	finalize	add	CRIT	ASP+COR	2002	Constructions the model gets wrong.
+umr-en	5	3	edit_skill	critique	modify	CONV	ATT	107	Match gold.
+umr-en	5	4	edit_skill	critique	add	CRITIC	ASP	525	Stop harmful critique fixes.
+umr-en	5	5	add_step	add_modal		CODE	MOD	3423	Gold has a modal tuple per event, including nested ones. The model omits most of them (i_modal missing in every sentence).
+umr-en	6	0	edit_skill	generate	modify	CRIT	SEN	43	Free space in the near-full generate skill.
+umr-en	6	1	edit_skill	generate	delete	SPACE	-	0	Free space; the rule is repeated in finalize.
+umr-en	6	2	edit_skill	generate	modify	CONV	ASP	156	Gold gives no aspect to modifier-adjective events.
+umr-en	6	3	edit_skill	generate	add	CONV	FMT	195	Bare variables and multi-word alignment spans cost many units.
+umr-en	6	4	edit_skill	generate	add	CONV	CON	99	Adverb handling.
+umr-en	6	5	edit_skill	finalize	modify	CONV	ASP	190	Gold has no aspect on modifier-adjective events.
+umr-en	6	6	edit_skill	finalize	modify	CONV	MOD	132	Extra modal tuples on modifier events.
+umr-en	6	7	edit_skill	finalize	add	CONV	FMT	2013	Constructions and conventions that cost the most units in this group.
+umr-en	6	9	edit_skill	critique	add	CRITIC	ARG+ASP+MOD	498	Stop harmful critique fixes and add the new checks.
+umr-en	6	10	add_step	clean_doc		CODE	FMT+MOD	4979	Rename bare variables, drop invalid doc tuples, drop modal tuples of aspect-less modifier events, and guarantee (root :modal author) first.
+umr-en	7	0	edit_skill	generate	delete	SPACE	-	0	free space
+umr-en	7	1	edit_skill	generate	delete	SPACE	-	0	free space
+umr-en	7	2	edit_skill	generate	delete	SPACE	-	0	duplicated in finalize; free space
+umr-en	7	3	edit_skill	generate	add	CRIT	ASP+CON	279	aspect, then, a-few and ARGn cues
+umr-en	7	4	edit_skill	critique	modify	CRITIC	ATT	114	stop removing class
+umr-en	7	5	edit_skill	critique	add	CRITIC	FMT+CON+ARG	482	stop harmful critique fixes
+umr-en	7	6	edit_skill	finalize	add	CRIT	ASP+TMP	892	aspect, then, a-few, ARGn, coref
+umr-en	8	0	edit_skill	generate	delete	SPACE	-	0	Duplicated in finalize; free space
+umr-en	8	1	edit_skill	generate	delete	SPACE	-	0	Duplicated in finalize; free space
+umr-en	8	2	edit_skill	generate	modify	CONV	FMT	83	Shorten; duplicated in finalize
+umr-en	8	4	edit_skill	finalize	delete	SPACE	-	0	Free space (rare pattern)
+umr-en	8	5	edit_skill	finalize	delete	SPACE	-	0	Free space (rare pattern)
+umr-en	8	6	edit_skill	finalize	modify	CONV	TMP	146	Gold temporal for dates
+umr-en	8	8	edit_skill	critique	add	CRITIC	CON+ARG	423	Stop harmful critique fixes; add checks
+umr-en	9	0	replace_tool	roleset_lookup		TOOL	SEN	2490	Show sense names (meaning) and roles from the XML, with fallback to base verb for derived nouns/adjectives, so the model can choose the right sense (consider-01 vs -02).
+umr-en	9	1	edit_skill	critique	add	CRITIC	SEN+ARG+MOD	906	Stop harmful critique fixes (continue-01 dropped, place->manner, may->partial) and flag dropped small words.
+umr-en	9	2	edit_skill	finalize	delete	SPACE	-	0	Rare pattern; free space.
+umr-en	9	3	edit_skill	finalize	delete	SPACE	-	0	Rare pattern; free space.
+umr-en	9	4	edit_skill	finalize	delete	SPACE	-	0	Rare pattern; free space.
+umr-en	9	6	edit_skill	generate	modify	CONV	FMT	44	Model wrote letter+number variables.
+umr-en	9	7	edit_skill	generate	add	CRIT	CON+SEN	446	Dropped modifiers/discourse words, alignment, sense choice.
+umr-en	10	0	replace_tool	roleset_lookup		TOOL	SEN	3479	Phrasal rolesets (pick-up-04, get-up-26) were invisible because of the 14-line truncation; append verb-particle rolesets and fall back to the base verb.
+umr-en	10	1	edit_skill	generate	delete	SPACE	-	0	Free space (date-entity rule is also in finalize).
+umr-en	10	2	edit_skill	generate	delete	SPACE	-	0	Free space (stop is already an event).
+umr-en	10	3	edit_skill	generate	delete	SPACE	-	0	Free space; rule repeated in finalize.
+umr-en	10	4	edit_skill	generate	add	TOOLUSE	SEN	160	Gold uses fused phrasal rolesets and :direction with a sense id for other particles.
+umr-en	10	5	edit_skill	generate	modify	CRIT	ARG	58	Gold uses consecutive for clause-joining 'and' with sequential events.
+umr-en	10	6	edit_skill	finalize	modify	TOOLUSE	SEN	238	Gold fuses phrasal rolesets and uses :direction with sense ids.
+umr-en	10	7	edit_skill	finalize	modify	CONV	ARG	96	Gold has :part-of for 'side of the road'; the critique forced include-91.
+umr-en	10	8	edit_skill	finalize	add	CRIT	SEN+ARG+COR	359	Harmful critique rewrites, missing senses, incomplete coref.
+umr-en	10	9	edit_skill	critique	modify	CRITIC	ARG	159	The critique removed a correct and-root, which turned throw-01 into :mod.
+umr-en	10	10	edit_skill	critique	modify	CRITIC	SEN+ARG	243	Conflict with gold: :direction off-07, fused phrasal concepts, kept verb lemma.
+umr-en	10	11	edit_skill	critique	modify	CRITIC	SEN	105	Allow fused phrasal concepts.
+umr-en	10	12	edit_skill	critique	modify	CRITIC	ARG	63	Prevent the include-91 rewrite for part nouns.
+umr-en	10	13	add_step	drop_aspectless_modal		CODE	MOD	1940	add_modal gave modal tuples to aspect-less sense-id nodes (particles, adjective ARG2). Gold gives tuples only to events with :aspect.
