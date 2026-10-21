@@ -13,6 +13,7 @@
 - `analysis/annoforge.py`：`extract --src ../SkillParseUMR` 抽数据，`make` 出表、图、宏和统计检验。
 - `notes/new_references.md`、`notes/new_references.bib`：这次新增的 46 条参考文献及核实记录（已并入 `references.bib`）；
   `notes/references_verification.md`：之前的核实记录。
+- `outline_umr.tex`：只做 UMR 的重写版论文骨架（ACL 格式，每节每段写内容概要和数据状态），单独编译：`latexmk -pdf outline_umr.tex`；中文版大纲和导师意见在 `notes/outline-umr.md`。
 - `archive/`：旧版本（v1：单轨迹中文 UMR 的稿子、表、数据和脚本；更早的 B 篇）。
 
 ## 编译

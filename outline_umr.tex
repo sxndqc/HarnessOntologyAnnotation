@@ -1,0 +1,543 @@
+% Paper skeleton for the UMR-only rewrite (see notes/outline-umr.md for the advisor's feedback).
+% Every section and paragraph holds a summary of what it will say, not final prose.
+% Status tags: [data] numbers exist; [analysis] raw records exist, analysis to do;
+% [new run] experiment to run; [verify] re-check with the official scorers.
+% Compile on its own: latexmk -pdf outline_umr.tex (uses acl.sty and references.bib of this folder).
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{xspace}
+\usepackage{xcolor}
+\usepackage{CJKutf8}
+\usepackage{tipa}
+
+\newcommand{\jumach}{ju\textlengthmark{}m\ae{}\textteshlig{}\xspace}
+\newcommand{\umr}{\textsc{UMR}\xspace}
+\newcommand{\zh}[1]{\begin{CJK}{UTF8}{gbsn}#1\end{CJK}}
+\newcommand{\stag}[2]{\textcolor{#1}{\textsf{\scriptsize[#2]}}}
+\newcommand{\HAVE}{\stag{green!50!black}{data}\xspace}
+\newcommand{\ANA}{\stag{blue!70!black}{analysis}\xspace}
+\newcommand{\RUN}{\stag{red!75!black}{new run}\xspace}
+\newcommand{\CHK}{\stag{orange!80!black}{verify}\xspace}
+\newcommand{\tbd}{\textcolor{red}{TBD}\xspace}
+\newcommand{\placeholder}[2]{\fbox{\parbox{#1}{\centering\small\vspace{0.6em}#2\vspace{0.6em}}}}
+
+\title{Learning to Parse Uniform Meaning Representation\\
+from Its Guideline and Fifty Sentences}
+
+\author{Anonymous submission}
+
+\begin{document}
+\maketitle
+
+% ------------------------------------------------------------------
+\begin{abstract}
+\emph{Five sentences, one per research question.}
+(1) Uniform Meaning Representation (UMR) unifies concept graphs, PropBank senses, aspect, modality, reference attributes and document-level temporal, modal and coreference relations across languages, but most languages have little annotated data, and the fine-tuned systems of the first UMR parsing shared task reach 37.7 (Chinese) and 40.3 (English) AnCast++ F on our test documents.
+(2) Giving an LLM the 366K-character guideline is not enough either, and a per-layer diagnosis shows why: most of the loss comes from project conventions that the guideline states differently from the data, from PropBank senses and arguments, and from document-level relations, not from failures to understand the sentence.
+(3) We start from a step-wise annotator written from the guideline and let an LLM revise it on 50 gold sentences, editing its instructions, writing a PropBank lookup tool, and adding rule code.
+(4) This improves Chinese and English F by 6.1 and 11.3 and reaches an official \jumach score of 42.9 and 38.0, above the fine-tuned systems (38.8 and 27.3).
+(5) Tracing each gain to the edit that produced it, we find that the annotator learns conventions first, then lookups, then semantics; aspect, temporal relations and coreference barely move, because no resource supports them and the gold is inconsistent, which suggests how UMR annotation projects can divide work between people and models.
+\end{abstract}
+
+% ------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+\paragraph{UMR and why it matters}
+UMR \citep{vangysel2021designing,bonn2024building} extends AMR \citep{banarescu2013abstract} with aspect, modal strength, person and number, word alignments, and document-level temporal, modal and coreference relations, and it is designed for many languages, including languages without a PropBank. It gives one meaning representation across sentences and languages, which makes it a demanding but useful target for parsing. \HAVE
+
+\paragraph{The difficulty: a complex scheme with little data}
+The guideline runs to 366K characters and requires external resources (Chinese and English PropBank frames; \citealp{xue2009adding,palmer2005propbank}). Gold data are scarce: the released English UMR data are mostly partial conversions from AMR, and only three English documents have full sentence- and document-level annotation. The fine-tuned systems of the shared task \citep{stepanek2026first,heinecke2026orange,devergnette2026sema} therefore remain low (best: 37.7 / 40.3 F on our documents). \HAVE
+
+\paragraph{Reading the guideline is the obvious alternative, and it falls short}
+An LLM given the whole guideline reaches only 30.9 F and 12.5 \jumach on Chinese (Haiku). State the diagnosis of \S\ref{sec:diagnosis} up front: the model does not lack understanding; it lacks the project's conventions, the lexical resources, and the document-level bookkeeping. \HAVE{} \ANA
+
+\paragraph{Approach in one paragraph}
+A builder LLM writes a three-step annotator from the guideline, then revises it over ten rounds of five gold sentences each, guided by a per-layer UMR judge: it edits instructions, writes a PropBank lookup tool, and adds rule code. Contrast with guideline refinement for flat labeling \citep{kim2026refining,kim2026diziner}: there the guideline text is edited from label errors; here the target is a multi-layer graph, the feedback is per UMR layer, and the edits reach instructions, tools and code. \HAVE
+
+\paragraph{Results and attribution in brief}
++6.1 / +11.3 F; \jumach above the fine-tuned systems with 50 gold sentences; gains concentrated in conventions, senses and arguments, and document-level modality; aspect, temporal relations and coreference flat.
+
+\paragraph{Contributions, stated as findings}
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item A per-layer diagnosis of LLM UMR parsing that measures the gap between the guideline and the data (\S\ref{sec:diagnosis}).
+  \item An annotator learned from 50 gold sentences, without fine-tuning, that outperforms the fine-tuned shared-task systems (\S\ref{sec:results}).
+  \item An attribution of every gain to edit types and UMR layers, with the instructions before and after (\S\ref{sec:attribution}).
+  \item An account of what is not learned and why, with implications for UMR annotation projects (\S\ref{sec:limits}).
+\end{enumerate}
+
+% ------------------------------------------------------------------
+\section{UMR: What It Represents and Why It Is Hard to Parse}
+\label{sec:umr}
+
+\emph{This section answers what UMR solves and shows that the scheme is complex and comprehensive. Each layer is described by what it represents, what makes it hard to parse, and which judge check scores it (Table~\ref{tab:layers}).}
+
+\subsection{What UMR adds to AMR}
+
+\paragraph{Limits of AMR}
+English-centric; no tense or aspect; modality limited to polarity and a few concepts; single sentences only; no alignment to words.
+
+\paragraph{UMR's answer}
+Cross-lingual design (predicates without a frame use \texttt{lemma-00} with \texttt{:actor}/\texttt{:undergoer}); aspect; modal strength and the document-level modal dependency; temporal dependency; cross-sentence coreference; reference attributes; word alignment \citep{vangysel2021designing,bonn2025uniform,bonn2026uniform}. Figure~\ref{fig:example} shows one Chinese sentence with its graph and document-level annotation.
+
+\begin{figure}[t]
+\centering
+\placeholder{0.95\columnwidth}{Figure 1: a Chinese sentence from the test set with its sentence graph, alignment and document-level \texttt{:temporal}, \texttt{:modal}, \texttt{:coref} groups; each part labelled with its layer (\S\ref{sec:umr}).}
+\caption{A UMR annotation and its layers.}
+\label{fig:example}
+\end{figure}
+
+\subsection{Sentence level}
+
+\paragraph{Concepts and granularity}
+Event or entity; concepts in the language of the text (Chinese words, not English translations); word segmentation and node granularity (\texttt{a\_*} checks).
+
+\paragraph{Senses and arguments}
+PropBank rolesets require an external lookup; no-frame predicates follow the \texttt{-00} convention (\texttt{b\_event\_sense}, \texttt{d\_core\_args\_*}, \texttt{e\_core\_labels}).
+
+\paragraph{Attributes}
+Aspect (state, activity, performance, \ldots), polarity, \texttt{:refer-person}, \texttt{:refer-number}, mode (\texttt{c\_*}).
+
+\paragraph{Names, wiki links and reentrancy}
+(\texttt{f\_*}, \texttt{g\_reentrancy}).
+
+\subsection{Document level}
+
+\paragraph{Temporal, modal and coreference relations}
+(\texttt{h\_temporal}, \texttt{i\_modal}, \texttt{j\_coref\_*}, \texttt{k\_doc\_format}).
+
+\paragraph{Why the document level is harder}
+It requires earlier sentences, relations point to variables of earlier sentences, and gold relations are sparse.
+
+\subsection{Chinese UMR}
+
+\paragraph{Language-specific conventions}
+Chinese PropBank, Chinese concepts, classifiers, aspect particles (\zh{了}, \zh{着}, \zh{过}); the two Chinese gold versions differ (\S\ref{sec:setup}).
+
+\subsection{Data and prior systems}
+
+\paragraph{Shared task and releases}
+The first UMR parsing shared task \citep{stepanek2026first} on UMR~2.2 \citep{bonn2026uniform}; its two systems, Orange and Sema, are fine-tuned; earlier pipelines and LLM-assisted annotation \citep{chun2024pipeline,sun2024chinese,gamba2025bootstrapping}.
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
+\toprule
+Layer & Example decision & Difficulty & Checks \\
+\midrule
+Concepts & event or entity; Chinese word & convention & \texttt{a\_*} \\
+Senses, arguments & \texttt{lemma-01} vs.\ \texttt{-02}; ARG0 & resource & \texttt{b}, \texttt{d}, \texttt{e} \\
+Attributes & aspect; refer-number & convention / discourse & \texttt{c\_*} \\
+Names, reentrancy & pronoun reuses a variable & convention & \texttt{f}, \texttt{g} \\
+Doc.\ modal & \texttt{(root :modal author)} & convention & \texttt{i} \\
+Doc.\ temporal & before / overlap & discourse & \texttt{h} \\
+Coreference & same-entity, subset-of & discourse & \texttt{j} \\
+Format & groups, variables, alignment & format & \texttt{k} \\
+\bottomrule
+\end{tabular}}
+\caption{UMR layers, the kind of difficulty each poses, and the judge checks that score them. This table organizes \S\S\ref{sec:diagnosis}, \ref{sec:attribution} and \ref{sec:limits}. \ANA{} (final assignment of difficulty types)}
+\label{tab:layers}
+\end{table}
+
+% ------------------------------------------------------------------
+\section{Evaluation Setup}
+\label{sec:setup}
+
+\subsection{Data}
+
+\paragraph{Test documents}
+Shared-task blind test documents with available gold: 7 Chinese documents (99 sentences) and 4 English documents (95 sentences), sampled whole. en-0005 and en-0007 are two annotations of the same text and agree at 81.8 \jumach, a rough ceiling. \HAVE
+
+\paragraph{Training groups}
+Ten groups of five consecutive sentences: Chinese from ten documents, English from the only three fully annotated documents. The builder never sees test documents. \HAVE
+
+\subsection{Metrics}
+
+\paragraph{AnCast++ F (main metric)}
+Sentence-graph F over aligned nodes \citep{sun2024anchor,sun2025ancastpp}, macro-averaged over documents, against the cleaned gold \citep{chun2024pipeline}. \HAVE
+
+\paragraph{AnCast++ comprehensive}
+Adds document-level temporal, modal and coreference relations. \HAVE
+
+\paragraph{Official \jumach}
+The shared task's score \citep{stepanek2026first,zeman2026word} computed with \texttt{compare\_umr.pl} against the official gold; nodes are mapped through alignment, so it also scores alignment. Explain why both golds are reported (English 99.0, Chinese 71.7 agreement). \HAVE{} \CHK
+
+\paragraph{Smatch}
+The standard graph-matching score \citep{cai2013smatch} on sentence graphs, for comparison with AMR work. \RUN
+
+\paragraph{The per-layer judge}
+umrjudge: 25 checks in 11 groups over AnCast++ alignments (definitions in the appendix). Used for diagnosis and attribution, not as a headline score. \HAVE
+
+\subsection{Models and reproducibility}
+
+\paragraph{Models}
+Haiku as annotator, Sonnet as builder; GPT and Sonnet as alternative annotators only in \S\ref{sec:scheme}. \HAVE
+
+\paragraph{Reproducibility}
+All scores are recomputed by the official scorers from released prediction files; predictions, every harness version, reflections, diffs and table scripts are public; every table was checked independently by the authors with their own scripts. \CHK
+
+% ------------------------------------------------------------------
+\section{RQ1: Where Does an LLM Fail When It Reads the Guideline?}
+\label{sec:diagnosis}
+
+\subsection{Overall}
+
+\paragraph{The guideline in the prompt}
+One call per sentence with the whole guideline: Haiku 30.9 / 50.8 F and 12.5 / 21.7 \jumach (Chinese / English); Sonnet and GPT score higher but remain below the fine-tuned systems on \jumach. \HAVE
+
+\subsection{Errors by layer}
+
+\begin{figure}[t]
+\centering
+\placeholder{0.95\columnwidth}{Figure 2: F of the guideline-prompt baseline on each judge check, Chinese and English, bars coloured by difficulty type of Table~\ref{tab:layers}.}
+\caption{Where the guideline-prompt baseline loses. \ANA}
+\label{fig:diagnosis}
+\end{figure}
+
+\paragraph{Convention errors}
+The model writes the guideline's notation where the data use another (\texttt{:modstr}, \texttt{:ref-person}, \texttt{DCT}); document format and modal labels fail (Figure~\ref{fig:diagnosis}). \ANA
+
+\paragraph{Resource errors}
+Wrong or invented senses (\texttt{-02}, \texttt{-03}), wrong argument numbering. \ANA
+
+\paragraph{A Chinese-specific failure}
+English concepts for Chinese words (\texttt{define-01}); worst when the model reads the guideline through search tools (14.9 F). \HAVE
+
+\paragraph{Discourse errors}
+Temporal and coreference relations near zero. \ANA
+
+\subsection{Takeaway}
+
+\paragraph{What is missing is conventions and resources, not understanding}
+This diagnosis motivates the three kinds of edits of \S\ref{sec:method}.
+
+% ------------------------------------------------------------------
+\section{Method: A Self-Revising UMR Annotator}
+\label{sec:method}
+
+\emph{Described for UMR only; each design choice answers one error type of \S\ref{sec:diagnosis}.}
+
+\subsection{Seed annotator}
+
+\paragraph{Three steps written from the guideline}
+Sonnet reads only the guideline and writes \emph{generate}, \emph{critique} and \emph{finalize}, each at most 8,000 characters; every sentence sees the five previous sentences and their annotations, which document-level relations need. \HAVE
+
+\paragraph{What the seed alone does}
+Chinese 30.9 $\rightarrow$ 46.4, English 50.8 $\rightarrow$ 40.9; the English drop is explained in \S\ref{sec:before-after} (conventions lost when compressing the guideline). \HAVE{} \ANA
+
+\subsection{Per-layer feedback from gold}
+
+\paragraph{The judge as a reviewer}
+umrjudge assigns each error to a UMR layer and check, with the gold and predicted fragments. This is what ``more complex reflection'' means concretely, and the main difference from guideline refinement on flat labels.
+
+\subsection{Three kinds of edits for three kinds of errors}
+
+\paragraph{Instruction edits for conventions}
+Conventions, decision criteria and inline examples in the step instructions.
+
+\paragraph{Tools for resources}
+The builder is told only that PropBank files exist and writes the lookup itself.
+
+\paragraph{Rule code for format}
+Format repair and label normalization as deterministic steps.
+
+\paragraph{Admission checks}
+No copying of test text, tested tools and rules, length limits; no reviewer model. \HAVE
+
+\subsection{One round}
+
+\begin{figure*}[t]
+\centering
+\placeholder{0.95\textwidth}{Figure 3: one real Chinese round. Left: incorrect judge units; middle: the builder's diagnosis (quoted); right: the diff of the edited instruction and the added rule.}
+\caption{A round of revision. \ANA}
+\label{fig:round}
+\end{figure*}
+
+\paragraph{Annotate, judge, reflect, edit, re-test}
+Walk through Figure~\ref{fig:round}; ten rounds of five sentences. \HAVE
+
+% ------------------------------------------------------------------
+\section{RQ3: How Much Can Be Learned from Fifty Sentences?}
+\label{sec:results}
+
+\begin{table*}[t]
+\centering\small
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+& \multicolumn{4}{c}{Chinese} & \multicolumn{4}{c}{English} \\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+System & F & Comp. & \jumach & Smatch & F & Comp. & \jumach & Smatch \\
+\midrule
+Orange (fine-tuned) & 37.7 & 34.0 & 38.8 & \tbd & 40.3 & 24.8 & 27.3 & \tbd \\
+Sema (fine-tuned) & 34.7 & 33.4 & 29.2 & \tbd & 32.1 & 21.5 & 21.4 & \tbd \\
+Guideline prompt (Haiku) & 30.9 & 24.1 & 12.5 & \tbd & 50.8 & 29.9 & 21.7 & \tbd \\
+Guideline prompt (Sonnet) & 50.1 & 38.0 & 24.4 & \tbd & 54.1 & 31.8 & 28.4 & \tbd \\
+50 gold sentences as few-shot & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Guideline refinement, 10 rounds & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd & \tbd \\
+Seed $H_0$ & 46.4 & 34.0 & 24.1 & \tbd & 40.9 & 22.5 & 25.9 & \tbd \\
+Learned $H_{10}$ & 52.4 & 47.2 & 42.9 & \tbd & 52.2 & 33.0 & 38.0 & \tbd \\
+\bottomrule
+\end{tabular}
+\caption{Main results (Haiku as annotator unless stated). TBD: Smatch \RUN; few-shot and ten-round guideline refinement \RUN. All rows \CHK.}
+\label{tab:main}
+\end{table*}
+
+\subsection{Main results}
+
+\paragraph{Seed to learned annotator}
+Chinese 46.4 $\rightarrow$ 52.4 F (paired document bootstrap 95\% interval 1.0 to 10.1), English 40.9 $\rightarrow$ 52.2 (7.7 to 14.9); 65 of 98 and 72 of 95 sentences improve by more than a point (Table~\ref{tab:main}). \HAVE
+
+\paragraph{Against the fine-tuned systems}
+\jumach 42.9 vs.\ 38.8 (Chinese) and 38.0 vs.\ 27.3 (English); F also higher; 50 gold sentences against the full shared-task training data. \HAVE
+
+\paragraph{Other metrics}
+Smatch and comprehensive give the same ranking. \RUN
+
+\subsection{Ruling out simpler explanations}
+
+\paragraph{The same 50 sentences as in-context examples}
+If putting the gold sentences in the prompt is enough, the gain belongs to the data, not to learning. \RUN{} (highest priority)
+
+\paragraph{Editing only the guideline}
+The closest prior approach \citep{kim2026refining}. One round raises \jumach (12.5 $\rightarrow$ 36.3 Chinese) but barely F (30.9 $\rightarrow$ 32.7, vs.\ 47.2 for the annotator after the same round); a fair comparison needs ten rounds. \HAVE{} \RUN
+
+\paragraph{Run-to-run variation}
+Re-running $H_0$ and $H_{10}$ with fresh samples changes F by at most 2.1, below the gains \HAVE; two more trajectories with other group orders \RUN.
+
+\subsection{How many sentences are needed}
+
+\begin{figure}[t]
+\centering
+\placeholder{0.95\columnwidth}{Figure 4: test F of $H_0,\ldots,H_{10}$, Chinese and English, with the training-group score before and after each round; reference lines for the guideline prompt and Orange.}
+\caption{Learning curves. \HAVE}
+\label{fig:curves}
+\end{figure}
+
+\paragraph{Learning curves}
+The test curves flatten after three to six groups (15--30 sentences); training and test gains of a round are positively correlated (Spearman $\rho$ 0.58 / 0.50, $p$ = 0.08 / 0.14, so stated cautiously); three rounds per language lower the test score, by at most 1.8 (Figure~\ref{fig:curves}). \HAVE
+
+% ------------------------------------------------------------------
+\section{RQ4: Where Do the Gains Come From?}
+\label{sec:attribution}
+
+\emph{The core of the paper: what the instructions looked like before and after revision, what changed, and which change produced which gain.}
+
+\subsection{The annotator before and after}
+\label{sec:before-after}
+
+\paragraph{Size and parts}
+Seed instructions about 18K characters; $H_{10}$ 26.4K (Chinese) and 27.9K (English), against 366K for the guideline; 10 (Chinese) and 4 (English) rule steps; one lookup tool each. \HAVE
+
+\paragraph{A coding of every edit}
+All applied instruction edits (73 Chinese, 77 English) coded as convention/notation, decision criterion, inline example, tool-use instruction, critic restriction; plus rule steps and tools (Table~\ref{tab:edits}). Coding manual in the appendix; first pass by an LLM, every item checked by hand. This turns ``instructions, examples, tools'' into data. \ANA
+
+\paragraph{Before and after, side by side}
+The Chinese \emph{generate} instruction on concepts and predicates in $H_0$ and $H_{10}$: keep Chinese words, never translate; whole segmented verbs; call the frame lookup for every predicate; \texttt{lemma-00} with \texttt{:actor}/\texttt{:undergoer} when no frame exists. Note: $H_{10}$ contains almost no stand-alone examples, only rules with short inline examples. \HAVE
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Edit type & Chinese & English \\
+\midrule
+Convention / notation & \tbd & \tbd \\
+Decision criterion & \tbd & \tbd \\
+Inline example & \tbd & \tbd \\
+Tool-use instruction & \tbd & \tbd \\
+Critic restriction & \tbd & \tbd \\
+Rule step (code) & 10 & 4 \\
+Tool & 1 & 1 (+2 revisions) \\
+\bottomrule
+\end{tabular}
+\caption{Applied edits by type over ten rounds. \ANA}
+\label{tab:edits}
+\end{table}
+
+\subsection{Gains by layer}
+
+\begin{figure*}[t]
+\centering
+\placeholder{0.95\textwidth}{Figure 5: change of every judge check from $H_0$ to $H_{10}$, Chinese and English, coloured by difficulty type (Table~\ref{tab:layers}), annotated with the round in which the check jumped and the edit type responsible.}
+\caption{Gains by layer, linked to rounds and edits. \HAVE{} \ANA}
+\label{fig:layers}
+\end{figure*}
+
+\paragraph{Conventions gain most}
+\texttt{k\_doc\_format} 23 $\rightarrow$ 91 / 25 $\rightarrow$ 86; \texttt{i\_modal} 0 $\rightarrow$ 50 / 0 $\rightarrow$ 32; \texttt{c\_other\_attributes} 53 $\rightarrow$ 70 / 11 $\rightarrow$ 56; \texttt{c\_refer} 0 $\rightarrow$ 33 / 0 $\rightarrow$ 50 (Chinese / English; Figure~\ref{fig:layers}). \HAVE
+
+\paragraph{Resources next}
+\texttt{b\_event\_sense} 88 $\rightarrow$ 94 / 67 $\rightarrow$ 80; \texttt{d\_core\_args\_event} 52 $\rightarrow$ 64 / 42 $\rightarrow$ 55. \HAVE
+
+\paragraph{Chinese concepts}
+\texttt{a\_entity\_concept} 66 $\rightarrow$ 81; \texttt{a\_granularity} 84 $\rightarrow$ 96. \HAVE
+
+\paragraph{Locating each jump}
+From the per-round test units, find the round in which each check jumps and align it with that round's operations. \ANA
+
+\subsection{Removing one kind of edit}
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \multicolumn{2}{c}{Chinese} & \multicolumn{2}{c}{English} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+Variant of $H_{10}$ & F & \jumach & F & \jumach \\
+\midrule
+$H_{10}$ & 52.4 & 42.9 & 52.2 & 38.0 \\
+seed instructions & 47.4 & 28.7 & 40.0 & 24.9 \\
+without tools & 53.0 & 43.5 & 50.6 & 36.6 \\
+without rule steps & 54.3 & 43.1 & 52.6 & 37.5 \\
+without convention edits & \tbd & \tbd & \tbd & \tbd \\
+without criterion edits & \tbd & \tbd & \tbd & \tbd \\
+\bottomrule
+\end{tabular}
+\caption{Ablations. Last two rows: roll back one edit type \RUN.}
+\label{tab:ablation}
+\end{table}
+
+\paragraph{Existing ablations}
+Seed instructions cost 5.0 / 12.3 F, so the learned instructions carry most of the gain; without tools F barely changes but senses fall (94 $\rightarrow$ 78); without rule steps little changes (Table~\ref{tab:ablation}). \HAVE
+
+\paragraph{Rolling back one edit type}
+Remove the convention edits, or the criterion edits, from $H_{10}$ and re-test, to divide the gain among edit types. \RUN
+
+\paragraph{Restricted revision}
+Two-round runs that forbid tools or rule steps agree: without tools Chinese falls behind, most on \jumach. \HAVE
+
+\subsection{One case per difficulty}
+
+\paragraph{PropBank lookup}
+Told only that frame files exist, the builders wrote \texttt{lookup\_frame} (Chinese, round 2) and \texttt{roleset\_lookup} (English, round 1), and in round 9 replaced the English tool with one that reads sense names from the XML frames and backs off from derived forms, after noticing wrong senses; with $H_{10}$, 60\% (Chinese) and 39\% (English) of calls use the tool. \HAVE
+
+\paragraph{Document-level modality}
+From modal strength in the graph to the document-level modal dependency, plus the \texttt{root\_modal} rule: 0 $\rightarrow$ 50. \HAVE{} \ANA
+
+\paragraph{Chinese concepts}
+No translation, no splitting of segmented words, classifiers kept. \HAVE{} \ANA
+
+\paragraph{An over-eager critic}
+The critic ``fixed'' correct annotations; the builder narrowed its checklist several times, in line with work on self-correction without external feedback \citep{huang2024large,kamoi2024when}. \HAVE
+
+\subsection{What is learned is about UMR, not about the annotator model}
+\label{sec:scheme}
+
+\paragraph{Same instructions, other models}
+$H_{10}$ run unchanged by GPT (Chinese 49.1 $\rightarrow$ 56.4 F against its own seed) or Sonnet (48.1 $\rightarrow$ 58.9) gains as much as with Haiku, so the edits record knowledge of the scheme. One paragraph; full tables in the appendix. \HAVE
+
+\subsection{Takeaway}
+
+\paragraph{Conventions, then document level, then semantics}
+The English trajectory: round 1 notation; rounds 2--6 document level; rounds 7--10 aspect cues, phrasal verbs, senses. Fifty gold sentences mainly teach the project's conventions and how to consult its resources. \HAVE
+
+% ------------------------------------------------------------------
+\section{RQ5: What Is Not Learned, and Why}
+\label{sec:limits}
+
+\subsection{Layers that do not move}
+
+\paragraph{Aspect, temporal relations, coreference}
+Aspect 74.5 $\rightarrow$ 74.8 / 64.3 $\rightarrow$ 59.6; temporal 3 $\rightarrow$ 15 / 5 $\rightarrow$ 13; coreference chains 14 $\rightarrow$ 18 / 17 $\rightarrow$ 17. \HAVE
+
+\subsection{Why}
+
+\paragraph{No resource, discourse reasoning}
+A sample of 30 errors per layer, classified by cause. \ANA
+
+\paragraph{Inconsistent gold}
+How many of the builder's suggestions (UMR trajectories only) point to inconsistent gold, e.g.\ \texttt{:refer-number} on plural nouns in some English documents but not in others. \CHK
+
+\paragraph{Human and model error analysis}
+Compare a human annotator's error notes with the error patterns the builder found: which agree, and what the builder missed. \ANA
+
+\subsection{Implications for UMR annotation}
+
+\paragraph{A division of labor}
+The gap between guideline and data can be exposed from the first annotated sentences; people decide conventions and adjudicate inconsistencies, and the model maintains the instructions, tools and checks.
+
+% ------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{AMR and UMR parsing}
+Fine-tuned AMR parsers and LLMs on AMR \citep{lee2023amr,ho2025evaluation,barta2025enhancing,ettinger2023you}; UMR pipelines, LLM-assisted UMR annotation and the shared task \citep{chun2024pipeline,sun2024chinese,gamba2025bootstrapping,stepanek2026first}.
+
+\paragraph{LLMs as annotators and guideline refinement}
+\citet{gilardi2023chatgpt,he2024annollm}; refining guidelines from errors or disagreements on NER \citep{kim2026refining,kim2026diziner}. Differences: flat labels vs.\ a multi-layer graph; editing the guideline vs.\ editing instructions, tools and code; per-layer feedback.
+
+\paragraph{Self-improvement and harness evolution}
+\citet{madaan2023selfrefine,shinn2023reflexion,zelikman2024self,lee2026metaharness}; only work directly relevant to the method.
+
+% ------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+\paragraph{Answers to RQ1--RQ5}
+One sentence each.
+
+\paragraph{Outlook}
+UMR for low-resource languages without a PropBank, where the \texttt{-00} convention applies; a tool for human-in-the-loop annotation \citep{anon2026orchestration}.
+
+% ------------------------------------------------------------------
+\section*{Limitations}
+
+\paragraph{Scale and variance}
+194 test sentences; one trajectory per language (more in progress).
+
+\paragraph{Models and data}
+Builder and main annotator from one model family; inconsistent gold; possible pretraining contamination.
+
+\paragraph{Human design choices}
+Prompts, operation set, judge and admission rules were designed by the authors.
+
+\section*{Ethics Statement}
+Automating annotation can reduce paid annotation work; UMR data are used under their licenses; generative AI was used in experiments and editing.
+
+\bibliography{references}
+
+\appendix
+
+\section{Data and Splits}
+\label{app:data}
+Test documents, training windows, the two Chinese golds. \HAVE
+
+\section{The Judge}
+\label{app:judge}
+The 25 checks of umrjudge. \HAVE
+
+\section{Prompts}
+Output format, seed and reflection prompts. \HAVE
+
+\section{Round-by-Round Records}
+Training and test scores, operations, sizes per round (UMR only). \HAVE
+
+\section{Per-Check Scores}
+Baseline, $H_0$, $H_{10}$ for every check. \HAVE{} \ANA
+
+\section{Edit Coding Manual and Codes}
+Categories, decision rules, every coded edit. \ANA
+
+\section{Other Annotator Models}
+Generator/critic pairs and transfer tables. \HAVE
+
+\section{Trajectory Excerpts}
+Reflections, the lookup tool and its revision, a rule step. \HAVE
+
+\section{Cost}
+Calls and price per sentence. \HAVE
+
+\end{document}
