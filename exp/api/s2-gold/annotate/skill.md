@@ -58,8 +58,8 @@ then, once, after the last sentence, every document-level relation of the whole 
 
 ## Tools
 
-`search_annotations(language, keywords, max_results)` returns gold UMR annotations of whole sentences (from
-other documents) that contain the keywords: words of the text, concepts (`have-org-role-92`), roles
+`search_annotations(language, keywords, max_results)` returns gold UMR annotations of whole sentences of the
+training data (other documents) that contain the keywords: words of the text, concepts (`have-org-role-92`), roles
 (`:ARG1-of`), attribute values (`:aspect state`), document-level relations (`:same-entity`). Use it to see
 how a construction, a word or a relation is annotated in the gold data before you annotate it.
 

@@ -2,8 +2,8 @@
 
     search_guidelines    passages of the full UMR guidelines (search.py)
     propbank_lookup      PropBank rolesets, Chinese or English, of the web repo's propbank/zh.json, en.json
-    search_annotations   gold UMR annotations of whole sentences (the web repo's gold/zh, gold/en),
-                         never a sentence of a test document
+    search_annotations   gold UMR annotations of whole sentences: the shared task's training data (UMR 2.2
+                         training-clean, training-dirty), never a sentence of a test document
 """
 import json
 

@@ -21,7 +21,7 @@ SUBS = {
     "s2-propbank": ("guidelines/umr_guidelines_abridged.md", ["propbank_lookup"], "propbank",
                     "第二步：缩略版 guideline + PropBank（propbank_lookup，网页 repo 的 propbank/zh.json、en.json）"),
     "s2-gold": ("guidelines/umr_guidelines_abridged.md", ["search_annotations"], "gold",
-                "第二步：缩略版 guideline + gold 数据（search_annotations，网页 repo 的 gold/zh、gold/en，不含测试文档）"),
+                "第二步：缩略版 guideline + gold 数据（search_annotations，shared task 的训练数据 UMR 2.2 training-clean/dirty，不含测试句子）"),
 }
 
 GUIDELINE_ATTACHED = """The full UMR guidelines (umr4nlp/umr-guidelines `guidelines.md`, about 366,000 characters) are
@@ -111,8 +111,8 @@ Look up every predicate before you choose its sense and its numbered roles; give
     "search_annotations": """
 ## Tools
 
-`search_annotations(language, keywords, max_results)` returns gold UMR annotations of whole sentences (from
-other documents) that contain the keywords: words of the text, concepts (`have-org-role-92`), roles
+`search_annotations(language, keywords, max_results)` returns gold UMR annotations of whole sentences of the
+training data (other documents) that contain the keywords: words of the text, concepts (`have-org-role-92`), roles
 (`:ARG1-of`), attribute values (`:aspect state`), document-level relations (`:same-entity`). Use it to see
 how a construction, a word or a relation is annotated in the gold data before you annotate it.
 """,
@@ -137,8 +137,8 @@ and numbered roles from it.
     "gold": """
 ## Attached file
 
-Gold UMR annotations of sentences from other documents are attached (`<document>.gold.md`): for each
-sentence of this document, the gold sentences that share most of its words, with their whole
+Gold UMR annotations of training sentences (other documents) are attached (`<document>.gold.md`): for
+each sentence of this document, the training sentences that share most of its words, with their whole
 annotation. Use them to see how a construction, a word or a relation is annotated in the gold data.
 """,
 }
@@ -157,7 +157,7 @@ The document, one sentence per line: the sentence number, a tab, then its words 
 
 REGISTRY = """# {sub}（{method}）：{desc}
 # 语法是 SkillParseUMR skillsets/REGISTRY.md 的最小子集，见 exp/lib/registry.py。
-# 一波、一个 episode（整篇文档），一个 skill：输入整篇文档（一行一句），输出每句的 PENMAN 图和对齐，
+# 一波、一个 episode（整篇文档），一个 skill：输入是 shared task 的 blind 测试文件（一行一句，空格分词），输出每句的 PENMAN 图和对齐，
 # 最后一张整篇文档的文档级关系图（exp/lib/umrdoc.py 把它分到各句，写成 .umr 再打分）。
 # 本文件由 exp/scripts/make_subexps.py 生成。
 

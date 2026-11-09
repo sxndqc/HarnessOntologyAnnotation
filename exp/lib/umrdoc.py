@@ -1,12 +1,15 @@
 """UMR documents: the gold, the input a model sees, and the model's answer as a .umr file.
 
-    doc = load("exp/data/gold/chinese_umr-0023.umr")
+    doc = load_blind(".cache/umr22/test-blind/zh-0023.txt")   the shared task's input: one sentence per
+                               line, tokens separated by spaces
+    doc = load(".cache/umr22/test-gold/zh-0023.umr")          a .umr file (the gold)
     doc["sents"]               [{index, words, head, gold}]: head is the block's header (# :: sntN,
-                               Index:, Words:), gold the three sections as the gold file has them
+                               Index:, Words:), gold the three sections as the file has them
     input_lines(doc)           the document as the model sees it: one sentence per line,
                                "<number>\t<words separated by spaces>"
-    gold_umr(doc)              the gold as a .umr text, normalised the same way as predictions
-    parse_answer(doc, text)    a model's answer -> (.umr text, report)
+    gold_umr(doc)              the gold as a .umr text, normalised the same way as predictions (for
+                               AnCast and umrjudge; juːmæʧ and Smatch read the official gold file itself)
+    parse_answer(doc, text)    a model's answer -> (.umr text in the shared task's file format, report)
 
 The answer gives, for each sentence, `# ::snt N`, its sentence-level PENMAN graph and its alignment,
 and at the end one `# document level relations:` graph holding every temporal, modal and coreference
@@ -22,7 +25,7 @@ import penman
 SECTIONS = ("# sentence level graph:", "# alignment:", "# document level annotation:")
 RULE = "#" * 80
 VAR = re.compile(r"^s(\d+)[a-z][\w-]*$")
-DOC_GROUP = re.compile(r":(temporal|modal|coref)\b")
+DOC_GROUP = re.compile(r":(temporal|modal|coref)\s*\(")   # a group, not the relation of (root :modal author)
 DOC_TRIPLE = re.compile(r"\(\s*([^\s()]+)\s+:([\w-]+)\s+([^\s()]+)\s*\)")
 
 
@@ -65,7 +68,33 @@ def load(path):
         sents.append({"index": int(m.group(1)), "words": words, "head": head,
                       "gold": {k: sections.get(k, "").strip() for k in SECTIONS}})
     name = os.path.basename(path)[:-4]
-    return {"name": name, "lang": "zh" if name.startswith("chinese") else "en", "sents": sents, "path": path}
+    return {"name": name, "lang": lang_of(name), "sents": sents, "path": path}
+
+
+def lang_of(name):
+    """zh-0023 -> zh, en-0005 -> en (the shared task's file names); chinese_umr-0023 -> zh."""
+    if name.startswith("chinese"):
+        return "zh"
+    if name.startswith("english"):
+        return "en"
+    return name.split("-")[0]
+
+
+def load_blind(path):
+    """A blind test file of the shared task: one sentence per line, tokens separated by spaces."""
+    with open(path, encoding="utf-8-sig") as f:
+        lines = [l.rstrip("\n").rstrip("\r") for l in f]
+    while lines and not lines[-1].strip():
+        lines.pop()
+    sents = []
+    for k, line in enumerate(lines, 1):
+        words = line.split(" ") if line.strip() else []
+        words = [w for w in words if w != ""]
+        head = "\n".join(["# :: snt%d" % k, "Index: " + " ".join(str(i + 1) for i in range(len(words))),
+                          "Words: " + " ".join(words)])
+        sents.append({"index": k, "words": words, "head": head, "gold": {}})
+    name = os.path.basename(path)[:-4]
+    return {"name": name, "lang": lang_of(name), "sents": sents, "path": path}
 
 
 def input_lines(doc):
@@ -159,14 +188,19 @@ def sentence_sections(index, graph_text, align_text, strict=True, problems=None)
         g = penman.Graph([(rename.get(s, s), r, rename.get(t, t) if isinstance(t, str) else t) for s, r, t in g.triples],
                          top=rename.get(g.top, g.top))
     variables = set(g.variables())
+    if strict:
+        # a fresh layout: every node is defined where it first occurs, so there are no forward references
+        # (the shared task's validator rejects them)
+        g = penman.Graph(g.triples, top=g.top)
     graph = penman.encode(g, indent=4)
     align = []
     for line in align_text.splitlines():
-        m = re.match(r"^\s*(\S+?)\s*:\s*(-?\d+)\s*-\s*(-?\d+)\s*$", line)
+        m = re.match(r"^\s*(\S+?)\s*:\s*(-?\d+\s*-\s*-?\d+(?:\s*,\s*-?\d+\s*-\s*-?\d+)*)\s*$", line)
         if m:
             v = rename.get(m.group(1), m.group(1))
+            ranges = [re.sub(r"\s", "", r) for r in m.group(2).split(",")]
             if v in variables and not any(a.startswith(v + ":") for a in align):
-                align.append("%s: %s-%s" % (v, m.group(2), m.group(3)))
+                align.append("%s: %s" % (v, ",".join(ranges)))
         elif line.strip():
             problems.append("sentence %d: alignment line not understood: %s" % (index, line.strip()[:60]))
     for v in sorted(variables - {a.split(":")[0] for a in align}):
@@ -305,4 +339,4 @@ def render(items):
     for head, sections in items:
         pieces = [head.strip()] + ["%s\n%s" % (k, (sections.get(k) or "").strip()) for k in SECTIONS]
         out.append(RULE + "\n" + "\n\n".join(pieces))
-    return "\n\n\n".join(out) + "\n"
+    return "\n\n\n".join(out) + "\n\n\n"

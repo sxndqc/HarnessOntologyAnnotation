@@ -5,9 +5,9 @@ here plain Python: files read from disk, the sentences to leave out set with set
                                             keywords
     search_guidelines(keywords)             the sections of the UMR guidelines that contain them
 
-The data is under data/skillparse/resources/ (built by scripts/sync_skillparse.py):
-gold/zh/gold.json, gold/en/gold.json and guidelines/umr_guidelines.md, read on the first search from
-$SP_RESOURCES (by default the sibling checkout's data/skillparse/resources/).
+The guidelines are the web repo's data/skillparse/resources/guidelines/umr_guidelines.md ($SP_RESOURCES, by
+default the sibling checkout). The gold is the shared task's training data (UMR 2.2 training-clean and
+training-dirty, $UMR22, by default exp/.cache/umr22), or with GOLD_SOURCE=web the web repo's gold.json.
 
 The test documents (set_skip: their names, and the texts of the document being annotated, since
 english_umr-0005 and -0007 are one text) are never returned: their answers must not leak.
@@ -36,7 +36,7 @@ def set_skip(docs=(), texts=()):
 def search_annotations(language: str, keywords: list[str], max_results: int = 3) -> dict:
     """Find how a case is annotated: gold UMR annotations of whole sentences.
 
-    language: "zh" (Chinese) or "en" (English); there is no gold data for "uz" (Uzbek).
+    language: "zh" (Chinese) or "en" (English).
     keywords: words or pieces to look for, matched anywhere in a sentence or its annotation:
     words of the text (e.g. "发生", "wanted to"), concepts ("have-org-role-91", "identity-91"),
     roles (":ARG1-of", ":manner"), attribute values (":aspect state"). Sentences with more of the
@@ -156,15 +156,49 @@ def _read(rel):
     return text
 
 
+GOLD_DIRS = {"zh": "chinese", "en": "english"}
+
+
+def _umr22():
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.environ.get("UMR22", os.path.join(here, "..", ".cache", "umr22"))
+
+
 def _gold(lang):
-    """[(record, its sentence and annotation in lower case)], made once: a search runs through
-    every sentence (31,147 in English)."""
+    """[(record, its sentence and annotation in lower case)], made once.
+
+    The gold is the training data of the DMR 2026 UMR parsing shared task (UMR 2.2 training-clean and
+    training-dirty, read from $UMR22, by default exp/.cache/umr22), as the shared task allowed; with
+    GOLD_SOURCE=web it is the web repo's gold/<lang>/gold.json instead (SkillParseUMR newdata, which
+    holds earlier UMR releases)."""
     key = "gold:" + lang
     if key not in _cache:
-        recs = json.loads(_read("gold/%s/gold.json" % lang))
+        if os.environ.get("GOLD_SOURCE") == "web":
+            recs = json.loads(_read("gold/%s/gold.json" % lang))
+        else:
+            recs = []
+            for part in ("training-clean", "training-dirty"):
+                folder = os.path.join(_umr22(), part, GOLD_DIRS[lang])
+                for name in sorted(os.listdir(folder)) if os.path.isdir(folder) else []:
+                    if name.endswith(".umr"):
+                        recs += _umr_records(os.path.join(folder, name), name[:-4])
         _cache[key] = [(r, (r["text"] + "\n" + r["annotation"]).lower()) for r in recs]
     return _cache[key]
 
+
+def _umr_records(path, doc):
+    """{doc, snt, text, annotation} of every sentence block of a .umr file."""
+    with open(path, encoding="utf-8-sig") as f:
+        text = f.read()
+    out = []
+    for block in re.split(r"^#{20,}\s*$", text, flags=re.M):
+        m = re.search(r"#\s*::\s*snt(\d+)", block)
+        words = re.search(r"^Words:\s*(.*)$", block, re.M)
+        if not m or not words:
+            continue
+        out.append({"doc": doc, "snt": int(m.group(1)), "text": " ".join(words.group(1).split()),
+                    "annotation": block.strip()})
+    return out
 
 
 def _guideline_sections():

@@ -58,8 +58,8 @@ then, once, after the last sentence, every document-level relation of the whole 
 
 ## Attached file
 
-Gold UMR annotations of sentences from other documents are attached (`<document>.gold.md`): for each
-sentence of this document, the gold sentences that share most of its words, with their whole
+Gold UMR annotations of training sentences (other documents) are attached (`<document>.gold.md`): for
+each sentence of this document, the training sentences that share most of its words, with their whole
 annotation. Use them to see how a construction, a word or a relation is annotated in the gold data.
 
 ## Input

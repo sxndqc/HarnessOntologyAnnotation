@@ -1,18 +1,19 @@
-"""Scores of one predicted .umr against its gold .umr.
+"""Scores of one predicted .umr against its gold, as the DMR 2026 UMR parsing shared task scores them.
 
-    ancast(pred, gold)   AnCast++ (umr4nlp/ancast, `python -m ancast -s doc -df umr`): sentence-graph P/R/F
-                         and the Modal, Temporal, Coref and Comprehensive scores, after Chun & Xue's cleanup
-                         (a :modal-strength in the sentence graph moves to the document-level :modal block),
-                         as SkillParseUMR's scripts/compare_ancast.py and experiment/annoforge/af/score.py do
-    jumach(pred, gold)   juːmæʧ, the DMR 2026 shared task's metric (ufal/umrtools compare_umr.pl): counts
-                         (correct, gold, predicted); needs perl and the umrtools checkout ($UMRTOOLS, default
-                         exp/.cache/umrtools)
-    smatch(pred, gold)   Smatch (pip smatch) over the sentence-level graphs, counts summed over sentences
-    judge(pred, gold)    umrjudge (judges/umrjudge.py from SkillParseUMR): per-check units and scores
+    jumach(pred, gold)    juːmæʧ, the shared task's main metric: ufal/umrtools compare_umr.pl
+                          (`perl compare_umr.pl GOLD gold.umr SYS pred.umr --tsv`), counts (correct, gold,
+                          predicted); a language's score is F1 over the counts summed over its files, as
+                          umrtools micro_average.pl computes it
+    smatch(pred, gold)    Smatch (snowblink14/smatch, `pip install smatch`), sentence-level graphs only,
+                          counts summed over the sentences of all files of a language
+    validate(pred)        umrtools validate.py --level 2, the shared task's format check
+    ancast(pred, gold)    AnCast++ (not a shared-task metric; kept for comparison with SkillParseUMR/AnnoForge)
+    judge(pred, gold)     umrjudge per-check scores (not a shared-task metric)
 
-All four read the same two files: the gold as lib/umrdoc.gold_umr writes it and the prediction as
-lib/umrdoc.parse_answer writes it. The gold is the newdata/ gold of SkillParseUMR (not the shared task's
-official test gold, which is not in git), so juːmæʧ here is not the official number of the shared task.
+gold is the official test gold of UMR 2.2 (test-gold/<doc>.umr) for juːmæʧ and Smatch, and the same file
+written back by lib/umrdoc.gold_umr for AnCast and umrjudge (they cannot read every official file as is).
+On the published system outputs (UMR 2.2 system-outputs/), this reproduces the overview paper's
+Table 5 (Smatch) to 0.002 and Table 2 (juːmæʧ) to 0.005: `python3 exp/run.py verify-st`.
 """
 import os
 import re
@@ -160,6 +161,18 @@ def jumach(pred_path, gold_path):
         if len(cells) >= 6 and cells[0].strip().startswith("ju"):
             return int(cells[3]), int(cells[4]), int(cells[5])
     return None
+
+
+def validate(pred_path):
+    """{"passed", "errors": [first error lines], "n_errors"} of validate.py --level 2, or None without umrtools."""
+    script = os.path.join(UMRTOOLS, "validate.py")
+    if not os.path.exists(script):
+        return None
+    proc = subprocess.run([sys.executable, script, "--level", "2", "--max-err", "0", pred_path],
+                          capture_output=True, text=True, timeout=600)
+    lines = (proc.stdout + proc.stderr).splitlines()
+    errors = [l for l in lines if l.startswith("[") and "Warning" not in l]
+    return {"passed": proc.returncode == 0, "n_errors": len(errors), "errors": errors[:10]}
 
 
 # ------------------------------------------------------------------ Smatch
