@@ -4,35 +4,36 @@ Shared-task scoring: juːmæʧ (main metric, compare_umr.pl) and Smatch, against
 
 | file | sents | juːmæʧ P | R | F | Smatch F | valid | AnCast F | Comp | judge |
 |---|---|---|---|---|---|---|---|---|---|
-| zh-0032 | 6 | 43.4 | 44.6 | 44.0 | 54.4 | yes | 40.7 | 36.8 | 53.7 |
-| **zh** (1/15 files) | 6 | 43.4 | 1.7 | 3.3 | 3.9 | 1/1 | 40.7 | 36.8 | 53.7 |
+| zh-0028 | 12 | 40.4 | 44.1 | 42.2 | 61.5 | yes | 44.0 | 44.9 | 57.5 |
+| zh-0032 | 6 | 43.4 | 44.6 | 44.0 | 54.7 | yes | 40.7 | 36.8 | 53.7 |
+| **zh** (2/15 files) | 18 | 42.0 | 3.2 | 6.0 | 7.7 | 2/2 | 42.3 | 40.9 | 54.3 |
 
 ## umrjudge per check
 
 | check | zh |
 |---|---|
-| a_entity_concept | 76.2 |
-| a_entity_found | 90.8 |
-| a_event_concept | 87.5 |
-| a_event_found | 99.0 |
-| a_granularity | 94.7 |
-| b_event_sense | 90.2 |
-| c_aspect | 45.3 |
+| a_entity_concept | 78.3 |
+| a_entity_found | 93.8 |
+| a_event_concept | 76.6 |
+| a_event_found | 96.8 |
+| a_granularity | 94.1 |
+| b_event_sense | 89.6 |
+| c_aspect | 49.5 |
 | c_modstr | – |
-| c_other_attributes | 25.0 |
-| c_polarity | 66.7 |
-| c_refer | 0.0 |
-| d_core_args_abstract | 20.0 |
-| d_core_args_event | 61.0 |
-| d_peripheral_entity | 29.7 |
-| d_peripheral_event | 12.5 |
-| e_core_labels | 92.9 |
-| e_peripheral_labels | 62.5 |
-| f_name_tokens | 60.6 |
+| c_other_attributes | 36.6 |
+| c_polarity | 33.3 |
+| c_refer | 28.6 |
+| d_core_args_abstract | 38.3 |
+| d_core_args_event | 47.6 |
+| d_peripheral_entity | 34.6 |
+| d_peripheral_event | 32.9 |
+| e_core_labels | 74.6 |
+| e_peripheral_labels | 72.7 |
+| f_name_tokens | 48.0 |
 | f_wiki | 0.0 |
-| g_reentrancy | 48.3 |
-| h_temporal | 19.7 |
-| i_modal | 41.5 |
-| j_coref_chain | 10.0 |
+| g_reentrancy | 24.1 |
+| h_temporal | 34.4 |
+| i_modal | 54.3 |
+| j_coref_chain | 11.0 |
 | j_coref_subset | – |
 | k_doc_format | 100.0 |
