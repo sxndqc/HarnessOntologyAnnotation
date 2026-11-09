@@ -1,0 +1,29 @@
+# s2-gold（chat 界面）：第二步：缩略版 guideline + gold 数据（search_annotations，网页 repo 的 gold/zh、gold/en，不含测试文档）
+# 语法是 SkillParseUMR skillsets/REGISTRY.md 的最小子集，见 exp/lib/registry.py。
+# 一波、一个 episode（整篇文档），一个 skill：输入整篇文档（一行一句），输出每句的 PENMAN 图和对齐，
+# 最后一张整篇文档的文档级关系图（exp/lib/umrdoc.py 把它分到各句，写成 .umr 再打分）。
+# 本文件由 exp/scripts/make_subexps.py 生成。
+
+waves:
+  - name: document
+    start: annotate
+    init_input:
+      context:
+        lang: annotation.lang
+        doc_id: annotation.name
+        n: annotation.sentences
+      input:
+        sentences: annotation.lines
+
+skills:
+  annotate:
+    path: annotate
+    guideline: guidelines/umr_guidelines_abridged.md
+    attachment: gold          # chat：随 prompt 一起上传的文件
+    input:
+      sentences: str
+    emit:
+      umr: str                  # 回答原文：每句的图和对齐 + 文档级关系
+    store: [umr]
+
+dispatcher: {}

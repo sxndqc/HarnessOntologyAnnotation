@@ -1,0 +1,1444 @@
+# PropBank entries for the words of chinese_umr-0032
+
+From ai-native-annotator.github.io data/skillparse/resources/propbank/zh.json: every roleset of every word of the document that PropBank has.
+
+## 和
+
+### 和-01
+
+- ARG0: agent
+- ARG1: theme
+
+Example 1: 
+- ARG1: 音乐
+- rel: 和
+
+### 和-02
+
+- ARG0: agent
+- ARG1: co-arg0
+
+Example 1: 
+- rel: 和
+
+## 就
+
+### 就-01
+
+- ARG0: entity described
+- ARG1: entity arg0 is restricted to
+
+Example 1: *PRO* 就 片 论 片
+- ARG0: *PRO*
+- ARG1: 片
+- rel: 就
+
+## 达成
+
+### 达成-01
+
+- ARG0: parties
+- ARG1: agreement, consensus, etc.
+
+Example 1: 城市 北 出口 道路 建设 工程 已 与 香港 泰华 公司 达成 建设 协议
+- ARG0-CRD: 城市 北 出口 道路 建设 工程
+- ARG0-CRD: 与 香港 泰华 公司
+- ARG1: 建设 协议
+- ARGM-ADV: 已
+- rel: 达成
+
+## 将
+
+### 将-01
+
+- ARG0: 
+
+Example 1: 「 青少年 戏剧 推广 计划 」 在 文建会 *PRO* 连续 三 年 、 每 年 编列 一千多万 元 预算 的 大力 推动 之下 ， *OP* *T*-1 参与 的 学校 已 将 一百多 所
+- rel: 将
+
+## 参与
+
+### 参与-01
+
+- ARG0: participant
+- ARG1: activity
+
+Example 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。
+- ARG0: 日本 进出口 银行
+- rel: 参与
+
+Example 2: 法国 从来 没有 参与
+- ARG0: 法国
+- ARGM-ADV: 从来
+- rel: 参与
+
+## 独立
+
+### 独立-01
+
+- ARG0: theme
+- ARG1: independent of
+
+Example 1: 吉尔吉斯 独立 以后 两 国 关系 发展 顺利
+- ARG0: 吉尔吉斯
+- rel: 独立
+
+## 监测
+
+### 监测-01
+
+- ARG0: monitor
+- ARG1: thing monitored
+
+Example 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中
+- ARG0: 联合国
+- ARG1: *T*-1
+- ARGM-TMP: 自 １９９３年 以来
+- rel: 监测
+
+## 并
+
+### 并-01
+
+- ARG0: agent
+- ARG1: thing merged
+- ARG2: something arg1 is merged into
+- ARG3: result
+
+Example 1: *OP* *T*-3 被 并 *T*-3 企业
+- ARG1: 企业
+- rel: 并
+
+## 恢复
+
+### 恢复-01
+
+- ARG0: event
+
+Example 1: 西非 经济 明显 恢复 *PRO* 增长
+- ARG0: 西非 经济
+- ARG0-PRD: *PRO* 增长
+- ARGM-ADV: 明显
+- rel: 恢复
+
+Example 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权
+- ARG0: 中华 人民 共和国
+- ARG0-PRED: *PRO* 行使 主权
+- rel: 恢复
+
+Example 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复
+- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长
+- ARGM-ADV: 已
+- ARGM-ADV: 明显
+- rel: 恢复
+
+### 恢复-02
+
+- ARG0: restorer
+- ARG1: thing restored
+- ARG2: restored state
+
+Example 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。
+- ARG0: 联合国 安理会
+- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力
+- rel: 恢复
+
+Example 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平
+- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数
+- ARG2: 牲畜 归 户 时 的 水平
+- rel: 恢复
+
+## 进口
+
+### 进口-01
+
+- ARG0: importer
+- ARG1: thing imported
+- ARG2: entity arg1 is imported from
+
+Example 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期
+- ARG0: 外商 投资 企业
+- ARG1: 设备 和 原材料
+- ARGM-ADV: 免税
+- rel: 进口
+
+Example 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备
+- ARG0: 中国
+- ARG1: 技术 和 成套 设备
+- ARG2: 从 三十多 个 国家 和 地区
+- ARGM-ADV: 与 此 同时
+- rel: 进口
+
+Example 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口
+- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物
+- rel: 进口
+
+Example 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品
+- ARG1: 初级 形状 塑料
+- ARG1-QTY: 一百一十万 吨
+- ARGM-ADV: 其中
+- rel: 进口
+
+## 报道
+
+### 报道-01
+
+- ARG0: reporter
+- ARG1: thing reported
+
+Example 1: 眼下 ， 西班牙 大众 传媒 每 天 都 在 连篇累牍 地 报道 欧元 及 其 相关 情况
+- ARGM-ADV: 眼下
+- ARG0: 西班牙 大众 传媒
+- ARGM-TMP: 每 天
+- ARGM-ADV: 都
+- ARGM-ADV: 在
+- ARGM-ADV: 连篇累牍 地
+- rel: 报道
+
+Example 2: 媒介 报道 ， 沿海 地区 仅 苏 、 浙 、 沪 三 地 国际 集装箱 码头 已 达到 二十多 个 。
+- ARG0: 媒介
+- rel: 报道
+
+## 主管
+
+### 主管-01
+
+- ARG0: people described
+- ARG1: thing arg0 is in charge of
+
+Example 1: 这 位 *OP* *T*-1 主管 灾 后 重建 工作 的 官员
+- ARG0: *T*-1
+- ARG1: 灾 后 重建 工作
+- rel: 主管
+
+## 持续
+
+### 持续-01
+
+- ARG0: thing described
+- ARG1: duration
+
+Example 1: 二十一 颗 彗核 撞击 时间 持续 五 天 半 。
+- ARG0: 二十一 颗 彗核 撞击 时间
+- ARG1: 五 天 半
+- rel: 持续
+
+Example 2: 两 岸 关系 持续 *PRO* 低迷
+- ARG0: 两 岸 关系
+- ARG0-PRD: *PRO* 低迷
+- rel: 持续
+
+### 持续-02
+
+- ARG0: thing described
+- ARG1: end point
+
+Example 1: 中国 经济 发展 的 传奇 将 持续 到 *OP* *T*-2 新 的 世纪
+- ARG0: 中国 经济 发展 的 传奇
+- ARG1: *OP* *T*-2 新 的 世纪
+- ARGM-ADV: 将
+- rel: 持续
+
+## 磋商
+
+### 磋商-01
+
+- ARG0: agent
+- ARG1: thing arg0 negotiates about
+
+Example 1: 双方 就 有关 具体 问题 进行 了 磋商 ， 并 达成 了 *OP* *T*-1 广泛 的 一致
+- ARG0: 双方
+- ARG1: 就 有关 具体 问题
+- rel: 磋商
+
+## 污染
+
+### 污染-01
+
+- ARG0: cause,agent
+- ARG1: theme
+
+Example 1: 这 种 方法 不 会 污染 环境 。
+- ARG0: 这 种 方法
+- rel: 污染
+
+Example 2: 这 个 *OP* *T*-2 严重 污染 的 第三 大 淡水湖
+- ARGM-ADV: 严重
+- rel: 污染
+
+## 欢迎
+
+### 欢迎-01
+
+- ARG0: entity extending welcome
+- ARG1: entity receiving welcome
+- ARG2: predicate
+
+Example 1: 德 外长 欢迎 北约 对 塞族 的 最后 通牒
+- ARG0: 德 外长
+- rel: 欢迎
+
+Example 2: 他 代表 中国 政府 欢迎 与会者 *PRO* 今年 ９月 赴 中国 香港 出席 国际 货币 基金 组织 临委会 下 一 次 会议 和 １９９７年 年会 。
+- ARG0: 他
+- rel: 欢迎
+
+## 在
+
+### 在-01
+
+- ARG0: entity that exists
+- ARG1: location arg0 is located
+
+Example 1: 该 项 展览 旨 在 *PRO* 向 雇主 及 求职者 推广 劳工处 的 免费 就业 选配 服务
+- ARG0-PSE: 旨
+- ARG0-PSR: 该 项 展览
+- ARG1: *PRO* 向 雇主 及 求职者 推广 劳工处 的 免费 就业 选配 服务
+- rel: 在
+
+Example 2: 电子 工业 产值 前 七 名 的 市 均 在 三角洲 内
+- ARG0: 电子 工业 产值 前 七 名 的 市
+- ARG1: 三角洲 内
+- ARGM-ADV: 均
+- rel: 在
+
+Example 3: *PRO* 只要 渡 过 眼前 价格 混乱 、 景气 浑沌 的 调整期 ， *OP* *T*-1 元气 饱满 的 台商 ， *PRO* 相较於 *OP* *T*-2 里 外 受创 的 对手 ， 优势 仍 在
+- ARG0-PSE: 优势
+- ARG0-PSR: *OP* *T*-1 元气 饱满 的 台商
+- ARGM-ADV: 仍
+- ARGM-ADV: *PRO* 相较於 *OP* *T*-2 里 外 受创 的 对手
+- ARGM-CND: *PRO* 只要 渡 过 眼前 价格 混乱 、 景气 浑沌 的 调整期
+- rel: 在
+
+### 在-02
+
+- ARG0: entity described
+- ARG1: location determining factor of agr0 lies in
+
+Example 1: 兵 不 在 多 而 在于 精
+- ARG0: 兵
+- ARG1: 多
+- ARGM-ADV: 不
+- rel: 在
+
+### 在-03
+
+- ARG0: 
+
+Example 1: 我 几乎 把 眼睛 紧贴 在 了 车窗 玻璃 上 ， 朝 后面 仰望
+- rel: 在
+
+## 下
+
+### 下-01
+
+- ARG0: entity moving
+- ARG1: location arg0 moves to
+
+Example 1: 日前 ， 哈尔滨 市宾县 摆渡乡 *OP* *T*-1 已 习惯于 “ 冬闲 ” 的 五十万 只 蜜蜂 告别 了 北方 ， 乘 麦道 飞机 南 下 福州市 “ 追赶 花季 ”
+- ARG0: 哈尔滨 市宾县 摆渡乡 *OP* *T*-1 已 习惯于 “ 冬闲 ” 的 五十万 只 蜜蜂
+- ARG1: 福州市
+- ARGM-ADV: 南
+- ARGM-TMP: 日前
+- rel: 下
+
+### 下-02
+
+- ARG0: agent
+- ARG1: thing(chess)played
+
+Example 1: 以前 他 与 中国 棋手 下 过 九 盘 ， 全 都 获胜
+- ARG0: 他
+- ARG0: 与 中国 棋手
+- ARG1: 九 盘
+- ARGM-TMP: 以前
+- rel: 下
+
+### 下-03
+
+- ARG0: agent
+- ARG1: thing(efforts/decision) made
+
+Example 1: *pro* 必须 紧紧 咬定 一 个 “ 新 ” 字 ， 要 在 知识 创新 、 科技 创新 和 体制 创新 上 下 功夫 ， 真正 搞出 中国 的 创新 体系 来
+- ARG0: *pro*
+- ARG1: 功夫
+- ARGM-LOC: 在 知识 创新 、 科技 创新 和 体制 创新 上
+- rel: 下
+
+### 下-04
+
+- ARG0: agent
+- ARG1: location arg0 descends from
+
+Example 1: 小 皇帝 孺子婴 由 师傅 搀扶 *-1 ， 下 了 殿
+- ARG0: 小 皇帝 孺子婴
+- ARG1: 殿
+- rel: 下
+
+Example 2: *PRO* 下 了 班
+- ARG0: *PRO*
+- ARG1: 班
+- rel: 下
+
+### 下-05
+
+- ARG0: rain
+
+Example 1: *pro* 现在 正在 下 大 雨
+- ARG0: 大 雨
+- ARGM-ADV: 正在
+- rel: 下
+
+### 下-06
+
+- ARG0: entity described
+- ARG1: entity arg0 is inferior to
+
+Example 1: 而 有的 色情 内容 煸情 程度 不 下 限制级 电影
+- ARG0-PSR: 有的色情 内容
+- ARG0-PSE: 煸情 程度
+- ARGM-ADV: 不
+- ARG1: 限制级 电影
+- rel: 下
+
+### 下-07
+
+- ARG0: agent
+- ARG1: order, policy
+
+Example 1: 新 政府 下 这 项 政令
+- ARG0: 新 政府
+- ARG1: 这 项 政令
+- rel: 下
+
+### 下-08
+
+- ARG0: agent
+- ARG1: entity uninstalled
+
+Example 1: *OP* *T*-1 下 螺丝 的
+- ARG0: *T*-1
+- ARG1: 螺丝
+- rel: 下
+
+### 下-09
+
+- ARG0: entity lost
+
+Example 1: 这 面子 下 不 来
+- ARG0: 这 面子
+- rel: 下
+
+### 下-010
+
+- ARG0: agent
+- ARG1: ptient
+
+Example 1: 作为 教育 机构 *pro* 在 *OP* *pro* *T*-1 关注 升学率 的 同时 ， 在 孩子 成长 教育 过程 中 更 应 在 “ 知理 ” 上 下 功夫 。
+- ARG0: *pro*
+- ARGM-DGR: 更
+- ARG1: 功夫
+- rel: 下
+
+### 下-011
+
+- ARG0: agent
+- ARG1: entity arg0 drops
+
+Example 1: 我们 的 飞机 、 军舰 、 导弹 就 是 在 “ 下 饺子 ” 也 忙 不 过来 。
+- ARGM-ADV: 就
+- ARGM-ADV: 在
+- ARG1: 饺子
+- rel: 下
+
+### 下-012
+
+- ARG0: agent
+- ARG1: entity downloaded from internet
+
+### 下-013
+
+- ARG0: agent
+- ARG1: MWE usage, work place
+
+## 设立
+
+### 设立-01
+
+- ARG0: establisher
+- ARG1: theme
+- ARG2: purpose
+
+Example 1: 天津港 保税区 是 中国 *OP* *T*-1 最早 设立 的 保税区 之一 。
+- ARGM-ADV: 最早
+- rel: 设立
+
+Example 2: *PRO* 召回 朝鲜 军事 停战 委员会 朝方 代表团 以及 设立 朝鲜 人民军 板门店 代表处 *PRO* 作为 协商 机构
+- ARG0: *PRO*
+- rel: 设立
+
+Example 3: 中国 企业 迄今 已 在 南非 设立 各 类 机构 四十多 个
+- ARG0: 中国 企业
+- ARGM-ADV: 迄今
+- ARGM-ADV: 已
+- ARGM-LOC: 在 南非
+- rel: 设立
+
+Example 4: 近 几 年 台湾 厂商 也 在 广东 设立 七千多 家 加工 企业 。
+- ARG0: 台湾 厂商
+- ARGM-ADV: 也
+- ARGM-LOC: 在 广东
+- rel: 设立
+
+## 确保
+
+### 确保-01
+
+- ARG0: agent/cause
+- ARG1: thing guaranteed
+
+Example 1: 四 、 人民 银行 要 认真 做好 对 金融 机构 的 监管 工作 ， 确保 金融 体系 的 稳定
+- ARG0: 人民 银行
+- ARG1: 金融 体系 的 稳定
+- rel: 确保
+
+Example 2: 深圳市 政府 已 与 “ 深圳 高速 ” 签订 了 “ 专营 协议 ” ， 确保 它 在 公路 建设 方面 有 优先 发展权
+- ARG0: 深圳市 政府
+- ARG1: 它 在 公路 建设 方面 有 优先 发展权
+- rel: 确保
+
+Example 3: 临立会 的 成员 会 谅解 并 合作 确保 草案 *PRO* 得以 迅速 通过
+- ARG0: 临立会 的 成员
+- ARG1: 草案
+- ARG1-PRD: *PRO* 得以 迅速 通过
+- rel: 确保
+
+## 等
+
+### 等-01
+
+- ARG0: party that waits
+- ARG1: waiting for
+
+Example 1: 但是 *pro* 现在 还 需要 等 体检 结果
+- ARG0: *pro*
+- ARG1: 体检 结果
+- ARGM-ADV: 还
+- rel: 等
+
+Example 2: *pro* 如果 等 情势 完全 明朗
+- ARG0: *pro*
+- ARG1: 情势 完全 明朗
+- rel: 等
+
+Example 3: 宏基 可以 等
+- ARG0: 宏基
+- rel: 等
+
+### 等-02
+
+- ARG0: entities being equal to each other
+
+Example 1: 彰化 地检署 侦办 *pro* 总统 大选 贿选 案 ， 将 员林 镇长 等 二百多 人 依 *PRO* 违反 选罢法 提起 公诉 ， 分别 求处 三 年 至 二 个 月 *OP* *T*-1 不 等 徒刑
+- ARG0: *T*-1
+- ARGM-ADV: 不
+- rel: 等
+
+## 相关
+
+### 相关-01
+
+- ARG0: entities which are relevant
+
+Example 1: *OP* *T*-2 与 澳门 政权 交接 密切 相关 的 “ 三 大 问题 ” 的 解决
+- ARG0: *T*-2
+- ARG0-CRD: 与 澳门 政权 交接
+- ARGM-ADV: 密切
+- rel: 相关
+
+## 有效
+
+### 有效-01
+
+- ARG0: thing described
+- ARG1: thing arg0 is effective for
+
+Example 1: *PRO* 登报 揭露 就 很 有效
+- ARG0: *PRO* 登报 揭露
+- ARGM-ADV: 很
+- ARGM-ADV: 就
+- rel: 有效
+
+Example 2: *PRO* 对 其 终身 监禁 有效
+- ARG0: *PRO*
+- ARG1: 对 其 终身 监禁
+- rel: 有效
+
+## 采样
+
+### 采样-01
+
+- ARG0: agent
+- ARG1: a whole mass that arg0 takes specimen from
+
+Example 1: 中华 民国 *OP* *T*-1 驻 法 代表处 向 游离 辐射 防护局 和 家乐福 超商 采样 探询
+- ARG0: 中华 民国 驻 法 代表处
+- ARG1: 向 游离 辐射 防护局 和 家乐福 超商
+- rel: 采样
+
+## 分析
+
+### 分析-01
+
+- ARG0: analyzer
+- ARG1: thing analyzed
+
+Example 1: 俄罗斯 航天 飞行 控制 中心 技术 委员会 今天 开会 分析 了 *OP* 两 次 对接 *T*-1 失败 的 原因 并 决定 *pro* ９月 ２日 进行 第三 次 对接 。
+- ARG0: 俄罗斯 航天 飞行 控制 中心 技术 委员会
+- ARG1: *OP* 两 次 对接 *T*-1 失败 的 原因
+- ARGM-TMP: 今天
+- rel: 分析
+
+Example 2: 据 权威 人士 分析
+- ARG0: 权威 人士
+- rel: 分析
+
+### 分析-02
+
+- ARG0: analyzer
+- ARG1: conclusion
+
+Example 1: 有关 人士 分析 ， *PRO* 加快 水运 港口 建设 ， 是 江西省 继 京九 铁路 通车 后 ， 区位 优势 得到 进一步 改善 的 又 一 标志 。
+- ARG0: 有关 人士
+- ARG1: *PRO* 加快 水运 港口 建设 ， 是 江西省 继 京九 铁路 通车 后 ， 区位 优势 得到 进一步 改善 的 又 一 标志
+- rel: 分析
+
+## 安排
+
+### 安排-01
+
+- ARG0: arranger
+- ARG1: thing arranged
+- ARG2: for whom the arrangement is made
+
+Example 1: 此外 ， 中国 在 航天 技术 和 激光 技术 领域 安排 了 四百多 个 课题 的 研究
+- ARG0: 中国
+- ARGM-LOC: 在 航天 技术 和 激光 技术 领域
+- rel: 安排
+
+Example 2: 在 该 名 ＂ 老细 ＂ 安排 下 ， 两 人 在 二月 底 到 港 。
+- ARG0: 该 名 ＂ 老细 ＂
+- rel: 安排
+
+### 安排-02
+
+- ARG0: arranger
+- ARG1: party arranged
+- ARG2: predicate
+
+Example 1: 海协 安排 专家 *PRO* 介绍 案件 的 具体 情况 ， 并 回答 问题
+- ARG0: 海协
+- rel: 安排
+
+## 实施
+
+### 实施-01
+
+- ARG0: agent
+- ARG1: theme
+
+Example 1: 中国 海关 总署 将 实施 对 知识 产权 的 保护 措施
+- ARG0: 中国 海关 总署
+- ARGM-ADV: 将
+- rel: 实施
+
+Example 2: 结售 制度 和 *OP* *T*-2 新 的 核销 制度 在 西藏 全面 实施
+- ARG1: 结售 制度 和 *OP* (*T*-2)->(核销制度) 新 的 核销 制度
+- ARGM-LOC: 在 西藏
+- ARGM-ADV: 全面
+- rel: 实施
+
+## 基于
+
+### 基于-01
+
+- ARG0: theme
+- ARG1: based on
+
+Example 1: *PRO* 基于 以上 认识
+- ARG0: *PRO*
+- ARG1: 以上 认识
+- rel: 基于
+
+## 科学
+
+### 科学-01
+
+- ARG0: thing described
+
+Example 1: 引进 加拿大 ＭＡＩ 公司 *OP* *T*-2 科学 的 管理 办法 和 *OP* *T*-1 先进 的 计算机 技术
+- ARG0: *T*-2
+- rel: 科学
+
+## 符合
+
+### 符合-01
+
+- ARG0: theme
+- ARG1: consistent with
+
+Example 1: 中 美 保持 友好 既 符合 两 国 人民 利益 ， 也 有利于 亚太 地区 乃至 世界 的 和平 与 稳定
+- ARG0: 中 美 保持 友好
+- ARG1: 两 国 人民 利益
+- rel: 符合
+
+## 标准
+
+### 标准-01
+
+- ARG0: entity described
+
+Example 1: 发音 标准 是 英语 学习 的 关键
+- ARG0: 发音
+- rel: 标准
+
+## 表示
+
+### 表示-01
+
+- ARG0: agent
+- ARG1: message expressed
+- ARG2: party receiving the message
+- ARG3: topic of message
+
+Example 1: 香港 特区 行政 长官 董建华 今天 对 *OP* 美国 传统 基金会 发表 *T*-1 的 《 一九九八年 经济 自由 指数 报告 》 表示 欢迎
+- ARG0: 香港 特区 行政 长官 董建华
+- ARGM-TMP: 今天
+- ARG3: 对 *OP* 美国 传统 基金会 发表 (*T*-1)->(《一九九八年经济自由指数报告》) 的 《 一九九八年 经济 自由 指数 报告 》
+- rel: 表示
+
+Example 2: 拉美 一体化 协会 常设 政治 机构 “ 代表 委员会 ” 对 中国 *OP* *T*-1 常 驻 该 协会 观察员 、 中国 *OP* *T*-2 驻 乌拉圭 大使 谢汝茂 表示 欢迎 。
+- ARG0: 拉美 一体化 协会 常设 政治 机构 “ 代表 委员会 ”
+- ARG2: 对 中国 *OP* (*T*-1)->(观察员) 常 驻 该 协会 观察员 、 中国 *OP* (*T*-2)->(大使) 驻 乌拉圭 大使 谢汝茂
+- rel: 表示
+
+Example 3: 电力 工业部 国际 合作司 司长 谭艾幸 今天 就 此 事 对 新华社 记者 表示 ， 这 个 电厂 如果 *pro* 成功 的话 ， 将 作为 *OP* *pro* 沿海 地区 *T*-1 建设 同 类 电厂 的 样板 。
+- ARG0: 电力 工业部 国际 合作司 司长 谭艾幸
+- ARGM-TMP: 今天
+- ARG3: 就 此 事
+- ARG2: 对 新华社 记者
+- rel: 表示
+
+Example 4: 传统 基金会 表示 ， 该 指数 也 有 被 投资者 用作 投资 指南 。
+- ARG0: 传统 基金会
+- ARG1: 该 指数 也 有 被 投资者 用作 投资 指南
+- rel: 表示
+
+### 表示-02
+
+- ARG0: thing described
+- ARG1: thing arg0 means/shows
+
+Example 1: 这 表示 大部份 人 都 不 以 *PRO* 大学 毕业 为 满足 ， 还 想 *PRO* 在 知识 的 领域 中 更上一层楼
+- ARG0: 这
+- ARG1: 大部份 人 都 不 以 *PRO* 大学 毕业 为 满足 ， 还 想 *PRO* 在 知识 的 领域 中 更上一层楼
+- rel: 表示
+
+## 扩展
+
+### 扩展-01
+
+- ARG0: agent
+- ARG1: entity expanded
+- ARG2: source
+- ARG3: goal
+
+Example 1: 北约 在 中亚 和 原 苏联 其他 地区 扩展 影响
+- ARG0: 北约
+- ARG1: 影响
+- ARGM-LOC: 在 中亚 和 原 苏联 其他 地区
+- rel: 扩展
+
+Example 2: 迄今 ， *OP* *T*-1 可 经营 人民币 业务 的 外资 银行 已 扩展 到 九 家
+- ARG1: *OP* *T*-1 可 经营 人民币 业务 的 外资 银行
+- ARG3: 九 家
+- ARGM-ADV: 迄今
+- ARGM-ADV: 已
+- rel: 扩展
+
+Example 3: 招商 范围 由 周边 国家 扩展 到 欧 美 、 东南亚 、 西亚 、 中东 等 近 一百 个 国家 和 地区
+- ARG1: 招商 范围
+- ARG2: 由 周边 国家
+- ARG3: 欧 美 、 东南亚 、 西亚 、 中东 等 近 一百 个 国家 和 地区
+- rel: 扩展
+
+Example 4: 其 销售 市场 已 从 国内 和 东南亚 扩展 欧 美 许多 国家
+- ARG1: 其 销售 市场
+- ARG2: 从 国内 和 东南亚
+- ARG3: 欧 美 许多 国家
+- ARGM-ADV: 已
+- rel: 扩展
+
+## 对
+
+### 对-01
+
+- ARG0: agent
+- ARG1: thing confronted
+- ARG2: instrument
+
+Example 1: 同时 ， *OP* *T*-1 在 *pro* 与 ＣＩＰＭ 合作 中 逐渐 成长 的 中方 管理 人员 ， 也 变得 善于 *PRO* “ 以 中 对 洋 ” 。
+- ARG0-: *PRO*
+- ARG1-: 洋
+- ARG2-: 以 中
+- rel: 对
+
+### 对-02
+
+- ARG0: thing described
+
+Example 1: 这 种 看法 是 *OP* *T*-1 不 对 的 。 ”
+- ARG0-: *T*-1
+- ARGM-ADV: 不
+- rel: 对
+
+Example 2: 
+
+### 对-03
+
+- ARG0: person described
+- ARG1: entity arg0 hasn't done enough for
+
+Example 1: *pro* 有时 看到 他们 *PRO* 睡觉 的 可爱 脸蛋 ， 会 觉得 *PRO* 有点 对 不 起 他们
+- ARG0-: *PRO*
+- ARG1-: 他们
+- ARGM-ADV: 有点
+- rel: 对
+
+### 对-04
+
+- ARG0: person described
+- ARG1: to check (lottery, numbers, etc)
+
+Example 1: 号码 对 奖
+- ARGM-MNR: 号码
+- ARG1-: 奖
+- rel: 对
+
+### 对-05
+
+- ARG0: person described
+- ARG1: entity arg0 has done enough for
+
+Example 1: 这样子 政党 领导人 才 能够 对 得 起 过去
+- ARGM-ADV: 这样子
+- ARG0-: 政党 领导人
+- ARGM-DIS: 才
+- ARG1-: 过去
+- rel: 对
+
+### 对-06
+
+- ARG0: agent
+- ARG1: entity arg0 treats
+
+Example 1: *pro* 不 光是 对 别人 ， 自己 也 是 ， 你 的 手机 从来 不 关机 。
+- ARG0-: *pro*
+- ARG1-: 别人
+- rel: 对
+
+### 对-07
+
+- (no roles)
+
+### 对-08
+
+- ARG0: agent
+- ARG1: entity mixed
+
+Example 1: *pro* 香油精 对 *T*-1 的 油水
+- ARG0: *pro*
+- ARGM-ADV: 香油精
+- ARG1: *T*-1 油水
+- rel: 对
+
+### 对-09
+
+- ARG0: participants match each other
+
+Example 1: 
+- ARG0: 美国队
+- rel: 对
+
+### 对-010
+
+- ARG0: 
+
+## 处理
+
+### 处理-01
+
+- ARG0: punisher
+- ARG1: party punished
+
+Example 1: 索珠乡 丁拉村 村支书 与 村委 主任 私 分 公款 的 情况 ， 在 财务 帐目 公开 时 被 *OP* 群众 发现 *T*-2 后 ， *pro* 及时 挽回 了 损失 ， 依法 处理 了 当事人 ， 推选 *OP* *T*-1 更为 合适 的 村委 主任 人选 。
+- ARG0: *pro*
+- ARG1: 当事人
+- ARGM-TMP: 索珠乡 丁拉村 村支书 与 村委 主任 私 分 公款 的 情况 ， 在 财务 帐目 公开 时 被 *OP* 群众 发现 *T*-2 后
+- ARGM-MNR: 依法
+- rel: 处理
+
+Example 2: 对 直接 责任人 和 主管 领导人 ， 不论 工作 是否 变动 ， *pro* 都 要 追究 责任 并 严肃 处理 。
+- ARG0: *pro*
+- ARG1: 对 直接 责任人 和 主管 领导人
+- ARGM-CND: 不论 工作 是否 变动
+- ARGM-ADV: 都
+- ARGM-ADV: 严肃
+- rel: 处理
+
+### 处理-02
+
+- ARG0: agent
+- ARG1: theme
+
+Example 1: 外交部 驻港 特派员 公署 致力 *PRO* 协助 特区 政府 *PRO* 处理 经 授权 的 对 外 事务
+- ARG0: *PRO*
+- ARG1: 经 授权 的 对 外 事务
+- rel: 处理
+
+Example 2: 举凡 *OP* *T*-1 涉及 世界 和平 与 安全 的 重大 事件 ， 只有 安理会 才 有 权 决定 *PRO* 如何 处理
+- ARG0: *PRO*
+- ARGM-ADV: 如何
+- rel: 处理
+
+### 处理-03
+
+- ARG0: agent
+- ARG1: theme
+- ARG2: thing arg0 processes arg1 into being
+
+Example 1: 只要 「 包装 」 好 一点 ， *pro* 处理 成 流行 趋势 、 理财 资讯 ， 不 要 太 像 广告 ， 一般 民众 大概 看 不 出来 新闻 後面 的 商业 利益
+- ARG1: *pro*
+- ARG2: 流行 趋势 、 理财 资讯
+- rel: 处理
+
+## 计划
+
+### 计划-01
+
+- ARG0: planner
+- ARG1: thing planned
+
+Example 1: 陕西 计划 *PRO* 加速 发展 旅游业
+- ARG0: 陕西
+- ARG1: *PRO* 加速 发展 旅游业
+- rel: 计划
+
+Example 2: 年赛 计划 *PRO* 每 两 年 举行 一 次 。
+- ARG1: 年赛
+- ARG1-PRD: *PRO* 每 两 年 举行 一 次
+- rel: 计划
+
+## 具体
+
+### 具体-01
+
+- ARG0: entity described
+
+Example 1: *pro* 基本 做到 了 每 个 环节 都 有 *OP* *T*-5 明确 而 又 具体 的 规定
+- ARG0: *T*-5
+- ARGM-ADV: 又
+- rel: 具体
+
+## 会
+
+### 会-01
+
+- ARG0: agent
+- ARG1: capable of
+
+Example 1: *OP* *T*-1 只 会 ＡＢＣ 的 人
+- ARG0-: (*T*-1) 人
+- ARGM-ADV: 只
+- rel: 会
+
+### 会-02
+
+- ARG0: 
+
+Example 1: *pro* 不 会 吧
+- rel: 会
+
+### 会-03
+
+- (no roles)
+
+### 会-04
+
+- ARG0: agent
+- ARG1: entity arg0 meets
+
+Example 1: 那 你 就 去 会 好了
+- ARGM-DIS: 那
+- ARG0: 你
+- ARGM-ADV: 就
+- rel: 会
+
+## 受
+
+### 受-01
+
+- ARG0: experiencer
+- ARG1: thing arg0 cannot endure
+
+Example 1: *OP* *T*-1 已经 被困 了 ２ 、 ３ 个 小时 ， 终于 受 不 了 的 台铁 旅客们
+- ARG0: *T*-1 -> 旅客们
+- rel: 受
+
+### 受-02
+
+- ARG0: agent
+- ARG1: things accepted by arg0
+
+Example 1: 好人 做 好事 ， *pro* 有 奖励 *pro* 就 坦然 受 之
+- ARG0: *pro*
+- ARGM-ADV: 就
+- ARGM-MNR: 坦然
+- ARG1: 之
+- rel: 受
+
+## 及
+
+### 及-01
+
+- ARG0: thing compared
+- ARG1: thing compared with
+
+Example 1: 虽然 四十 年 的 航天 投资 总额 还 不 及 前 苏联 、 美国 一 年 的 航天 投资 。
+- ARG0: 四十 年 的 航天 投资 总额
+- ARG1: 前 苏联 、 美国 一 年 的 航天 投资
+- ARGM-ADV: 还
+- ARGM-ADV: 不
+- rel: 及
+
+### 及-02
+
+- ARG0: theme
+- ARG1: place arg0 reached
+
+Example 1: *PRO* 才 过 民权 大桥 或 麦帅 二 桥 ， *OP* 视线 所 及 *T*-1 就 是 *OP* *T*-6 招牌 高 挂 醒目 的 量贩 店 错落 其中
+- ARG0: 视线
+- ARG1: *T*-1
+- rel: 及
+
+## 引发
+
+### 引发-01
+
+- ARG0: cause
+- ARG1: result
+
+Example 1: 特别是 有关 香港 回归 后 与 内地 经贸 关系 的 法律 调整 问题 ， 引发 了 与会者 的 积极 讨论 。
+- ARG0: 有关 香港 回归 后 与 内地 经贸 关系 的 法律 调整 问题
+- rel: 引发
+
+### 引发-02
+
+- ARG0: cause
+- ARG1: theme
+- ARG2: predicate
+
+Example 1: 此 *OP* *T*-2 先进 的 电子 撞车 传感器 在 更 短 时间 内 ， 引发 防撞 气囊 *PRO* 迅速 起爆
+- ARG0: 此 *OP* (*T*-2)->(电子撞车传感器) 先进 的 电子 撞车 传感器
+- ARGM-LOC: 在 更 短 时间 内
+- rel: 引发
+
+## 损毁
+
+### 损毁-01
+
+- ARG0: agent/cause
+- ARG1: thing arg0 damages
+
+Example 1: 祭祀 完毕 之後 ， 或许是 因为 王朝 的 更迭 ， 或许是 一 种 *PRO* 藉由 焚烧 上达 天神 用意 ， *OP* *T*-2 精美 的 神像 与 礼器 在 熊熊烈火 中 焚烧 、 损毁 ， 再 埋入 土坑 之中
+- ARG1: *OP* *T*-2 精美 的 神像 与 礼器
+- ARGM-LOC: 在 熊熊烈火 中
+- ARGM-PRP: 或许是 一 种 *PRO* 藉由 焚烧 上达 天神 用意
+- ARGM-PRP: 或许是 因为 王朝 的 更迭
+- ARGM-TMP: 祭祀 完毕 之後
+- rel: 损毁
+
+## 导致
+
+### 导致-01
+
+- ARG0: cause
+- ARG1: result
+
+Example 1: ７０年代 ， 美国 钢铁厂 的 兼并 直接 导致 了 一些 大型 一体化 钢铁 公司 的 诞生
+- ARG0: 美国 钢铁厂 的 兼并
+- rel: 导致
+
+Example 2: 任何 延误 都 会 让 蛇头 *PRO* 有机可乘 ， 散播 特赦 的 谣言 ， 导致 大量 儿童 涌入
+- ARG0: 任何 延误
+- rel: 导致
+
+## 冷却
+
+### 冷却-01
+
+- ARG0: agent/cause
+- ARG1: thing arg0 cools down
+
+Example 1: 「 场地 的 限制 」 则 是 *OP* 捶丸 *T*-2 逐渐 冷却 ， 并 未 广泛 流行 的 原因
+- ARG1: 捶丸
+- ARGM-ADV: 逐渐
+- ARGM-PRP: *T*-2
+- rel: 冷却
+
+## 系统
+
+### 系统-01
+
+- ARG0: entity described
+
+Example 1: *PRO* 没有 *OP* *T*-1 系统 的 训练 和 *OP* *T*-2 足够 的 备战
+- ARG0: *T*-1
+- rel: 系统
+
+## 停止
+
+### 停止-01
+
+- ARG0: agent/cause
+- ARG1: thing stopped
+
+Example 1: 在 伊 入侵 科威特 之后 ， 中国 立即 停止 了 对 伊 的 军事 销售
+- ARG0: 中国
+- ARG1: 对 伊 的 军事 销售
+- ARGM-ADV: 立即
+- ARGM-TMP: 在 伊 入侵 科威特 之后
+- rel: 停止
+
+Example 2: *pro* 停止 *PRO* 实行 中央 计划 经济
+- ARG0: *pro*
+- ARG1: *PRO* 实行 中央 计划 经济
+- rel: 停止
+
+Example 3: 但 这 次 欧洲 统一 货币 的 尝试 因 第一 次 世界 大战 而 被 迫 *PRO* 停止
+- ARG1: *PRO*
+- rel: 停止
+
+## 运作
+
+### 运作-01
+
+- ARG0: agent
+- ARG1: thing arg0 operates/runs
+
+Example 1: 土地 基金 将 独立 於 与 外汇 基金 之外 ， 由 香港 金融 管理局 在 财政司 司长 的 指导 下 运作
+- ARG1: 土地 基金
+- ARG0: 由 香港 金融 管理局
+- ARGM-LOC: 在 财政司 司长 的 指导 下
+- ARGM-ADV: 将
+- rel: 运作
+
+Example 2: 香港 经贸 事务 一如既往 地 运作
+- ARG1: 香港 经贸 事务
+- ARGM-ADV: 一如既往 地
+- rel: 运作
+
+Example 3: 各 地区 、 各 部门 要 关心 *RNR*-1 和 支持 金融 机构 的 健康 发展 ， 维护 金融 机构 信誉 ， 按 市场 经济 原则 规范 运作 ， 为 *PRO* 建立 新型 的 银 企 关系 创造 *OP* *T*-2 良好 的 经济 环境
+- ARG0: 各 地区 、 各 部门
+- ARGM-MNR: 按 市场 经济 原则 规范
+- rel: 运作
+
+## 注入
+
+### 注入-01
+
+- ARG0: agent/cause
+- ARG2: entity filled
+- ARG1: thing arg2 is filled with
+
+Example 1: 厦门港 今年 成为 *OP* 海峡 两 岸 *T*-3 直航 试点港 后 ， 货物 运输 被 注入 了 *OP* *T*-1 新 的 生机 和 活力
+- ARG1: *OP* *T*-1 新 的 生机 和 活力
+- ARG2: 货物 运输
+- ARGM-TMP: 厦门港 今年 成为 *OP* 海峡 两 岸 *T*-3 直航 试点港 后
+- rel: 注入
+
+Example 2: 第六 届 远东 及 南 太平洋 地区 残疾人 运动会 的 举行 ， 必 将 给 她 注入 *OP* *T*-1 新 的 活力
+- ARG0: 第六 届 远东 及 南 太平洋 地区 残疾人 运动会 的 举行
+- ARG1: *OP* *T*-1 新 的 活力
+- ARG2: 给 她
+- ARGM-ADV: 将
+- ARGM-ADV: 必
+- rel: 注入
+
+Example 3: 深圳 有关 *OP* *T*-1 负责 官员 表示 ， *pro* 要 将 “ 深业 控股 ” 建成 *OP* 深圳 *T*-2 参与 国际 资本 市场 的 “ 龙头 ” 机构 ， 适当 时候 将 注入 母公司 的 优质 资产 加快 发展
+- ARG0: *pro*
+- ARG1: 母公司 的 优质 资产
+- ARGM-ADV: 将
+- ARGM-TMP: 适当 时候
+- rel: 注入
+
+## 直接
+
+### 直接-01
+
+- ARG0: entity described
+
+Example 1: 女性 对 河流 、 水 的 感觉 更为 直接
+- ARG0: 女性 对 河流 、 水 的 感觉
+- ARGM-ADV: 更为
+- rel: 直接
+
+## 使用
+
+### 使用-01
+
+- ARG0: agent
+- ARG1: entity used
+- ARG2: entity used for
+
+Example 1: 电厂 使用 这 种 乳化油 已经 取得 了 *OP* *T*-1 令 人 *PRO* 满意 的 结果
+- ARG0: 电厂
+- ARG1: 这 种 乳化油
+- rel: 使用
+
+Example 2: 传统 的 发电 ， 一般 都 使用 煤 、 水 、 油 等
+- ARG2: 传统 的 发电
+- ARG1: 煤 、 水 、 油 等
+- ARGM-ADV: 都
+- ARGM-ADV: 一般
+- rel: 使用
+
+Example 3: *PRO* 将 *OP* *T*-1 可 盈利 百万 元 以上 的 一 整 套 “ 王码 软件 精品 ” ， 免 收 技术 费用 ， 全部 以 *OP* *T*-2 不 加密 的 软盘 方式 对 国内 “ 开放 ” ， 从而 使 国内 任何 微机 用户 *PRO* 都 可以 拷贝 使用
+- ARG0: *PRO*
+- ARGM-ADV: 都
+- rel: 使用
+
+Example 4: 它 会 对 用户 文件 进行 加密 ， 从而 使 这些 文件 *PRO* 变 得 无法 使用
+- ARG1: *PRO*
+- ARGM-ADV: 无法
+- rel: 使用
+
+Example 5: 此 车 相对 固定 给 崔广华 使用
+- ARG0: 给 崔广华
+- ARG1: 此 车
+- ARGM-ADV: 固定
+- ARGM-ADV: 相对
+- rel: 使用
+
+## 经
+
+### 经-01
+
+- ARG0: entity described
+- ARG1: thing arg0 goes through
+
+Example 1: *OP* *T*-2 经 挑选 的 申请人 须 参加 初 次 面试
+- ARG0: *T*-2
+- ARG1: 挑选
+- rel: 经
+
+Example 2: 这些 法例 大部分 未 经 条例 草案 委员会 审议
+- ARG0: 这些 法例
+- ARG1: 条例 草案 委员会 审议
+- ARGM-ADV: 未
+- ARGM-ADV: 大部分
+- rel: 经
+
+## 已
+
+### 已-01
+
+- ARG0: entity described
+
+Example 1: *pro* 不 追究 *PRO* 则 已
+- ARG0: *PRO*
+- ARGM-ADV: 则
+- ARGM-CND: *pro* 不 追究
+- rel: 已
+
+## 储存
+
+### 储存-01
+
+- ARG0: agent
+- ARG1: storage
+- ARG2: thing stored
+
+Example 1: 芯片 中 可 储存 行李 的 目的地 、 飞行 航线 等 详细 信息
+- ARG1: 芯片 中
+- ARG2: 行李 的 目的地 、 飞行 航线 等 详细 信息
+- rel: 储存
+
+## 开始
+
+### 开始-01
+
+- ARG0: entity described
+- ARG1: thing started
+
+Example 1: 目前 ， 王翔 又 开始 了 九龙街 的 建设 。
+- ARG0: 王翔
+- ARG1: 九龙街 的 建设
+- ARGM-ADV: 又
+- ARGM-TMP: 目前
+- rel: 开始
+
+Example 2: 德国 统一 后 ， 原 驻德 苏军 *PRO* 从 １９９１年 开始 分批 撤离 。
+- ARG1: *PRO*
+- ARGM-TMP: 从 １９９１年
+- rel: 开始
+
+Example 3: 活动 将 于 元旦 上午 十时三十分 开始
+- ARG1: 活动
+- ARGM-TMP: 于 元旦 上午 十时三十分
+- ARGM-ADV: 将
+- rel: 开始
+
+### 开始-02
+
+- ARG0: entity started
+
+Example 1: 二零零五年 的 夏天 ， 一 个 *OP* *T*-1 被 人们 期待 *T*-2 已 久 的 画面 开始 在 香港 的 各 大 媒体 频繁 出现
+- ARGM-TMP: 二零零五年 的 夏天
+- ARG0: 一 个 被 人们 期待 已 久 的 画面
+- ARG0-PRD: 在 香港 的 各 大 媒体 频繁 出现
+- rel: 开始
+
+## 排放
+
+### 排放-01
+
+- ARG0: agent
+- ARG1: thing discharged
+
+Example 1: *pro* 在 *OP* *T*-2 日 排放 废水 一百 吨 以上 的 一千零三十五 家 重点 污染 企业 中 已 有 八百七十八 家 完成 了 治理
+- ARG0: *T*-2
+- ARG1: 废水
+- ARG1-QTY: 一百 吨 以上
+- ARGM-ADV: 日
+- rel: 排放
+
+Example 2: 对 *OP* *T*-1 超 标 排放 企业 实行 强制 关闭
+- ARG0: *T*-1
+- rel: 排放
+
+## 称呼
+
+### 称呼-01
+
+- ARG0: agent
+- ARG1: entity arg0 calls
+- ARG2: name arg1 is called
+
+Example 1: 他 用 「 语言流 」 称呼 自己 的 语法
+- ARG0: 他
+- ARG1: 自己 的 语法
+- ARG2: 用 「 语言流 」
+- rel: 称呼
+
+Example 2: 一时 之间 很多 朋友 都 不 称呼 我 的 名字 ， 而 叫 我 「 女 状元 的 爸爸 」
+- ARG0: 很多 朋友
+- ARG2: 我 的 名字
+- ARGM-ADV: 不
+- ARGM-ADV: 都
+- ARGM-TMP: 一时 之间
+- rel: 称呼
+
+Example 3: *OP* 而 *pro* 吃 食 *T*-3 的 便 是 *OP* *T*-2 用 台语 称呼 —— 『 菜头糕 』 的 萝卜糕
+- ARG1: *T*-2
+- ARG2: —— 『 菜头糕 』
+- ARGM-MNR: 用 台语
+- rel: 称呼
+
+Example 4: 反正 *OP* *T*-1 买 *pro* 的 人 也 都 不 问 *pro* *pro* 如何 称呼
+- ARG1: *pro*
+- ARGM-ADV: 如何
+- rel: 称呼
+
+## 为
+
+### 为-01
+
+- ARG0: entity being predicated
+- ARG1: predicative
+
+Example 1: 乡镇 企业 贷款 增幅 为 百分之六十一点八三
+- ARG0: 乡镇 企业 贷款 增幅
+- ARG1: 百分之六十一点八三
+- rel: 为
+
+Example 2: 图 为 １２日 李鹏 总理 在 马六甲州 参观
+- ARG0: 图
+- ARG1: １２日 李鹏 总理 在 马六甲州 参观
+- rel: 为
+
+### 为-02
+
+- ARG0: a role of arg0
+- ARG1: entity playing the role of arg1
+
+Example 1: *OP* *T*-2 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德 为 团长 的 澳大利亚 代表团
+- ARG1: 团长
+- ARG0: 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德
+- rel: 为
+
+Example 2: *pro* 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中 ， 以 日本 为 最 多
+- ARG0: *pro*
+- ARG1: 最 多
+- ARG2: 以 日本
+- ARGM-LOC: 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中
+- rel: 为
+
+### 为-03
+
+- ARG0: entity being predicated
+- ARG1: predicate
+
+Example 1: 巴格瓦特 是 *OP* *T*-1 １９９６年 ９月 被 任命 为 印度 海军 参谋长 的
+- ARG0: *T*-1
+- ARG1: 印度 海军 参谋长
+- ARGM-TMP: １９９６年 ９月
+- rel: 为
+
+### 为-04
+
+- ARG0: agent/doer
+- ARG1: thing done
+
+Example 1: *PRO* “ 有 所 为 ， 有 所 不 为 ” 的 原则
+- ARG0: *PRO*
+- rel: 为
+
+### 为-05
+
+- ARG0: agent/doer
+- ARG1: reason/purpose
+
+Example 1: 我们 学 电影 ， 嗯 ， 写 东西 是 为 什么
+- ARG0: 我们 学 电影 ， 写 东西
+- ARG1: 什么
+- rel: 为
+
+## 称为
+
+### 称为-01
+
+- ARG0: name giver
+- ARG1: name receiver
+- ARG2: name
+
+Example 1: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话 ， 那么 文部 草原 应当 称为 *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”
+- ARG1: 文部 草原
+- ARG2: *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”
+- ARGM-CND: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话
+- rel: 称为
+
+Example 2: 防城港 、 钦州 、 北海 和 湛江 ， 被 人们 称为 西南 出海 大 通道 的 “ 龙头 ”
+- ARG0: 人们
+- ARG1: 防城港 、 钦州 、 北海 和 湛江
+- ARG2: 西南 出海 大 通道 的 “ 龙头 ”
+- rel: 称为

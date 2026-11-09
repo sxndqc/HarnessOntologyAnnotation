@@ -1,0 +1,98 @@
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph and alignment, then all the document-level relations (temporal, modal, coreference) of the
+document. Follow the guidelines below. The document is under **Input** at the end, one sentence per line.
+
+## Guidelines
+
+The full UMR guidelines (umr4nlp/umr-guidelines `guidelines.md`, about 366,000 characters) are
+attached to this message as `umr_guidelines.md`. Read them before you annotate. They often write the older
+short names (AUTH, DCT, FullAff, :modstr); your answer uses the release names listed under Output format.
+
+
+## Output format
+
+Write plain text only (no JSON, no commentary). For every sentence, in order:
+
+    # ::snt 1
+    # sentence level graph:
+    (s1t / taste-01
+        :ARG0 (s1p / person
+            :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+        :ARG1 (s1f / free-04
+            :ARG1 s1p
+            :aspect state)
+        :temporal (s1t2 / today)
+        :aspect performance)
+    # alignment:
+    s1t: 3-3
+    s1p: 1-2
+    s1n: 0-0
+    s1f: 4-4
+    s1t2: 5-5
+
+then, once, after the last sentence, every document-level relation of the whole document in one graph:
+
+    # document level relations:
+    (d / document
+        :temporal ((document-creation-time :depends-on s1t2)
+                   (s1t2 :contained s1t)
+                   (s1t :before s2c))
+        :modal ((root :modal author)
+                (author :full-affirmative s1t)
+                (author :full-affirmative s2c))
+        :coref ((s1p :same-entity s2p)))
+
+- `# ::snt N` uses the sentence number of the input line. Every sentence gets a graph, even a short one.
+- Variables of sentence N start with `s` + N and a letter (`s3p`, `s3x2`), all different. A node that
+  fills two roles in one sentence is written once and then named by its variable.
+- Alignment: one line per variable, `variable: first-last` with the word positions of the input line
+  (counted from 1); `0-0` for a node with no word.
+- Document level: `(parent :relation child)` triples, grouped under `:temporal`, `:modal`, `:coref`;
+  each end is a variable of a sentence graph or a constant (`author`, `root`, `document-creation-time`,
+  `past-reference`, `present-reference`, `future-reference`, `null-conceiver`).
+- Use the names of the UMR release data: `author` (not AUTH), `document-creation-time` (not DCT),
+  `full-affirmative`, `partial-affirmative`, `neutral-affirmative`, `neutral-negative`,
+  `partial-negative`, `full-negative`, `unspecified` (not FullAff, ...), `:modal-strength` (not
+  :modstr), `:refer-person` / `:refer-number` with lower-case values (`3rd`, `singular`), and lower-case
+  aspect values (`performance`, `state`, ...).
+- Write the whole document: do not stop early, do not summarise, do not skip sentences.
+
+## Input
+
+Language: en
+Document: english_umr-0007 (29 sentences)
+
+The document, one sentence per line: the sentence number, a tab, then its words separated by spaces
+(the alignment refers to these word positions, counted from 1 in each sentence).
+
+1	The United States is hoping that Russia's President Vladimir Putin will follow the advice of his special commission and pardon Edmund Pope .
+2	This week the American businessman began serving a 20-year prison sentence in Moscow after being convicted of spying.
+3	Specifically Russian prosecutors charged that Pope had stolen secrets relating to a high - speed Russian torpedo .
+4	Pope denied the charges and Washington backed him up .
+5	Marsha Lipman is Editor of Moscow based news magazine ' Itogi ' .
+6	Marsha , did the Presidential Pardons Commission give any reason for their decision ?
+7	It gave several reasons .
+8	I am not sure if those were the formal reasons but members of the commission have been interviewed today by various outlets and they say that they were afraid of the spy mania rising in Russia , that they thought it was really suspicious to them that Edmund Pope was sentenced to the maximum term , whereas the article of the law had 10 to 20 years.
+9	He was sentenced to 20 , even though according to the members of the Pardon Commission , the evidence that was presented by the prosecution was far from quotient .
+10	They also said this court did not give the lawyers for the defense due procedure .
+11	The court listened to the defense much less than it did to the prosecution .
+12	Much of this sounds less like a pardon and more like a criticism of the number of institutions that Mr. Putin also has to show some support of , including his court system and his police and his prosecutors .
+13	How is he going to respond to this and when ?
+14	I don't think anybody knows and I don't think anybody will know until President Putin has responded .
+15	It is his decision .
+16	According to the Russian law the Pardon Commission , after it has made its decision , sends it to the President and it's up to him whether to endorse it or not to say no .
+17	One last question for you , Marsha .
+18	He does have a lot to balance doesn't he , President Putin ?
+19	Not only the institutions I mentioned but the need to keep things somehow free of tension .
+20	Is this case likely to strain US - Russian relations ?
+21	I'm afraid it might .
+22	Recently the Russian policy toward the US has fallen into a line where Russia tries to demonstrate force it once had but no longer does .
+23	It wants to put an end to what is regarded by the current Russian government as humiliation of the past years .
+24	There were numerous attempts to be a source of minor troubles even though Russia can no longer be a source of scare to the west and among such instances there were several , there was just recently flying over by Russian military planes over Kitty Hawk , an American warship .
+25	There is also a scandal that erupted over Russia's declaration that it will sell weapons to Iran , contrary to the earlier made agreement .
+26	Such examples are quite a few already , some of them are combined with material profits for Russia but not necessarily .
+27	Marsha Lipman is Editor of the Moscow based news magazine ' Itogi ' .
+28	Marsha , thank you very much for speaking with us .
+29	Pleasure .

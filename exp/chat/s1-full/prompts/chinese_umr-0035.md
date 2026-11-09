@@ -1,0 +1,95 @@
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph and alignment, then all the document-level relations (temporal, modal, coreference) of the
+document. Follow the guidelines below. The document is under **Input** at the end, one sentence per line.
+
+## Guidelines
+
+The full UMR guidelines (umr4nlp/umr-guidelines `guidelines.md`, about 366,000 characters) are
+attached to this message as `umr_guidelines.md`. Read them before you annotate. They often write the older
+short names (AUTH, DCT, FullAff, :modstr); your answer uses the release names listed under Output format.
+
+
+## Output format
+
+Write plain text only (no JSON, no commentary). For every sentence, in order:
+
+    # ::snt 1
+    # sentence level graph:
+    (s1t / taste-01
+        :ARG0 (s1p / person
+            :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+        :ARG1 (s1f / free-04
+            :ARG1 s1p
+            :aspect state)
+        :temporal (s1t2 / today)
+        :aspect performance)
+    # alignment:
+    s1t: 3-3
+    s1p: 1-2
+    s1n: 0-0
+    s1f: 4-4
+    s1t2: 5-5
+
+then, once, after the last sentence, every document-level relation of the whole document in one graph:
+
+    # document level relations:
+    (d / document
+        :temporal ((document-creation-time :depends-on s1t2)
+                   (s1t2 :contained s1t)
+                   (s1t :before s2c))
+        :modal ((root :modal author)
+                (author :full-affirmative s1t)
+                (author :full-affirmative s2c))
+        :coref ((s1p :same-entity s2p)))
+
+- `# ::snt N` uses the sentence number of the input line. Every sentence gets a graph, even a short one.
+- Variables of sentence N start with `s` + N and a letter (`s3p`, `s3x2`), all different. A node that
+  fills two roles in one sentence is written once and then named by its variable.
+- Alignment: one line per variable, `variable: first-last` with the word positions of the input line
+  (counted from 1); `0-0` for a node with no word.
+- Document level: `(parent :relation child)` triples, grouped under `:temporal`, `:modal`, `:coref`;
+  each end is a variable of a sentence graph or a constant (`author`, `root`, `document-creation-time`,
+  `past-reference`, `present-reference`, `future-reference`, `null-conceiver`).
+- Use the names of the UMR release data: `author` (not AUTH), `document-creation-time` (not DCT),
+  `full-affirmative`, `partial-affirmative`, `neutral-affirmative`, `neutral-negative`,
+  `partial-negative`, `full-negative`, `unspecified` (not FullAff, ...), `:modal-strength` (not
+  :modstr), `:refer-person` / `:refer-number` with lower-case values (`3rd`, `singular`), and lower-case
+  aspect values (`performance`, `state`, ...).
+- Write the whole document: do not stop early, do not summarise, do not skip sentences.
+
+## Input
+
+Language: zh
+Document: chinese_umr-0035 (26 sentences)
+
+The document, one sentence per line: the sentence number, a tab, then its words separated by spaces
+(the alignment refers to these word positions, counted from 1 in each sentence).
+
+1	2025 年 美国 总统 就职 典礼 ， 官方 名称 为 第 60 届 美国 总统 就职 典礼 （ 英语 ： The 60 th Presidential Inauguration ） ， 也 称为 唐纳德 · 特朗普 第二 次 总统 就职 典礼 ， 为 第 47 任 美国 总统 唐纳德 · 特朗普 于 2025 年 1 月 20 日 周一 举行 的 就职 典礼
+2	美国 总统 当选人 唐纳德 · 特朗普 与 美国 副 总统 当选人 J · D · 万斯 在 这天 正式 宣誓 就职 ， 标志着 二人 领导 的 共和党 政府 4年 任期 的 开始
+3	根据 传统 ， 2025 年 1 月 17 日 到 21 日 ， 首都 华盛顿 特区 会 举办 音乐会 、 宣誓 仪式 、 午宴 、 游行 、 就职 舞会 、 各 宗教 派别 就职 祷告 仪式 等 就职 活动
+4	这次 就职 典礼 的 主题 是 “ 恢复 信心 ”
+5	2025 年 1 月 17 日 ， 考量 到 天气 预报 华盛顿 当日 最高 气温 只有 摄氏 零下 5 度 、 最低 零下 11 度 以及 风寒 效应 对 体感 温度 的 影响 ， 特朗普 宣布 为 因应 严寒 天气 将其 就职 典礼 由 美国 国会大厦 西侧 草坪 转移 到 国会大厦 圆形 大厅内 举行
+6	这 是 自 1985 年 1 月 21 日 第 40 任 美国 总统 罗纳德 · 里根 及 第 43 任 美国 副 总统 乔治 · 赫伯特 · 沃克 · 布什 的 就职 典礼 以来 再次 于 室内 举行
+7	佩洛西 等 20 多位 民主党 众议员 未 参加 此次 就职 典礼
+8	背景
+9	就职 典礼 标志 着 在 2024 年 美国 总统 选举 中 当选 的 唐纳德 · 特朗普 正式 结束 总统 过渡期 并就任 总统
+10	特朗普 自 就职 起 凭借 78 岁 7 月 6 天 的 高龄 ， 打破 乔·拜登 的 纪录 ， 成为 上任 时 最 年长 的 美国 总统
+11	国会 联合 委员会
+12	2024 年 5 月 ， 国会 两院 任命 了 一个 就职 典礼 联合 委员会 ， 以 监督 平台 和 其他 临时 结构 的 建设 ， 这些 建筑 预计 将 用于 户外 仪式 和 庆祝 活动
+13	首届 平台 的 建造 仪式 于 2024 年 9 月 18 日 开始
+14	安全
+15	2024 年 10 月 、 美国 国会 警察 进行 了 一次 情报 评估 ， 结论 是 ， 一个 激进 组织 “ 曾 进行 过 大规模 的 非法 示威 活动 ， 无论 结果 如何 ， 都 计划 抗议 就职 典礼 ” ， 而 其他 抗议 以色列-哈马斯 战争 的 组织 “ 几乎 肯定 会 以 就职 典礼 为 目标 ” ， 无论 美国 总统 大选 的 获胜者 是 谁
+16	参与 策划 仪式 的 机构 包括 美国国会 警察局 、 华盛顿 特区 大都会 警察局 和 美国 公园 警察局
+17	24 个州 为 选举人票 认证 和 就职 典礼 提供 国民警卫队 支持
+18	1 月 17 日 ， 约 8 , 000 名 国民警卫队士兵 被 任命 为 美国 特别 副 法警 ， 赋予 他们 在 国家 首都 地区 的 警务 权力
+19	就职 委员会
+20	2024 年 11 月 9 日 ， 特朗普 宣布 成立 特朗普 / 万斯 就职 委员会 ， 致力于 规划 就职 活动
+21	委员会 联合 主席 是 史蒂夫 · 维特科夫 和 前 美国 参议员 凯利 · 勒弗勒 ， 他们 是 当选 总统 的 长期 朋友 和 支持者
+22	捐款
+23	美国 各大 科技 公司 的 领导人 承诺 为 就职 典礼 捐款 和 服务
+24	OpenAI 首席 执行官 萨姆 · 阿尔特曼 通过 发言人 表示 ， 他 将 个人 捐款 100 万美元
+25	Meta 负责人 、 Facebook 和 Instagram 的 马克 · 扎克伯格 捐赠 了 100 万美元
+26	12 月 23 日 ， 福特 汽车 公司 和 通用 汽车 公司 宣布 将 各 捐赠 100 万美元 并 为 总统 就职 典礼 提供 车队

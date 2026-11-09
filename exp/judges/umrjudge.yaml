@@ -1,0 +1,204 @@
+# Everything umrjudge.py scores is declared here; the program only reads this.
+#
+# The judge compares a predicted .umr file with a gold one, sentence by
+# sentence. AnCast decides which predicted node corresponds to which gold node
+# (its match_list01 / match_list10). Every check below then looks at ONE thing
+# about the matched nodes and edges: is the concept the same, is the sense the
+# same, is the aspect the same, how far apart are the arguments.
+#
+# A check produces units. Each unit gets one verdict:
+#   correct   gold and prediction agree
+#   partial   they half agree (the check says how much in `credit`)
+#   wrong     both sides have the thing and they disagree
+#   missing   gold has it, the prediction does not
+#   extra     the prediction has it, gold does not
+# and the credit of a verdict is the table under `scoring`.
+#
+# To add a measurement, add an entry under `checks`. To change what counts as
+# an event or a core argument, edit `node_types` or `role_groups`.
+
+
+# ---------------------------------------------------------------- AnCast
+match:
+  cneighbor: 1              # weight of neighbour information when matching
+  sense_coefficient: 0.1    # weight of the sense id when comparing concepts
+  separate_1_and_2: false
+  use_alignment: false
+  use_smatch_top: true
+
+
+# ------------------------------------------------------------ node types
+# A node gets the first type whose `when` holds. Names are lower-cased by
+# AnCast, so everything here is lower case. The type of a matched pair is the
+# gold node's type; an unmatched prediction node uses its own.
+#
+#   has_relation    the node has an outgoing role of this name
+#   has_attribute   the node has an attribute (a role whose value is a literal)
+#   concept_in      the concept is one of these
+#   concept_regex   the concept, written with its sense (have-org-role-91), matches this regular expression
+#   has_sense       the concept has a sense number (run-02)
+#   default         always
+node_types:
+  - name: named_entity
+    when: {has_relation: name}
+  - name: name_node         # the (n / name :op1 ...) node itself; f judges its tokens
+    when: {concept_in: [name]}
+  - name: date
+    when: {concept_in: [date-entity, date-interval]}
+  - name: quantity
+    when: {concept_regex: "(-quantity|-entity)$"}
+  - name: abstract_event
+    when: {concept_regex: "^(have|belong|exist|include|identity|resemble|be)(-[a-z\\-]*)?-9[0-9]$"}
+  - name: event
+    when: {has_sense: true}
+  - name: event
+    when: {has_attribute: aspect}
+  - name: entity
+    when: {default: true}
+
+
+# ------------------------------------------------------------ role groups
+# A role belongs to the first group with a matching pattern (regular
+# expressions, lower case). `name` and `op` are the pieces of a named entity.
+role_groups:
+  - name: core
+    patterns: ["^arg[0-9]$"]
+  - name: name
+    patterns: ["^name$"]
+  - name: op
+    patterns: ["^op[0-9]+$"]
+  - name: peripheral
+    patterns: ["^(temporal|place|manner|purpose|cause|condition|concession|extent|instrument|beneficiary|accompanier|source|goal|path|direction|duration|frequency|age|poss|possessor|mod|quant|ord|unit|topic|medium|material|subevent|subset|part|example|compared-to|degree|li|domain|wiki|ref-number|ref-person)$"]
+  - name: other
+    patterns: [".*"]
+
+
+# ----------------------------------------------------------------- checks
+# kind                what it compares
+#   node_coverage     does a gold node of these types have a match (and is
+#                     there any unmatched prediction node of these types)
+#   concept_value     matched nodes: is the concept the same
+#   sense_value       matched nodes with the same concept: same sense number
+#   attribute_value   matched nodes: same value for each attribute
+#   argument_set      matched heads: how far apart are the argument sets
+#   role_label        matched edges: same role label
+#   name_ops          matched named entities: same name tokens
+#   reentrancy        edges that point back at an already-declared node
+#   granularity       aligned spans: is each node cut at the same words
+#
+# `module` is the letter of the fine-grained module the check belongs to.
+# Checks in a to f never see reentrancy edges (`skip_reentrant`), so what
+# module g finds cannot move their scores.
+checks:
+
+  # a. head: is there a node, and is its concept right
+  - {id: a_event_found,       module: a, kind: node_coverage, types: [event, abstract_event]}
+  - {id: a_event_concept,     module: a, kind: concept_value, types: [event, abstract_event]}
+  - {id: a_entity_found,      module: a, kind: node_coverage, types: [entity, named_entity, date, quantity]}
+  - {id: a_entity_concept,    module: a, kind: concept_value, types: [entity, named_entity, date, quantity]}
+  # are the nodes cut at the same words (one node for several gold nodes, or
+  # the other way round); compared on characters, nodes aligned to 0-0 left out
+  - {id: a_granularity,       module: a, kind: granularity, breakdown: [granularity]}
+
+  # b. sense: the PropBank roleset number, once the concept is right
+  - {id: b_event_sense,       module: b, kind: sense_value, types: [event]}
+
+  # c. aspect and modal strength, then the other literal attributes
+  - {id: c_aspect,            module: c, kind: attribute_value, types: [event, abstract_event], attributes: [aspect]}
+  - {id: c_modstr,            module: c, kind: attribute_value, types: [event, abstract_event], attributes: [modal-strength, modstr]}
+  - {id: c_polarity,          module: c, kind: attribute_value, types: [event, abstract_event, entity, named_entity, date, quantity], attributes: [polarity]}
+  # pronouns: refer-number / refer-person (an extra one is a non-pronoun given them)
+  - {id: c_refer,             module: c, kind: attribute_value, types: [event, abstract_event, entity, named_entity, date, quantity], attributes: [refer-number, refer-person]}
+  - id: c_other_attributes
+    module: c
+    kind: attribute_value
+    types: [event, abstract_event, entity, named_entity, date, quantity]
+    attributes: "*"
+    except: [aspect, modal-strength, modstr, wiki, polarity, refer-number, refer-person]
+
+  # d. arguments: how far apart are the argument sets of a matched head
+  - {id: d_core_args_event,      module: d, kind: argument_set, heads: [event],          roles: [core],       skip_reentrant: true}
+  - {id: d_core_args_abstract,   module: d, kind: argument_set, heads: [abstract_event], roles: [core],       skip_reentrant: true}
+  - {id: d_peripheral_event,     module: d, kind: argument_set, heads: [event],          roles: [peripheral], skip_reentrant: true}
+  - {id: d_peripheral_entity,    module: d, kind: argument_set, heads: [entity, named_entity, quantity, date], roles: [peripheral], skip_reentrant: true}
+
+  # e. role labels: given that the edge is there, is the label right
+  - {id: e_core_labels,          module: e, kind: role_label, roles: [core],       skip_reentrant: true}
+  - {id: e_peripheral_labels,    module: e, kind: role_label, roles: [peripheral], skip_reentrant: true}
+
+  # f. named entities: the name tokens and the wiki title
+  - {id: f_name_tokens,          module: f, kind: name_ops}
+  - {id: f_wiki,                 module: f, kind: attribute_value, types: [named_entity], attributes: [wiki]}
+
+  # g. reentrancy: judged on its own, after everything above
+  - {id: g_reentrancy,           module: g, kind: reentrancy}
+
+  # h-j. document level (`level: document`): the relations between nodes of
+  # different sentences. Predicted variables are first turned into the gold
+  # variables AnCast matched them to in their own sentences.
+  #   dependency      one unit per child node: its parent(s) and relation(s)
+  #   coref_chain     identity coreference as chains, one unit per mention:
+  #                   is it linked to the same other mentions as in gold
+  #   relation_set    the listed relations, one unit per relation
+  #   doc_format      the predicted relations alone: well formed or not
+  # A unit's `sent` is the sentence of its child node / mention.
+
+  # Each has ONE score; `breakdown` only groups its units in judge/details.md
+  # (parent_kind: what the gold parent is; error: right parent / wrong relation
+  # and so on; by: who wrote the predicted relation; confusion: gold label ->
+  # predicted label).
+
+  # h. temporal dependency
+  - {id: h_temporal,             module: h, kind: dependency, level: document, section: temporal,
+     breakdown: [parent_kind, error], confusion: true}
+  # i. modal dependency (with the cleanup below, a sentence-graph :modal-strength is here too):
+  #    conceiver (the parent) and strength (the label) are told apart by `error`
+  - {id: i_modal,                module: i, kind: dependency, level: document, section: modal,
+     breakdown: [parent_kind, error, by], confusion: true}
+  # j. coreference; window = how many sentences back the document skill sees,
+  #    so a link further back is told apart in the breakdown
+  - {id: j_coref_chain,          module: j, kind: coref_chain, level: document, relations: [same-entity, same-event],
+     window: 5, breakdown: [mention_kind, distance, error]}
+  - {id: j_coref_subset,         module: j, kind: relation_set, level: document, section: coref, relations: [subset-of, subset]}
+
+  # k. is the predicted document level well formed at all (no gold needed):
+  #    references resolved, known constants, labels of their section, no
+  #    later-sentence ends, no self-links, one temporal parent, (root :modal author)
+  - id: k_doc_format
+    module: k
+    kind: doc_format
+    level: document
+    breakdown: [problem]
+    constants: [author, root, document-creation-time, past-reference, present-reference, future-reference, null-conceiver]
+    labels:
+      temporal: [before, after, overlap, contains, contained, depends-on]
+      modal: [modal, full-affirmative, partial-affirmative, neutral-affirmative, neutral-negative, partial-negative, full-negative, unspecified]
+      coref: [same-entity, same-event, subset-of]
+
+
+# ----------------------------------------------------------------- cleanup
+# Chun & Xue's cleanup, the one AnCast++ is scored with
+# (scripts/compare_ancast.py): a :modal-strength in a sentence graph, in gold
+# or in the prediction, leaves the sentence graph and becomes the modal
+# relation (author :value node), unless that relation is already there. With
+# it, c_modstr has nothing left to judge and i_modal judges modal strength.
+cleanup:
+  move_modal_strength: true
+
+
+# ----------------------------------------------------------------- scoring
+scoring:
+  # credit of a verdict; a unit that carries its own `credit` (argument_set
+  # does: the share of the arguments that agree) uses that instead
+  credit: {correct: 1.0, partial: 0.5, wrong: 0.0, missing: 0.0, extra: 0.0}
+  # recall counts the gold side (correct, partial, wrong, missing), precision
+  # the prediction side (correct, partial, wrong, extra); `score` is the F1 of
+  # the two
+  gold_side: [correct, partial, wrong, missing]
+  pred_side: [correct, partial, wrong, extra]
+  # attribute values that are numbers compare equal within this tolerance
+  numeric_tolerance: 0.000001
+  # an argument_set head the prediction never produced is already counted by
+  # node_coverage; count its arguments as missing too (true) or leave them out
+  # so each check judges one thing (false)
+  count_arguments_of_unmatched_heads: false

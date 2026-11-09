@@ -1,0 +1,204 @@
+"""search_annotations and search_guidelines (copied from ai-native-annotator.github.io data/skillparse/web_tools/search.py;
+here plain Python: files read from disk, the sentences to leave out set with set_skip).
+
+    search_annotations(language, keywords)  gold UMR annotations of whole sentences that contain the
+                                            keywords
+    search_guidelines(keywords)             the sections of the UMR guidelines that contain them
+
+The data is under data/skillparse/resources/ (built by scripts/sync_skillparse.py):
+gold/zh/gold.json, gold/en/gold.json and guidelines/umr_guidelines.md, read on the first search from
+$SP_RESOURCES (by default the sibling checkout's data/skillparse/resources/).
+
+The test documents (set_skip: their names, and the texts of the document being annotated, since
+english_umr-0005 and -0007 are one text) are never returned: their answers must not leak.
+"""
+import json
+import os
+import re
+
+MAX_RESULTS = 10
+MAX_TEXT = 6000                 # characters of one returned annotation or section
+CHUNK = 3000                    # a guideline section longer than this is returned in passages
+LANGS = {"zh": "zh", "chinese": "zh", "中文": "zh", "汉语": "zh", "en": "en", "english": "en", "英文": "en", "英语": "en",
+         "uz": "uz", "uzbek": "uz", "o'zbek": "uz", "oʻzbek": "uz", "o'zbekcha": "uz"}
+GOLD = ("zh", "en")             # the languages there is gold data for
+_cache = {}
+_skip = {"docs": set(), "texts": set()}
+
+
+def set_skip(docs=(), texts=()):
+    """Gold sentences search_annotations never returns: every sentence of these documents and these
+    sentence texts (spaces ignored)."""
+    _skip["docs"] = set(docs)
+    _skip["texts"] = {_plain(t) for t in texts}
+
+
+def search_annotations(language: str, keywords: list[str], max_results: int = 3) -> dict:
+    """Find how a case is annotated: gold UMR annotations of whole sentences.
+
+    language: "zh" (Chinese) or "en" (English); there is no gold data for "uz" (Uzbek).
+    keywords: words or pieces to look for, matched anywhere in a sentence or its annotation:
+    words of the text (e.g. "发生", "wanted to"), concepts ("have-org-role-91", "identity-91"),
+    roles (":ARG1-of", ":manner"), attribute values (":aspect state"). Sentences with more of the
+    keywords come first.
+    max_results: how many gold sentences to return (at most 10).
+
+    Returns {"gold": [{"doc", "sentence_number", "sentence", "annotation"}], where annotation is
+    the sentence's whole annotation (words, sentence-level graph, alignment, document-level
+    annotation); "found": how many gold sentences matched in all}.
+    """
+    lang = _lang(language)
+    if lang is None:
+        return {"gold": [], "error": f"language must be zh, en or uz, not {language!r}"}
+    if lang not in GOLD:
+        return {"gold": [], "found": 0, "note": f"there is no gold data for {language!r}"}
+    words = _keywords(keywords)
+    if not words:
+        return {"gold": [], "error": "give at least one keyword"}
+    n = _count(max_results, 3)
+    skip = _skip["texts"]
+    gold, left_out = [], 0
+    for rec, low in _gold(lang):
+        hits = _hits(low, words, lowered=True)
+        if not hits[0]:
+            continue
+        if rec["doc"] in _skip["docs"] or _plain(rec["text"]) in skip:
+            left_out += 1
+            continue
+        gold.append((hits, len(rec["annotation"]), rec))
+    gold.sort(key=lambda x: (-x[0][0], -x[0][1], x[1]))
+    out = {
+        "gold": [{"doc": r["doc"], "sentence_number": r["snt"], "sentence": r["text"],
+                  "annotation": _clip(r["annotation"])} for _, _, r in gold[:n]],
+        "found": len(gold),
+    }
+    if left_out:
+        out["left_out"] = f"{left_out} matching sentences of the test documents are not shown"
+    return out
+
+
+def search_guidelines(keywords: list[str], max_results: int = 3) -> dict:
+    """Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).
+
+    keywords: terms to look for, e.g. "aspect", "modal strength", "have-rel-role-92", ":quant",
+    "reentrancy". Passages with more of the keywords come first, then those whose heading has
+    them, then those that mention them most.
+    max_results: how many passages to return (at most 10).
+
+    Returns {"sections": [{"heading": the passage's place in the guidelines ("Part 3. ... > Part
+    3-3-1. Aspect"), "text": the passage (a section, or a part of a long one)}], "found": how
+    many passages matched}.
+    """
+    words = _keywords(keywords)
+    if not words:
+        return {"sections": [], "error": "give at least one keyword"}
+    n = _count(max_results, 3)
+    found = []
+    for path, text in _guideline_sections():
+        hits = _hits(path + "\n" + text, words)
+        if hits[0]:
+            in_head = _hits(path, words)[0]
+            found.append(((hits[0], in_head, hits[1] * 1000 // max(1, len(text))), len(text), path, text))
+    found.sort(key=lambda x: (-x[0][0], -x[0][1], -x[0][2], x[1]))
+    return {"sections": [{"heading": p, "text": _clip(t)} for _, _, p, t in found[:n]], "found": len(found)}
+
+
+# ------------------------------------------------------------------ helpers
+
+def _lang(language):
+    return LANGS.get(str(language or "").strip().lower())
+
+
+def _keywords(keywords):
+    if isinstance(keywords, str):
+        keywords = re.split(r"[,，;；\s]+", keywords)
+    return [k.strip().lower() for k in (keywords or []) if isinstance(k, str) and k.strip()]
+
+
+def _count(n, default):
+    try:
+        return max(1, min(MAX_RESULTS, int(n)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _hits(text, words, lowered=False):
+    """(how many of the keywords occur, how many times in all)."""
+    low = text if lowered else text.lower()
+    counts = [low.count(w) for w in words]
+    return sum(1 for c in counts if c), sum(counts)
+
+
+def _plain(text):
+    return re.sub(r"\s+", "", str(text))
+
+
+def _clip(text):
+    return text if len(text) <= MAX_TEXT else text[:MAX_TEXT] + "\n… (%d more characters)" % (len(text) - MAX_TEXT)
+
+
+def _resources():
+    """The web repo's resources folder: $SP_RESOURCES, else the sibling checkout of
+    ai-native-annotator/ai-native-annotator.github.io next to this repository."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.environ.get("SP_RESOURCES") or os.path.normpath(os.path.join(
+        here, "..", "..", "..", "ai-native-annotator.github.io", "data", "skillparse", "resources"))
+
+
+def _read(rel):
+    """A resource file's text, from the web repo's data/skillparse/resources/ (see _resources)."""
+    if rel in _cache:
+        return _cache[rel]
+    path = os.path.join(_resources(), rel)
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+    _cache[rel] = text
+    return text
+
+
+def _gold(lang):
+    """[(record, its sentence and annotation in lower case)], made once: a search runs through
+    every sentence (31,147 in English)."""
+    key = "gold:" + lang
+    if key not in _cache:
+        recs = json.loads(_read("gold/%s/gold.json" % lang))
+        _cache[key] = [(r, (r["text"] + "\n" + r["annotation"]).lower()) for r in recs]
+    return _cache[key]
+
+
+
+def _guideline_sections():
+    key = "guidelines"
+    if key not in _cache:
+        text = _read("guidelines/umr_guidelines.md")
+        sections, path, body = [], [], []
+        title = ""
+
+        def close():
+            # a long section is cut at paragraphs into passages of about CHUNK characters
+            text = "\n".join(body).strip()
+            if not text:
+                return
+            head = " > ".join(path) or title
+            parts, cur = [], ""
+            for para in re.split(r"\n\s*\n", text):
+                if cur and len(cur) + len(para) > CHUNK:
+                    parts.append(cur)
+                    cur = ""
+                cur = cur + "\n\n" + para if cur else para
+            if cur:
+                parts.append(cur)
+            for k, part in enumerate(parts):
+                sections.append((head + (" (%d/%d)" % (k + 1, len(parts)) if len(parts) > 1 else ""), part))
+        for line in text.split("\n"):
+            m = re.match(r"^(#{1,6})\s+(.*?)\s*#*\s*$", line)
+            if m:
+                close()
+                level = len(m.group(1))
+                path = path[:level - 1] + [m.group(2)]
+                body = [line]
+            else:
+                body.append(line)
+        close()
+        _cache[key] = sections
+    return _cache[key]

@@ -1,0 +1,81 @@
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph and alignment, then all the document-level relations (temporal, modal, coreference) of the
+document. Follow the guidelines below. The document is under **Input** at the end, one sentence per line.
+
+## Guidelines
+
+The full UMR guidelines (umr4nlp/umr-guidelines `guidelines.md`, about 366,000 characters) are
+attached to this message as `umr_guidelines.md`. Read them before you annotate. They often write the older
+short names (AUTH, DCT, FullAff, :modstr); your answer uses the release names listed under Output format.
+
+
+## Output format
+
+Write plain text only (no JSON, no commentary). For every sentence, in order:
+
+    # ::snt 1
+    # sentence level graph:
+    (s1t / taste-01
+        :ARG0 (s1p / person
+            :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+        :ARG1 (s1f / free-04
+            :ARG1 s1p
+            :aspect state)
+        :temporal (s1t2 / today)
+        :aspect performance)
+    # alignment:
+    s1t: 3-3
+    s1p: 1-2
+    s1n: 0-0
+    s1f: 4-4
+    s1t2: 5-5
+
+then, once, after the last sentence, every document-level relation of the whole document in one graph:
+
+    # document level relations:
+    (d / document
+        :temporal ((document-creation-time :depends-on s1t2)
+                   (s1t2 :contained s1t)
+                   (s1t :before s2c))
+        :modal ((root :modal author)
+                (author :full-affirmative s1t)
+                (author :full-affirmative s2c))
+        :coref ((s1p :same-entity s2p)))
+
+- `# ::snt N` uses the sentence number of the input line. Every sentence gets a graph, even a short one.
+- Variables of sentence N start with `s` + N and a letter (`s3p`, `s3x2`), all different. A node that
+  fills two roles in one sentence is written once and then named by its variable.
+- Alignment: one line per variable, `variable: first-last` with the word positions of the input line
+  (counted from 1); `0-0` for a node with no word.
+- Document level: `(parent :relation child)` triples, grouped under `:temporal`, `:modal`, `:coref`;
+  each end is a variable of a sentence graph or a constant (`author`, `root`, `document-creation-time`,
+  `past-reference`, `present-reference`, `future-reference`, `null-conceiver`).
+- Use the names of the UMR release data: `author` (not AUTH), `document-creation-time` (not DCT),
+  `full-affirmative`, `partial-affirmative`, `neutral-affirmative`, `neutral-negative`,
+  `partial-negative`, `full-negative`, `unspecified` (not FullAff, ...), `:modal-strength` (not
+  :modstr), `:refer-person` / `:refer-number` with lower-case values (`3rd`, `singular`), and lower-case
+  aspect values (`performance`, `state`, ...).
+- Write the whole document: do not stop early, do not summarise, do not skip sentences.
+
+## Input
+
+Language: zh
+Document: chinese_umr-0028 (12 sentences)
+
+The document, one sentence per line: the sentence number, a tab, then its words separated by spaces
+(the alignment refers to these word positions, counted from 1 in each sentence).
+
+1	16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，
+2	而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，
+3	能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。
+4	这 就 是 三星 B560 ， 你 值得 拥有 !
+5	方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。
+6	它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。
+7	高清 的 HDMI 接口 成为 现在 市场 的 主流 ， 很 有 可能 HDMI 就 是 2012 的 一 个 趋势 ， 同时 还 保留 有 VGA 的 接口 ， 让 消费者 在 不同 需求 上 得到 满足 。
+8	福韵 B560 系列 的 诠释 有 ： “ 福运 ” 、 “ 幸福 ” 、 和 拥有 贵族 的 “ 韵 ” 味 。
+9	左右上角 的 两 条 龙 设计 的 毫 无 瑕疵 ， 机身 背后 写 有 一 个 大大 的 “ 福 ” 字 ， 并且 拥有 古代 龙纹 图案 ， 这些 都 有 浓郁 的 中国 元素 。
+10	金黄色 的 B560 系列 看 起来 更 符合 龙年 的 韵味 ， 背部 的 福 字 也 更加 现眼 . 。
+11	中国人 的 习俗 ， 把 龙 当做 为 吉祥物 。
+12	在 龙年 快 要 到来 之 时 还 不 赶快 把 “ 福韵 ” 带 回家 ！

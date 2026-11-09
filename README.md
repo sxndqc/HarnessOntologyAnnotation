@@ -13,6 +13,7 @@
 - `analysis/annoforge.py`：`extract --src ../SkillParseUMR` 抽数据，`make` 出表、图、宏和统计检验。
 - `notes/new_references.md`、`notes/new_references.bib`：这次新增的 46 条参考文献及核实记录（已并入 `references.bib`）；
   `notes/references_verification.md`：之前的核实记录。
+- `exp/`：整篇文档一次标 UMR 的对照实验（缩略版 / 完整 guideline，加 guideline 搜索、PropBank、gold；直接调 API、chat、harness 三种方法），说明见 `exp/README.md`。
 - `archive/`：旧版本（v1：单轨迹中文 UMR 的稿子、表、数据和脚本；更早的 B 篇）。
 
 ## 编译
