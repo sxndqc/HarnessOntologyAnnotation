@@ -8,8 +8,9 @@
 - Streaming (a whole document is a long answer), adaptive thinking, the given effort.
 - The system prompt (skill.md before "## Input": instructions and guideline) is the same for every document
   and carries a cache breakpoint; the tool loop is covered by automatic caching (top-level cache_control).
-- Server-side refusal fallback is on (fallbacks "default"); if the API refuses the parameter the call is
-  made once more without it.
+- No server-side refusal fallback by default, so every answer comes from the model asked for (a refusal is
+  recorded as stop_reason "refusal"). UMR_FALLBACKS=default turns it on (fallbacks "default"); if the API
+  refuses the parameter the call is made once more without it.
 - Every response is kept under cache_dir, keyed by the whole request, so a rerun asks only what changed.
 """
 import hashlib
@@ -26,7 +27,7 @@ MAX_TURNS = 40
 MAX_TOKENS = 128000
 _client = None
 _lock = threading.Lock()
-_no_fallbacks = {"set": False}
+_no_fallbacks = {"set": os.environ.get("UMR_FALLBACKS", "off") != "default"}
 
 
 def client():

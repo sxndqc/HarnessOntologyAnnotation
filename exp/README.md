@@ -74,8 +74,8 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
   文档级图），每条文档级关系放进它提到的最后一句的文档级图，`(root :modal author)` 放进每句有模态关系的句子；
   旧写法自动换成发布写法，不带 `s<N>` 前缀的变量改名，括号不配对的修复，问题记在 `<doc>.trace.json` 的 `parse.problems`。
 - **API**：默认 `claude-opus-5-5`，adaptive thinking，effort `high`，流式，`max_tokens` 128000；`skill.md` 在 `## Input`
-  处切开，前面（说明 + guideline）是 system，带缓存断点；工具循环用自动缓存。开了服务端拒答回退（`fallbacks: "default"`），
-  API 不接受时自动去掉。每个回答按完整请求存在 `.cache/answers/`（不进 git），重跑只问变了的部分。key 读 `UMR_MODEL_KEY`。
+  处切开，前面（说明 + guideline）是 system，带缓存断点；工具循环用自动缓存。默认不开服务端拒答回退，每个回答都出自指定的模型（拒答记为
+  `stop_reason: refusal`）；设 `UMR_FALLBACKS=default` 才开（`fallbacks: "default"`），API 不接受时自动去掉。每个回答按完整请求存在 `.cache/answers/`（不进 git），重跑只问变了的部分。key 读 `UMR_MODEL_KEY`。
 
 ## 运行
 
