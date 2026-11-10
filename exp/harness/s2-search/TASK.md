@@ -14,9 +14,9 @@ and document-level relation counts. Take the time this needs:
   entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
 - Follow the examples: when a sentence has a construction an example shows, annotate it the way the
   example does.
-- Do not guess when you can check: whenever the abridged guidelines do not settle a case, look it up in
-  the full guidelines (`tools/search_guidelines.py`, or Grep in `guidelines/umr_guidelines.md`). Look
-  things up as often as you need: many lookups are expected.
+- Do not guess when you can check: whenever the abridged guidelines do not settle a case, search the full
+  guidelines with `tools/search_guidelines.py`. Look things up as often as you need: many lookups are
+  expected.
 - Before you go on to the next sentence, check the graph against the guidelines once more: every word
   that carries meaning has its concept, every event its aspect, every role the right direction; and at
   the end check that the document-level relations cover every event and entity the guidelines ask for.
@@ -25,11 +25,6 @@ and document-level relation counts. Take the time this needs:
 
 - `guidelines/umr_guidelines_abridged.md`: the UMR guidelines, abridged (about 14,000 characters). Read
   all of it before you start.
-- `guidelines/umr_guidelines.md`: the full UMR guidelines (umr4nlp/umr-guidelines, about 366,000
-  characters, with many examples). It is long: read it in parts (Read with offset and limit) and search it
-  (Grep) for the terms of a case. Read the parts this document needs before you start, and go back to it
-  for every decision you are not sure of. It often writes the older short names (AUTH, DCT, FullAff,
-  :modstr); your answer uses the release names listed under Output format.
 - `tools/`: commands (run them with Bash, from this directory):
 
 `python3 tools/search_guidelines.py KEYWORD [KEYWORD ...] [--max N]` searches the full UMR guidelines and

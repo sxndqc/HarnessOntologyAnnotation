@@ -19,8 +19,8 @@ python3 exp/harness/claude_code.py s2-gold --docs zh-0028 --prepare-only  # 只�
 `--max-budget-usd`（每篇的花费上限）、`--login`（见下）。
 
 默认用 `--bare` 跑：不读这台机器的 CLAUDE.md、hooks、插件、记忆和 MCP 服务器，key 用 `$UMR_MODEL_KEY`（作为
-`ANTHROPIC_API_KEY` 传给它，和 API 实验同一个 key、同样计费）。加 `--login` 则用这台机器上 `claude` 的登录
-（这时也会读这台机器的用户设置和 CLAUDE.md）。
+`ANTHROPIC_API_KEY` 传给它，和 API 实验同一个 key、同样计费）。加 `--login` 则用这台机器上 `claude` 的登录（订阅），
+只给它一个精简的环境（没有外层 Claude Code 的 `CLAUDE_*` 变量、没有 API key），只读工作目录的设置（`--setting-sources project`）。
 
 ## 每篇文档的工作目录
 
@@ -29,7 +29,7 @@ python3 exp/harness/claude_code.py s2-gold --docs zh-0028 --prepare-only  # 只�
 | 文件 | 内容 |
 |---|---|
 | `TASK.md` | `harness/<sub>/TASK.md` 填上这篇文档（由 `scripts/make_subexps.py` 生成，和 API、chat 的 prompt 同一套说明） |
-| `guidelines/` | s1-abridged、s2-propbank、s2-gold：缩略版；s1-full：完整版；s2-search：两份都有 |
+| `guidelines/` | 和 API 一样：s1-full 是完整版，其余是缩略版（s2-search 的完整版只能通过搜索工具查） |
 | `tools/<tool>.py` | 这个子实验的工具：`search_guidelines.py`、`propbank_lookup.py` 或 `search_annotations.py`（`harness/cc_tools.py`，和 API 的工具同一份代码、同一份数据；`search_annotations` 不返回测试句子） |
 | `notes/` | 给 agent 记笔记 |
 | `.claude/settings.json` | 权限，见下 |

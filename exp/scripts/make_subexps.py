@@ -249,9 +249,8 @@ HARNESS_CHECK = {
                    "there rather than answer from memory.",
     "s1-full": "the answer to almost every question is in the guidelines file and its examples; look it up "
                "there rather than answer from memory.",
-    "s2-search": "whenever the abridged guidelines do not settle a case, look it up in the full guidelines "
-                 "(`tools/search_guidelines.py`, or Grep in `guidelines/umr_guidelines.md`). Look things up as "
-                 "often as you need: many lookups are expected.",
+    "s2-search": "whenever the abridged guidelines do not settle a case, search the full guidelines with "
+                 "`tools/search_guidelines.py`. Look things up as often as you need: many lookups are expected.",
     "s2-propbank": "look up every predicate in PropBank (`tools/propbank_lookup.py`) before you choose its sense "
                    "and numbered roles.",
     "s2-gold": "look up how the gold data annotates a construction, a word or a relation "
@@ -311,7 +310,7 @@ HARNESS_ANSWER = """- Write the answer to `answer.txt` in this directory: every 
   sentence by sentence, adding to the file), but at the end the file must hold the whole answer.
 """
 
-HARNESS_SUBS = {"s1-abridged": ["abridged"], "s1-full": ["full"], "s2-search": ["abridged", "full"],
+HARNESS_SUBS = {"s1-abridged": ["abridged"], "s1-full": ["full"], "s2-search": ["abridged"],
                 "s2-propbank": ["abridged"], "s2-gold": ["abridged"]}
 
 

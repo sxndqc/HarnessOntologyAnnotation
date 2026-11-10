@@ -12,7 +12,7 @@ document), --login (use the claude login instead of the key, see below).
 The working directory <work>/<sub>/<doc>/ holds only what the condition gives:
 
     TASK.md                 harness/<sub>/TASK.md filled with the document (scripts/make_subexps.py writes it)
-    guidelines/             the abridged guidelines, or the full ones, or both (s2-search)
+    guidelines/             the abridged guidelines, or the full ones (s1-full), as in the API sub-experiments
     tools/<tool>.py         the sub-experiment's tool as a command (harness/cc_tools.py; same code and data
                             as the API tools)
     notes/                  for the agent's notes
@@ -23,8 +23,9 @@ The working directory <work>/<sub>/<doc>/ holds only what the condition gives:
 Claude Code runs there with `--bare` (no CLAUDE.md, hooks, plugins, memory or MCP servers of this machine)
 on the key in $UMR_MODEL_KEY (given to it as ANTHROPIC_API_KEY, sent to $UMR_API_BASE or api.anthropic.com), the model and effort asked for, and
 `--permission-mode dontAsk` (anything the settings do not allow is refused, never asked). With --login
-it runs without --bare on the machine's claude login instead (then this machine's user settings and
-CLAUDE.md are read too).
+it runs without --bare on the machine's claude login instead (a subscription), with a small environment
+(no CLAUDE_* variables of a Claude Code it runs inside, no API key) and `--setting-sources project` (only
+the working directory's settings).
 
 Results: harness/<sub>/answers/<label>/<doc>.txt (answer.txt), <doc>.meta.json (cost, turns, time, usage
 per model, every tool call); the whole transcript in .cache/harness-logs/ (not in git); then the scores
@@ -48,7 +49,7 @@ import run as R  # noqa: E402
 PROMPT = ("Do the task described in TASK.md in this directory: annotate the document it gives and write the "
           "answer to answer.txt. Work on your own until answer.txt holds the whole answer.")
 GUIDE = {"abridged": "umr_guidelines_abridged.md", "full": "umr_guidelines.md"}
-FILES = {"s1-abridged": ["abridged"], "s1-full": ["full"], "s2-search": ["abridged", "full"],
+FILES = {"s1-abridged": ["abridged"], "s1-full": ["full"], "s2-search": ["abridged"],
          "s2-propbank": ["abridged"], "s2-gold": ["abridged"]}
 STUB = """#!/usr/bin/env python3
 import sys
@@ -124,8 +125,17 @@ def one(sub, name, a):
            "--verbose", "--permission-mode", "dontAsk", "--settings", os.path.join(w, ".claude", "settings.json"),
            "--strict-mcp-config", "--no-session-persistence", "--allowedTools", ",".join(allow),
            "--disallowedTools", ",".join(deny)]
-    env = dict(os.environ)
-    if not a.login:
+    if a.login:
+        # the machine's claude login (a subscription): a small environment of its own, so that a Claude Code
+        # this runs inside (CLAUDE_* variables) or an API key does not take over; no user settings
+        keep = ("HOME", "PATH", "LANG", "LC_ALL", "TMPDIR", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "https_proxy",
+                "http_proxy", "no_proxy", "NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE",
+                "ANTHROPIC_BASE_URL", "UMR22", "SP_RESOURCES", "GOLD_SOURCE")
+        env = {k: os.environ[k] for k in keep if k in os.environ}
+        env["PYTHONIOENCODING"] = "utf-8"
+        cmd += ["--setting-sources", "project"]
+    else:
+        env = dict(os.environ)
         cmd.insert(1, "--bare")
         if not env.get("UMR_MODEL_KEY"):
             raise SystemExit("UMR_MODEL_KEY is not set (or run with --login)")
