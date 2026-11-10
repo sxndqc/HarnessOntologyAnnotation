@@ -11,6 +11,8 @@
 - No server-side refusal fallback by default, so every answer comes from the model asked for (a refusal is
   recorded as stop_reason "refusal"). UMR_FALLBACKS=default turns it on (fallbacks "default"); if the API
   refuses the parameter the call is made once more without it.
+- At most MAX_TURNS requests per answer; the last one may not call a tool (tool_choice none), so the
+  model writes its answer then.
 - Every response is kept under cache_dir, keyed by the whole request, so a rerun asks only what changed.
 """
 import hashlib
@@ -97,6 +99,8 @@ def answer(model, system, user, tool_names=(), effort="high", cache_dir=".cache/
     out = None
     for turn in range(1, MAX_TURNS + 1):
         req = _request(model, system, messages, list(tool_names), effort)
+        if tool_names and turn == MAX_TURNS:
+            req["tool_choice"] = {"type": "none"}     # the last turn: no more lookups, write the answer
         out, hit = _cached(req, cache_dir)
         cached += hit
         for k, v in out["usage"].items():

@@ -1,8 +1,8 @@
 # exp：整篇文档一次标 UMR（guideline 与资源的对照）
 
 SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `skill.md`）的最简单版本：每个子实验一个 registry、
-一个 skill（`annotate`），**输入是整篇文档，一行一句**，**输出是每句的 PENMAN 图和对齐，最后一张整篇文档的文档级关系图**
-（时间、模态、共指）。输出转成标准 `.umr` 后，用 umrjudge（judges）逐项评分，再算 AnCast++、juːmæʧ 和 Smatch。
+一个 skill（`annotate`），**输入是整篇文档，一行一句**，**输出是每句的 PENMAN 图，最后一张整篇文档的文档级关系图**
+（时间、模态、共指）；词对齐不让模型写，由 `lib/autoalign.py` 从图和词自动生成。输出转成标准 `.umr` 后，用 umrjudge（judges）逐项评分，再算 AnCast++、juːmæʧ 和 Smatch。
 
 ## 子实验
 
@@ -21,7 +21,8 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
    `chat/<sub>/answers/<doc>.txt`，再用 `run.py chat-score` 打分。chat 里没有工具，第二步的资源换成附件：
    搜索条件上传完整 guideline；PropBank 条件上传这篇文档每个词在 PropBank 里的全部条目（预先查好）；
    gold 条件上传每句最相似的训练句子（用 `search_annotations` 按每句的实词预先查好，每句 3 条、每篇最多 60 条）。
-3. **Codex / Claude Code 的 harness**（`harness/<sub>/`）：留空，见 `harness/README.md`。
+3. **Claude Code 的 harness**（`harness/<sub>/`）：每篇文档一个工作目录（`harness/<sub>/TASK.md` + guideline 文件 + 工具命令），
+   `harness/claude_code.py` 在里面用 `claude -p` 跑，答案写到 `answer.txt`，见 `harness/README.md`。Codex 版还没做。
 
 ## 设定（和 DMR 2026 UMR parsing shared task 一致）
 
@@ -68,9 +69,11 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
     读 UMR 2.2 的 `training-clean` 和 `training-dirty`（中文 1,992 句、英文 30,052 句）；和任何测试句子原文相同的句子都不返回
     （英文训练数据里有 37 句和 en-0006、en-0008 相同）。设 `GOLD_SOURCE=web` 则改用网页 repo 的 `gold/<lang>/gold.json`。
   - 工具代码 `tools/search.py`、`tools/propbank.py` 拷自网页 repo 的 `web_tools/`，只改了读文件的方式和 gold 的来源。
-- **输出格式**（每个 `skill.md` 的 Output format 一节）：每句 `# ::snt N`、`# sentence level graph:`、`# alignment:`；
+- **输出格式**（每个 `skill.md` 的 Output format 一节）：每句 `# ::snt N`、`# sentence level graph:`；
   最后一次 `# document level relations:`，一张 `(d / document :temporal (...) :modal (...) :coref (...))`。
-  对齐是必须的：juːmæʧ 靠对齐匹配节点。`lib/umrdoc.py` 把回答写成 shared task 的文件格式（每句四块：tokens、句子图、对齐、
+  不写对齐：juːmæʧ 靠对齐匹配节点，所以由 `lib/autoalign.py` 按 UMR 2.2 gold 的对齐方式自动生成（概念去掉义项号后等于句中的词
+  就对齐到这个词；有名字的实体对齐到名字的词，`name` 节点不对齐；抽象概念不对齐）。用 gold 自己的图配自动对齐，中文 15 个文件合计
+  juːmæʧ 87.4（单个文件 86–97）；回答里如果写了对齐，按回答的。`lib/umrdoc.py` 把回答写成 shared task 的文件格式（每句四块：tokens、句子图、对齐、
   文档级图），每条文档级关系放进它提到的最后一句的文档级图，`(root :modal author)` 放进每句有模态关系的句子；
   旧写法自动换成发布写法，不带 `s<N>` 前缀的变量改名，括号不配对的修复，问题记在 `<doc>.trace.json` 的 `parse.problems`。
 - **API**：默认 `claude-opus-5-5`，adaptive thinking，effort `high`，流式，`max_tokens` 128000；`skill.md` 在 `## Input`
@@ -109,13 +112,23 @@ python3 exp/run.py chat-score s1-abridged --label claude-ai-opus     # → runs/
 python3 exp/run.py table
 ```
 
+Claude Code 的 harness（要装 `claude` 命令行；默认用 `UMR_MODEL_KEY` 的 key、`--bare`，见 `harness/README.md`）：
+
+```bash
+python3 exp/harness/claude_code.py s1-abridged --docs zh-0028,zh-0032   # → harness/s1-abridged/answers/claude-code/、runs/harness/s1-abridged/claude-code/
+python3 exp/harness/claude_code.py all --docs zh-0028,zh-0032          # 五个子实验
+```
+
 ## 文件
 
-- `api/<sub>/registry.yaml`、`api/<sub>/annotate/skill.md`；`chat/<sub>/` 同样两个文件，加 `prompts/`、`attachments/`、`answers/`。
-  这十个子实验由 `scripts/make_subexps.py` 生成，改 skill 时改这个脚本再运行，两种方法保持一致。
+- `api/<sub>/registry.yaml`、`api/<sub>/annotate/skill.md`；`chat/<sub>/` 同样两个文件，加 `prompts/`、`attachments/`、`answers/`；
+  `harness/<sub>/TASK.md`。这些都由 `scripts/make_subexps.py` 生成，改 prompt 时改这个脚本再运行，三种方法保持一致
+  （改完 chat 的还要 `python3 exp/run.py chat-prompts <sub>` 重新生成 prompts/）。
 - `lib/registry.py`：registry 的最小子集（SkillParseUMR `skillsets/REGISTRY.md` 的 waves / skills / dispatcher；一波、
   没有 for_each，整篇文档一个 episode；skill 多两个键：`guideline` 填进 `{guideline}`，`tools` 列出可用工具）。
-- `lib/llm.py`：Messages API 调用和工具循环；`lib/umrdoc.py`：读 gold、生成输入、解析回答；`lib/score.py`：四种打分。
+- `lib/llm.py`：Messages API 调用和工具循环（最后一轮不许再调工具）；`lib/umrdoc.py`：读 gold、生成输入、解析回答；
+  `lib/autoalign.py`：自动对齐；`lib/score.py`：四种打分。
+- `harness/claude_code.py`：Claude Code 的 harness；`harness/cc_tools.py`：把 `tools/` 做成命令。
 - `tools/`：`search_guidelines`、`propbank_lookup`、`search_annotations`。
 - `run.py`：命令行；`run_api.sh`：API 全部跑完；`results.md`：总表（`run.py table` 生成）。
 - `data/docs.json`：测试文件列表（30 个文件，语言、句数、token 数）；`data/fetch_umr22.sh`：下载 UMR 2.2 和 umrtools。

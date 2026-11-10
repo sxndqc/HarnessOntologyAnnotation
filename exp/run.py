@@ -8,7 +8,7 @@
     python3 exp/run.py chat-score <sub> [--label L]
         read the chat answers chat/<sub>/answers/<doc>.txt and score them
     python3 exp/run.py harness-score <sub> [--label L]
-        the same for harness/<sub>/answers/<doc>.txt (method 3, not done yet)
+        the same for harness/<sub>/answers/<label>/<doc>.txt (method 3; harness/claude_code.py runs it)
     python3 exp/run.py score <run dir>        score a run directory again
     python3 exp/run.py verify-st              re-score the shared task's two systems (UMR 2.2 system-outputs)
                                               with this scoring, next to the overview paper's numbers
@@ -207,8 +207,11 @@ def gold_attachment(doc, search, per_sentence=3, limit=60):
 
 
 def answers_score(sub, label, method="chat"):
-    """Score answers saved by hand: <method>/<sub>/answers/<doc>.txt -> runs/<method>/<sub>/<label>/."""
+    """Score saved answers: chat/<sub>/answers/<doc>.txt (saved by hand) or harness/<sub>/answers/<label>/<doc>.txt
+    (written by harness/claude_code.py, with <doc>.meta.json) -> runs/<method>/<sub>/<label>/."""
     base = os.path.join(EXP, method, sub, "answers")
+    if method == "harness":
+        base = os.path.join(base, label)
     out_dir = os.path.join(RUNS, method, sub, label)
     if not any(os.path.exists(os.path.join(base, d["doc"] + ".txt")) for d in DOCS):
         raise SystemExit("no answers in %s (save each answer as <doc>.txt there)" % base)
@@ -222,8 +225,12 @@ def answers_score(sub, label, method="chat"):
         umr, report = umrdoc.parse_answer(doc, text)
         open(os.path.join(out_dir, d["doc"] + ".raw.txt"), "w", encoding="utf-8").write(text)
         open(os.path.join(out_dir, d["doc"] + ".umr"), "w", encoding="utf-8").write(umr)
-        json.dump({"doc": d["doc"], "parse": report}, open(os.path.join(out_dir, d["doc"] + ".trace.json"), "w",
-                  encoding="utf-8"), ensure_ascii=False, indent=1)
+        trace = {"doc": d["doc"], "parse": report}
+        meta = os.path.join(base, d["doc"] + ".meta.json")
+        if os.path.exists(meta):
+            trace["run"] = json.load(open(meta, encoding="utf-8"))
+        json.dump(trace, open(os.path.join(out_dir, d["doc"] + ".trace.json"), "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
         print("%s %s: %d/%d sentences, %d relations, %d problems" % (sub, d["doc"], report["sentences_found"],
               report["sentences"], report["relations"], len(report["problems"])))
     score_dir(out_dir)
@@ -442,7 +449,7 @@ def main():
     elif a.command == "chat-score":
         answers_score(a.target, a.label or "chat", "chat")
     elif a.command == "harness-score":
-        answers_score(a.target, a.label or "harness", "harness")
+        answers_score(a.target, a.label or "claude-code", "harness")
     elif a.command == "score":
         score_dir(os.path.abspath(a.target))
     elif a.command == "verify-st":

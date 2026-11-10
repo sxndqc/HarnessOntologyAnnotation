@@ -22,6 +22,8 @@ import re
 
 import penman
 
+import autoalign
+
 SECTIONS = ("# sentence level graph:", "# alignment:", "# document level annotation:")
 RULE = "#" * 80
 VAR = re.compile(r"^s(\d+)[a-z][\w-]*$")
@@ -157,8 +159,10 @@ def balance(text):
     return "".join(out) + ")" * depth
 
 
-def sentence_sections(index, graph_text, align_text, strict=True, problems=None):
-    """(graph, alignment, variables) of one sentence; an unparseable graph becomes (sNx0 / empty)."""
+def sentence_sections(index, graph_text, align_text, strict=True, problems=None, words=None):
+    """(graph, alignment, variables) of one sentence; an unparseable graph becomes (sNx0 / empty).
+    With words, a variable the alignment text does not give is aligned by autoalign (the answer has no
+    alignment); without, it gets 0-0."""
     problems = problems if problems is not None else []
     graph_text = normalise_names(graph_text.strip())
     g = None
@@ -203,8 +207,10 @@ def sentence_sections(index, graph_text, align_text, strict=True, problems=None)
                 align.append("%s: %s" % (v, ",".join(ranges)))
         elif line.strip():
             problems.append("sentence %d: alignment line not understood: %s" % (index, line.strip()[:60]))
+    auto = autoalign.align(g, words) if words is not None else {}
     for v in sorted(variables - {a.split(":")[0] for a in align}):
-        align.append("%s: 0-0" % v)
+        span = auto.get(v)
+        align.append("%s: %s" % (v, "%d-%d" % span if span else "0-0"))
     return graph, "\n".join(align), variables
 
 
@@ -302,7 +308,7 @@ def parse_answer(doc, text):
             parts = split_sections(body)
             doc_text += "\n" + parts.get(SECTIONS[2], "")    # per-sentence relations, if the model wrote any
             graphs[i], aligns[i], vs = sentence_sections(i, parts.get(SECTIONS[0], ""), parts.get(SECTIONS[1], ""),
-                                                         problems=problems)
+                                                         problems=problems, words=s["words"])
         variables |= vs
     triples = read_doc(doc_text)
     indices = [s["index"] for s in doc["sents"]]
