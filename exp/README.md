@@ -72,8 +72,9 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
 - **输出格式**（每个 `skill.md` 的 Output format 一节）：每句 `# ::snt N`、`# sentence level graph:`；
   最后一次 `# document level relations:`，一张 `(d / document :temporal (...) :modal (...) :coref (...))`。
   不写对齐：juːmæʧ 靠对齐匹配节点，所以由 `lib/autoalign.py` 按 UMR 2.2 gold 的对齐方式自动生成（概念去掉义项号后等于句中的词
-  就对齐到这个词；有名字的实体对齐到名字的词，`name` 节点不对齐；抽象概念不对齐）。用 gold 自己的图配自动对齐，中文 15 个文件合计
-  juːmæʧ 87.4（单个文件 86–97）；回答里如果写了对齐，按回答的。`lib/umrdoc.py` 把回答写成 shared task 的文件格式（每句四块：tokens、句子图、对齐、
+  就对齐到这个词；有名字的实体对齐到名字的词，`name` 节点不对齐；抽象概念不对齐）。英文另加不规则词形、派生词、形容词形式的名字（American、Russian）。用 gold 自己的图配自动对齐，
+  中文 15 个文件合计 juːmæʧ 87.4（单个文件 86–97），英文 5 个文件 65.9（61–76；英文 gold 的对齐本身有不少错位，比如
+  `spy-01` 对到 the）；回答里如果写了对齐，按回答的。`lib/umrdoc.py` 把回答写成 shared task 的文件格式（每句四块：tokens、句子图、对齐、
   文档级图），每条文档级关系放进它提到的最后一句的文档级图，`(root :modal author)` 放进每句有模态关系的句子；
   旧写法自动换成发布写法，不带 `s<N>` 前缀的变量改名，括号不配对的修复，问题记在 `<doc>.trace.json` 的 `parse.problems`。
 - **API**：默认 `claude-opus-5-5`，adaptive thinking，effort `high`，流式，`max_tokens` 128000；`skill.md` 在 `## Input`
