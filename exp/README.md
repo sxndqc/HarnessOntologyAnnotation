@@ -134,4 +134,6 @@ python3 exp/harness/claude_code.py all --docs zh-0028,zh-0032          # 五个�
 - `data/docs.json`：测试文件列表（30 个文件，语言、句数、token 数）；`data/fetch_umr22.sh`：下载 UMR 2.2 和 umrtools。
   UMR 2.2 不进 git（中文 CC BY-NC-ND 4.0 等，各语言许可证见包里的 README.txt）；chat 的 prompt 里有测试句子的原文。
 - `runs/shared-task/{orange,sema}/`：`verify-st` 的结果；`runs/<method>/<sub>/<label>/`：`<doc>.raw.txt`（回答原文）、`<doc>.umr`（打分用）、`<doc>.trace.json`（解析问题、用量、
-  工具调用）、`scores.json`、`scores.md`。
+  工具调用）、`scores.json`、`scores.md`；API 的还有 `<doc>.prompt.md`（实际发出的 system 和 user）和 `<doc>.transcript.json`
+  （完整对话：每次回答的全部内容块、每个工具调用和结果、每次请求的用量；之前的运行用 `scripts/export_api_transcripts.py`
+  从缓存补出）。Claude Code 的完整记录在 `harness/<sub>/answers/<label>/`，见 `harness/README.md`。

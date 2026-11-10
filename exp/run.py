@@ -90,7 +90,19 @@ def skip_test(search):
 
 # ------------------------------------------------------------------ API
 
-def run_api(sub, model, effort, docs, jobs, label):
+def write_transcript(out_dir, name, model, effort, system, user, tools, r):
+    """<doc>.prompt.md: the prompt as sent (system, then the user message); <doc>.transcript.json: the
+    whole conversation (every answer with its thinking blocks and tool calls, every tool result)."""
+    import llm
+    with open(os.path.join(out_dir, name + ".prompt.md"), "w", encoding="utf-8") as f:
+        f.write("<!-- system -->\n" + system + "\n<!-- user -->\n" + user)
+    with open(os.path.join(out_dir, name + ".transcript.json"), "w", encoding="utf-8") as f:
+        json.dump({"model": model, "effort": effort, "max_tokens": llm.MAX_TOKENS, "thinking": {"type": "adaptive"},
+                   "system": "see %s.prompt.md" % name, "tools": llm.T.schemas(tools) if tools else [],
+                   "responses": r["responses"], "messages": r["messages"]}, f, ensure_ascii=False, indent=1)
+
+
+def run_api(sub, model, effort, docs, jobs, label, cache_only=False):
     import llm
     import tools.search as search
     skip_test(search)
@@ -104,8 +116,10 @@ def run_api(sub, model, effort, docs, jobs, label):
         traces = []
 
         def call_skill(skill_name, skill, system, user):
-            r = llm.answer(model, system, user, skill.get("tools") or [], effort, os.path.join(CACHE, "answers"))
-            traces.append({k: v for k, v in r.items() if k != "text"} | {"skill": skill_name})
+            tools = skill.get("tools") or []
+            r = llm.answer(model, system, user, tools, effort, os.path.join(CACHE, "answers"), cache_only)
+            traces.append({k: v for k, v in r.items() if k not in ("text", "messages", "responses")} | {"skill": skill_name})
+            write_transcript(out_dir, name, model, effort, system, user, tools, r)
             return {"umr": r["text"]}
 
         tree = registry.run(reg, annotation(doc), call_skill)
@@ -116,8 +130,12 @@ def run_api(sub, model, effort, docs, jobs, label):
         umr, report = umrdoc.parse_answer(doc, text)
         with open(os.path.join(out_dir, name + ".umr"), "w", encoding="utf-8") as f:
             f.write(umr)
+        seconds = round(time.time() - t0, 1)
+        old = os.path.join(out_dir, name + ".trace.json")
+        if traces and all(c["cached_turns"] == c["turns"] for c in traces) and os.path.exists(old):
+            seconds = json.load(open(old, encoding="utf-8")).get("seconds", seconds)   # from the cache: keep the real time
         with open(os.path.join(out_dir, name + ".trace.json"), "w", encoding="utf-8") as f:
-            json.dump({"doc": name, "model": model, "effort": effort, "seconds": round(time.time() - t0, 1),
+            json.dump({"doc": name, "model": model, "effort": effort, "seconds": seconds,
                        "status": node["status"], "error": node.get("error"), "parse": report, "calls": traces},
                       f, ensure_ascii=False, indent=1)
         print("%s %s: %s, %d/%d sentences, %d relations, %d problems, %.0fs" % (

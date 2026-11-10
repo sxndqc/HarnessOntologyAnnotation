@@ -28,7 +28,8 @@ it runs without --bare on the machine's claude login instead (a subscription), w
 the working directory's settings).
 
 Results: harness/<sub>/answers/<label>/<doc>.txt (answer.txt), <doc>.meta.json (cost, turns, time, usage
-per model, every tool call); the whole transcript in .cache/harness-logs/ (not in git); then the scores
+per model, every tool call), <doc>.prompt.md (the command, the settings and TASK.md as given),
+<doc>.transcript.jsonl (the whole session, stream-json); then the scores
 in runs/harness/<sub>/<label>/ (as `python3 exp/run.py harness-score <sub> --label <label>` does).
 """
 import argparse
@@ -99,6 +100,16 @@ def prepare(sub, name, work):
     return w, allow, deny
 
 
+def write_prompt(out, name, w, cmd):
+    """<doc>.prompt.md: what Claude Code was given: the command line (its one-line prompt), the permission
+    settings and TASK.md as filled for the document."""
+    settings = open(os.path.join(w, ".claude", "settings.json"), encoding="utf-8").read()
+    task = open(os.path.join(w, "TASK.md"), encoding="utf-8").read()
+    with open(os.path.join(out, name + ".prompt.md"), "w", encoding="utf-8") as f:
+        f.write("<!-- command (in %s) -->\n%s\n\n<!-- .claude/settings.json -->\n%s\n\n<!-- TASK.md -->\n%s" % (
+            w, " ".join(json.dumps(c, ensure_ascii=False) if (" " in c or not c) else c for c in cmd), settings, task))
+
+
 def summarise(lines):
     """The result message and every tool call of a stream-json transcript."""
     result, calls = {}, []
@@ -144,15 +155,15 @@ def one(sub, name, a):
         env.pop("ANTHROPIC_AUTH_TOKEN", None)
     if a.max_budget_usd:
         cmd += ["--max-budget-usd", str(a.max_budget_usd)]
-    logs = os.path.join(EXP, ".cache", "harness-logs", sub, a.label)
-    os.makedirs(logs, exist_ok=True)
-    t0 = time.time()
-    with open(os.path.join(logs, name + ".jsonl"), "w", encoding="utf-8") as log:
-        p = subprocess.run(cmd, cwd=w, env=env, stdout=log, stderr=subprocess.STDOUT, text=True)
-    lines = open(os.path.join(logs, name + ".jsonl"), encoding="utf-8").read().splitlines()
-    result, calls = summarise(lines)
     out = os.path.join(EXP, "harness", sub, "answers", a.label)
     os.makedirs(out, exist_ok=True)
+    write_prompt(out, name, w, cmd)
+    logs = out
+    t0 = time.time()
+    with open(os.path.join(logs, name + ".transcript.jsonl"), "w", encoding="utf-8") as log:
+        p = subprocess.run(cmd, cwd=w, env=env, stdout=log, stderr=subprocess.STDOUT, text=True)
+    lines = open(os.path.join(logs, name + ".transcript.jsonl"), encoding="utf-8").read().splitlines()
+    result, calls = summarise(lines)
     answer = os.path.join(w, "answer.txt")
     if os.path.exists(answer):
         shutil.copy(answer, os.path.join(out, name + ".txt"))

@@ -75,12 +75,18 @@ def _send(req):
         return s.get_final_message()
 
 
-def _cached(req, cache_dir):
+class NotCached(Exception):
+    pass
+
+
+def _cached(req, cache_dir, cache_only=False):
     key = hashlib.sha256(json.dumps(req, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
     path = os.path.join(cache_dir, key[:2], key + ".json")
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             return json.load(f), True
+    if cache_only:
+        raise NotCached(key)
     msg = _send(req)
     out = {"content": [b.model_dump(exclude_none=True, mode="json") for b in msg.content],
            "stop_reason": msg.stop_reason, "model": msg.model,
@@ -93,16 +99,20 @@ def _cached(req, cache_dir):
     return out, False
 
 
-def answer(model, system, user, tool_names=(), effort="high", cache_dir=".cache/answers"):
+def answer(model, system, user, tool_names=(), effort="high", cache_dir=".cache/answers", cache_only=False):
+    """The answer, and the whole conversation: "messages" (every request's messages, each answer and tool
+    result in order, the last answer included) and "responses" (stop reason, model and usage of each)."""
     messages = [{"role": "user", "content": user}]
-    calls, usage, cached = [], {}, 0
+    calls, usage, cached, responses = [], {}, 0, []
     out = None
     for turn in range(1, MAX_TURNS + 1):
         req = _request(model, system, messages, list(tool_names), effort)
         if tool_names and turn == MAX_TURNS:
             req["tool_choice"] = {"type": "none"}     # the last turn: no more lookups, write the answer
-        out, hit = _cached(req, cache_dir)
+        out, hit = _cached(req, cache_dir, cache_only)
         cached += hit
+        responses.append({"turn": turn, "stop_reason": out["stop_reason"], "model": out["model"], "usage": out["usage"],
+                          "tool_choice": req.get("tool_choice")})
         for k, v in out["usage"].items():
             if isinstance(v, int):
                 usage[k] = usage.get(k, 0) + v
@@ -118,6 +128,8 @@ def answer(model, system, user, tool_names=(), effort="high", cache_dir=".cache/
             calls.append({"turn": turn, "name": b["name"], "input": b.get("input"), "chars": len(text), "error": err})
             results.append({"type": "tool_result", "tool_use_id": b["id"], "content": text, "is_error": err})
         messages.append({"role": "user", "content": results})
+    if not messages or messages[-1].get("content") is not out["content"]:
+        messages.append({"role": "assistant", "content": out["content"]})
     text = "\n".join(b.get("text", "") for b in out["content"] if b.get("type") == "text")
     return {"text": text, "turns": turn, "tool_calls": calls, "usage": usage, "stop_reason": out["stop_reason"],
-            "model": out["model"], "cached_turns": cached}
+            "model": out["model"], "cached_turns": cached, "messages": messages, "responses": responses}

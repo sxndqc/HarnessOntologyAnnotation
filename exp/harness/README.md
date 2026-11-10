@@ -46,8 +46,12 @@ python3 exp/harness/claude_code.py s2-gold --docs zh-0028 --prepare-only  # 只�
 
 - `harness/<sub>/answers/<label>/<doc>.txt`：`answer.txt` 原样；`<doc>.meta.json`：花费、轮数、用时、每个模型的用量、
   被拒绝的操作、每一次工具调用。
-- `.cache/harness-logs/<sub>/<label>/<doc>.jsonl`：完整对话记录（stream-json，不进 git）。
+- `<doc>.prompt.md`：Claude Code 拿到的全部输入：命令行（那一句指令）、权限设置、填好的 `TASK.md`。
+- `<doc>.transcript.jsonl`：整个会话的完整记录（stream-json：每一步的思考提示、工具调用和结果、写出的文件）。
 - `runs/harness/<sub>/<label>/`：打分，和 API、chat 一样（跑完自动打；也可以 `python3 exp/run.py harness-score <sub> --label <label>`）。
   然后 `python3 exp/run.py table` 更新总表。
 
 `meta.json` 的 `models` 列出这篇用到的所有模型：Claude Code 有时会用小模型做后台的小事，如果不只是 `claude-opus-5-5`，会在这里看到。
+
+`permission-test.json`：权限的检查（2026-11-10）：在 s2-gold/zh-0032 的工作目录里让 agent 用 Bash `cat`、Bash `head`、Read、
+Grep 去读本仓库的文件和测试 gold，四个都被拒绝。
