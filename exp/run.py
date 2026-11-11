@@ -97,7 +97,9 @@ def write_transcript(out_dir, name, model, effort, system, user, tools, r):
     with open(os.path.join(out_dir, name + ".prompt.md"), "w", encoding="utf-8") as f:
         f.write("<!-- system -->\n" + system + "\n<!-- user -->\n" + user)
     with open(os.path.join(out_dir, name + ".transcript.json"), "w", encoding="utf-8") as f:
-        json.dump({"model": model, "effort": effort, "max_tokens": llm.MAX_TOKENS, "thinking": {"type": "adaptive"},
+        params = ({"provider": "openai", "reasoning_effort": effort} if llm.is_openai(model) else
+                  {"max_tokens": llm.MAX_TOKENS, "thinking": {"type": "adaptive"}})
+        json.dump({"model": model, "effort": effort, **params,
                    "system": "see %s.prompt.md" % name, "tools": llm.T.schemas(tools) if tools else [],
                    "responses": r["responses"], "messages": r["messages"]}, f, ensure_ascii=False, indent=1)
 
