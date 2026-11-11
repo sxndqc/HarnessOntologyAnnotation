@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>UMR 标注实验结果</title><style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans CJK SC",sans-serif;
+ max-width:1180px;margin:2rem auto;padding:0 1.2rem;line-height:1.6;color:#1d1d1f;background:#fff}
+h1{font-size:1.7rem;margin-bottom:.2rem} h2{font-size:1.3rem;margin-top:2.4rem;border-bottom:1px solid #ddd;padding-bottom:.2rem}
+h3{font-size:1.05rem;margin-top:1.6rem}
+table{border-collapse:collapse;margin:.6rem 0;font-size:.86rem;display:block;overflow-x:auto;max-width:100%}
+th,td{border:1px solid #ddd;padding:.25rem .5rem;text-align:right;white-space:nowrap}
+th{background:#f5f5f7;position:sticky;top:0} td:first-child,th:first-child{text-align:left}
+tr.sep td{color:#666;background:#fafafa}
+.note{font-size:.83rem;color:#555;margin-top:.2rem} .lead{color:#444}
+code{background:#f2f2f2;padding:0 .25rem;border-radius:3px}
+ul{padding-left:1.3rem} li{margin:.2rem 0}
+details{margin:.6rem 0} summary{cursor:pointer;font-weight:600}
+nav a{margin-right:.8rem}
+@media (prefers-color-scheme: dark){body{background:#111;color:#e6e6e6} th{background:#222} th,td{border-color:#333}
+ tr.sep td{background:#181818;color:#999} code{background:#222} .note,.lead{color:#aaa} h2{border-color:#333}}
+</style></head><body>
+<h1>UMR 整篇文档标注实验：目前为止的全部结果</h1>
+<p class="lead">HarnessOntologyAnnotation <code>exp/</code>，提交 <code>7fbe383</code>，由 <code>python3 exp/scripts/report.py</code> 从仓库里的分数和记录生成。测试数据和打分方式与 DMR 2026 UMR parsing shared task 一致（UMR 2.2 官方测试集和 gold）。</p>
+<nav><a href="#summary">要点</a><a href="#setup">设定</a><a href="#main">主表</a><a href="#methods">三种方法</a><a href="#chat">chat</a><a href="#prompt">prompt 版本</a><a href="#breakdown">分项</a><a href="#ablation">ablation</a><a href="#usage">工具与用量</a><a href="#caveats">局限</a><a href="#files">文件</a></nav>
+<h2 id="summary">要点</h2><ul>
+<li><b>样本很小</b>：只有 3 篇测试文件（中文 zh-0028、zh-0032，共 18 句；英文 en-0008，9 句），每个条件只跑一次。下面几分以内的差别都在噪声范围里；中文 15 篇、英文 5 篇的全量还没跑。</li>
+<li><b>所有 LLM 设置都明显高于两支参赛队伍</b>：这三篇上 juːmæʧ 中文 41.8–50.9（最低的是 Claude Code 的 s1-full），参赛队伍 32.0、32.2；英文 44.6–59.2，参赛队伍 41.0、35.6。</li>
+<li><b>五个条件之间总分差别很小</b>（Claude API 中文 48.1–50.0）；资源的作用在分项里：PropBank 让谓词义项和核心角色标签提高 9–17 分，gold 例子让共指和人称/数提高，guideline 搜索让角色标签提高约 10 分；几乎所有资源都让文档级模态关系略降。</li>
+<li><b>Claude 三种方法（API、Claude Code、claude.ai chat）总分基本一样</b>；Claude Code 的 s1-full 偏低（41.8）。</li>
+<li><b>GPT（gpt-6.1-sol）和 Claude 总分接近</b>：中文每个条件都是 Claude 略高（差 0.6–4.3）；英文各有高低，GPT 拿到完整 guideline（full、+search）后高于 Claude。GPT 调用工具的次数是 Claude 的几倍到几十倍，但分数没有因此更高。</li>
+<li><b>一句句跑的 ablation</b>（a1）和整篇一次标的 s2-propbank 总分相差 2 分以内。</li>
+<li><b>对齐不让模型写，由程序自动生成</b>：gold 的图配自动对齐，中文 juːmæʧ 87.4、英文 65.9（英文 gold 自己的对齐有不少错位）。自动对齐比模型自己写的对齐还好（同样的图高 3–9 分）。</li>
+</ul>
+<h2 id="setup">设定</h2>
+<table>
+<thead><tr><th>测试文件</th><th>语言</th><th>句数</th><th>词数</th></tr></thead><tbody>
+<tr><td>zh-0028</td><td>中文</td><td>12</td><td>250</td></tr>
+<tr><td>zh-0032</td><td>中文</td><td>6</td><td>187</td></tr>
+<tr><td>en-0008</td><td>英文</td><td>9</td><td>140</td></tr>
+</tbody></table>
+<h3>条件（子实验）</h3>
+<table>
+<thead><tr><th>条件</th><th>给模型的资源</th></tr></thead><tbody>
+<tr><td>s1-abridged</td><td>缩略版 guideline（1.4 万字符）</td></tr>
+<tr><td>s1-full</td><td>完整 guideline（36.6 万字符）</td></tr>
+<tr><td>s2-search</td><td>缩略版 + search_guidelines 工具（搜完整 guideline）</td></tr>
+<tr><td>s2-propbank</td><td>缩略版 + propbank_lookup 工具</td></tr>
+<tr><td>s2-gold</td><td>缩略版 + search_annotations 工具（shared task 训练数据的 gold，不含测试句子）</td></tr>
+<tr><td>a1-sentence-propbank</td><td>s2-propbank 的资源，一句句跑：先每句单独标句子图；全部标完后，每句再给它和前五句的原文与图，标这一句的文档级关系</td></tr>
+</tbody></table>
+<h3>方法和模型</h3>
+<table>
+<thead><tr><th>方法</th><th>模型 / 标签</th><th>说明</th></tr></thead><tbody>
+<tr><td>API</td><td>claude-opus-5-5（标签 claude-opus-5-5-v2）</td><td>effort medium，adaptive thinking；不开拒答回退，每个回答都出自这个模型</td></tr>
+<tr><td>API</td><td>gpt-6.1-sol（gpt-6.1-sol-medium）</td><td>OpenAI Responses API，reasoning effort medium，同样的 prompt、工具和循环</td></tr>
+<tr><td>API</td><td>gpt-6-astra（gpt-6-astra-medium）</td><td>同上，先跑的另一个 GPT 模型，作参考</td></tr>
+<tr><td>Claude Code</td><td>claude-opus-5-5（claude-code）</td><td>订阅；每篇一个工作目录（TASK.md + guideline 文件 + 工具命令），只能读本目录、运行工具、写 answer.txt</td></tr>
+<tr><td>chat</td><td>claude.ai（claude-ai）</td><td>人工把 prompt 贴进 chat 窗口，附件代替工具</td></tr>
+<tr><td>chat</td><td>ChatGPT（chatgpt、chatgpt-6-astra-high）</td><td>同上</td></tr>
+</tbody></table>
+<h3>打分</h3><ul><li><b>juːmæʧ</b>（主指标，umrtools compare_umr.pl）和 <b>Smatch</b>；中文两篇把计数加总再算 F1。</li><li><b>AnCast++</b>（Modal、Temporal、Coref、Comprehensive）和 <b>umrjudge</b>（25 项分项检查，见分项一节）作补充。</li><li><b>对齐</b>：模型只写图，词对齐由 <code>lib/autoalign.py</code> 按 gold 的对齐方式生成（概念等于句中的词就对齐到这个词，有名字的实体对齐到名字的词，英文另加词形变化）。</li></ul>
+<h3>打分核对：重算两支参赛队伍的输出，和概述论文对照</h3>
+<table>
+<thead><tr><th>系统</th><th>语言</th><th>juːmæʧ（这里）</th><th>论文表 2</th><th>Smatch（这里）</th><th>论文表 5</th></tr></thead><tbody>
+<tr><td>orange</td><td>zh</td><td>36.34</td><td>36.51</td><td>52.08</td><td>51.94</td></tr>
+<tr><td>orange</td><td>en</td><td>22.19</td><td>22.19</td><td>46.48</td><td>46.25</td></tr>
+<tr><td>sema</td><td>zh</td><td>25.78</td><td>25.85</td><td>43.64</td><td>43.63</td></tr>
+<tr><td>sema</td><td>en</td><td>18.71</td><td>19.19</td><td>41.57</td><td>41.69</td></tr>
+</tbody></table>
+<p class="note">juːmæʧ 差 0.5 以内，Smatch 差 0.3 以内（Smatch 本身有随机性）。</p>
+<h2 id="main">主表：API，每个条件（juːmæʧ F / Smatch F）</h2>
+<table>
+<thead><tr><th>条件</th><th>中文 Claude J</th><th>S</th><th>中文 GPT-sol J</th><th>S</th><th>中文 GPT-astra J</th><th>S</th><th>英文 Claude J</th><th>S</th><th>英文 GPT-sol J</th><th>S</th><th>英文 GPT-astra J</th><th>S</th></tr></thead><tbody>
+<tr><td>s1-abridged：缩略版 guideline</td><td><b>49.0</b></td><td>56.8</td><td>47.8</td><td>57.4</td><td>46.6</td><td>57.2</td><td>54.7</td><td>79.1</td><td>44.6</td><td>72.2</td><td>48.0</td><td>75.5</td></tr>
+<tr><td>s1-full：完整 guideline</td><td><b>49.3</b></td><td>58.1</td><td>45.0</td><td>55.1</td><td>44.7</td><td>55.4</td><td>56.5</td><td>80.9</td><td>59.2</td><td>86.0</td><td>55.2</td><td>83.7</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td><b>50.0</b></td><td>58.8</td><td>48.4</td><td>58.8</td><td>48.6</td><td>59.4</td><td>54.0</td><td>79.5</td><td>55.6</td><td>86.0</td><td>55.9</td><td>86.3</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td><b>48.1</b></td><td>57.3</td><td>47.4</td><td>58.1</td><td>48.0</td><td>58.3</td><td>56.0</td><td>81.8</td><td>48.5</td><td>75.9</td><td>49.1</td><td>76.2</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td><b>49.5</b></td><td>57.7</td><td>48.9</td><td>58.3</td><td>48.7</td><td>58.2</td><td>51.5</td><td>78.4</td><td>48.1</td><td>78.7</td><td>46.7</td><td>73.4</td></tr>
+<tr><td>a1：PropBank，一句句跑（ablation）</td><td><b>49.2</b></td><td>59.0</td><td>47.3</td><td>57.7</td><td>–</td><td>–</td><td>55.1</td><td>81.8</td><td>46.6</td><td>75.8</td><td>–</td><td>–</td></tr>
+<tr class="sep"><td>对照：参赛队伍 Orange</td><td>32.0</td><td>48.1</td><td></td><td></td><td></td><td></td><td>41.0</td><td>72.0</td><td></td><td></td><td></td><td></td></tr>
+<tr class="sep"><td>对照：参赛队伍 Sema</td><td>32.2</td><td>50.1</td><td></td><td></td><td></td><td></td><td>35.6</td><td>57.0</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table>
+<p class="note">J = juːmæʧ F，S = Smatch F。中文 = zh-0028 + zh-0032，英文 = en-0008。粗体：这一行中文三个模型里 juːmæʧ 最高的。参赛队伍的英文列放在 Claude 的位置上，只作对照。</p>
+<h2 id="methods">Claude 的三种方法：API、Claude Code、chat（juːmæʧ F）</h2>
+<table>
+<thead><tr><th>条件</th><th>中文 API</th><th>中文 Claude Code</th><th>中文 claude.ai</th><th>英文 API</th><th>英文 Claude Code</th><th>英文 claude.ai</th></tr></thead><tbody>
+<tr><td>s1-abridged：缩略版 guideline</td><td>49.0</td><td>49.2</td><td>48.3</td><td>54.7</td><td>–</td><td>52.2</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>49.3</td><td>41.8</td><td>–</td><td>56.5</td><td>–</td><td>–</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>50.0</td><td>49.3</td><td>–</td><td>54.0</td><td>–</td><td>–</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>48.1</td><td>50.9</td><td>44.9（仅 zh-0032）</td><td>56.0</td><td>–</td><td>–</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>49.5</td><td>49.6</td><td>–</td><td>51.5</td><td>–</td><td>–</td></tr>
+</tbody></table>
+<p class="note">Claude Code 没跑英文；chat 只做了 s1-abridged 和 s2-propbank。</p>
+<h2 id="chat">chat 的每一份回答</h2>
+<table>
+<thead><tr><th>条件</th><th>chat 模型</th><th>文件</th><th>juːmæʧ F</th><th>Smatch F</th><th>通过格式检查</th><th>同条件 Claude API 的 juːmæʧ</th></tr></thead><tbody>
+<tr><td>s1-abridged</td><td>claude-ai</td><td>en-0008</td><td>52.2</td><td>78.1</td><td>否</td><td>54.7</td></tr>
+<tr><td>s1-abridged</td><td>claude-ai</td><td>zh-0028</td><td>51.8</td><td>61.0</td><td>是</td><td>51.1</td></tr>
+<tr><td>s1-abridged</td><td>claude-ai</td><td>zh-0032</td><td>45.3</td><td>53.8</td><td>是</td><td>47.0</td></tr>
+<tr><td>s1-abridged</td><td>chatgpt</td><td>en-0008</td><td>46.5</td><td>69.5</td><td>否</td><td>54.7</td></tr>
+<tr><td>s1-abridged</td><td>chatgpt-6-astra-high</td><td>zh-0032</td><td>46.2</td><td>54.9</td><td>是</td><td>47.0</td></tr>
+<tr><td>s2-propbank</td><td>claude-ai</td><td>zh-0032</td><td>44.9</td><td>54.7</td><td>否</td><td>45.4</td></tr>
+</tbody></table>
+<p class="note">格式检查是 umrtools validate.py --level 2；没通过的都是图里有环，gold 在同样的句子也有环，照常计分。</p>
+<h2 id="prompt">prompt 的两个版本（Claude API，中文，juːmæʧ F）</h2>
+<table>
+<thead><tr><th>条件</th><th>v1：原 prompt（要模型写对齐）</th><th>v2：现在的 prompt（不写对齐，强调尽量正确、多查）</th><th>差</th></tr></thead><tbody>
+<tr><td>s1-abridged：缩略版 guideline</td><td>49.4</td><td>49.0</td><td>-0.4</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>44.7</td><td>49.3</td><td>+4.6</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>49.0</td><td>50.0</td><td>+1.0</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>47.5</td><td>48.1</td><td>+0.5</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>48.8</td><td>49.5</td><td>+0.7</td></tr>
+</tbody></table>
+<p class="note">v1 的回答在这里去掉模型自己写的对齐、改用自动对齐重新打分，所以两列可以直接比较。只改措辞，同一篇的分数就会变 0.4–4.6 分，可以当作随机波动的一个参考。</p>
+<h2 id="breakdown">分项（umrjudge 每项检查、AnCast 各项）</h2>
+<p>每一行是一项检查的正确率（%）；“相对 abridged”的表是每个条件减去同一模型 s1-abridged 的分差。同样的表也在 <code>exp/breakdown.md</code>。</p>
+<h3>中文（zh-0028 + zh-0032）：每个条件的绝对分数</h3>
+<table>
+<thead><tr><th></th><th>Claude API abridged</th><th>Claude API full</th><th>Claude API +search</th><th>Claude API +PropBank</th><th>Claude API +gold</th><th>Claude API +PropBank by sentence</th><th>GPT API abridged</th><th>GPT API full</th><th>GPT API +search</th><th>GPT API +PropBank</th><th>GPT API +gold</th><th>GPT API +PropBank by sentence</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>49.0</td><td>49.3</td><td>50.0</td><td>48.1</td><td>49.5</td><td>49.2</td><td>47.8</td><td>45.0</td><td>48.4</td><td>47.4</td><td>48.9</td><td>47.3</td></tr>
+<tr><td>Smatch F</td><td>56.8</td><td>58.1</td><td>58.8</td><td>57.3</td><td>57.7</td><td>59.0</td><td>57.4</td><td>55.1</td><td>58.8</td><td>58.1</td><td>58.3</td><td>57.7</td></tr>
+<tr><td>AnCast Modal</td><td>60.8</td><td>58.2</td><td>56.5</td><td>57.9</td><td>56.0</td><td>54.7</td><td>51.4</td><td>57.5</td><td>48.3</td><td>50.2</td><td>49.0</td><td>49.1</td></tr>
+<tr><td>AnCast Temporal</td><td>33.0</td><td>35.9</td><td>37.3</td><td>31.8</td><td>29.2</td><td>33.5</td><td>27.1</td><td>22.4</td><td>24.3</td><td>25.4</td><td>33.0</td><td>24.6</td></tr>
+<tr><td>AnCast Coref</td><td>3.0</td><td>2.6</td><td>5.2</td><td>9.2</td><td>8.4</td><td>7.8</td><td>5.7</td><td>2.2</td><td>10.6</td><td>11.5</td><td>6.5</td><td>6.7</td></tr>
+<tr><td>AnCast Comprehensive</td><td>40.5</td><td>40.3</td><td>42.7</td><td>40.2</td><td>40.5</td><td>41.2</td><td>38.8</td><td>37.2</td><td>40.9</td><td>39.1</td><td>40.6</td><td>38.2</td></tr>
+<tr><td>umrjudge mean</td><td>54.3</td><td>58.4</td><td>57.4</td><td>53.3</td><td>57.8</td><td>56.4</td><td>55.3</td><td>55.9</td><td>57.6</td><td>56.8</td><td>56.8</td><td>55.1</td></tr>
+<tr><td>events found</td><td>97.5</td><td>96.3</td><td>96.1</td><td>95.3</td><td>97.5</td><td>97.3</td><td>97.5</td><td>95.8</td><td>96.1</td><td>97.5</td><td>97.0</td><td>97.5</td></tr>
+<tr><td>event concept</td><td>77.1</td><td>72.6</td><td>78.6</td><td>79.6</td><td>76.0</td><td>76.3</td><td>77.5</td><td>71.1</td><td>80.5</td><td>78.5</td><td>76.0</td><td>77.1</td></tr>
+<tr><td>entities found</td><td>93.9</td><td>92.9</td><td>93.4</td><td>92.9</td><td>93.4</td><td>92.7</td><td>92.6</td><td>92.1</td><td>93.4</td><td>92.3</td><td>93.0</td><td>92.1</td></tr>
+<tr><td>entity concept</td><td>78.2</td><td>79.0</td><td>78.8</td><td>77.3</td><td>80.4</td><td>80.6</td><td>78.5</td><td>79.4</td><td>78.5</td><td>76.5</td><td>80.9</td><td>79.9</td></tr>
+<tr><td>granularity</td><td>98.0</td><td>96.7</td><td>97.3</td><td>98.0</td><td>98.0</td><td>98.0</td><td>96.6</td><td>96.8</td><td>97.2</td><td>97.3</td><td>96.9</td><td>97.3</td></tr>
+<tr><td>predicate sense</td><td>89.9</td><td>89.5</td><td>89.7</td><td>98.8</td><td>88.5</td><td>97.4</td><td>86.0</td><td>91.6</td><td>88.3</td><td>100.0</td><td>87.1</td><td>97.6</td></tr>
+<tr><td>aspect</td><td>47.4</td><td>47.0</td><td>50.3</td><td>45.9</td><td>44.8</td><td>50.9</td><td>50.9</td><td>54.4</td><td>55.1</td><td>54.4</td><td>48.6</td><td>49.5</td></tr>
+<tr><td>polarity</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>66.7</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td></tr>
+<tr><td>refer-person/number</td><td>25.0</td><td>62.5</td><td>35.3</td><td>26.1</td><td>70.6</td><td>35.3</td><td>27.3</td><td>18.2</td><td>33.3</td><td>27.3</td><td>33.3</td><td>25.0</td></tr>
+<tr><td>other attributes</td><td>35.8</td><td>49.1</td><td>33.9</td><td>36.6</td><td>37.5</td><td>43.5</td><td>33.6</td><td>32.6</td><td>38.8</td><td>35.1</td><td>36.6</td><td>46.4</td></tr>
+<tr><td>core args of events</td><td>49.7</td><td>47.9</td><td>55.2</td><td>66.7</td><td>52.6</td><td>66.5</td><td>53.3</td><td>43.8</td><td>57.2</td><td>61.4</td><td>58.9</td><td>65.1</td></tr>
+<tr><td>core args of abstract concepts</td><td>35.3</td><td>34.2</td><td>40.2</td><td>24.6</td><td>19.3</td><td>29.7</td><td>24.8</td><td>28.3</td><td>47.5</td><td>27.8</td><td>22.8</td><td>21.3</td></tr>
+<tr><td>non-core roles of events</td><td>28.4</td><td>36.4</td><td>35.8</td><td>33.4</td><td>34.1</td><td>39.7</td><td>28.2</td><td>28.0</td><td>33.0</td><td>25.5</td><td>29.4</td><td>28.6</td></tr>
+<tr><td>non-core roles of entities</td><td>43.8</td><td>33.5</td><td>39.3</td><td>44.6</td><td>41.5</td><td>41.5</td><td>35.5</td><td>34.8</td><td>42.6</td><td>38.6</td><td>38.5</td><td>39.8</td></tr>
+<tr><td>core role labels</td><td>69.7</td><td>74.7</td><td>78.8</td><td>86.6</td><td>67.1</td><td>83.4</td><td>76.2</td><td>78.1</td><td>87.6</td><td>87.4</td><td>74.8</td><td>79.8</td></tr>
+<tr><td>non-core role labels</td><td>77.4</td><td>77.9</td><td>78.2</td><td>78.1</td><td>80.6</td><td>79.3</td><td>73.7</td><td>76.0</td><td>75.0</td><td>70.6</td><td>73.4</td><td>74.8</td></tr>
+<tr><td>name strings</td><td>41.2</td><td>37.5</td><td>42.8</td><td>40.6</td><td>48.0</td><td>53.7</td><td>42.7</td><td>45.7</td><td>41.0</td><td>41.6</td><td>46.5</td><td>38.8</td></tr>
+<tr><td>wiki</td><td>0.0</td><td>–</td><td>–</td><td>0.0</td><td>–</td><td>0.0</td><td>–</td><td>–</td><td>0.0</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>reentrancy</td><td>29.3</td><td>31.3</td><td>33.9</td><td>26.1</td><td>20.7</td><td>22.6</td><td>25.8</td><td>15.5</td><td>27.0</td><td>16.3</td><td>27.7</td><td>14.3</td></tr>
+<tr><td>doc: temporal</td><td>33.0</td><td>35.2</td><td>36.1</td><td>27.2</td><td>29.4</td><td>33.5</td><td>25.2</td><td>23.8</td><td>23.7</td><td>22.4</td><td>30.1</td><td>23.2</td></tr>
+<tr><td>doc: modal</td><td>60.6</td><td>57.7</td><td>55.9</td><td>56.9</td><td>55.6</td><td>54.8</td><td>53.8</td><td>55.9</td><td>51.5</td><td>53.0</td><td>52.5</td><td>50.8</td></tr>
+<tr><td>doc: coref chains</td><td>2.6</td><td>1.8</td><td>9.3</td><td>9.9</td><td>8.9</td><td>15.4</td><td>4.8</td><td>1.7</td><td>13.0</td><td>12.5</td><td>12.6</td><td>8.1</td></tr>
+<tr><td>doc: coref subset</td><td>0.0</td><td>–</td><td>0.0</td><td>0.0</td><td>–</td><td>0.0</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>0.0</td></tr>
+<tr><td>doc: format</td><td>99.4</td><td>100.0</td><td>99.6</td><td>99.3</td><td>99.3</td><td>98.4</td><td>99.7</td><td>100.0</td><td>100.0</td><td>100.0</td><td>99.3</td><td>99.0</td></tr>
+</tbody></table>
+<h3>中文（zh-0028 + zh-0032）：相对 abridged 的变化</h3>
+<table>
+<thead><tr><th></th><th>Claude API abridged</th><th>Claude API full</th><th>Claude API +search</th><th>Claude API +PropBank</th><th>Claude API +gold</th><th>Claude API +PropBank by sentence</th><th>GPT API abridged</th><th>GPT API full</th><th>GPT API +search</th><th>GPT API +PropBank</th><th>GPT API +gold</th><th>GPT API +PropBank by sentence</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>49.0</td><td>+0.2</td><td>+1.0</td><td>-0.9</td><td>+0.5</td><td>+0.2</td><td>47.8</td><td>-2.8</td><td>+0.5</td><td>-0.4</td><td>+1.1</td><td>-0.6</td></tr>
+<tr><td>Smatch F</td><td>56.8</td><td>+1.3</td><td>+2.1</td><td>+0.5</td><td>+0.9</td><td>+2.3</td><td>57.4</td><td>-2.3</td><td>+1.4</td><td>+0.7</td><td>+0.9</td><td>+0.3</td></tr>
+<tr><td>AnCast Modal</td><td>60.8</td><td>-2.6</td><td>-4.4</td><td>-2.9</td><td>-4.8</td><td>-6.1</td><td>51.4</td><td>+6.1</td><td>-3.1</td><td>-1.2</td><td>-2.4</td><td>-2.3</td></tr>
+<tr><td>AnCast Temporal</td><td>33.0</td><td>+2.9</td><td>+4.3</td><td>-1.2</td><td>-3.9</td><td>+0.4</td><td>27.1</td><td>-4.7</td><td>-2.8</td><td>-1.8</td><td>+5.9</td><td>-2.5</td></tr>
+<tr><td>AnCast Coref</td><td>3.0</td><td>-0.4</td><td>+2.2</td><td>+6.2</td><td>+5.4</td><td>+4.8</td><td>5.7</td><td>-3.5</td><td>+4.9</td><td>+5.8</td><td>+0.8</td><td>+1.0</td></tr>
+<tr><td>AnCast Comprehensive</td><td>40.5</td><td>-0.2</td><td>+2.1</td><td>-0.3</td><td>-0.0</td><td>+0.7</td><td>38.8</td><td>-1.6</td><td>+2.1</td><td>+0.4</td><td>+1.8</td><td>-0.6</td></tr>
+<tr><td>umrjudge mean</td><td>54.3</td><td>+4.2</td><td>+3.1</td><td>-1.0</td><td>+3.5</td><td>+2.1</td><td>55.3</td><td>+0.6</td><td>+2.3</td><td>+1.4</td><td>+1.4</td><td>-0.3</td></tr>
+<tr><td>events found</td><td>97.5</td><td>-1.2</td><td>-1.4</td><td>-2.2</td><td>+0.0</td><td>-0.2</td><td>97.5</td><td>-1.7</td><td>-1.5</td><td>-0.1</td><td>-0.5</td><td>-0.1</td></tr>
+<tr><td>event concept</td><td>77.1</td><td>-4.5</td><td>+1.5</td><td>+2.6</td><td>-1.0</td><td>-0.8</td><td>77.5</td><td>-6.5</td><td>+3.0</td><td>+0.9</td><td>-1.5</td><td>-0.5</td></tr>
+<tr><td>entities found</td><td>93.9</td><td>-1.0</td><td>-0.5</td><td>-1.0</td><td>-0.5</td><td>-1.1</td><td>92.6</td><td>-0.5</td><td>+0.8</td><td>-0.3</td><td>+0.4</td><td>-0.5</td></tr>
+<tr><td>entity concept</td><td>78.2</td><td>+0.8</td><td>+0.5</td><td>-0.9</td><td>+2.2</td><td>+2.4</td><td>78.5</td><td>+0.9</td><td>+0.0</td><td>-2.0</td><td>+2.4</td><td>+1.4</td></tr>
+<tr><td>granularity</td><td>98.0</td><td>-1.2</td><td>-0.7</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>96.6</td><td>+0.3</td><td>+0.7</td><td>+0.7</td><td>+0.3</td><td>+0.7</td></tr>
+<tr><td>predicate sense</td><td>89.9</td><td>-0.3</td><td>-0.2</td><td>+9.0</td><td>-1.4</td><td>+7.5</td><td>86.0</td><td>+5.6</td><td>+2.3</td><td>+14.0</td><td>+1.1</td><td>+11.6</td></tr>
+<tr><td>aspect</td><td>47.4</td><td>-0.4</td><td>+2.9</td><td>-1.5</td><td>-2.6</td><td>+3.5</td><td>50.9</td><td>+3.5</td><td>+4.2</td><td>+3.5</td><td>-2.3</td><td>-1.5</td></tr>
+<tr><td>polarity</td><td>33.3</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>33.3</td><td>+33.3</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td></tr>
+<tr><td>refer-person/number</td><td>25.0</td><td>+37.5</td><td>+10.3</td><td>+1.1</td><td>+45.6</td><td>+10.3</td><td>27.3</td><td>-9.1</td><td>+6.1</td><td>+0.0</td><td>+6.1</td><td>-2.3</td></tr>
+<tr><td>other attributes</td><td>35.8</td><td>+13.3</td><td>-1.9</td><td>+0.8</td><td>+1.7</td><td>+7.7</td><td>33.6</td><td>-1.1</td><td>+5.1</td><td>+1.4</td><td>+3.0</td><td>+12.8</td></tr>
+<tr><td>core args of events</td><td>49.7</td><td>-1.8</td><td>+5.5</td><td>+17.0</td><td>+2.9</td><td>+16.8</td><td>53.3</td><td>-9.5</td><td>+3.9</td><td>+8.1</td><td>+5.6</td><td>+11.8</td></tr>
+<tr><td>core args of abstract concepts</td><td>35.3</td><td>-1.1</td><td>+4.8</td><td>-10.7</td><td>-16.0</td><td>-5.6</td><td>24.8</td><td>+3.5</td><td>+22.7</td><td>+3.0</td><td>-2.0</td><td>-3.5</td></tr>
+<tr><td>non-core roles of events</td><td>28.4</td><td>+8.0</td><td>+7.3</td><td>+4.9</td><td>+5.6</td><td>+11.3</td><td>28.2</td><td>-0.2</td><td>+4.9</td><td>-2.7</td><td>+1.3</td><td>+0.4</td></tr>
+<tr><td>non-core roles of entities</td><td>43.8</td><td>-10.2</td><td>-4.5</td><td>+0.8</td><td>-2.2</td><td>-2.3</td><td>35.5</td><td>-0.8</td><td>+7.1</td><td>+3.1</td><td>+3.0</td><td>+4.3</td></tr>
+<tr><td>core role labels</td><td>69.7</td><td>+5.0</td><td>+9.2</td><td>+16.9</td><td>-2.6</td><td>+13.7</td><td>76.2</td><td>+2.0</td><td>+11.4</td><td>+11.2</td><td>-1.4</td><td>+3.7</td></tr>
+<tr><td>non-core role labels</td><td>77.4</td><td>+0.5</td><td>+0.8</td><td>+0.7</td><td>+3.1</td><td>+1.8</td><td>73.7</td><td>+2.4</td><td>+1.4</td><td>-3.0</td><td>-0.3</td><td>+1.1</td></tr>
+<tr><td>name strings</td><td>41.2</td><td>-3.7</td><td>+1.6</td><td>-0.6</td><td>+6.8</td><td>+12.6</td><td>42.7</td><td>+2.9</td><td>-1.8</td><td>-1.1</td><td>+3.7</td><td>-4.0</td></tr>
+<tr><td>wiki</td><td>0.0</td><td>–</td><td>–</td><td>+0.0</td><td>–</td><td>+0.0</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>reentrancy</td><td>29.3</td><td>+2.0</td><td>+4.5</td><td>-3.2</td><td>-8.6</td><td>-6.7</td><td>25.8</td><td>-10.3</td><td>+1.3</td><td>-9.5</td><td>+1.9</td><td>-11.5</td></tr>
+<tr><td>doc: temporal</td><td>33.0</td><td>+2.2</td><td>+3.1</td><td>-5.8</td><td>-3.6</td><td>+0.5</td><td>25.2</td><td>-1.3</td><td>-1.5</td><td>-2.8</td><td>+5.0</td><td>-2.0</td></tr>
+<tr><td>doc: modal</td><td>60.6</td><td>-2.9</td><td>-4.7</td><td>-3.7</td><td>-5.0</td><td>-5.8</td><td>53.8</td><td>+2.1</td><td>-2.3</td><td>-0.8</td><td>-1.3</td><td>-3.0</td></tr>
+<tr><td>doc: coref chains</td><td>2.6</td><td>-0.8</td><td>+6.7</td><td>+7.3</td><td>+6.3</td><td>+12.8</td><td>4.8</td><td>-3.1</td><td>+8.2</td><td>+7.7</td><td>+7.8</td><td>+3.3</td></tr>
+<tr><td>doc: coref subset</td><td>0.0</td><td>–</td><td>+0.0</td><td>+0.0</td><td>–</td><td>+0.0</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>doc: format</td><td>99.4</td><td>+0.6</td><td>+0.1</td><td>-0.1</td><td>-0.2</td><td>-1.0</td><td>99.7</td><td>+0.3</td><td>+0.3</td><td>+0.3</td><td>-0.4</td><td>-0.7</td></tr>
+</tbody></table>
+<details><summary>中文（zh-0028 + zh-0032）：Claude 三种方法和 chat 的分项</summary>
+<table>
+<thead><tr><th></th><th>API abridged</th><th>Claude Code abridged</th><th>claude.ai abridged</th><th>API full</th><th>Claude Code full</th><th>API +search</th><th>Claude Code +search</th><th>API +PropBank</th><th>Claude Code +PropBank</th><th>claude.ai +PropBank (zh-0032)</th><th>API +gold</th><th>Claude Code +gold</th><th>ChatGPT chat (chatgpt-6-astra-high) abridged (zh-0032)</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>49.0</td><td>49.2</td><td>48.3</td><td>49.3</td><td>41.8</td><td>50.0</td><td>49.3</td><td>48.1</td><td>50.9</td><td>44.9</td><td>49.5</td><td>49.6</td><td>46.2</td></tr>
+<tr><td>Smatch F</td><td>56.8</td><td>57.9</td><td>57.3</td><td>58.1</td><td>57.3</td><td>58.8</td><td>58.1</td><td>57.3</td><td>59.4</td><td>54.7</td><td>57.7</td><td>58.6</td><td>54.9</td></tr>
+<tr><td>AnCast Modal</td><td>60.8</td><td>59.1</td><td>58.4</td><td>58.2</td><td>55.9</td><td>56.5</td><td>58.0</td><td>57.9</td><td>61.5</td><td>42.4</td><td>56.0</td><td>56.9</td><td>44.2</td></tr>
+<tr><td>AnCast Temporal</td><td>33.0</td><td>30.1</td><td>31.3</td><td>35.9</td><td>28.7</td><td>37.3</td><td>36.0</td><td>31.8</td><td>32.0</td><td>25.3</td><td>29.2</td><td>32.5</td><td>19.5</td></tr>
+<tr><td>AnCast Coref</td><td>3.0</td><td>6.7</td><td>10.1</td><td>2.6</td><td>6.9</td><td>5.2</td><td>8.2</td><td>9.2</td><td>4.6</td><td>0.0</td><td>8.4</td><td>9.4</td><td>0.0</td></tr>
+<tr><td>AnCast Comprehensive</td><td>40.5</td><td>41.2</td><td>40.5</td><td>40.3</td><td>38.6</td><td>42.7</td><td>41.3</td><td>40.2</td><td>43.4</td><td>35.8</td><td>40.5</td><td>42.4</td><td>37.2</td></tr>
+<tr><td>umrjudge mean</td><td>54.3</td><td>55.9</td><td>54.7</td><td>58.4</td><td>55.8</td><td>57.4</td><td>54.3</td><td>53.3</td><td>57.1</td><td>54.8</td><td>57.8</td><td>59.4</td><td>56.5</td></tr>
+<tr><td>events found</td><td>97.5</td><td>96.8</td><td>95.4</td><td>96.3</td><td>94.6</td><td>96.1</td><td>96.1</td><td>95.3</td><td>96.8</td><td>99.0</td><td>97.5</td><td>95.4</td><td>94.6</td></tr>
+<tr><td>event concept</td><td>77.1</td><td>79.1</td><td>78.6</td><td>72.6</td><td>73.4</td><td>78.6</td><td>78.2</td><td>79.6</td><td>77.6</td><td>87.5</td><td>76.0</td><td>84.1</td><td>90.9</td></tr>
+<tr><td>entities found</td><td>93.9</td><td>92.8</td><td>93.6</td><td>92.9</td><td>93.0</td><td>93.4</td><td>93.6</td><td>92.9</td><td>92.6</td><td>91.4</td><td>93.4</td><td>90.3</td><td>88.4</td></tr>
+<tr><td>entity concept</td><td>78.2</td><td>78.8</td><td>78.7</td><td>79.0</td><td>78.0</td><td>78.8</td><td>78.6</td><td>77.3</td><td>79.5</td><td>77.6</td><td>80.4</td><td>81.8</td><td>73.8</td></tr>
+<tr><td>granularity</td><td>98.0</td><td>98.0</td><td>98.0</td><td>96.7</td><td>96.8</td><td>97.3</td><td>97.9</td><td>98.0</td><td>98.0</td><td>94.6</td><td>98.0</td><td>98.0</td><td>95.8</td></tr>
+<tr><td>predicate sense</td><td>89.9</td><td>90.0</td><td>88.5</td><td>89.5</td><td>92.3</td><td>89.7</td><td>92.6</td><td>98.8</td><td>96.2</td><td>92.7</td><td>88.5</td><td>86.3</td><td>84.6</td></tr>
+<tr><td>aspect</td><td>47.4</td><td>46.7</td><td>48.8</td><td>47.0</td><td>54.1</td><td>50.3</td><td>52.1</td><td>45.9</td><td>54.2</td><td>34.7</td><td>44.8</td><td>45.7</td><td>41.1</td></tr>
+<tr><td>polarity</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>33.3</td><td>66.7</td><td>33.3</td><td>66.7</td><td>66.7</td></tr>
+<tr><td>refer-person/number</td><td>25.0</td><td>33.3</td><td>28.6</td><td>62.5</td><td>29.4</td><td>35.3</td><td>33.3</td><td>26.1</td><td>37.5</td><td>0.0</td><td>70.6</td><td>35.7</td><td>0.0</td></tr>
+<tr><td>other attributes</td><td>35.8</td><td>35.1</td><td>36.6</td><td>49.1</td><td>32.5</td><td>33.9</td><td>33.1</td><td>36.6</td><td>50.9</td><td>50.0</td><td>37.5</td><td>47.2</td><td>50.0</td></tr>
+<tr><td>core args of events</td><td>49.7</td><td>55.9</td><td>50.8</td><td>47.9</td><td>53.6</td><td>55.2</td><td>55.6</td><td>66.7</td><td>70.3</td><td>62.8</td><td>52.6</td><td>53.9</td><td>56.9</td></tr>
+<tr><td>core args of abstract concepts</td><td>35.3</td><td>38.8</td><td>32.3</td><td>34.2</td><td>24.2</td><td>40.2</td><td>22.9</td><td>24.6</td><td>24.5</td><td>20.0</td><td>19.3</td><td>32.5</td><td>25.0</td></tr>
+<tr><td>non-core roles of events</td><td>28.4</td><td>31.3</td><td>29.1</td><td>36.4</td><td>29.9</td><td>35.8</td><td>31.3</td><td>33.4</td><td>31.3</td><td>25.0</td><td>34.1</td><td>30.5</td><td>17.1</td></tr>
+<tr><td>non-core roles of entities</td><td>43.8</td><td>40.7</td><td>47.2</td><td>33.5</td><td>36.7</td><td>39.3</td><td>42.4</td><td>44.6</td><td>37.8</td><td>34.2</td><td>41.5</td><td>44.2</td><td>33.3</td></tr>
+<tr><td>core role labels</td><td>69.7</td><td>79.3</td><td>69.0</td><td>74.7</td><td>72.1</td><td>78.8</td><td>72.0</td><td>86.6</td><td>81.8</td><td>95.1</td><td>67.1</td><td>73.3</td><td>92.5</td></tr>
+<tr><td>non-core role labels</td><td>77.4</td><td>76.6</td><td>80.0</td><td>77.9</td><td>74.2</td><td>78.2</td><td>74.8</td><td>78.1</td><td>74.2</td><td>73.7</td><td>80.6</td><td>77.5</td><td>80.0</td></tr>
+<tr><td>name strings</td><td>41.2</td><td>44.6</td><td>40.8</td><td>37.5</td><td>42.5</td><td>42.8</td><td>51.2</td><td>40.6</td><td>44.6</td><td>48.5</td><td>48.0</td><td>48.5</td><td>60.6</td></tr>
+<tr><td>wiki</td><td>0.0</td><td>0.0</td><td>0.0</td><td>–</td><td>–</td><td>–</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>reentrancy</td><td>29.3</td><td>35.1</td><td>30.0</td><td>31.3</td><td>30.0</td><td>33.9</td><td>33.0</td><td>26.1</td><td>28.6</td><td>37.5</td><td>20.7</td><td>29.6</td><td>33.3</td></tr>
+<tr><td>doc: temporal</td><td>33.0</td><td>32.3</td><td>27.3</td><td>35.2</td><td>27.4</td><td>36.1</td><td>36.5</td><td>27.2</td><td>33.2</td><td>17.4</td><td>29.4</td><td>27.9</td><td>13.7</td></tr>
+<tr><td>doc: modal</td><td>60.6</td><td>59.2</td><td>57.7</td><td>57.7</td><td>55.3</td><td>55.9</td><td>57.6</td><td>56.9</td><td>61.1</td><td>42.1</td><td>55.6</td><td>54.6</td><td>44.9</td></tr>
+<tr><td>doc: coref chains</td><td>2.6</td><td>7.8</td><td>13.8</td><td>1.8</td><td>4.1</td><td>9.3</td><td>9.3</td><td>9.9</td><td>8.3</td><td>10.5</td><td>8.9</td><td>8.0</td><td>0.0</td></tr>
+<tr><td>doc: coref subset</td><td>0.0</td><td>–</td><td>–</td><td>–</td><td>–</td><td>0.0</td><td>0.0</td><td>0.0</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>doc: format</td><td>99.4</td><td>99.3</td><td>100.0</td><td>100.0</td><td>100.0</td><td>99.6</td><td>99.6</td><td>99.3</td><td>100.0</td><td>100.0</td><td>99.3</td><td>96.9</td><td>100.0</td></tr>
+</tbody></table></details>
+<details><summary>中文（zh-0028 + zh-0032）：gpt-6-astra 的分项</summary>
+<table>
+<thead><tr><th></th><th>gpt-6-astra abridged</th><th>gpt-6-astra full</th><th>gpt-6-astra +search</th><th>gpt-6-astra +PropBank</th><th>gpt-6-astra +gold</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>46.6</td><td>44.7</td><td>48.6</td><td>48.0</td><td>48.7</td></tr>
+<tr><td>Smatch F</td><td>57.2</td><td>55.4</td><td>59.4</td><td>58.3</td><td>58.2</td></tr>
+<tr><td>AnCast Modal</td><td>53.3</td><td>51.6</td><td>49.6</td><td>48.1</td><td>50.8</td></tr>
+<tr><td>AnCast Temporal</td><td>33.7</td><td>20.0</td><td>30.8</td><td>29.0</td><td>30.5</td></tr>
+<tr><td>AnCast Coref</td><td>7.4</td><td>7.7</td><td>9.3</td><td>10.3</td><td>7.8</td></tr>
+<tr><td>AnCast Comprehensive</td><td>40.5</td><td>36.7</td><td>40.6</td><td>40.0</td><td>39.9</td></tr>
+<tr><td>umrjudge mean</td><td>57.6</td><td>56.1</td><td>58.1</td><td>58.0</td><td>58.1</td></tr>
+<tr><td>events found</td><td>97.3</td><td>95.3</td><td>96.9</td><td>98.1</td><td>95.8</td></tr>
+<tr><td>event concept</td><td>75.7</td><td>67.6</td><td>72.6</td><td>73.9</td><td>77.1</td></tr>
+<tr><td>entities found</td><td>93.1</td><td>92.8</td><td>91.0</td><td>92.3</td><td>91.0</td></tr>
+<tr><td>entity concept</td><td>78.5</td><td>80.4</td><td>83.8</td><td>80.1</td><td>82.7</td></tr>
+<tr><td>granularity</td><td>97.8</td><td>96.6</td><td>97.2</td><td>97.3</td><td>96.9</td></tr>
+<tr><td>predicate sense</td><td>89.6</td><td>92.3</td><td>89.2</td><td>100.0</td><td>86.8</td></tr>
+<tr><td>aspect</td><td>52.9</td><td>52.7</td><td>55.4</td><td>55.1</td><td>47.5</td></tr>
+<tr><td>polarity</td><td>83.3</td><td>66.7</td><td>83.3</td><td>66.7</td><td>66.7</td></tr>
+<tr><td>refer-person/number</td><td>24.0</td><td>31.3</td><td>27.3</td><td>25.0</td><td>35.3</td></tr>
+<tr><td>other attributes</td><td>31.2</td><td>33.1</td><td>49.1</td><td>46.4</td><td>36.6</td></tr>
+<tr><td>core args of events</td><td>58.1</td><td>46.3</td><td>56.6</td><td>62.6</td><td>56.8</td></tr>
+<tr><td>core args of abstract concepts</td><td>30.1</td><td>43.8</td><td>44.7</td><td>27.6</td><td>35.7</td></tr>
+<tr><td>non-core roles of events</td><td>31.0</td><td>30.7</td><td>29.4</td><td>28.6</td><td>28.7</td></tr>
+<tr><td>non-core roles of entities</td><td>39.4</td><td>44.4</td><td>37.4</td><td>38.4</td><td>39.6</td></tr>
+<tr><td>core role labels</td><td>76.9</td><td>80.3</td><td>82.9</td><td>84.9</td><td>81.2</td></tr>
+<tr><td>non-core role labels</td><td>73.1</td><td>88.7</td><td>73.9</td><td>71.2</td><td>81.2</td></tr>
+<tr><td>name strings</td><td>43.8</td><td>32.7</td><td>45.0</td><td>45.4</td><td>42.4</td></tr>
+<tr><td>reentrancy</td><td>26.3</td><td>8.7</td><td>22.7</td><td>19.6</td><td>27.9</td></tr>
+<tr><td>doc: temporal</td><td>32.7</td><td>20.7</td><td>32.8</td><td>28.4</td><td>28.9</td></tr>
+<tr><td>doc: modal</td><td>55.9</td><td>51.2</td><td>52.6</td><td>51.5</td><td>53.1</td></tr>
+<tr><td>doc: coref chains</td><td>6.9</td><td>9.5</td><td>12.0</td><td>12.6</td><td>15.6</td></tr>
+<tr><td>doc: coref subset</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>doc: format</td><td>99.4</td><td>98.6</td><td>99.7</td><td>100.0</td><td>100.0</td></tr>
+</tbody></table></details>
+<h3>英文（en-0008）：每个条件的绝对分数</h3>
+<table>
+<thead><tr><th></th><th>Claude API abridged</th><th>Claude API full</th><th>Claude API +search</th><th>Claude API +PropBank</th><th>Claude API +gold</th><th>Claude API +PropBank by sentence</th><th>GPT API abridged</th><th>GPT API full</th><th>GPT API +search</th><th>GPT API +PropBank</th><th>GPT API +gold</th><th>GPT API +PropBank by sentence</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>54.7</td><td>56.5</td><td>54.0</td><td>56.0</td><td>51.5</td><td>55.1</td><td>44.6</td><td>59.2</td><td>55.6</td><td>48.5</td><td>48.1</td><td>46.6</td></tr>
+<tr><td>Smatch F</td><td>79.1</td><td>80.9</td><td>79.5</td><td>81.8</td><td>78.4</td><td>81.8</td><td>72.2</td><td>86.0</td><td>86.0</td><td>75.9</td><td>78.7</td><td>75.8</td></tr>
+<tr><td>AnCast Modal</td><td>82.6</td><td>79.2</td><td>76.0</td><td>71.7</td><td>61.5</td><td>84.0</td><td>70.4</td><td>76.0</td><td>64.5</td><td>74.1</td><td>70.2</td><td>74.1</td></tr>
+<tr><td>AnCast Temporal</td><td>60.5</td><td>56.7</td><td>56.7</td><td>51.8</td><td>36.1</td><td>56.0</td><td>37.9</td><td>54.9</td><td>61.4</td><td>43.0</td><td>32.2</td><td>31.4</td></tr>
+<tr><td>AnCast Coref</td><td>73.3</td><td>64.3</td><td>60.0</td><td>73.3</td><td>73.3</td><td>73.3</td><td>73.3</td><td>71.4</td><td>73.3</td><td>56.2</td><td>73.3</td><td>73.3</td></tr>
+<tr><td>AnCast Comprehensive</td><td>71.7</td><td>70.7</td><td>68.5</td><td>71.1</td><td>66.3</td><td>74.3</td><td>59.8</td><td>79.8</td><td>76.5</td><td>62.0</td><td>66.9</td><td>62.4</td></tr>
+<tr><td>umrjudge mean</td><td>83.3</td><td>81.0</td><td>82.1</td><td>85.1</td><td>82.1</td><td>84.4</td><td>74.4</td><td>90.0</td><td>88.6</td><td>77.3</td><td>80.5</td><td>77.2</td></tr>
+<tr><td>events found</td><td>95.1</td><td>96.9</td><td>95.1</td><td>96.8</td><td>93.5</td><td>98.4</td><td>95.2</td><td>95.4</td><td>95.4</td><td>96.8</td><td>97.0</td><td>95.4</td></tr>
+<tr><td>event concept</td><td>82.8</td><td>93.5</td><td>82.8</td><td>93.3</td><td>89.7</td><td>93.5</td><td>83.3</td><td>96.8</td><td>96.8</td><td>90.0</td><td>81.2</td><td>90.3</td></tr>
+<tr><td>entities found</td><td>92.5</td><td>93.5</td><td>93.3</td><td>91.4</td><td>92.3</td><td>92.6</td><td>92.5</td><td>94.3</td><td>95.3</td><td>93.5</td><td>95.4</td><td>90.7</td></tr>
+<tr><td>entity concept</td><td>95.9</td><td>94.0</td><td>95.9</td><td>95.8</td><td>93.8</td><td>96.0</td><td>93.9</td><td>94.0</td><td>94.1</td><td>92.0</td><td>96.2</td><td>93.9</td></tr>
+<tr><td>granularity</td><td>96.2</td><td>96.4</td><td>96.2</td><td>96.3</td><td>96.1</td><td>96.3</td><td>96.2</td><td>98.5</td><td>98.5</td><td>96.4</td><td>98.5</td><td>96.3</td></tr>
+<tr><td>predicate sense</td><td>86.4</td><td>92.3</td><td>90.9</td><td>88.5</td><td>83.3</td><td>80.8</td><td>78.3</td><td>96.3</td><td>96.3</td><td>80.0</td><td>73.9</td><td>80.0</td></tr>
+<tr><td>aspect</td><td>71.4</td><td>76.2</td><td>60.9</td><td>59.6</td><td>56.5</td><td>66.7</td><td>62.2</td><td>82.9</td><td>66.7</td><td>65.2</td><td>59.6</td><td>65.2</td></tr>
+<tr><td>refer-person/number</td><td>80.0</td><td>81.8</td><td>81.8</td><td>80.0</td><td>84.2</td><td>81.8</td><td>85.7</td><td>87.0</td><td>87.0</td><td>88.0</td><td>91.7</td><td>90.9</td></tr>
+<tr><td>other attributes</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
+<tr><td>core args of events</td><td>62.4</td><td>66.7</td><td>62.5</td><td>70.6</td><td>74.8</td><td>71.7</td><td>60.2</td><td>85.3</td><td>93.0</td><td>63.8</td><td>70.9</td><td>67.1</td></tr>
+<tr><td>core args of abstract concepts</td><td>100.0</td><td>83.3</td><td>100.0</td><td>100.0</td><td>100.0</td><td>83.3</td><td>83.3</td><td>100.0</td><td>100.0</td><td>83.3</td><td>86.7</td><td>83.3</td></tr>
+<tr><td>non-core roles of events</td><td>68.4</td><td>62.5</td><td>68.4</td><td>77.8</td><td>68.4</td><td>77.8</td><td>63.3</td><td>80.0</td><td>87.5</td><td>80.4</td><td>66.7</td><td>70.6</td></tr>
+<tr><td>non-core roles of entities</td><td>81.2</td><td>78.5</td><td>84.8</td><td>76.1</td><td>78.6</td><td>81.2</td><td>70.5</td><td>83.3</td><td>88.0</td><td>52.1</td><td>76.1</td><td>73.8</td></tr>
+<tr><td>core role labels</td><td>82.4</td><td>94.1</td><td>84.8</td><td>96.9</td><td>90.9</td><td>93.9</td><td>81.8</td><td>100.0</td><td>100.0</td><td>90.3</td><td>91.7</td><td>93.8</td></tr>
+<tr><td>non-core role labels</td><td>91.7</td><td>90.9</td><td>91.7</td><td>95.2</td><td>95.5</td><td>95.8</td><td>95.2</td><td>95.7</td><td>96.0</td><td>85.0</td><td>90.9</td><td>95.2</td></tr>
+<tr><td>name strings</td><td>96.8</td><td>96.8</td><td>93.3</td><td>96.8</td><td>96.8</td><td>96.8</td><td>58.1</td><td>100.0</td><td>76.5</td><td>58.1</td><td>76.5</td><td>71.0</td></tr>
+<tr><td>wiki</td><td>66.7</td><td>0.0</td><td>64.3</td><td>82.8</td><td>60.0</td><td>69.2</td><td>0.0</td><td>97.0</td><td>97.0</td><td>43.5</td><td>81.2</td><td>0.0</td></tr>
+<tr><td>reentrancy</td><td>69.6</td><td>78.3</td><td>75.0</td><td>78.3</td><td>75.0</td><td>72.0</td><td>48.0</td><td>90.3</td><td>88.9</td><td>58.3</td><td>56.0</td><td>58.3</td></tr>
+<tr><td>doc: temporal</td><td>57.1</td><td>65.1</td><td>54.5</td><td>51.1</td><td>44.4</td><td>52.2</td><td>41.7</td><td>60.9</td><td>52.8</td><td>49.0</td><td>34.6</td><td>34.6</td></tr>
+<tr><td>doc: modal</td><td>82.6</td><td>79.2</td><td>76.0</td><td>72.5</td><td>60.8</td><td>84.0</td><td>74.0</td><td>74.5</td><td>67.2</td><td>78.0</td><td>73.6</td><td>75.0</td></tr>
+<tr><td>doc: coref chains</td><td>73.3</td><td>64.3</td><td>54.8</td><td>73.3</td><td>73.3</td><td>73.3</td><td>73.3</td><td>69.0</td><td>73.3</td><td>56.2</td><td>73.3</td><td>73.3</td></tr>
+<tr><td>doc: format</td><td>100.0</td><td>98.9</td><td>100.0</td><td>100.0</td><td>97.8</td><td>98.9</td><td>100.0</td><td>99.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
+</tbody></table>
+<h3>英文（en-0008）：相对 abridged 的变化</h3>
+<table>
+<thead><tr><th></th><th>Claude API abridged</th><th>Claude API full</th><th>Claude API +search</th><th>Claude API +PropBank</th><th>Claude API +gold</th><th>Claude API +PropBank by sentence</th><th>GPT API abridged</th><th>GPT API full</th><th>GPT API +search</th><th>GPT API +PropBank</th><th>GPT API +gold</th><th>GPT API +PropBank by sentence</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>54.7</td><td>+1.8</td><td>-0.7</td><td>+1.2</td><td>-3.3</td><td>+0.3</td><td>44.6</td><td>+14.6</td><td>+10.9</td><td>+3.8</td><td>+3.5</td><td>+2.0</td></tr>
+<tr><td>Smatch F</td><td>79.1</td><td>+1.8</td><td>+0.4</td><td>+2.7</td><td>-0.7</td><td>+2.7</td><td>72.2</td><td>+13.8</td><td>+13.7</td><td>+3.6</td><td>+6.5</td><td>+3.5</td></tr>
+<tr><td>AnCast Modal</td><td>82.6</td><td>-3.4</td><td>-6.6</td><td>-10.9</td><td>-21.1</td><td>+1.4</td><td>70.4</td><td>+5.6</td><td>-5.9</td><td>+3.7</td><td>-0.2</td><td>+3.7</td></tr>
+<tr><td>AnCast Temporal</td><td>60.5</td><td>-3.8</td><td>-3.7</td><td>-8.7</td><td>-24.3</td><td>-4.4</td><td>37.9</td><td>+17.0</td><td>+23.5</td><td>+5.1</td><td>-5.7</td><td>-6.5</td></tr>
+<tr><td>AnCast Coref</td><td>73.3</td><td>-9.0</td><td>-13.3</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>73.3</td><td>-1.9</td><td>+0.0</td><td>-17.1</td><td>+0.0</td><td>+0.0</td></tr>
+<tr><td>AnCast Comprehensive</td><td>71.7</td><td>-1.0</td><td>-3.2</td><td>-0.6</td><td>-5.4</td><td>+2.6</td><td>59.8</td><td>+20.0</td><td>+16.7</td><td>+2.2</td><td>+7.1</td><td>+2.6</td></tr>
+<tr><td>umrjudge mean</td><td>83.3</td><td>-2.2</td><td>-1.1</td><td>+1.8</td><td>-1.2</td><td>+1.1</td><td>74.4</td><td>+15.6</td><td>+14.3</td><td>+2.9</td><td>+6.1</td><td>+2.8</td></tr>
+<tr><td>events found</td><td>95.1</td><td>+1.8</td><td>+0.0</td><td>+1.7</td><td>-1.5</td><td>+3.3</td><td>95.2</td><td>+0.1</td><td>+0.1</td><td>+1.5</td><td>+1.7</td><td>+0.1</td></tr>
+<tr><td>event concept</td><td>82.8</td><td>+10.8</td><td>+0.0</td><td>+10.6</td><td>+6.9</td><td>+10.8</td><td>83.3</td><td>+13.4</td><td>+13.4</td><td>+6.7</td><td>-2.1</td><td>+7.0</td></tr>
+<tr><td>entities found</td><td>92.5</td><td>+1.0</td><td>+0.9</td><td>-1.0</td><td>-0.1</td><td>+0.1</td><td>92.5</td><td>+1.9</td><td>+2.9</td><td>+1.0</td><td>+3.0</td><td>-1.7</td></tr>
+<tr><td>entity concept</td><td>95.9</td><td>-1.9</td><td>+0.0</td><td>-0.1</td><td>-2.2</td><td>+0.1</td><td>93.9</td><td>+0.1</td><td>+0.2</td><td>-1.9</td><td>+2.3</td><td>+0.0</td></tr>
+<tr><td>granularity</td><td>96.2</td><td>+0.2</td><td>+0.0</td><td>+0.1</td><td>-0.1</td><td>+0.1</td><td>96.2</td><td>+2.3</td><td>+2.3</td><td>+0.2</td><td>+2.3</td><td>+0.1</td></tr>
+<tr><td>predicate sense</td><td>86.4</td><td>+5.9</td><td>+4.5</td><td>+2.1</td><td>-3.0</td><td>-5.6</td><td>78.3</td><td>+18.0</td><td>+18.0</td><td>+1.7</td><td>-4.3</td><td>+1.7</td></tr>
+<tr><td>aspect</td><td>71.4</td><td>+4.8</td><td>-10.6</td><td>-11.9</td><td>-14.9</td><td>-4.8</td><td>62.2</td><td>+20.7</td><td>+4.4</td><td>+3.0</td><td>-2.6</td><td>+3.0</td></tr>
+<tr><td>refer-person/number</td><td>80.0</td><td>+1.8</td><td>+1.8</td><td>+0.0</td><td>+4.2</td><td>+1.8</td><td>85.7</td><td>+1.2</td><td>+1.2</td><td>+2.3</td><td>+6.0</td><td>+5.2</td></tr>
+<tr><td>other attributes</td><td>100.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>100.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td></tr>
+<tr><td>core args of events</td><td>62.4</td><td>+4.3</td><td>+0.1</td><td>+8.2</td><td>+12.4</td><td>+9.3</td><td>60.2</td><td>+25.1</td><td>+32.8</td><td>+3.6</td><td>+10.8</td><td>+6.9</td></tr>
+<tr><td>core args of abstract concepts</td><td>100.0</td><td>-16.7</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>-16.7</td><td>83.3</td><td>+16.7</td><td>+16.7</td><td>+0.0</td><td>+3.3</td><td>+0.0</td></tr>
+<tr><td>non-core roles of events</td><td>68.4</td><td>-5.9</td><td>+0.0</td><td>+9.4</td><td>+0.0</td><td>+9.4</td><td>63.3</td><td>+16.7</td><td>+24.2</td><td>+17.1</td><td>+3.3</td><td>+7.3</td></tr>
+<tr><td>non-core roles of entities</td><td>81.2</td><td>-2.8</td><td>+3.5</td><td>-5.2</td><td>-2.7</td><td>+0.0</td><td>70.5</td><td>+12.9</td><td>+17.5</td><td>-18.4</td><td>+5.6</td><td>+3.4</td></tr>
+<tr><td>core role labels</td><td>82.4</td><td>+11.8</td><td>+2.5</td><td>+14.5</td><td>+8.6</td><td>+11.6</td><td>81.8</td><td>+18.2</td><td>+18.2</td><td>+8.5</td><td>+9.8</td><td>+11.9</td></tr>
+<tr><td>non-core role labels</td><td>91.7</td><td>-0.8</td><td>+0.0</td><td>+3.6</td><td>+3.8</td><td>+4.2</td><td>95.2</td><td>+0.4</td><td>+0.8</td><td>-10.2</td><td>-4.3</td><td>+0.0</td></tr>
+<tr><td>name strings</td><td>96.8</td><td>+0.0</td><td>-3.4</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>58.1</td><td>+41.9</td><td>+18.4</td><td>+0.0</td><td>+18.4</td><td>+12.9</td></tr>
+<tr><td>wiki</td><td>66.7</td><td>-66.7</td><td>-2.4</td><td>+16.1</td><td>-6.7</td><td>+2.6</td><td>0.0</td><td>+97.0</td><td>+97.0</td><td>+43.5</td><td>+81.2</td><td>+0.0</td></tr>
+<tr><td>reentrancy</td><td>69.6</td><td>+8.7</td><td>+5.4</td><td>+8.7</td><td>+5.4</td><td>+2.4</td><td>48.0</td><td>+42.3</td><td>+40.9</td><td>+10.3</td><td>+8.0</td><td>+10.3</td></tr>
+<tr><td>doc: temporal</td><td>57.1</td><td>+8.0</td><td>-2.6</td><td>-6.1</td><td>-12.7</td><td>-5.0</td><td>41.7</td><td>+19.2</td><td>+11.2</td><td>+7.3</td><td>-7.1</td><td>-7.1</td></tr>
+<tr><td>doc: modal</td><td>82.6</td><td>-3.4</td><td>-6.6</td><td>-10.1</td><td>-21.8</td><td>+1.4</td><td>74.0</td><td>+0.5</td><td>-6.8</td><td>+4.0</td><td>-0.4</td><td>+1.0</td></tr>
+<tr><td>doc: coref chains</td><td>73.3</td><td>-9.0</td><td>-18.5</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>73.3</td><td>-4.4</td><td>+0.0</td><td>-17.1</td><td>+0.0</td><td>+0.0</td></tr>
+<tr><td>doc: format</td><td>100.0</td><td>-1.1</td><td>+0.0</td><td>+0.0</td><td>-2.2</td><td>-1.1</td><td>100.0</td><td>-1.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td><td>+0.0</td></tr>
+</tbody></table>
+<details><summary>英文（en-0008）：Claude 三种方法和 chat 的分项</summary>
+<table>
+<thead><tr><th></th><th>API abridged</th><th>claude.ai abridged</th><th>API full</th><th>API +search</th><th>API +PropBank</th><th>API +gold</th><th>ChatGPT chat (chatgpt) abridged</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>54.7</td><td>52.2</td><td>56.5</td><td>54.0</td><td>56.0</td><td>51.5</td><td>46.5</td></tr>
+<tr><td>Smatch F</td><td>79.1</td><td>78.1</td><td>80.9</td><td>79.5</td><td>81.8</td><td>78.4</td><td>69.5</td></tr>
+<tr><td>AnCast Modal</td><td>82.6</td><td>84.0</td><td>79.2</td><td>76.0</td><td>71.7</td><td>61.5</td><td>75.0</td></tr>
+<tr><td>AnCast Temporal</td><td>60.5</td><td>38.9</td><td>56.7</td><td>56.7</td><td>51.8</td><td>36.1</td><td>36.0</td></tr>
+<tr><td>AnCast Coref</td><td>73.3</td><td>73.3</td><td>64.3</td><td>60.0</td><td>73.3</td><td>73.3</td><td>75.0</td></tr>
+<tr><td>AnCast Comprehensive</td><td>71.7</td><td>68.0</td><td>70.7</td><td>68.5</td><td>71.1</td><td>66.3</td><td>58.4</td></tr>
+<tr><td>umrjudge mean</td><td>83.3</td><td>81.0</td><td>81.0</td><td>82.1</td><td>85.1</td><td>82.1</td><td>76.0</td></tr>
+<tr><td>events found</td><td>95.1</td><td>96.8</td><td>96.9</td><td>95.1</td><td>96.8</td><td>93.5</td><td>91.8</td></tr>
+<tr><td>event concept</td><td>82.8</td><td>86.7</td><td>93.5</td><td>82.8</td><td>93.3</td><td>89.7</td><td>82.1</td></tr>
+<tr><td>entities found</td><td>92.5</td><td>92.5</td><td>93.5</td><td>93.3</td><td>91.4</td><td>92.3</td><td>93.5</td></tr>
+<tr><td>entity concept</td><td>95.9</td><td>93.9</td><td>94.0</td><td>95.9</td><td>95.8</td><td>93.8</td><td>86.0</td></tr>
+<tr><td>granularity</td><td>96.2</td><td>96.2</td><td>96.4</td><td>96.2</td><td>96.3</td><td>96.1</td><td>96.3</td></tr>
+<tr><td>predicate sense</td><td>86.4</td><td>82.6</td><td>92.3</td><td>90.9</td><td>88.5</td><td>83.3</td><td>68.2</td></tr>
+<tr><td>aspect</td><td>71.4</td><td>65.2</td><td>76.2</td><td>60.9</td><td>59.6</td><td>56.5</td><td>60.5</td></tr>
+<tr><td>refer-person/number</td><td>80.0</td><td>80.0</td><td>81.8</td><td>81.8</td><td>80.0</td><td>84.2</td><td>90.9</td></tr>
+<tr><td>other attributes</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
+<tr><td>core args of events</td><td>62.4</td><td>70.9</td><td>66.7</td><td>62.5</td><td>70.6</td><td>74.8</td><td>52.2</td></tr>
+<tr><td>core args of abstract concepts</td><td>100.0</td><td>100.0</td><td>83.3</td><td>100.0</td><td>100.0</td><td>100.0</td><td>77.8</td></tr>
+<tr><td>non-core roles of events</td><td>68.4</td><td>83.3</td><td>62.5</td><td>68.4</td><td>77.8</td><td>68.4</td><td>60.0</td></tr>
+<tr><td>non-core roles of entities</td><td>81.2</td><td>79.5</td><td>78.5</td><td>84.8</td><td>76.1</td><td>78.6</td><td>78.0</td></tr>
+<tr><td>core role labels</td><td>82.4</td><td>88.9</td><td>94.1</td><td>84.8</td><td>96.9</td><td>90.9</td><td>75.9</td></tr>
+<tr><td>non-core role labels</td><td>91.7</td><td>95.7</td><td>90.9</td><td>91.7</td><td>95.2</td><td>95.5</td><td>95.5</td></tr>
+<tr><td>name strings</td><td>96.8</td><td>96.8</td><td>96.8</td><td>93.3</td><td>96.8</td><td>96.8</td><td>73.3</td></tr>
+<tr><td>wiki</td><td>66.7</td><td>0.0</td><td>0.0</td><td>64.3</td><td>82.8</td><td>60.0</td><td>50.0</td></tr>
+<tr><td>reentrancy</td><td>69.6</td><td>69.6</td><td>78.3</td><td>75.0</td><td>78.3</td><td>75.0</td><td>34.8</td></tr>
+<tr><td>doc: temporal</td><td>57.1</td><td>46.8</td><td>65.1</td><td>54.5</td><td>51.1</td><td>44.4</td><td>39.1</td></tr>
+<tr><td>doc: modal</td><td>82.6</td><td>84.0</td><td>79.2</td><td>76.0</td><td>72.5</td><td>60.8</td><td>75.0</td></tr>
+<tr><td>doc: coref chains</td><td>73.3</td><td>73.3</td><td>64.3</td><td>54.8</td><td>73.3</td><td>73.3</td><td>91.7</td></tr>
+<tr><td>doc: format</td><td>100.0</td><td>100.0</td><td>98.9</td><td>100.0</td><td>100.0</td><td>97.8</td><td>100.0</td></tr>
+</tbody></table></details>
+<details><summary>英文（en-0008）：gpt-6-astra 的分项</summary>
+<table>
+<thead><tr><th></th><th>gpt-6-astra abridged</th><th>gpt-6-astra full</th><th>gpt-6-astra +search</th><th>gpt-6-astra +PropBank</th><th>gpt-6-astra +gold</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>48.0</td><td>55.2</td><td>55.9</td><td>49.1</td><td>46.7</td></tr>
+<tr><td>Smatch F</td><td>75.5</td><td>83.7</td><td>86.3</td><td>76.2</td><td>73.4</td></tr>
+<tr><td>AnCast Modal</td><td>74.1</td><td>72.0</td><td>64.5</td><td>79.2</td><td>76.9</td></tr>
+<tr><td>AnCast Temporal</td><td>32.9</td><td>54.9</td><td>61.4</td><td>33.4</td><td>23.3</td></tr>
+<tr><td>AnCast Coref</td><td>73.3</td><td>73.3</td><td>78.6</td><td>68.8</td><td>60.0</td></tr>
+<tr><td>AnCast Comprehensive</td><td>64.6</td><td>76.2</td><td>76.8</td><td>63.7</td><td>59.5</td></tr>
+<tr><td>umrjudge mean</td><td>78.0</td><td>87.7</td><td>88.5</td><td>77.3</td><td>74.8</td></tr>
+<tr><td>events found</td><td>95.2</td><td>95.4</td><td>95.4</td><td>98.4</td><td>95.2</td></tr>
+<tr><td>event concept</td><td>86.7</td><td>96.8</td><td>96.8</td><td>87.1</td><td>86.7</td></tr>
+<tr><td>entities found</td><td>92.6</td><td>94.4</td><td>95.3</td><td>93.5</td><td>93.5</td></tr>
+<tr><td>entity concept</td><td>94.0</td><td>94.1</td><td>94.1</td><td>94.0</td><td>92.0</td></tr>
+<tr><td>granularity</td><td>96.3</td><td>98.5</td><td>98.5</td><td>96.4</td><td>96.4</td></tr>
+<tr><td>predicate sense</td><td>73.9</td><td>96.3</td><td>96.3</td><td>80.0</td><td>75.0</td></tr>
+<tr><td>aspect</td><td>62.2</td><td>82.9</td><td>66.7</td><td>69.6</td><td>62.2</td></tr>
+<tr><td>refer-person/number</td><td>91.7</td><td>71.4</td><td>87.0</td><td>91.7</td><td>90.9</td></tr>
+<tr><td>other attributes</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
+<tr><td>core args of events</td><td>69.4</td><td>78.3</td><td>93.0</td><td>67.1</td><td>65.0</td></tr>
+<tr><td>core args of abstract concepts</td><td>100.0</td><td>100.0</td><td>100.0</td><td>83.3</td><td>83.3</td></tr>
+<tr><td>non-core roles of events</td><td>63.3</td><td>80.0</td><td>80.0</td><td>75.9</td><td>56.9</td></tr>
+<tr><td>non-core roles of entities</td><td>81.2</td><td>80.0</td><td>88.0</td><td>60.4</td><td>76.1</td></tr>
+<tr><td>core role labels</td><td>88.6</td><td>100.0</td><td>100.0</td><td>90.9</td><td>87.5</td></tr>
+<tr><td>non-core role labels</td><td>95.7</td><td>91.7</td><td>95.8</td><td>90.9</td><td>90.9</td></tr>
+<tr><td>name strings</td><td>71.0</td><td>76.5</td><td>76.5</td><td>71.0</td><td>71.0</td></tr>
+<tr><td>wiki</td><td>0.0</td><td>97.0</td><td>97.0</td><td>0.0</td><td>0.0</td></tr>
+<tr><td>reentrancy</td><td>66.7</td><td>90.3</td><td>88.9</td><td>58.3</td><td>52.2</td></tr>
+<tr><td>doc: temporal</td><td>36.7</td><td>60.9</td><td>52.8</td><td>40.8</td><td>32.7</td></tr>
+<tr><td>doc: modal</td><td>78.0</td><td>72.3</td><td>67.2</td><td>82.0</td><td>78.0</td></tr>
+<tr><td>doc: coref chains</td><td>73.3</td><td>73.3</td><td>78.6</td><td>68.8</td><td>60.0</td></tr>
+<tr><td>doc: format</td><td>100.0</td><td>99.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
+</tbody></table></details>
+<h2 id="ablation">ablation：一句句跑（a1）对整篇一次标（s2-propbank）</h2>
+<h3>中文</h3><table>
+<thead><tr><th></th><th>Claude API 整篇</th><th>Claude API 一句句（差）</th><th>GPT API 整篇</th><th>GPT API 一句句（差）</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>48.1</td><td>+1.1</td><td>47.4</td><td>-0.2</td></tr>
+<tr><td>Smatch F</td><td>57.3</td><td>+1.7</td><td>58.1</td><td>-0.4</td></tr>
+<tr><td>AnCast Modal</td><td>57.9</td><td>-3.2</td><td>50.2</td><td>-1.2</td></tr>
+<tr><td>AnCast Temporal</td><td>31.8</td><td>+1.6</td><td>25.4</td><td>-0.8</td></tr>
+<tr><td>AnCast Coref</td><td>9.2</td><td>-1.3</td><td>11.5</td><td>-4.9</td></tr>
+<tr><td>AnCast Comprehensive</td><td>40.2</td><td>+1.0</td><td>39.1</td><td>-0.9</td></tr>
+<tr><td>umrjudge mean</td><td>53.3</td><td>+3.1</td><td>56.8</td><td>-1.7</td></tr>
+<tr><td>events found</td><td>95.3</td><td>+2.0</td><td>97.5</td><td>+0.0</td></tr>
+<tr><td>event concept</td><td>79.6</td><td>-3.3</td><td>78.5</td><td>-1.4</td></tr>
+<tr><td>entities found</td><td>92.9</td><td>-0.2</td><td>92.3</td><td>-0.2</td></tr>
+<tr><td>entity concept</td><td>77.3</td><td>+3.3</td><td>76.5</td><td>+3.4</td></tr>
+<tr><td>granularity</td><td>98.0</td><td>+0.0</td><td>97.3</td><td>+0.0</td></tr>
+<tr><td>predicate sense</td><td>98.8</td><td>-1.4</td><td>100.0</td><td>-2.4</td></tr>
+<tr><td>aspect</td><td>45.9</td><td>+5.0</td><td>54.4</td><td>-4.9</td></tr>
+<tr><td>polarity</td><td>33.3</td><td>+0.0</td><td>33.3</td><td>+0.0</td></tr>
+<tr><td>refer-person/number</td><td>26.1</td><td>+9.2</td><td>27.3</td><td>-2.3</td></tr>
+<tr><td>other attributes</td><td>36.6</td><td>+6.9</td><td>35.1</td><td>+11.3</td></tr>
+<tr><td>core args of events</td><td>66.7</td><td>-0.2</td><td>61.4</td><td>+3.7</td></tr>
+<tr><td>core args of abstract concepts</td><td>24.6</td><td>+5.1</td><td>27.8</td><td>-6.5</td></tr>
+<tr><td>non-core roles of events</td><td>33.4</td><td>+6.3</td><td>25.5</td><td>+3.1</td></tr>
+<tr><td>non-core roles of entities</td><td>44.6</td><td>-3.1</td><td>38.6</td><td>+1.2</td></tr>
+<tr><td>core role labels</td><td>86.6</td><td>-3.2</td><td>87.4</td><td>-7.5</td></tr>
+<tr><td>non-core role labels</td><td>78.1</td><td>+1.1</td><td>70.6</td><td>+4.1</td></tr>
+<tr><td>name strings</td><td>40.6</td><td>+13.1</td><td>41.6</td><td>-2.8</td></tr>
+<tr><td>wiki</td><td>0.0</td><td>+0.0</td><td>–</td><td>–</td></tr>
+<tr><td>reentrancy</td><td>26.1</td><td>-3.6</td><td>16.3</td><td>-2.0</td></tr>
+<tr><td>doc: temporal</td><td>27.2</td><td>+6.3</td><td>22.4</td><td>+0.8</td></tr>
+<tr><td>doc: modal</td><td>56.9</td><td>-2.1</td><td>53.0</td><td>-2.2</td></tr>
+<tr><td>doc: coref chains</td><td>9.9</td><td>+5.5</td><td>12.5</td><td>-4.5</td></tr>
+<tr><td>doc: coref subset</td><td>0.0</td><td>+0.0</td><td>–</td><td>–</td></tr>
+<tr><td>doc: format</td><td>99.3</td><td>-0.9</td><td>100.0</td><td>-1.0</td></tr>
+</tbody></table>
+<h3>英文</h3><table>
+<thead><tr><th></th><th>Claude API 整篇</th><th>Claude API 一句句（差）</th><th>GPT API 整篇</th><th>GPT API 一句句（差）</th></tr></thead><tbody>
+<tr><td>juːmæʧ F</td><td>56.0</td><td>-0.9</td><td>48.5</td><td>-1.9</td></tr>
+<tr><td>Smatch F</td><td>81.8</td><td>-0.0</td><td>75.9</td><td>-0.1</td></tr>
+<tr><td>AnCast Modal</td><td>71.7</td><td>+12.3</td><td>74.1</td><td>+0.0</td></tr>
+<tr><td>AnCast Temporal</td><td>51.8</td><td>+4.2</td><td>43.0</td><td>-11.6</td></tr>
+<tr><td>AnCast Coref</td><td>73.3</td><td>+0.0</td><td>56.2</td><td>+17.1</td></tr>
+<tr><td>AnCast Comprehensive</td><td>71.1</td><td>+3.2</td><td>62.0</td><td>+0.4</td></tr>
+<tr><td>umrjudge mean</td><td>85.1</td><td>-0.8</td><td>77.3</td><td>-0.0</td></tr>
+<tr><td>events found</td><td>96.8</td><td>+1.6</td><td>96.8</td><td>-1.4</td></tr>
+<tr><td>event concept</td><td>93.3</td><td>+0.2</td><td>90.0</td><td>+0.3</td></tr>
+<tr><td>entities found</td><td>91.4</td><td>+1.2</td><td>93.5</td><td>-2.7</td></tr>
+<tr><td>entity concept</td><td>95.8</td><td>+0.2</td><td>92.0</td><td>+1.9</td></tr>
+<tr><td>granularity</td><td>96.3</td><td>+0.0</td><td>96.4</td><td>-0.1</td></tr>
+<tr><td>predicate sense</td><td>88.5</td><td>-7.7</td><td>80.0</td><td>+0.0</td></tr>
+<tr><td>aspect</td><td>59.6</td><td>+7.1</td><td>65.2</td><td>+0.0</td></tr>
+<tr><td>refer-person/number</td><td>80.0</td><td>+1.8</td><td>88.0</td><td>+2.9</td></tr>
+<tr><td>other attributes</td><td>100.0</td><td>+0.0</td><td>100.0</td><td>+0.0</td></tr>
+<tr><td>core args of events</td><td>70.6</td><td>+1.0</td><td>63.8</td><td>+3.3</td></tr>
+<tr><td>core args of abstract concepts</td><td>100.0</td><td>-16.7</td><td>83.3</td><td>+0.0</td></tr>
+<tr><td>non-core roles of events</td><td>77.8</td><td>+0.0</td><td>80.4</td><td>-9.8</td></tr>
+<tr><td>non-core roles of entities</td><td>76.1</td><td>+5.2</td><td>52.1</td><td>+21.7</td></tr>
+<tr><td>core role labels</td><td>96.9</td><td>-2.9</td><td>90.3</td><td>+3.4</td></tr>
+<tr><td>non-core role labels</td><td>95.2</td><td>+0.6</td><td>85.0</td><td>+10.2</td></tr>
+<tr><td>name strings</td><td>96.8</td><td>+0.0</td><td>58.1</td><td>+12.9</td></tr>
+<tr><td>wiki</td><td>82.8</td><td>-13.5</td><td>43.5</td><td>-43.5</td></tr>
+<tr><td>reentrancy</td><td>78.3</td><td>-6.3</td><td>58.3</td><td>+0.0</td></tr>
+<tr><td>doc: temporal</td><td>51.1</td><td>+1.1</td><td>49.0</td><td>-14.4</td></tr>
+<tr><td>doc: modal</td><td>72.5</td><td>+11.5</td><td>78.0</td><td>-3.0</td></tr>
+<tr><td>doc: coref chains</td><td>73.3</td><td>+0.0</td><td>56.2</td><td>+17.1</td></tr>
+<tr><td>doc: format</td><td>100.0</td><td>-1.1</td><td>100.0</td><td>+0.0</td></tr>
+</tbody></table>
+<p class="note">a1 每篇的调用次数 = 2 × 句数（Claude 和 GPT 各 54 次）；每次调用的 prompt 和完整对话在 <code>runs/api/a1-sentence-propbank/&lt;标签&gt;/&lt;文件&gt;.calls/</code>。</p>
+<h2 id="usage">工具调用和用量</h2>
+<table>
+<thead><tr><th>条件</th><th>系统</th><th>工具调用（zh-0028 / zh-0032 / en-0008）</th><th>请求数或轮数</th><th>输出 token 合计</th><th>花费</th></tr></thead><tbody>
+<tr><td>s1-abridged：缩略版 guideline</td><td>Claude API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>27542</td><td>$0.67</td></tr>
+<tr><td>s1-abridged：缩略版 guideline</td><td>GPT-sol API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>13848</td><td>–</td></tr>
+<tr><td>s1-abridged：缩略版 guideline</td><td>GPT-astra API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>18491</td><td>–</td></tr>
+<tr><td>s1-abridged：缩略版 guideline</td><td>Claude Code</td><td>1 / 1 / –</td><td>8 / 6 / –</td><td>27148</td><td>$1.03</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>Claude API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>25011</td><td>$3.00</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>GPT-sol API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>14969</td><td>–</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>GPT-astra API</td><td>0 / 0 / 0</td><td>1 / 1 / 1</td><td>16542</td><td>–</td></tr>
+<tr><td>s1-full：完整 guideline</td><td>Claude Code</td><td>1 / 1 / –</td><td>13 / 16 / –</td><td>35946</td><td>$1.64</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>Claude API</td><td>1 / 0 / 0</td><td>2 / 1 / 1</td><td>33105</td><td>$0.85</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>GPT-sol API</td><td>14 / 11 / 6</td><td>6 / 4 / 4</td><td>16528</td><td>–</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>GPT-astra API</td><td>19 / 23 / 8</td><td>5 / 6 / 3</td><td>17128</td><td>–</td></tr>
+<tr><td>s2-search：缩略版 + guideline 搜索</td><td>Claude Code</td><td>2 / 3 / –</td><td>7 / 8 / –</td><td>25305</td><td>$1.14</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>Claude API</td><td>2 / 3 / 2</td><td>3 / 3 / 3</td><td>34008</td><td>$1.13</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>GPT-sol API</td><td>4 / 6 / 9</td><td>5 / 7 / 10</td><td>13676</td><td>–</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>GPT-astra API</td><td>13 / 6 / 9</td><td>4 / 7 / 10</td><td>16589</td><td>–</td></tr>
+<tr><td>s2-propbank：缩略版 + PropBank</td><td>Claude Code</td><td>3 / 3 / –</td><td>12 / 10 / –</td><td>26577</td><td>$1.36</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>Claude API</td><td>3 / 2 / 2</td><td>3 / 2 / 2</td><td>26689</td><td>$0.72</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>GPT-sol API</td><td>21 / 21 / 26</td><td>6 / 6 / 7</td><td>16052</td><td>–</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>GPT-astra API</td><td>26 / 19 / 30</td><td>5 / 5 / 7</td><td>15898</td><td>–</td></tr>
+<tr><td>s2-gold：缩略版 + gold 例子</td><td>Claude Code</td><td>6 / 5 / –</td><td>14 / 11 / –</td><td>29512</td><td>$1.38</td></tr>
+<tr><td>a1：PropBank，一句句跑（ablation）</td><td>Claude API</td><td>12 / 6 / 10</td><td>36 / 18 / 28</td><td>58337</td><td>$3.15</td></tr>
+<tr><td>a1：PropBank，一句句跑（ablation）</td><td>GPT-sol API</td><td>24 / 13 / 17</td><td>48 / 25 / 35</td><td>28139</td><td>–</td></tr>
+</tbody></table>
+<p class="note">花费：Claude API 按 Opus 5.5 的价格算（输入 $4、输出 $20、写缓存 $5、读缓存 $0.20，每百万 token）；Claude Code 是它自己报的 API 价格折算（实际走订阅）；GPT 没有算钱，以 OpenAI 控制台为准。Claude Code 的工具调用只数运行 tools/ 命令的次数（不算 Read、Grep 等）。</p>
+<h2 id="caveats">局限和下一步</h2><ul><li>3 篇文件、每个条件跑一次：没有量过同一条件重复跑的波动，也没有置信区间。</li><li>effort 都是 medium；模型查资源的次数（尤其 Claude）很少，资源条件的对照因此偏弱。</li><li>英文的自动对齐上限只有 65.9（中文 87.4），英文的 juːmæʧ 会因此偏低；Smatch 不受对齐影响。</li><li>下一步建议：中文 15 篇全量（API 和 Claude Code），同一条件重复 2–3 次量波动，按文件 bootstrap 求置信区间，以及让模型真正去查资源（调高 effort 或在 prompt 里规定每句都查）。</li></ul>
+<h2 id="files">文件</h2><ul><li>prompt：<code>exp/api/&lt;条件&gt;/…/skill.md</code>、<code>exp/chat/&lt;条件&gt;/prompts/</code>、<code>exp/harness/&lt;条件&gt;/TASK.md</code>，都由 <code>exp/scripts/make_subexps.py</code> 生成。</li><li>API 的结果：<code>exp/runs/api/&lt;条件&gt;/&lt;标签&gt;/</code>，每篇有回答原文、打分用的 .umr、实际发出的 prompt（<code>.prompt.md</code>）和完整对话（<code>.transcript.json</code>）。</li><li>Claude Code：<code>exp/harness/&lt;条件&gt;/answers/claude-code/</code>（答案、命令和权限、完整会话记录）。</li><li>chat：<code>exp/chat/&lt;条件&gt;/answers/&lt;chat 模型&gt;/</code>。</li><li>分项表：<code>exp/breakdown.md</code>；本页：<code>exp/report.html</code>（<code>python3 exp/scripts/report.py</code>）。</li></ul>
+</body></html>

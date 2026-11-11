@@ -43,7 +43,8 @@ def metrics(scores, docs):
     for key, name in (("jumach", "juːmæʧ F"), ("smatch", "Smatch F")):
         m[name] = f1(*[sum(scores[d][key][i] for d in have) for i in range(3)])
     for k in ANCAST:
-        xs = [scores[d]["ancast"][k] for d in have if scores[d].get("ancast")]
+        xs = [scores[d]["ancast"].get(k) for d in have if scores[d].get("ancast")]
+        xs = [x for x in xs if x is not None]
         m["AnCast " + k] = sum(xs) / len(xs) if xs else None
     js = [scores[d]["judge"] for d in have if scores[d].get("judge")]
     means = [sum(v for v in j.values() if v is not None) / max(1, sum(v is not None for v in j.values())) for j in js]
