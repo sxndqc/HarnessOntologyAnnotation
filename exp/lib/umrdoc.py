@@ -285,6 +285,10 @@ def parse_answer(doc, text):
     problems = []
     text = text.replace("\r", "")
     text = re.sub(r"^\s*```\w*\s*$", "", text, flags=re.M)
+    if re.search(r"\\[ \t]*$", text, flags=re.M):
+        # a hard line break of Markdown left by copying from a chat window: "...)\" at the end of a line
+        text = re.sub(r"\\[ \t]*$", "", text, flags=re.M)
+        problems.append("trailing backslashes removed (copied from a chat window)")
     final = list(FINAL.finditer(text))
     doc_text = ""
     if final:
