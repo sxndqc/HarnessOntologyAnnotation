@@ -38,7 +38,8 @@ import score  # noqa: E402
 import umrdoc  # noqa: E402
 
 SUBS = ["s1-abridged", "s1-full", "s2-search", "s2-propbank", "s2-gold"]
-ABLATIONS = ["a1-sentence-propbank"]   # API only: s2-propbank sentence by sentence, see api/a1-sentence-propbank/
+ABLATIONS = ["s3-all", "a1-sentence-propbank", "a2-sentence-all"]   # API only: all three tools (whole document);
+# s2-propbank and s3-all sentence by sentence (see api/<name>/registry.yaml)
 ALL_DOCS = json.load(open(os.path.join(EXP, "data", "docs.json"), encoding="utf-8"))["docs"]
 DOCS = [d for d in ALL_DOCS if d["lang"] in ("zh", "en")]      # set by --langs
 LANGS = ["zh", "en", "cs", "la", "it", "arp", "nv"]

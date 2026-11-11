@@ -1,0 +1,214 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-5.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9130
+    },
+    "cache_creation_input_tokens": 9130,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 238,
+    "output_tokens_details": {
+     "thinking_tokens": 78
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2181
+    },
+    "cache_creation_input_tokens": 2181,
+    "cache_read_input_tokens": 9130,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 783,
+    "output_tokens_details": {
+     "thinking_tokens": 194
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 5 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSjQYKEAgTGAI4AUIIdGhpbmtpbmcSDGdnmc3gNV2eDlaLQhoMK2JTzf3DT8reBgvvIjDT4x5T7Xo9lpXczXLeccakgR4i42t+tQkpFamUdwH42RS9IKl6aHO9HX41PChkzjoqqgWti/kp18VVPHWIy/HmwJx5S1OJoEGmNFyIz7pBGc4zG5MTcm84UJ8ueAzmKKywWLVDqkubnfWD7mK0gKgwg9d7bQCNYjH+g/DNjiE7LZJO2hKTxw2j58Pql6FifMSBmIH0MeZDqfQmsy5EgwTsYXh+cMyE9bYE+/CEDluUtJ2OQtwPhs0wtJg86GwvHs7T6w4c5Jqo/9Ly8Dsixzaxdr6kIV+eZ2I6hsc+E+mjAzkQLV0dZd2TUwJt8qk6w7aHKgobii+URwl/ilsIVzv/gFnNr0p5mjk0a81uGr/JJKqXHqEmDOhA/DCLzUK7QsYzb4frVfHHvosJn9Lis0MBSRUc3oSSXXaF+MNRNk2TMFTbDgLfbt+ZMbJwAno0rOTTlU3z8Tl5Fwzj/hcKOYOTopBg61/UPu40ZdWlkIPI0gJI7PBDBx4dU1t6yjq09G5kLWtqJGFTiLPwoyyurKIpgpdD/F2cJjWIk/yBgLzf+iDVVFVL4Fy8PiWGbdPVPb50c4WVHEeWLblkmqAHiwjuU5DaEcz4XlL8xrGJZhcteiNsKoXYfwkLL4xbHE6/NhplwTPnFuoSiKZHCmnBD+2Lcn+REcT0ML3Jfu5wtac8wXtFhgHZIJfom4xuzqujJRHIqFsXNEgpveFH3Ovsv0sP5SAcAT0LzAZyrSNaPgoy84+D9N4pMlRSP7nQyiZ6iB1R5CFu1m+CZcc2/6NnE36Ay/pW10rPur30+EQTM6pXqhc5xUF5mrIzfcmZ6afVsaAJDaJdC7VVFn0PesCF9tKZHiekIkL4YG2R5tqVCkdmy3X8/vRd9A7LTONFeKI4DrqRhSEZGH8v9S0vt+p5fRdVo6ePau3S6E4JH9QSwIw6Y0ztUkDcYuY5ZK/1yRs67Nd0WJZks6oF1Aueb2o5GAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01Bcevq2bdU4xz5GLppxTbtW",
+     "input": {
+      "lemmas": [
+       "fly"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01NWvhARpVWRcwKzsFWk4Q3S",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "military base",
+       "Ramstein"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01Bcevq2bdU4xz5GLppxTbtW",
+     "content": "## fly\n\n### fly-01 (fly through the air, travel via air, fly in a flock)\n\n- ARG0: pilot, agentive entity capable of flight (like a bird)\n- ARG1: passenger, cargo\n- ARG2: aircraft flown, flight number, steed, non-agentive thing in motion\n- ARG3: type of flight plan, mission, cognate object (like 'a flight' or 'sorties')\n- ARG4: airline\n\nExample 1 (fly-v: unaccusative, traveller as subject): And some investors fault Mr. Spiegel's life style; he earns millions of dollars a year and flies around in Columbia's jet planes.\n- ARG1: he\n- ARGM-DIR: around\n- ARG2: in Columbia's jet planes\n- rel: flies\n\nExample 2 (fly-v: transitive, pilot as subject): As a ``good-will measure,'' [the pilots]-1 had been working four extra hours a month and had agreed *trace*-1 to fly UAL's two new Boeing 747-400 aircraft.\n- ARG0: *trace*-1\n- ARG2: UAL's two new Boeing 747-400 aircraft\n- rel: fly\n\nExample 3 (fly-v: with destination): He will fly to San Francisco on the afternoon of the 20th to participate in another round of speeches .\n- ARG1: He\n- ARGM-MOD: will\n- ARGM-GOL: to San Francisco\n- ARGM-TMP: on the afternoon of the 20th\n- ARGM-PRP: to participate in another round of talks\n- rel: fly\n\nExample 4 (fly-v: with recipient): John flew the paper airplane to Mary.\n- ARG0: John\n- ARG2: the paper airplane\n- ARGM-GOL: to Mary\n- rel: flew\n\nExample 5 (fly-v: with employing airline, arg4): [All of the first group of pilots who went abroad to receive training for new fighter aircraft]-1 have left the military *trace*-1 to fly for civilian airlines\n- ARG0: *trace*-1\n- ARG4: for civilian airlines\n- rel: to fly\n\nExample 6 (fly-v: with arg3): Since this war began, something like 23,000 coalition sorties have been flown.\n- ARGM-TMP: Since this war began\n- ARG3: something like 23,000 coalition sorties\n- rel: flown\n\nExample 7 (flight-n: Within LVC): Just last week , for example , Trans World Airlines and Pan Am Corp. 's Pan American World Airways went so far as to offer cash rebates or gift checks of $ 200 to $ 1,000 to certain frequent-flier members making trans-Atlantic flights in business class or first class .\n- ARG1: certain frequent-flier members\n- ARGM-LVB: making\n- ARGM-DIR: trans-Atlantic\n- ARGM-MNR: in business class or first class.\n- rel: flights\n\nExample 8 (flight-n: pilot as subject, source and destination): This month we celebrate and remember Amelia Earhart's flight from Hawaii to California.\n- ARG0: Amelia Earhart's\n- ARGM-DIR: from Hawaii\n- ARGM-GOL: to California\n- rel: flight\n\nExample 9 (flight-v: With DIR): The maximum count of birds flighting in at dusk was a remarkable 183.\n- ARG0: birds\n- ARGM-DIR: in\n- ARGM-TMP: at dusk\n- rel: flighting\n\nExample 10 (fly-v): I never fly Frontier anymore.\n- ARG1: I\n- ARGM-NEG: never\n- ARG4: Frontier\n- ARGM-TMP: anymore\n- rel: fly\n\nExample 11 (fly-v): He flew on flight 664 to Albuquerque.\n- ARG1: He\n- ARG2: on flight 664\n- ARGM-GOL: to Albuquerque\n- rel: flew\n\nExample 12 (For first/business/economy class, use :manner.): When I fly intercontental, I always fly first class.\n- ARG1: I\n- ARGM-TMP: always\n- ARGM-MNR: first class\n- rel: fly\n\n### fly-02 (fly in the face of: flout)\n\n- ARG0: flouter\n- ARG1: \"in the face of __\"\n\nExample 1 (ULA example): There I believe we would decidedly fly in the face of established case law .\n- ARG0: we\n- ARGM-MOD: would\n- ARGM-ADV: decidedly\n- ARG1: in the face of established case law\n- rel: fly\n\n### fly-03 (hit a fly ball, has strange past participle)\n\n- ARG0: hitter\n- ARG1: bases\n- ARG2: where player moves to after hitting fly ball\n\nExample 1 (Args 0 & 2): Kemp came closest to a home run in the fourth inning when he flied to very deep right field.\n- ARG0: he\n- ARG2: to very deep right field\n- rel: flied\n\n### fly-06 ((cause to) hold a spatial configuration in the air)\n\n- ARG0: causal agent\n- ARG1: thing suspended in the air\n\nExample 1 (fly-v): He flew a flag above his house\n- ARG0: He\n- ARG1: a flag\n- ARGM-LOC: above his house\n- rel: flew\n\n### fly-yy (insect (and other non-predicative senses))\n\n- (no roles)\n\nExample 1 (fruit fly): A large number of fruit flies hovered over the rotting bananas.",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01NWvhARpVWRcwKzsFWk4Q3S",
+     "content": "{\"gold\": [], \"found\": 0, \"left_out\": \"1 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS7wgKEAgTGAI4AUIIdGhpbmtpbmcSDJEs3jAw7OEQkcvf7xoMhaHRtC8/vQss4eOSIjCa0JN4UbTc5QFeHybwu1GTcmYWImix3Oxox9a3csDLXJi+qDhliSW3EtKGx7nu6goqjAirhsko8jgCINRjuyMaeOKsJGmbYWhdrHM/T0SrE9fSSAuCyvr/kVbWd/qKEFb8hsCYS8nMwCH1Kls2zdRiD8bl4l+7XRL8nqrbt0kewGBRHE6nTiTm/vcBYTYloIj7mMSoTHX98aSZfUZTsKV2wynKESVAwhq7QEK/fqsw974b4cWbNqLOz4kx0z4WbhcsFOGh1IIbDu2UtcS4umWCy9y7vLFwQw+XoARuTA5dLUA1cSl4Z8rtCN9aV05bePSVVeb5E8+9nqFXHrS5vdhcTjy1+wgVTY7fH3b3RI1B1jA2l7wZ2Jc6t7vshw2uiiSGqcmgmmBllPXtonT0gYbtCJR/VuNTtBynEBCKkhdQuGhWXKbHnsWnSnX2R0IFF9ab2bz3C5Jp7W8rs0hXDRqXyjE9QOl+2Ic32hAgbiXkghd0zAr4Bpf0j0FsBcQC/tZirUvNz8qgUVUio8tabC5R5fEQ99GRS8Z8gCb7s8awQQd3K4eE4T3sOu3xg7Y+a/JMgNXmjab/YrYbGGY9Csh5ERPUL/kYR0AQj6eCEgQ+V7K6Tz/D4x6FsQuZwElc9+qfc+ZdniULVWNDBXnAfI4rx2Qu4coMmdiSRpS4KMqx1ZQNEIwZB8xdeb5KdkAb1Jf6eGDMs+a92H3YPeT2OMCkis7jZXaJiFuz/6QINgLvrFc568EfMkBDDkesETIG1Ba5EB1WB8xSo5j9yuqTCwATYXSK6qq/rD8YoP0Li/mQcGyF2/MqPbUYsLtygqhx7LXVW6uJKVwQ3fFl2vHGdpfIQKM+n9uhJ4obZlnAzxaeJ2cc4N3l4KOrMByxXi2sXop0AwX7M7UxQJAyRdDeXOO0VVLKZmyiXVjQq39yfG6DSsIyB+1ssmSBGGx2TeL9Y3Sf7Si6jU1h98Reaa+x1yk9/jNbIxgJkhLiM2vzbXIjtbgyO+WEVIkL11EHWwvZ0UUuM21XO+hV2dPRoy+dFTuX+zqU9XWkLMnFPl5cHRsjwGYR89asLz/SROTStyY78z8IvfHD3rgQ4Jvh8zLhdz9Y/BMYbLaTmGnTwLXV45g1UCDMhejNWz2pbTktDRR0R4EQORVbuUBlP627Ra8dDxmzfavPZ6E4YNN6lEyWdtlhzz4CBQXcKis34ZaD43aCGGMv2maPfPxdF3pLP+rsYBgbHOECE6Pg974WNM1JgiM9oHv+MSPXS4x3yc8+O0t44toRaIPL8HfTvktQGNsTDJ9miCa+QIMQ7dz/ic2ohrJuUmBRjaTTDDVm5wAG8hAVuAyB6teiey/Hu688EsEFy4Ei8r0iV1esVYMYxAjvqt4kNnjbAxyHaTMyrLgTEoZXy3rL4hg1HCIY+txAmwCgaNLMF+iXDV4QDiOx/i6MJ5IFGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I used fly-01, whose ARG1 is the passenger. Pope is that passenger, and nobody is named as the one who flew him. The node's alignment and the document-level links will be added in the later step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :mod (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :part-of (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\nA few choices in the graph:\n- **Destination:** \"to the U.S. military base\" is `:goal`, following the PropBank example \"fly to San Francisco\".\n- **Pope:** a `person` with the name \"Pope\". I took the name from the sentence alone; I couldn't see the earlier sentences.\n- **Aspect:** `performance`, because the flight is finished and reached its destination.\n- **The base:** \"military\" and \"U.S.\" are both `:mod` on `base`. Ramstein is a `city` placed on the base with `:place`, and it is `:part-of` Germany. No gold example for \"military base\" or \"Ramstein\" came up, so the structure of this phrase is my own judgment.\n- **Wiki title for Ramstein:** I used \"Ramstein-Miesenbach\" for the town. \"Ramstein_Air_Base\" would also be a reasonable choice.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,231 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-3.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 690,
+    "cache_read_input_tokens": 5910,
+    "output_tokens": 97,
+    "reasoning_tokens": 63,
+    "openai_usage": {
+     "input_tokens": 6600,
+     "input_tokens_details": {
+      "cache_write_tokens": 687,
+      "cached_tokens": 5910
+     },
+     "output_tokens": 97,
+     "output_tokens_details": {
+      "reasoning_tokens": 63
+     },
+     "total_tokens": 6697
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 137,
+    "cache_read_input_tokens": 6597,
+    "output_tokens": 121,
+    "reasoning_tokens": 15,
+    "openai_usage": {
+     "input_tokens": 6734,
+     "input_tokens_details": {
+      "cache_write_tokens": 134,
+      "cached_tokens": 6597
+     },
+     "output_tokens": 121,
+     "output_tokens_details": {
+      "reasoning_tokens": 15
+     },
+     "total_tokens": 6855
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 3 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmond_Pope\"\n        :name (s1n / name\n            :op1 \"Edmund\"\n            :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :wiki \"Edmond_Pope\"\n        :name (s2n / name\n            :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2n2 / nationality\n            :wiki \"United_States\"\n            :name (s2n3 / name\n                :op1 \"American\"))\n        :ARG1-of (s2c / convict-01\n            :ARG2 (s2c2 / charge-05\n                :ARG1 s2b\n                :ARG2 (s2s / spy-01\n                    :ARG0 s2b\n                    :aspect process)\n                :aspect process)\n            :temporal (s2w / week\n                :mod (s2l / last))\n            :aspect performance)\n        :ARG1-of (s2s2 / sentence-01\n            :ARG2 (s2p2 / prison\n                :mod (s2c3 / country\n                    :wiki \"Russia\"\n                    :name (s2n4 / name\n                        :op1 \"Russian\"))\n                :duration (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year)))\n            :ARG3 s2s\n            :aspect performance))\n    :aspect state)\n\nThis sentence:\n\n3\tHe denied any wrongdoing .\n\nIts graph:\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_2R3CgfXajv2liBKFCIGrsqe4",
+     "name": "search_annotations",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "denied",
+       "wrongdoing"
+      ],
+      "max_results": 2
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0d6dfe1004373f91006af40b997b3487d1a476601aafc6893d",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq9AubcR2ff4YMkC3okQCsgOtuCd8T_L_t7e6pjVjItxy5ZFm_inlk7EHCp_oqukSWtwdQXhg4iBDMzhH-PkAR6bCqQWQiVCPuu01ua6GOLdf2TEuGUMH3R6NxsoA1pWf8wzWt3-eJfyFLv23vqzZc7b27nJDu8JPqIFkOxPBxx42xSqskauprsv-AuNIlKZx-SnBqI-nHztaVuyY9gbk0ZY2sZDIHdCViIe9Lyi2rsj_nvd-FkyJ60plqAR7I4P8_8CmuxnV1s3wAQep8dPxJgA7AReYms6Xcm3grdd6DIwHCsYJilZRc8IM5nBqtHzi68OJYjlgAMOVpooL5UE-sgtSY9kh7h4gVTzwZUYXNGM1f6BhkPVoQAagPEhV8ND5SF2RVdI0FEWq2Dmd0a8PRGgFSNZ5qEeFlYzQ-cq64-IcOGn8D1Sqhdi6ilHokOLR7DEzPCNn9Yce6zJ-crLw4IR_XpXm_9HrVpJEERWAZ5I1OYQk0tTDIehhTQ7isRtlN9seAUxqgNCmaZ9ekBGsImuv8mvMMuVtawDGgVpuNfWL6hxibDD2jy4-qTNnjkxL-edGvDP3kun82N6XGBkzoYQyJckQ6AoHXzvIkaxChWregekNUQ21qKKORhP6TPtl4B-Fy5A1-PkgcRXRuqIWlfRdZWGfPPU2MXGoOhPtwbCMInQ-j1EesUkQwkVpY5jO7VirIPA1lgr8BHd0Sbd5Lmcibgr2KkMEdXxXBvgSp6g6W5XVoRxR3Es8S1Fu9uozFZwinT9zWX1czUnM_dollDjhbFYh5-kVF4tJMerPsVao46TWtejAsx10_T1DOWT1oRJok8p1yBY_D9WDQzuamXl9dePs0069NFZZ08uCHglZql6GBH1zHADhRSgKEXLxYIV7aPEhYuy56Un_je5qBL3LYbtMc6C7zr8HFdK1Em8Gz905M75SB1pldb-pDAW7t6Ha7T_IuEHS-28vQ5lAXHyKArUtLA09MDKjhZfk_uGK_3ePDIKsTF65JYkIydrNinfQllCI2tOP9tAJT5bU3ZL-x6teI8ds_7F2xS4sO0aZIgyYgD_MeNHvdn1bKEpqBtgVQeT8D3hD0filU1HyAXskK2tpINOLKXIaPcHbgHCGL3s75JHgDGJlkJiYSKZli9LK7qOREeoWXnXGH4pePippagAr9wDUJs-bLLTaz5at1J-xD9lIsQKiW8FY5sOI9Q-GZHk8sUkWwGl1bViS9F0-uaz52EPjYO43mnHcXlvlb6GYRaalKj3dJtSDHyiwFPm_zj9YRp3uNWsh4cgt4m7WNqRhYrEVFWzH8exp0tRfU14NQ3pXjWbh41_IbD4yisfiuKibNGVeFo4tvahK4XkVoG_S6SSYPSzqb3v7EEdOyczbVQel6RCi6DfkMBPYNkw-yziyzPEMYpWJmlgEnOgeg3kj9wvvxLVNXuSHDnL9eAGEYIl3NZoLyy3Pq9E3w5Hys2iRhXLUCO7676cvbWwQOcEtAkXbbc_Xzv_YfcfMjnCahO1ks-sOShHyHJJlI7DGVEf1brn-NEkx_ooEC01xPD4SfZ-EIsga0L4E39Rqtr7KSWWMVPr7nSDAfb-iSnnkoLcFX8l2yhHhDe5vExokFjAjB6GKRhBrrbdSIi4N8PmqS43Qxk791UV4iO89c96k1EpF_oHBnKlj5osjjJgMmzet0w1is5m335FLOzb93zjSbGNmv2UMewZZK9bPyC9eazjo0SDK0-EIZ43LMq_7goTLkoq_R6L9J9Ne1MbAJwqm8iadtqn7OpV_jcjpIOTSFnAuLinXBumNCa47OuWkwha9IOvZmPNiDbTMyihdTlhSTpzSGBXawoR5m6dTeawPyVMm-8z8jT8uuufYbxB276epau4TYAt7jYysJOA-2yzBHQ9VmEKJAkI-59JXi7visITwyYXpvPCgSn2dVaVDfLoli42Ynk6YWxcGhkQsc1pNBUylDQLluSr5L8u-GADLmisonDollV8328dKqSE7IPpmzDEFPSR2cpbxlUFDQoKmzYzxQs-c9RMsIhv-SziuLxMGF8HmHva4LWF_R-3FghJRX0Lr_TfZu2E9zVXhWJGvHI2dlMMGescQ8LDDQtuzJ3vAWSvs9ag46QorAb8LOPslH3a1tgcbA3WmOGLp8WC__GNHRsnb7DB84zZb5Apwh4g5LnfH86iP9NDDQmuINIX-XlY59gzjtaa1ZDBL_D7f_1eknIAAqTAg20k15st-DhE4r95ZYr4p6Oqhww0Bc4-MqDLzB9bkQ6VXQH2wmYmX07_lAqfaZetCHhrNiMiyEFej12cJE3ijWr3tS6hjT0U7jWh3GhOy3FQgYiaC5LR6BW56ZMFBljLlN_ou4DGvyb3d2H1bj9V4C1WV3ZRUuNzQO7z1krZQvUKoEim94HG4="
+      },
+      {
+       "arguments": "{\"language\":\"en\",\"keywords\":[\"denied\",\"wrongdoing\"],\"max_results\":2}",
+       "call_id": "call_2R3CgfXajv2liBKFCIGrsqe4",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_0d6dfe1004373f91006af40b9b33c887d1b81a003f4536afb0",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_2R3CgfXajv2liBKFCIGrsqe4",
+     "content": "{\"gold\": [], \"found\": 0, \"left_out\": \"1 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s3d)\n               (s3d :before s3d2))\n    :modal ((root :modal author)\n            (author :full-affirmative s3p)\n            (s3p :full-affirmative s3d)\n            (s3d :unspecified s3d2))\n    :coref ((s2p :same-entity s3p)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0d6dfe1004373f91006af40b9e874487d18671176e022afbe8",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq9AufxbHfqgsCDIwRuxSL2Vrbr7E0K-fqrsqY5C0AwzH_RvEV9qJJxIzNu74O62qO7WjydTNP6_m5oXpa9HNMpXt_7QJR45vMP9a5T1Qqv45q-whjRdfMUeRqdgl4EsINM9jEoTRC5fcPKYbY-QVfGcXufvmIavwgktnAsK-x3cJuFK10xCZlQwLZXUzumq6DxdwGQarIshUcck5oL61-ofoVoUOjcwq_iav5UbBtQJN1STCTq7YdEQYrDbjSatdXmuO86dx4Ti59mVeYhUBCpkCh76L1ojRzbQ0K2NzUnFT99DQDFjjw_TjAyAu5ArKugLRPObQb_mi4aYP5viN7f2RFh6njP3ku8dT-1smX-fkxMB0WVVIGiS_nGa-HHDnj0-lM_72U3p7FideDpD0cycb2GTZuJ9rT-ey_VvpDU4g6PsVTWoK-Ie1Gr4lXDM0CMZvAkaSApgcnWyiAGHhNKmukRKsAwEDJh56XIoITjaDEA74POHisK9g6Z4BmjkqhdyNFuJ_3FISfcaly0FUUPhShUDgAnnrIwSlJJlaXI8ZALX2IlCOxx21-kJC7Gqpddip9-_IsNiZ80rAwjeTyEkPRDrqAB-jKKzrKFG1kjTyJ5SLZOIhrnhZBIiX0nlYTKizxDhg2EaRImbPO9GJx6tsKwz2J3Ow0gs1NfkyU0uYZ5TrqvwsTNu7u8d3kApy46FHEF6PIgz1Ul6ss2aTzGJxcYIwKdVK5Yp-BoOEwX4YB0yZNz14v49fvgRRNlOhD8FBvCJHmcAofe8rnGWmLsTTGmIuhdS5Trb9C0qTwic9aAu7gtRyq5d8y5J0Ddri3dH5eSuWK3M90YRNDcy-tCmBthbL0Ba7I_v7m6PVFulB-3x5NtSpl0-KY3PDYFsS0Nh1GpKQ2rUn91ZeOoIaRJGMj2OLfPHQGU0ZjNlyAKzBr3kliNpIC_rIwVGT5G17ZGcMNWh65jwrVydnHiknAAsnWUCqso_zG6DOA30rZkSDQPn0fFnaiWF_8Jf3PGyAt12TRT5qlIHvaShyvawyIPhLantjFerPYCgJ95g_Sh7m9jo83brLhTOiJWwAsG7oqTLDyahCgiDV5NBBvKwhf1umAlQKvj-VSBOz3NADWJct6NOQSUZtqTbipTt3dTjm4icZ2I1dIauVZybAxUcvDBOikDEUNGXM2qYIDIlyVFFU4Ly5PfBZSy2aJ-VoXfLUfj98STfEoh9CC7MCabV_oc4IBfQDwaJV8bsbky9fjKveiUsY26wzF-bGtWPoyCQeYlEyPFhQwd42ax9MIGbdogrCpOyfF5QG2leMI3yPyksTCaTLQ2bZ1RrwsPe5Mj09t4bQ8rkKvOH7vkdqJZIOdCQ7xEHdzkS0Hi9doYBnYAVjAfGVC5082f59Y2rhIBrtGXn42Haj7PMaZrsqM9lLyQqp2P8pW94z6Sr-sfQUFA4KI60u7huOiKbqD04sHo0FjsNDb6GzglUgDbhR3VOG1JpfZLIp50maJZlgkxp_gfmCvdQGkiQzXS-tg7ZbrnKuscYJJNCitiQXotrfZmAryKlIFePl2_U-WHOm_JAqM5Hyk7JADyLG3_kawvh53FXlnlJH2U7PSzTXv515giqf-58u7T_pbm0aQ0FfhjqWLGDmL2U1Noy3YR-eidr3-Bvu-jdWLZDfnXuMkIOy6mEmWmVE2PvC4RBZv5ArmicZSefjLAR4deZ9U4ld9u933knWNOBuqtP-Wvt1EwMVbi9p9xUw5YX08RgEiMSt-X-t_gpTYIr8="
+      },
+      {
+       "id": "msg_0d6dfe1004373f91006af40b9ebc1887d180b120b692516c55",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s3d)\n               (s3d :before s3d2))\n    :modal ((root :modal author)\n            (author :full-affirmative s3p)\n            (s3p :full-affirmative s3d)\n            (s3d :unspecified s3d2))\n    :coref ((s2p :same-entity s3p)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

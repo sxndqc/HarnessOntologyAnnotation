@@ -1,0 +1,253 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-6.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9143
+    },
+    "cache_creation_input_tokens": 9143,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 136,
+    "output_tokens_details": {
+     "thinking_tokens": 32
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5297
+    },
+    "cache_creation_input_tokens": 5297,
+    "cache_read_input_tokens": 9143,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 338,
+    "output_tokens_details": {
+     "thinking_tokens": 254
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2185
+    },
+    "cache_creation_input_tokens": 2185,
+    "cache_read_input_tokens": 14440,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 232,
+    "output_tokens_details": {
+     "thinking_tokens": 13
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 6 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSvAUKEAgTGAI4AUIIdGhpbmtpbmcSDLUh3k9QzMrdwvG+kRoMEvVKU/37Lhn9MX2SIjA40rtFqWtjiMJyyU3ZLwskCPy8dnKOmkhydTwpr86bolq8fDHF8ZZ7SxflUWL4oJsq2QQ9ABIzWZ9vvZtFX3m7YXndglQWd6tyk+ln3+bdYy4qlDduY3LrgnrObTNy/hS0rQE1ab12YESe63AYLjBEz+S1PB6OneOgbRmtBnH+2dYUDQ9WQnxHueNnSn6XaBQhSaXjrGq1cbfPEAcdW44iN/TLsOTWPr/PiUMSKX4p6B4w3X/aY4y354PAKTh0OlRGrAmTBeHvh/C5PWSFhwxmMAM+kc36OJfmb0/BlvWaUwigarxc3XIt2/JRJKYXJCuKDjeH9IvSWxmK96+z7PSS/8y7IcRD0pTc53iyaMeMEweIbQBPnpmWPOcm/yul1bVzeMc6MavhNfDknd+jeHSCzct6/fe1wUH8liS6wK2cY6MlFo2j6bJqMuWb8Ss+UJhz3Yqk5oOvdBRX0U3vPq4pSssHf+Ll/3aFJyUaEUKwMOAx/68QPP2/2y6rDJusKCjG4PziYKYwmwdOSmOtePqSb5GxpcbXfBC7YU/HOjDeIBvK6mpiNBYuzJ93iJ1wraIFQLUMB6oYqDC7j7JB0u5Cg0xCvs5pLjyrXzxePVFbDhD6k+eU3M9xvlTYXnsgDJXrwrMujPJIw0lfX6/Cnygyppliz4B6JHbpl7GLayidfrdGWtjce7HZGYgjFqDWnkj1FHh1kP0nirmXAktGYB7cI2hp2ifHhKV7Rd0naApvyTCHFkX1XfDfZ16IIlSCBSPmqW7x/v70XfrzOBQq89mzkDkTq4R9WRmYyShwesleYLS+2OJzJkuKqM2e5FcpbwxHc5kgJNFOS2/+Sgn+gflUD/KXB+GaBCRDyYGkGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01EuXbe8b6Vv6DTAZg289d9J",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "分别",
+       "有"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01EuXbe8b6Vv6DTAZg289d9J",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0003\", \"sentence_number\": 3, \"sentence\": \"该台 现时 设有 两条 频道 ， 分别 是 以 标清 播放 的 主 频道 （ 1 台 ） 和 以 高清 播放 的 城市 2 高清 台 ： 前者 可 于 全国 以 有线 电视 、 宽带 电视 和 卫星 电视 接收 ， 后者 于 启播 初期 则 在 贝尔 公司 的 宽带 电视 系统 播放 。\", \"annotation\": \"# meta-info\\n# :: snt3\\nIndex: 1  2  3  4  5  6 7  8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57\\nWords: 该台 现时 设有 两条 频道 ， 分别 是 以 标清 播放 的  主  频道 （  1  台  ）  和  以  高清 播放 的  城市 2  高清 台  ：  前者 可  于  全国 以  有线 电视 、  宽带 电视 和  卫星 电视 接收 ，  后者 于  启播 初期 则  在  贝尔 公司 的  宽带 电视 系统 播放 。\\n\\n# sentence level graph:\\n(s3a / and\\n    :op1 (s3x / 设有-01\\n        :ARG0 (s3x3 / 台\\n            :mod (s3x4 / 该))\\n        :ARG1 (s3x5 / 频道\\n            :quant 2\\n            :unit (s3x6 / 条)\\n            :ARG1-of (s3i4 / identity-91\\n                :ARG2 (s3a2 / and\\n                    :op1 (s3x12 / 频道\\n                        :mod (s3x13 / 主)\\n                        :ARG1-of (s3i5 / identity-91\\n                            :ARG2 (s3x11 / 台\\n                                :ord (s3o2 / ordinal-entity\\n                                    :value 1)))\\n                        :ARG0-of (s3x9 / 播放-01\\n                            :manner (s3x10 / 标清)\\n                            :aspect habitual))\\n                    :op2 (s3b2 / broadcast-program\\n                        :name (s3n / name\\n                            :op1 \\\"城市\\\"\\n                            :op2 \\\"2\\\"\\n                            :op3 \\\"高清\\\"\\n                            :op4 \\\"台\\\")\\n                        :ARG0-of (s3x7 / 播放-01\\n                            :aspect habitual\\n                            :manner (s3x8 / 高清))))\\n                :aspect state))\\n        :temporal (s3x2 / 现时)\\n        :aspect state)\\n    :op2 (s3x14 / 接收-01\\n        :ARG1 s3x12\\n        :place (s3x15 / 全国)\\n        :medium (s3o / or\\n            :op1 (s3x16 / 电视\\n                :mod (s3x17 / 有线))\\n            :op2 (s3x18 / 电视\\n                :mod (s3x19 / 宽带))\\n            :op3 (s3x20 / 电视\\n                :mod (s3x21 / 卫星)))\\n        :aspect habitual)\\n    :op3 (s3x22 / 播放-01\\n        :ARG1 s3b2\\n        :temporal (s3x23 / 初期\\n            :op1 (s3x24 / 启-01\\n                :ARG1 (s3x29 / 播-01\\n                    :aspect habitual)\\n                :aspect performance))\\n        :medium (s3x25 / 系统\\n            :mod (s3x26 / 电视\\n                :mod (s3x27 / 宽带))\\n            :possessor (s3x28 / 公司\\n                :name (s3n2 / name\\n                    :op1 \\\"贝尔\\\")))\\n        :aspect habitual))\\n\\n# alignment:\\ns3a: 0-0\\ns3a2: 0-0\\ns3b2: 0-0\\ns3i4: 0-0\\ns3i5: 0-0\\ns3n: 0-0\\ns3n2: 0-0\\ns3o: 0-0\\ns3o2: 0-0\\ns3x: 3-3\\ns3x10: 10-10\\ns3x11: 17-17\\ns3x12: 5-5\\ns3x13: 13-13\\ns3x14: 42-42\\ns3x15: 32-32\\ns3x16: 35-35\\ns3x17: 34-34\\ns3x18: 35-35\\ns3x19: 37-37\\ns3x2: 2-2\\ns3x20: 35-35\\ns3x21: 40-40\\ns3x22: 11-11\\ns3x23: 47-47\\ns3x24: 46-46\\ns3x25: 55-55\\ns3x26: 35-35\\ns3x27: 37-37\\ns3x28: 51-51\\ns3x29: 11-11\\ns3x3: 17-17\\ns3x4: 1-1\\ns3x5: 5-5\\ns3x6: 4-4\\ns3x7: 11-11\\ns3x8: 21-21\\ns3x9: 11-11\\n\\n# document level annotation:\\n(s3s0 / sentence\\n    :temporal ((document-creation-time :before s3x)\\n        (s3x :overlap s3x9)\\n        (s3x :overlap s3x7)\\n        (s3x :overlap s3x14)\\n        (s3x14 :before s3x22)\\n        (s3x22 :overlap s3x24)\\n        (s3x24 :overlap s3x29))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s3x10)\\n        (author :full-affirmative s3x12)\\n        (author :full-affirmative s3x)\\n        (author :neutral-affirmative s3x14)\\n        (author :full-affirmative s3x29)\\n        (author :full-affirmative s3x24)\\n        (author :full-affirmative s3x22)\\n        (author :full-affirmative s3x9)\\n        (author :full-affirmative s3x7)\\n        (author :full-affirmative s3i4))\\n    :coref ((s2x3 :same-entity s3x3)))\"}, {\"doc\": \"chinese_umr-0007\", \"sentence_number\": 34, \"sentence\": \"此 游戏 有 两个 结局 ， 分别 是 柯南 结局 和 金田一 结局 。\", \"annotation\": \"# meta-info\\n# :: snt34\\nIndex: 1 2  3 4  5  6 7  8 9  10 11 12  13 14\\nWords: 此 游戏 有 两个 结局 ， 分别 是 柯南 结局 和  金田一 结局 。\\n\\n# sentence level graph:\\n(s34e / exist-91\\n    :ARG1 (s34x2 / 游戏\\n        :mod (s34x4 / 此))\\n    :ARG2 (s34x3 / 结局\\n        :quant 2\\n        :unit (s34x5 / 个)\\n        :ARG1-of (s34i2 / identity-91\\n            :ARG2 (s34a / and\\n                :op1 (s34x6 / 结局\\n                    :topic (s34i3 / individual-person\\n                        :name (s34n / name\\n                            :op1 \\\"柯南\\\")))\\n                :op2 (s34x7 / 结局\\n                    :topic (s34i4 / individual-person\\n                        :name (s34n2 / name\\n                            :op1 \\\"金田一\\\"))))\\n            :mod (s34x8 / 分别-01)\\n            :aspect state))\\n    :aspect state)\\n\\n# alignment:\\ns34a: 0-0\\ns34e: 0-0\\ns34i2: 0-0\\ns34i3: 0-0\\ns34i4: 0-0\\ns34n: 0-0\\ns34n2: 0-0\\ns34x2: 2-2\\ns34x3: 5-5\\ns34x4: 1-1\\ns34x5: 4-4\\ns34x6: 5-5\\ns34x7: 5-5\\ns34x8: 7-7\\n\\n# document level annotation:\\n(s34s0 / sentence\\n    :temporal ((document-creation-time :overlap s34e))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s34i2)\\n        (author :full-affirmative s34e))\\n    :coref ((s2x5 :same-entity s34x2)\\n        (s25i3 :same-entity s34i3)\\n        (s32i4 :same-entity s34i4)))\"}, {\"doc\": \"chinese_umr-0006\", \"sentence_number\": 13, \"sentence\": \"每队 设计师 会 有 1200 美元 的 预算 和 一天 的 时间 完成 作品 ， 而 优胜 的 两位 设计师 不仅 会 获得 下一场 挑战 的 淘汰 豁免权 ， 海迪 并 分别 会 穿着 两款 优胜 设计 拍摄 电视广告 和 出席 香水 发布会\", \"annotation\": \"# meta-info\\n# :: snt13\\nIndex: 1  2   3 4 5    6  7 8  9 10 11 12 13 14 15 16 17 18 19 20  21 22 23 24  25 26 27 28  29 30 31 32 33 34 35 36 37 38 39   40 41 42 43\\nWords: 每队 设计师 会 有 1200 美元 的 预算 和 一天 的  时间 完成 作品 ，  而  优胜 的  两位 设计师 不仅 会  获得 下一场 挑战 的  淘汰 豁免权 ，  海迪 并  分别 会  穿着 两款 优胜 设计 拍摄 电视广告 和  出席 香水 发布会\\n\\n# sentence level graph:\\n(s13a / and\\n    :op1 (s13h / have-91\\n        :ARG1 (s13x14 / 设计师\\n            :part (s13x15 / 每队))\\n        :ARG1 (s13a3 / and\\n            :op1 (s13x16 / 预算\\n                :ARG1-of (s13i2 / identity-91\\n                    :ARG2 (s13m / monetary-quantity\\n                        :unit (s13x17 / 美元)\\n                        :quant 1200)\\n                    :aspect state))\\n            :op2 (s13x18 / 时间\\n                :ARG1-of (s13i3 / identity-91\\n                    :ARG2 (s13t / temporal-quantity\\n                        :unit (s13x19 / 天)\\n                        :quant 1)\\n                    :aspect state)))\\n        :purpose (s13x20 / 完成-01\\n            :ARG0 s13x14\\n            :ARG1 (s13x21 / 作品)\\n            :aspect performance)\\n        :aspect state)\\n    :op2 (s13x7 / 获得-01\\n        :ARG0 (s13x8 / 优胜者\\n            :unit (s13x26 / 位)\\n            :quant 2)\\n        :ARG1 (s13x9 / 权\\n            :mod (s13x10 / 豁免-01\\n                :ARG1 (s13x11 / 淘汰-01\\n                    :aspect process\\n                    :place (s13x12 / 挑战\\n                        :mod (s13x13 / 下一场)))\\n                :aspect process))\\n        :aspect performance\\n        :mod (s13x49 / 不仅))\\n    :op3 (s13a2 / and\\n        :op1 (s13x / 穿-01\\n            :ARG0 (s13i4 / individual-person\\n                :name (s13n / name\\n                    :op1 \\\"海迪\\\"))\\n            :ARG1 (s13x4 / 设计-01\\n                :ARG0 s13x8\\n                :mod (s13x6 / 优胜)\\n                :aspect performance\\n                :unit (s13x27 / 款)\\n                :quant 2)\\n            :mod (s13x5 / 分别)\\n            :aspect performance)\\n        :op2 (s13x2 / 拍摄-00\\n            :ARG1 s13i4\\n            :ARG2 (s13x22 / 广告\\n                :mod (s13x23 / 电视))\\n            :aspect performance)\\n        :op3 (s13x3 / 出席-01\\n            :ARG0 s13i4\\n            :ARG1 (s13x24 / 发布会\\n                :topic (s13x25 / 香水))\\n            :aspect performance)))\\n\\n# alignment:\\ns13a: 0-0\\ns13a2: 0-0\\ns13a3: 0-0\\ns13h: 0-0\\ns13i2: 0-0\\ns13i3: 0-0\\ns13i4: 0-0\\ns13m: 0-0\\ns13n: 0-0\\ns13t: 0-0\\ns13x: 34-34\\ns13x10: 28-28\\ns13x11: 27-27\\ns13x12: 25-25\\ns13x13: 24-24\\ns13x14: 2-2\\ns13x15: 1-1\\ns13x16: 8-8\\ns13x17: 6-6\\ns13x18: 12-12\\ns13x19: 10-10\\ns13x2: 38-38\\ns13x20: 13-13\\ns13x21: 14-14\\ns13x22: 39-39\\ns13x23: 39-39\\ns13x24: 43-43\\ns13x25: 42-42\\ns13x26: 19-19\\ns13x27: 35-35\\ns13x3: 41-41\\ns13x4: 37-37\\ns13x49: 21-21\\ns13x5: 32-32\\ns13x6: 17-17\\ns13x7: 23-23\\ns13x8: 17-17\\ns13x9: 28-28\\n\\n# document level annotation:\\n(s13s0 / sentence\\n    :temporal ((document-creation-time :before s13h)\\n        (s13h :overlap s13x20)\\n        (s13h :after s13x7)\\n        (s13x7 :overlap s13x10)\\n        (s13x10 :overlap s13x11)\\n        (s13x7 :after s13x)\\n        (s13x :before s13x4)\\n        (s13x :overlap s13x2)\\n        (s13x :overlap s13x3))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (s13x14 :full-affirmative s13x10)\\n        (s13x10 :unspecified s13x11)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14)\\n        (author :full-affirmative s13x14))\\n    :coref ((s12x15 :same-entity s13x14)\\n        (s12i2 :same-entity s13i4)))\"}], \"found\": 405}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSpAoKEAgTGAI4AUIIdGhpbmtpbmcSDIjmX7KERSXWSu2YKhoMc+6xd3r3jaw98mPDIjBXxr39X+1uURdY9w2brXiGMboF8jCyIwOIsVv3SLK4o6mwtGDmaePdCms2uJIYZSUqwQluFS4i9/OdLC3/gQ8mixvPhtDx2RJv0v5TjUqykqYnpyHh3p3PiugKV78Cp7D045DFpgXvaSHxSaPmwUWOgiIZNh0HAuKM+IWItITv6TWbQqniqCHmMogOo9nNr7EEqViMjxRmFdJq4WuX/qGLaL1TlY+bxzoh+avbpZ4QXYz5NaALGIcz48oIAPf9wi5Xd3m+rZe1ue4rqWBDcm3si2WlzqaF+qtlG0/IVVMMm3Gq0eiRxslB7ZebORfwnvbi78eS9Hbmn24iIr4sDvfwIBNOggF1eZMyvQREUYPREsveBew78ujnnEwtArYLNGv6xzifUjF68mP2yZFYoZAQacYd+o3j+xtWBRN33yEnqDr2+oK7XXvUbDckDbTf4S/0EnmuPs7QBZina7yQPKNZ13/OYuJlCG0+JTRGiB+6OhDu3udsfQISFf9TOnWthwTQUCbGMGOrcdvJKACkxJAvFWfuVBG58+cUMD3f08zbGZh+5BaQMX06ICEeb1aBSCBxq9iMC5BcmwXQenHm+72Zu134J2OlN84sNJrzWJnygbFsln9+9b90I/1AmcfU72YHrBYNEkuD8Rv4pKXDjmrZ4UANcx6jaM5gHnWHKlv3n9n8/FXf0eHYh+nNtZE5r4MS/HT+rzfcALGUO97xbM/r21mMj8ZEcY9CCnV3IueqQcFX5ZmedcZmmFfe+XF4WG+Q893VylaadjPE7bRAPcjmX+77udNmEu+kxZSjJuNBSX//vSBdb2qgW2u4B65wFH0rA51giPoNw7tAvwWxR3Gy75sko8D1GYKvor4LNfwOXR7vGt6lpslvBY5gVTlaLPuwCR9NSXd9ZoxjhGrTa56/tNJee6YM7s84OKSy0iDg6h/H5Bxg/n7D8W05fsZzZEYPZF4P+a4F38RlcEzUmpBRcCDgFOifQjZgp+BiS2H3FS5kkaWn+p3U5NOTGjjs4REUweH0rrIzSV7lvcV6HaFHUkQKmNuzIvbS7ItNebjxYA2XUU5gEDIat9Y1niJudGKaomOy0JkrZTNo0ycLhB3iUVNjk/EVyJUikmXzg8jpA5fayyL0OQMNeD/5O9hlaFF5hMmwoPo8f1Mt/FJCJG0FctYfehlMMMXaMR35MR8aPQjrCTLMhdMMLdp3zZF9iicvVN66in8z7Feclq1tpGOtcv4iAa4feCKfhEvDlvNgIEnh/UGFrHTGNDYm5Lvm0fafl2llXTBcBOQkQOSeBXeT3CDod1zyt7WDLHbORfg8hgkwRibbJzLxGZIRzxN2GTj3hwDDhwJasWLi0JPBLSpRRS5o2cWPirP+yKTy48vPtIx1EajTAPcBBcwqdrr1Biwzawyjqg0mjAe31ADApq9aR7HvhRTi7CvWr9/WDquh3uAURh/hRIetaPoyL99UYE7eCTk5NhTmOqq37wwXx1H0HfGZmHlwfEq67BT5XfL3qTxXw4X5APy5z+W6ZsbzJoKwE9F5Loj98nlGBY2NbbULhHN64+cMWUykNkW9ru15NqLewPZifpt3UzcBQgM+Nu52nwVWtCg2WgYVs/MjLUz+OTRVUMeFV+OMvE3uKsVwc6bLJ/W0n6pyaS4JyQV81Sih7V83iGyBE+Xfloj0M3Gmm1qoeBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_012i3rzzGnztaUHz2LqnJiwX",
+     "input": {
+      "lemmas": [
+       "分别",
+       "有"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_012i3rzzGnztaUHz2LqnJiwX",
+     "content": "## 分别\n\n### 分别-01\n\n- ARG0: entity described\n\nExample 1: *OP* *T*-1 分别 五十 年 的 家庭\n- ARG0: *T*-1 -> 家庭\n- ARGM-EXT: 五十 年\n- rel: 分别\n\n## 有\n\n### 有-01\n\n- ARG0: owner\n- ARG1: entity owned\n\nExample 1: 原 苏联 解体 后 ， 该 军队 集群 转归 俄罗斯 *PRO* 所 有\n- ARG0-: *PRO*\n- rel: 有\n\nExample 2: *OP* *T*-1 统一 的 德国 能够 在 联合国 发挥 *OP* *T*-2 更 大 的 作用 ， 在 联合国 作出 决定 时 有 *OP* *T*-3 更 大 的 发言权\n- rel: 有\n\n### 有-02\n\n- ARG0: entity described\n- ARG1: predicative (often quantity of arg0)\n\nExample 1: *OP* *T*-1 第五 个 出生 的 男婴 体重 最 轻 ， 只 有 四百九十五 克\n- ARG0-PSE: 体重\n- ARG0-PSR: *T*-1 第五 个 出生 的 男婴\n- ARGM-ADV: 只\n- rel: 有\n\n### 有-03\n\n- ARG0: location/domain described\n- ARG1: entity that exists with respect to arg0\n\nExample 1: 中国 现 有 保险 公司 二十六 家\n- ARG0-: 中国\n- ARGM-TMP: 现\n- rel: 有\n\nExample 2: 据 统计 ， 今年 全 省 高新区 的 技工贸 总 收入 、 *OP* *pro* 完成 *T*-3 的 工业 总 产值 均 比 去年 有 较大 幅度 增长\n- ARG0-: 全 省 高新区的技工贸总收入 、 完成的工业总产值\n- ARGM-ADV: 均\n- ARGM-TMP: 今年\n- rel: 有\n\nExample 3: 随着 内地 贸易 、 金融 、 零售 等 服务业 有 步骤 地 对 外 开放\n- ARG1-: 步骤\n- rel: 有\n\n### 有-04\n\n- ARG0: \n\nExample 1: *OP* *T*-1 实际上 有 领取 奖金 的 传销商\n- rel: 有\n\n### 有-05\n\n- ARG0: entity described\n- ARG1: state/event that exists with respect to arg0\n\nExample 1: *pro* 有 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- ARG0-: *pro*\n- ARG1-: 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- rel: 有\n\n### 有-06\n\n- ARG0: entity described\n- ARG1: entity owned by/exist with respect to arg0\n\nExample 1: *PRO* 虽然 开发 有 整车 产品 三 个 系列 二十三 个 品种 ， 改装车 产品 三 个 系列 十二 个 品种\n- ARG0-: *PRO*\n- ARG1-: 整车 产品\n- ARG1-QTY: 三 个 系列 二十三 个 品种\n- ARG1-: 改装车 产品\n- ARG1-QTY: 三 个 系列 十二 个 品种\n- rel: 有\n\n### 有-07\n\n- ARG0: entity described\n- ARG1: entities arg0 includes\n\nExample 1: 据悉 ， 这些 新 措施 的 主要 内容 有 *PRO* 以 *PRO* 发展 规模 经营 、 组建 企业 集团 为 重点 ， 推进 省属 外贸 公司 的 战略性 重组 ； 加大 *OP* 支柱 产业 产品 *T*-1 出口 的 力度 ； 办好 *OP* *T*-2 在 香港 举办 的 外商 投资 招商会 和 九八 中国 投资 贸易 洽谈会 等\n- ARG0-: 这些 新 措施 的 主要 内容\n- ARG1-: 以发展规模经营 、组建企业集团为重点 ， 推进省属外贸公司的战略性重组 ；加大支柱产业产品出口的力度 ；办好在香港举办的外商投资招商会和九八中国投资贸易洽谈会等\n- ARGM-ADV: 据悉\n- rel: 有\n\n### 有-08\n\n- ARG0: entity described\n- ARG1: activity\n\nExample 1: 个别 企业 及 公司 的 业务 在 某些 环节 如 不 获 任何 协助 ， *pro* 就 难 有 贡献\n- ARG0-: *pro*\n- ARG1-: 贡献\n- ARGM-DIS: 就\n- ARGM-ADV: 难\n- rel: 有\n\nExample 2: 帛琉 则 成为 美国 的 托管 地 ， 并 於 一九八○ 年代 开始 与 我 国 有 了 政治 上 的 接触\n- ARG0-CRD: 帛琉\n- rel: 有\n\n### 有-09\n\n- ARG0: entity described\n- ARG1: amount extra\n\nExample 1: 古稀 有 二\n- ARG0-: 古稀\n- ARG1-: 二\n- rel: 有",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS4QUKEAgTGAI4AUIIdGhpbmtpbmcSDMtMv76eQHtBDBIBoRoMb9iFk9V4c8CzMFLxIjAdUAMMxmh+VeXx4t/YPtny54JjavHvm4RitAK/mawDpmivJGMVG4Bf4azH1N4qI0wq/gTkVgZ3YP1Eqw7cwZjFehyZ4RZK+4KRV32HLnPGJ+IU+hfFfvzqTXzLj2KIP64/9yMPueYuqxsovwE+ZWnYGoZdTCPCr+lzQwrmz0w6p/5OgwzFcAwCqXjXTwVi6DSKHwEUh/9iOc5h87TI+rw2sG3eLLLd7BTt1uFQ++Blt2tZOswJs41E9Qfpq1+7Y0JnTwqyiN73FngqkWD9q2jgqS2BCBCuZfslBGacFDLrBYMGljKEi9pTolVHa1QJDc0KrrogMQhGodqeaJ2Kg1HC2B4J6Yvd17uo1Tq2JhZ2rcI/VG8YXbweoY8X7e74uI7bb60864/b3leIZW/XmsSLlWhZsz4nUonWgdhQyngo8l8jMSV1TwCKkYwW1KtehnywkY9oMt9UH5SnA6y+l/wkoQqnbEn1vp9QUi1HuqpHkIlWf2oy6bXfzkOwPVFureFTHY84ECujQWOckS/s1IhQoPC9YWouItqQW0luGCEZD4R/wYhzEhlkPQL2D9sCtrjMh1cNUqMDgYkX2WwqWk7Cs7LRHeuWGO6FKdAvMVmr/Ieth5f+zNV4hXP0NHvxSgfBTAjUt+gb6tpgnlp62w/JEPLYjBE9Roq1O2BXDVwsVgZVbL9UueKemA/nxLZ++4e3Y2OSyqgntEWrWh5ckq0wf60mLvrT9SOqkD3HoK4yAcayki2PWOVR1smItOpxQTGw9olYLfbc/jMgVcxtcoFoPxYTerUjXjEaH6sq8zoMXMjjRr/NX9dprNe6PMsLOkpMr3B0J3gHRg49ir+TRHNPLTv3xfHQpzi+9Q6aZutZl62D1vRhVpXJQFsalb0FHkHMkSSs/GtJw/+TPJV5zNeo8BgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 6\n# sentence level graph:\n(s6h / have-91\n    :ARG1 (s6p / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s6x / 接口\n        :quant 3\n        :unit (s6x2 / 个)\n        :ARG1-of (s6i / identity-91\n            :ARG2 (s6a / and\n                :op1 (s6x3 / 电源)\n                :op2 (s6x4 / HDMI)\n                :op3 (s6x5 / VGA))\n            :mod (s6x6 / 分别-01)\n            :aspect state))\n    :aspect state)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

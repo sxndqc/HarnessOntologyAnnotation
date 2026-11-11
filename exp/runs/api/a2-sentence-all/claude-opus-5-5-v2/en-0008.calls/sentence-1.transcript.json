@@ -1,0 +1,195 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9130
+    },
+    "cache_creation_input_tokens": 9130,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 150,
+    "output_tokens_details": {
+     "thinking_tokens": 46
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 977
+    },
+    "cache_creation_input_tokens": 977,
+    "cache_read_input_tokens": 9130,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 617,
+    "output_tokens_details": {
+     "thinking_tokens": 171
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 1 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSlgYKEAgTGAI4AUIIdGhpbmtpbmcSDGMLg7BhMWNLfw/eAxoMjvQ2kNjWVnThnD/WIjAxUx+gEGfOnhs9XAo8ExZ8fTM6RENi5z9azXd0eF2tK7ifvUECTxVpTX60DOlgMDMqswW1go8EjFIo385XGW+cIcTH6843ybcJjcbgp1We3MlEiJQ0sT/lMSQfH7+1FUOVqac4uhxxlaiqK/9wx7mFXAwVSFTc2wh6JE3ono5DPqTxk9McImR1x5jlvi0QYy3zt7s+HxayCS9nmAwB8cdHcNY2jg6aSVhNJM21rOr7v1IGD29FNFf5agGR6LAyoVivvAF4edt1onfA/zkP8b9fGnlB7Qx3ENIUO70b2wQqqt3ThcYCU+nRT5U44G5WOGce5E+7pK46YN9F9dlzV3SfFdfFHL5Ji5con1SHs8woLHb0+hsKrQ9GcaR9bgZEP+nWoXkWxoxo5XhjWJ5qNB0XpBnymfY+BcBFchXlmPr8yFz6STSslriUj4Vzz4evLG9NDwE6UQms15nfo+QeeUOgU/1eRgn4XAFLeqZC9gUx+yhWHbG9VMmNASf1+HtqjXn9U000YLAM1s4AZl4TaLkJXctSgbpbVJjJPhlChyoCPTy1WCouqkUSQQYVf7ThMl9aWIlgn38tz5Q1JDZvrweaPr80jcgEkoPPomQ+rcU7C+esaRZ3fwD7IRtVj6s7DkTU95Spg139Y+RbMAmIQZ4rAQukzzfhtrqMVpO+SPGeiI5t8hHRXsDSorF6bHbjiPZRcTsZNOAamN/giT8tBwmspFT07BRSve6TjozdS8MMAzhxp35NF95BnG6hltPR5qtnEGvroebA+03KAj9IvMoLu7A1igmvVuj+BziD/jY7xnsGJnN71kts7aHqKt+PJsF58kbZNfYavSgDqiQwPmcI0fAczrv7nK/c7eTKEitfmbpZgzU6Ongyumd1xMlClCikgsqvNvec76pooqZzgMfYCEuyoWaoL8QwJZtINv7w5qb3DSF0KCYrCas4CQFJkR8kXC6++YtHAELGrx9Vhx6sJuD/IV0EGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01LHb1RP9W8kNapBtfimReNS",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "first time",
+       "more than"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01LHb1RP9W8kNapBtfimReNS",
+     "content": "{\"gold\": [{\"doc\": \"english_umr-0090\", \"sentence_number\": 23, \"sentence\": \"That's more than not being \\\"likable\\\".\", \"annotation\": \"# meta-info :: sent_id = bolt-eng-DF-170-181103-8886574_0090.23 :: type = partial_conversion\\n# :: snt23\\nIndex: 1          2          3          4          5          6\\nWords: That's     more       than       not        being      \\\"likable\\\".\\n\\n# sentence level graph:\\n(s23m / more-than\\n      :op1 (s23l / likable\\n                 :polarity -)\\n      :domain (s23t / that))\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0349\", \"sentence_number\": 83, \"sentence\": \"<Builder> is this your first time?\", \"annotation\": \"# meta-info :: sent_id = minecraft-4-13-clothesline-B52-A27_1454.83 :: type = partial_conversion\\n# :: snt83\\nIndex: 1         2         3         4         5         6\\nWords: <Builder> is        this      your      first     time?\\n\\n# sentence level graph:\\n(s83h2 / have-ord-91\\n       :ARG1 (s83t / time\\n                   :temporal-of (s83t2 / this)\\n                   :possessor (s83y / you))\\n       :ARG2 (s83o / ordinal-entity\\n                   :value 1)\\n       :polarity (s83a / umr-unknown))\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0013\", \"sentence_number\": 12, \"sentence\": \"More than they care about themselves, I mean.\", \"annotation\": \"# meta-info :: sent_id = DF-170-181103-888_4397.12 :: type = partial_conversion\\n# :: snt12\\nIndex: 1           2           3           4           5           6           7           8\\nWords: More        than        they        care        about       themselves, I           mean.\\n\\n# sentence level graph:\\n(s12m / mean-01\\n      :ARG0 (s12i / i)\\n      :ARG2 (s12m2 / more-than\\n                   :op1 (s12c / care-01\\n                              :ARG0 (s12t / they)\\n                              :ARG1 s12t)))\\n\\n# alignment:\\n\\n# document level annotation:\"}], \"found\": 25, \"left_out\": \"4 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSjAgKEAgTGAI4AUIIdGhpbmtpbmcSDF66/fZJGSRu3kPVMxoMEBAJL2ZFiQPTZKaEIjAnaSnxkmrpT4QhGdweAKe17vb3Fw1VcGfY+Wb+vPizCR/W8ax9/Kx6X7nC2e6KPckqqQeVhPkqO4tuXfoiiw7jHX+Grdm5Mc4Jwl20RK1yOvTw8Y7BBfyYgRgwWOkKt0IkpjB9EAfV7ae+TSdleF1OmRLXcezzJCuqW9WdgrDGVPFbuhj/W0ekPtpa9pk1YWyyH71ucvImECXqP1gfxN/0QmpNBP5jJK3ivg9asonLzLDnKypVQhURdaQGR5fiN3o1LfVkpzabLmUHYycSD/lzbLfleokWhIA3S9gyg5Q4l7rB0cB7Ck9V1Rioee9joBBqdhAS+s4Jsr9C6Tt8bvD6TuOMH8wbGDb1EBrgdmmUqOe7c+dTH7AnSRKQpivaP7ciznCvcaY9cT2CT3y43wIk9o27OzVZy6Vm/Lqvw8GzRKli1k1V4ibXenq4RUJes7k13omUqlxLVWBoyLnLVEplJG+/2IHSVdaIkEgYZp29UVab2jIa6BX92c9KeM1GM5oV2wCjOLiYY1Qcou5aMJP1hohcIMezMOTSpP7v5hMwpHI/ommHuC60uDm6YQ+zyvuFRGMtSJFFOCRwDsLiEg8MBMFKd7P9k/Rnsnid/A0hrH5oxtzkNnGIDooXOLJcDYfDCpwGZuCgLjqFPQ/IcXRTx5fFlZO2+IuyQV2gjk8xre/MrQH3LkGQp9a4/pgqMIhX1kp35BrBtfaHukP+Ksr6knHV+B10nnYjPK2IOCRu1waJNck+YgWUph6T4hYGeMYqe1rlieVARHqd+L1CKiS48Rnfms8SPhP7zFnCrNleeISExlb6QZowYpvCaIWWs0kMNSH/GMJU2ZMa2YGI+a4XePQPp+LoYiByzao47n8VkLtqH41WYdWdgwkizLyiocVXOsyKKu10C7gt0cZBNOZ+PLVNGzalmMPVYIxYRJM0nkejcl6XLHBtMIBDE6oapSFtszmMVKNy9rlqa8n0ZWkU8C4tvqSjpLjcySJHynx4ORLBOMc2//Kfy0DkKx8kN+8zu8cJawwfUHtcJq2Z0vOGt6Qm+vYLDzz7vQb4kXUBIr20lKWVo1GpRnRZscWvWrfvd6Y/IeM8/fCHb5iOPaaOU2KpslW55X9k3bsoj/bs6pm9YpJliISZTEuzezlvKjpOsyCkEc58FFxuQDdnGxx0tE8dZc7ywlaWGW1GkwXTULtMKkgGDLu87pxXj2X5WRnLBFdNlDfvx1CS0kRz46qJOPkifmMwMhP2VrQlMLnsUDRKLqZJydlavB6aDjtmQf6+wluj1DW7q3jiG/iW3wsJbEN7PAdSV6bZThZcGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I checked the gold data for the \"first time\" and \"more than\" constructions. Below is the graph:\n\n- **Ordinal:** \"for the first time\" is shown with `:ord` and `ordinal-entity :value 1`.\n- **Range:** \"in more than eight months\" is a `more-than` time span (`temporal-quantity :quant 8`, unit `month`) attached by `:range` under the ordinal.\n- **Freedom:** this becomes `free-04`, and Edmund Pope is the one who is free, written as a re-entrancy (`s1p`) rather than a second node.\n- **Aspect:** \"tasted\" is a completed past event (`performance`). Being free is a `state`.\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmund_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

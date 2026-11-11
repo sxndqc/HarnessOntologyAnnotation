@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-4.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2199
+    },
+    "cache_creation_input_tokens": 2199,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 827,
+    "output_tokens_details": {
+     "thinking_tokens": 367
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 4 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\nTheir graphs:\n\nThe sentence reads as a list of three specs for one display: \"16:9 screen ratio, 21.5-inch widescreen, its best resolution is 1920×1080.\" I joined the three parts with an `and` and annotated \"为\" as `identity-91`. I found no gold examples with 分辨率, 英寸 or 屏幕, so these choices are mine and not copied from the data:\n\n- **16:9:** I wrote the ratio as a `string-entity` holding \"16:9\" and linked it with `:quant`.\n- **1920 × 1080:** I wrote it as `product-of` with the two numbers.\n- **21.5 英寸:** this is a `distance-quantity` with 英寸 as its unit.\n- **最佳:** I kept it as one modifier word, not split into 佳 plus a degree marker.\n- **它:** this is a `thing` (3rd person, singular) and is the possessor of the resolution.\n\n    # ::snt 1\n    # sentence level graph:\n    (s1a / and\n        :op1 (s1x / 比例\n            :mod (s1x2 / 屏幕)\n            :quant (s1r / string-entity\n                :value \"16:9\"))\n        :op2 (s1x3 / 宽屏\n            :mod (s1d / distance-quantity\n                :quant 21.5\n                :unit (s1x4 / 英寸)))\n        :op3 (s1i / identity-91\n            :ARG1 (s1x5 / 分辨率\n                :mod (s1x6 / 最佳)\n                :possessor (s1t / thing\n                    :refer-person 3rd\n                    :refer-number singular))\n            :ARG2 (s1p / product-of\n                :op1 1920\n                :op2 1080)\n            :aspect state))\n\nI annotated sentence 2 as follows:\n\n- **Main predicate:** 配备 is PropBank `配备-01`. Its ARG0 is the agent, ARG1 the thing equipped and ARG2 the place it is fitted to. In 它配备了…接口, 它 is the device the ports are on, so I made it `:ARG2`, as in PropBank's examples. There is no agent. 它 is a 3rd-person singular `thing`.\n- **Aspect:** 了 marks a completed event, so the aspect is `performance`.\n- **而且 and 还:** both are `:mod` nodes. The gold examples of 而且 I found were partial conversions using `progression`, which isn't a standard concept, so I didn't follow them.\n- **The ports:** 接口 has `:quant 2`. 种 is a classifier, so it gets no node. The search found no gold example with 接口 to copy.\n- **The listed ports:** I put the two port types under `:mod` as an `and` of two named `product`s. \"VGA\" in brackets is an alternative name for D-Sub, so I attached it to D-Sub as another `:mod` product. Both are judgement calls. The list names every port, so an identity-style reading would also be defensible, and VGA could have been treated as a second name.\n\n# ::snt 2\n# sentence level graph:\n(s2x / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2p / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :mod (s2p2 / product\n                    :name (s2n2 / name :op1 \"VGA\")))\n            :op2 (s2p3 / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h / 还)\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3f / 方便-01\n    :ARG0 (s3t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3u / 用户)\n    :ARG2 (s3l / 连接-01\n        :ARG0 s3u\n        :ARG1 (s3s / 设备\n            :example (s3a / and\n                :op1 (s3p / product\n                    :name (s3n / name :op1 \"PS3\"))\n                :op2 (s3p2 / product\n                    :name (s3n2 / name :op1 \"Xbox360\"))\n                :op3 (s3b / 蓝光机)\n                :op4 (s3e / et-cetera)))\n        :aspect state)\n    :temporal (s3b2 / 拨接-01\n        :ARG0 s3t\n        :ARG1 (s3s2 / 设备\n            :mod (s3d / 电脑))\n        :aspect state\n        :modal-strength neutral-affirmative)\n    :mod (s3h / 还)\n    :aspect state\n    :modal-strength neutral-affirmative)\n\nThis sentence:\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\nIts graph:\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4t / thing\n            :mod (s4z / 这))\n        :ARG2 (s4p / product\n            :wiki \"-\"\n            :name (s4n / name :op1 \"三星\" :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4z2 / 值得-01\n        :ARG1 (s4y / 拥有-01\n            :ARG0 (s4p2 / person\n                :refer-person 2nd\n                :refer-number singular)\n            :ARG1 s4p\n            :aspect state\n            :modal-strength neutral-affirmative)\n        :aspect state))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSvQsKEAgTGAI4AUIIdGhpbmtpbmcSDLrgu+6bgkntoLSqlRoMXivEQmr2eIlpNtpfIjBxqubDsygkkwyGuBMSTvGyUZgVN+MJGmDYPbAZlHKYXatvln91iM4ZKYSbQYXYFlMq2grO0u8EmWx/rft6vbpooGYZTbWbDg2G/8EsHIFydEoNlQT1zy0T5kT6Y+Ip5eXPxeakKne5+Ui3m5444H951X4MiU64Z6XvjGJVKhinzTpAEEhFMnt68VB2Zob4AeTGDsRVE82QgswcuXpzZmUOr8Sau5rZMmIYSqcufujTce6u0hRLvFrFZhXKHtejlkVbVPJd9a3Vv8zhd3Tq27kBXJcWP+GwByLi8E0iBJTFtz/fU4MZ9xEao9UUVIyVKiAf5tNLaD71En5cFpEIbChY3EpaIH/B2tUno1AahajD7iEv2XJPngeL9MIRaUFDnmC0HBGom83rH2ZKFTqEOFlEPim5Hc46Y4KQu5/vydy9vKddtcLKkVzrgED8abA9kFNFppTf6vdw2YdIh77fEgGbcR+J80Nyj1aqRtX5bYlLBi4wbOuBdnB9+C8yIygf/gwORvVl0k7cFOv4KWpYMxQyGbjYZyklnUNO5LAX4qydORGKcRsdqD2ngdvqtfQoIjENtzH2gLjfp0ad9/8+e1GZUvgVDIwBzd1nUfDlsYmubiAd/L8VxtspYK4bbGpKcmhtj3BzRtzATRgDA0kRCW7NGhQdck6/IpIQZyWleMBwrzBcmSGJk+tIXIqx9Vz3EYmlXmnWAG1JuBNjOmc3JHyuaMajuglPe/cT9idZjtIkL9B39C50cB73cB0Z8WUWBJ8IIV9s9evJ/7lX1ZKcLUo9lU+rtTrFgSOIwYWHkd/yqiYh/toh6fTLnGh6lVqo73/Xy5gtZrXeVJlCXoMuMuXp2PdIiQ66UfVD5CnVWCcJu3z6jtkNdu6M02Kvq09bSOiwSntmFoWUyAyIc/QPDTzKqPDtJpxPPyHnsAy9ht5gb+3d+ij7R2W1QHgzZiz95yXm46eKJHoCuFAQVKOFPa5jj+YLERyf1G/IQdl3jWJDLqmRJWjcGJdx+rJ0l+7mNli5y14W1h5k9fYu99UjfgBmDPaH7QZaE04IiBFvGgLhZOGTGo61CsMleMC6xSDQKYQm1+/8o5hVa4CY778R/zYyNKNvVozn8Bp8M8nrHWIq6eLwDlyld5AaaHRC3nPULciwOmde3XKynZksCSlS2HdX2nM9bfTaJLqrca81zmCraD4viI+vVxu6qYP0dJMCRh8Ns561hTLwuJ0d+O2FAui+PEMeMGqvJDEZ4cImC2TMokD84lMXEHxdMdZ5twMuNJdBGnyL4bU20nALs9lwZWhKbEOtGqrbl/Vl+KNe2a+OBDpnZcZHxNCIYjnjtMmSB2yspd6dgQsKQHdhKtYZYd8Zo7Fj/RTPxqonGf0DvlOODQqXiaAqWDpJgqJ5owSSZu76nDsEm3tvbxsfI8Wu4S3boiRmozWEGsfYw7sjdvTjqD0ob298IByrceL7iDzBYnwvnV19UygQ1RLxqkG9bCdWlOV4BAKsZJQIjpkGxpBugXXPcZTpseqfqi1c4KPh3R2OqCyGdn0sK2B+qSuPjTcmrS2olLjzO0ClnjZVSWyZz5PftYuJdaiXn/I20+ZsRdmamvzGO5PhiyjbrRE3/FmLd4vrdt78U5xkiI60ZX8KruVcZct/y/XrJsy6Dpi/ogtam2us50KJN35X3Sja1FqvvLTh5uU1L+Q9b6ep2HYNlfn34gwEa6P7pd6HuNoa0iUo9qI+OVUbxaPfImS9vtdYjdtfqtQbWs894dtthfeH6tJZZz4wmI6ANEWDTMUAArp5oPIb221Rlv1E0Cevb2WJjO9E4v5xEyoX5ko0ZZmb8XcJs+XC0team+zbtCKt24jbwaSYkYKvVdj0Y4sG+06zEwHHqaMq1TmFIIjnzxgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s4i)\n               (document-creation-time :overlap s4z2)\n               (s4z2 :after s4y))\n    :modal ((root :modal author)\n            (author :full-affirmative s4i)\n            (author :full-affirmative s4z2)\n            (s4z2 :neutral-affirmative s4y))\n    :coref ((s3t :same-entity s4t)))\n\nThe relations above are my own judgement: I did not search the guidelines or the gold data for this sentence.\n\n- **Temporal:** \"This is the Samsung B560\" (identity-91) and \"deserve\" (值得) are present states, so both overlap the document creation time. I put \"own\" (拥有) after \"deserve\", because owning the monitor is still to come. Leaving that relation out, or using `:overlap` for it, would also be defensible.\n- **Modal:** the author asserts the identity and \"deserve\". \"Own\" sits under \"deserve\" as `neutral-affirmative`, the strength the sentence graph already gives it.\n- **Coreference:** 这 (\"this\", `s4t`) is the same monitor that sentences 1–3 call 它 (\"it\"). I linked it to the closest earlier mention, `s3t`. I did not link the product name `s4p` across sentences, because `s4t` and `s4p` are already joined inside this sentence by the identity.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

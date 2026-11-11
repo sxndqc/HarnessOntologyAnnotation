@@ -1,0 +1,424 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-4.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 63,
+    "cache_read_input_tokens": 5961,
+    "output_tokens": 98,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 6024,
+     "input_tokens_details": {
+      "cache_write_tokens": 60,
+      "cached_tokens": 5961
+     },
+     "output_tokens": 98,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 6122
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 6151,
+    "cache_read_input_tokens": 6021,
+    "output_tokens": 127,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 12172,
+     "input_tokens_details": {
+      "cache_write_tokens": 6148,
+      "cached_tokens": 6021
+     },
+     "output_tokens": 127,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 12299
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 6531,
+    "cache_read_input_tokens": 12169,
+    "output_tokens": 424,
+    "reasoning_tokens": 237,
+    "openai_usage": {
+     "input_tokens": 18700,
+     "input_tokens_details": {
+      "cache_write_tokens": 6528,
+      "cached_tokens": 12169
+     },
+     "output_tokens": 424,
+     "output_tokens_details": {
+      "reasoning_tokens": 237
+     },
+     "total_tokens": 19124
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 4 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_VE0HKp0QsAahoFOnTKT7qthg",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "值得",
+       "拥有",
+       "是"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_tmSYsh3xcKIwa8sKIqqgwecl",
+     "name": "search_annotations",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "值得",
+       "拥有"
+      ],
+      "max_results": 4
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_UvysmQuUTP8A97iVrUWhhxTJ",
+     "name": "search_guidelines",
+     "input": {
+      "keywords": [
+       "identity-91",
+       "demonstratives"
+      ],
+      "max_results": 2
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"值得\",\"拥有\",\"是\"],\"language\":\"zh\"}",
+       "call_id": "call_VE0HKp0QsAahoFOnTKT7qthg",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b7e048087d1a6560be3bcce45d6",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"language\":\"zh\",\"keywords\":[\"值得\",\"拥有\"],\"max_results\":4}",
+       "call_id": "call_tmSYsh3xcKIwa8sKIqqgwecl",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b7e049487d18675cf85c9ec79b3",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"keywords\":[\"identity-91\",\"demonstratives\"],\"max_results\":2}",
+       "call_id": "call_UvysmQuUTP8A97iVrUWhhxTJ",
+       "name": "search_guidelines",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b7e04a487d1a9796d5f279cd727",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_VE0HKp0QsAahoFOnTKT7qthg",
+     "content": "## 值得\n\n### 值得-01\n\n- ARG0: causer, what makes it worthwhile\n- ARG1: theme, what is worthwhile\n\nExample 1: 这 个 认识 来 之 不 易 ， 值得 万 分 珍惜\n- ARG0: 这 个 认识\n- rel: 值得\n\nExample 2: 一九九七年 七月 一日 这 一 天 ， 将 作为 *OP* *T*-3 值得 人们 永远 纪念 的 日子 载入 史册 。\n- ARG1: 人们 永远 纪念\n- rel: 值得\n\nExample 3: *pro* 花费 *OP* *T*-1 这么 大 的 代价 ， 聘请 这些 咨询 专家 值得 吗\n- ARG1: *pro* 花费 *OP* (*T*-1)->(代价) 这么 大 的 代价 ， 聘请 这些 咨询 专家\n- rel: 值得\n\n## 拥有\n\n### 拥有-01\n\n- ARG0: entity described\n- ARG1: entity arg0 owns\n\nExample 1: 目前 厦门港 已 拥有 *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARG0: 厦门港\n- ARG1: *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARGM-ADV: 已\n- ARG0-TMP: 目前\n- rel: 拥有\n\nExample 2: 全 世界 共 拥有 电脑 四亿 台\n- ARG0: 全 世界\n- ARG1: 电脑\n- ARG1-QTY: 四亿 台\n- ARGM-ADV: 共\n- rel: 拥有\n\nExample 3: *OP* *T*-4 以 苏哈托 个人 名义 拥有 的 地产 有 １１．６ 公顷\n- ARG1: *T*-4\n- ARGM-MNR: 以 苏哈托 个人 名义\n- rel: 拥有\n\n## 是\n\n### 是-01\n\n- ARG0: entity being predicated\n- ARG1: predicative\n\nExample 1: 藏 羚羊 、 野 牦牛 、 藏 野 驴 、 雪豹 、 宗熊 、 盘羊 等 都 是 珍稀 动物\n- ARG0: 藏 羚羊 、 野 牦牛 、 藏 野 驴 、 雪豹 、 宗熊 、 盘羊 等\n- ARG1: 珍稀 动物\n- ARGM-ADV: 都\n- rel: 是\n\nExample 2: 狮子会 的 宗旨 是 “ 我们 服务 ”\n- ARG0: 狮子会 的 宗旨\n- ARG1: “ 我们 服务 ”\n- rel: 是\n\nExample 3: 据悉 ， 中科院 设立 优秀 博士后 奖励 基金 和 王宽诚 博士后 奖励 基金 是 为了 *PRO* 吸引 更 多 优秀 博士 毕业生 *PRO* 到 中科院 做 博士后 ， 强化 *RNR*-1 和 激励 博士后 研究 人员 的 科学 创新 意识\n- ARG0: 中科院 设立 优秀 博士后 奖励 基金 和 王宽诚 博士后 奖励 基金\n- ARG1: 为了 *PRO* 吸引 更 多 优秀 博士 毕业生 *PRO* 到 中科院 做 博士后 ， 强化 *RNR*-1 和 激励 博士后 研究 人员 的 科学 创新 意识\n- ARGM-ADV: 据悉\n- rel: 是\n\n### 是-02\n\n- ARG0: location\n- ARG1: entity exists\n\nExample 1: 里面 都 是 水生 的 植物\n- ARG0: 里面\n- ARGM-ADV: 都\n- ARG1: 水生 的 植物\n- rel: 是\n\n### 是-03\n\n- ARG0: the entity that is confirmed (usually omitted by *pro*)\n\nExample 1: *pro* 是\n- ARG0: *pro*\n- rel: 是\n\n### 是-04\n\n- ARG0: \n\nExample 1: 我 做事 呢 ［ ［ ＮＳ ］ ］ 应当 是 办 实业\n- rel: 是",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_tmSYsh3xcKIwa8sKIqqgwecl",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 675, \"sentence\": \"“ 你 拥有 这 许多 星星 有 什么 用 ？ ”\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt675\\nIndex: 1  2    3  4    5    6  7    8  9 10 11\\nWords: “ 你  拥有   这  许多   星星   有  什么   用  ？  ”\\n\\n# sentence level graph:\\n(s675x12 / say\\n\\t:ARG1 (s675x3 / 拥有-01\\n\\t\\t:ARG0 (s675x2 / individual-person\\n\\t\\t\\t:refer-person 2\\n\\t\\t\\t:refer-number singular)\\n\\t\\t:ARG1 (s675x6 / 星星\\n\\t\\t\\t:quant (s675x5 / 许多)\\n\\t\\t\\t:mod (s675x4 / 这))\\n\\t\\t:purpose (s675x7 / amr-unknown)\\n\\t\\t:mode interrogative))\\n\\n# alignment:\\ns675x12: 0-0\\ns675x2: 0-0\\ns675x3: 3-3\\ns675x4: 4-4\\ns675x5: 5-5\\ns675x6: 6-6\\ns675x7: 0-0\\n\\n# document level annotation:\\n(s675s0 / sentence)\"}, {\"doc\": \"chinese_umr-0001\", \"sentence_number\": 3, \"sentence\": \"该 周报 也 曾经 短暂 的 拥有 过 一个 属 自己 的 电视 节目 。\", \"annotation\": \"# meta-info\\n# :: snt3\\nIndex: 1 2  3 4  5  6 7  8 9  10 11 12 13 14 15\\nWords: 该 周报 也 曾经 短暂 的 拥有 过 一个 属  自己 的  电视 节目 。\\n\\n# sentence level graph:\\n(s3x / 拥有-01\\n    :ARG0 (s3x2 / 周报\\n        :mod (s3x3 / 该))\\n    :ARG1 (s3x4 / 节目\\n        :medium (s3x5 / 电视)\\n        :ARG0-of (s3x6 / 属-02\\n            :ARG1 s3x2\\n            :aspect state)\\n        :quant 1\\n        :unit (s3x7 / 个))\\n    :mod (s3x8 / 也)\\n    :temporal (s3x9 / 曾经)\\n    :duration (s3x10 / 短暂)\\n    :aspect state)\\n\\n# alignment:\\ns3x: 7-7\\ns3x10: 5-5\\ns3x2: 2-2\\ns3x3: 1-1\\ns3x4: 14-14\\ns3x5: 13-13\\ns3x6: 10-10\\ns3x7: 9-9\\ns3x8: 3-3\\ns3x9: 4-4\\n\\n# document level annotation:\\n(s3s0 / sentence\\n    :temporal ((document-creation-time :before s3x)\\n        (s3x :overlap s3x6))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s3x6)\\n        (author :full-affirmative s3x))\\n    :coref ((s2x2 :same-entity s3x2)))\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 715, \"sentence\": \"我 拥有 火山 和 花 ， 这 对 我 的 火山 有 益处 ， 对 我 的 花 也 有 益处 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt715\\nIndex:  1    2    3  4  5  6  7  8  9 10   11 12   13 14 15 16 17 18 19 20   21 22\\nWords: 我  拥有   火山   和  花  ，  这  对  我  的  火山   有  益处   ，  对  我  的  花  也  有  益处   。\\n\\n# sentence level graph:\\n(s715x23 / and\\n\\t:op1 (s715x2 / 拥有-01\\n\\t\\t:ARG0 (s715x1 / individual-person\\n\\t\\t\\t:refer-person 1\\n\\t\\t\\t:refer-number singular)\\n\\t\\t:ARG1 (s715x27 / and\\n\\t\\t\\t:op1 (s715x3 / 火山)\\n\\t\\t\\t:op2 (s715x5 / 花))\\n\\t\\t:modal-strength (s715x43 / full-affirmative\\n\\t\\t\\t:op2 (s715x30 / and\\n\\t\\t\\t\\t:op1 (s715x12 / 有-05\\n\\t\\t\\t\\t\\t:ARG1 (s715x13 / 益处)\\n\\t\\t\\t\\t\\t:ARG0 (s715x7 / 这)\\n\\t\\t\\t\\t\\t:beneficiary (s715x11 / 火山\\n\\t\\t\\t\\t\\t\\t:possessor-of (s715x9 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t\\t\\t:refer-number singular)))\\n\\t\\t\\t\\t:op2 (s715x20 / 有-05\\n\\t\\t\\t\\t\\t:mod (s715x19 / 也)\\n\\t\\t\\t\\t\\t:ARG0 s715x7\\n\\t\\t\\t\\t\\t:ARG1 (s715x21 / 益处)\\n\\t\\t\\t\\t\\t:beneficiary (s715x18 / 花\\n\\t\\t\\t\\t\\t\\t:possessor-of (s715x16 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t\\t\\t:refer-number singular)))))))\\n\\n# alignment:\\ns715x1: 0-0\\ns715x11: 3-3\\ns715x12: 12-12\\ns715x13: 13-13\\ns715x16: 0-0\\ns715x18: 5-5\\ns715x19: 19-19\\ns715x2: 2-2\\ns715x20: 12-12\\ns715x21: 13-13\\ns715x23: 0-0\\ns715x27: 0-0\\ns715x3: 3-3\\ns715x30: 0-0\\ns715x43: 0-0\\ns715x5: 5-5\\ns715x7: 7-7\\ns715x9: 0-0\\n\\n# document level annotation:\\n(s715s0 / sentence)\"}, {\"doc\": \"chinese_umr-0004\", \"sentence_number\": 10, \"sentence\": \"格拉斯 称自当 上 戴 立克 人后 ， 他 感觉 到 戴 立克 前所未有 的 体验 — 感情 ， 并 认为 戴 立克 要 真正 的 进步 就 应 拥有 感情 ， 故 极力 提倡 将 人类 与 戴 立克 二 合为 一 。\", \"annotation\": \"# meta-info\\n# :: snt10\\nIndex: 1   2   3 4 5  6  7 8 9  10 11 12 13   14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43\\nWords: 格拉斯 称自当 上 戴 立克 人后 ， 他 感觉 到  戴  立克 前所未有 的  体验 —  感情 ，  并  认为 戴  立克 要  真正 的  进步 就  应  拥有 感情 ，  故  极力 提倡 将  人类 与  戴  立克 二  合为 一  。\\n\\n# sentence level graph:\\n(s10a / and\\n    :op1 (s10x / 称-02\\n        :ARG0 (s10i2 / individual-person\\n            :name (s10n / name\\n                :op1 \\\"格拉斯\\\"))\\n        :ARG1 (s10x2 / 感觉-01\\n            :ARG0 s10i2\\n            :ARG1 (s10x3 / 体验\\n                :mod (s10x4 / 前所未有)\\n                :ARG1-of (s10i4 / identity-91\\n                    :ARG0 (s10x5 / 感情)\\n                    :aspect state)\\n                :possessor (s10e / ethnic-group\\n                    :name (s10n2 / name\\n                        :op1 \\\"戴\\\"\\n                        :op2 \\\"立克\\\")))\\n            :aspect performance\\n            :temporal (s10x15 / 后\\n                :op1 (s10x17 / 当上-01\\n                    :ARG0 s10i2\\n                    :ARG1 (s10x16 / 人\\n                        :mod s10e)\\n                    :aspect performance)))\\n        :aspect performance)\\n    :op2 (s10h / have-reason-91\\n        :ARG0 (s10x6 / 认为-01\\n            :ARG0 s10i2\\n            :ARG1 (s10x7 / 拥有-01\\n                :ARG0 (s10i3 / individual-person)\\n                :ARG1 (s10x8 / 感情)\\n                :purpose (s10x9 / 进步-01\\n                    :ARG0 s10e\\n                    :mod (s10x10 / 真正)\\n                    :aspect process)\\n                :aspect process)\\n            :aspect state)\\n        :ARG1 (s10x11 / 提倡-01\\n            :ARG0 s10i2\\n            :ARG1 (s10x13 / 合为-01\\n                :ARG0 s10i2\\n                :ARG1 (s10s2 / species\\n                    :quant 2\\n                    :ARG0-of (s10i5 / identity-91\\n                        :ARG1 (s10a2 / and\\n                            :op1 (s10x14 / 人类)\\n                            :op2 s10e)\\n                        :aspect state))\\n                :ARG2 (s10s3 / species\\n                    :quant 1)\\n                :aspect process)\\n            :mod (s10x12 / 极力)\\n            :aspect performance)\\n        :aspect state))\\n\\n# alignment:\\ns10a: 0-0\\ns10a2: 0-0\\ns10e: 0-0\\ns10h: 0-0\\ns10i2: 0-0\\ns10i3: 0-0\\ns10i4: 0-0\\ns10i5: 0-0\\ns10n: 0-0\\ns10n2: 0-0\\ns10s2: 0-0\\ns10s3: 0-0\\ns10x: 2-2\\ns10x10: 24-24\\ns10x11: 34-34\\ns10x12: 33-33\\ns10x13: 41-41\\ns10x14: 36-36\\ns10x15: 6-6\\ns10x16: 6-6\\ns10x17: 3-3\\ns10x2: 9-9\\ns10x3: 15-15\\ns10x4: 13-13\\ns10x5: 17-17\\ns10x6: 20-20\\ns10x7: 29-29\\ns10x8: 17-17\\ns10x9: 26-26\\n\\n# document level annotation:\\n(s10s0 / sentence\\n    :temporal ((s9x6 :after s10x)\\n        (s10x :overlap s10x2)\\n        (s10x2 :before s10x17)\\n        (s10x2 :after s10x6)\\n        (s10x6 :overlap s10x7)\\n        (s10x7 :after s10x9)\\n        (s10x6 :overlap s10x11)\\n        (s10x6 :after s10x13))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s10i4)\\n        (author :full-affirmative s10x2)\\n        (author :full-affirmative s10x)\\n        (author :full-affirmative s10x9)\\n        (author :full-affirmative s10x7)\\n        (author :full-affirmative s10x6)\\n        (author :full-affirmative s10i5)\\n        (author :full-affirmative s10x13)\\n        (author :full-affirmative s10x11)\\n        (author :full-affirmative s10h)\\n        (author :full-affirmative s10x17))\\n    :coref ((s9i3 :same-entity s10i2)\\n        (s9e :same-entity s10e)))\"}], \"found\": 5}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_UvysmQuUTP8A97iVrUWhhxTJ",
+     "content": "{\"sections\": [{\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 3. Sentence-Level Representation > Part 3-1. UMR Concepts > Part 3-1-1. Eventive concepts > Part 3-1-3-6. Non-verbal clauses (3/3)\", \"text\": \"<table>  \\n<tr>  \\n<th>Clause Type</th>  \\n<th>Predicate</th>  \\n<th>ARG1</th>  \\n<th>ARG2</th>  \\n<th>ARG3</th>  \\n<th>ARG4</th>  \\n<th>ARG5</th>  \\n</tr>  \\n<tr>  \\n<td>Thetic Possession</td>  \\n<td>have-91</td>  \\n<td>possessor</td>  \\n<td>possessum</td>  \\n<td>---</td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr>  \\n<tr>  \\n<td>Predicative Possession</td>  \\n<td>belong-91</td>  \\n<td>possessum</td>  \\n<td>possessor</td>  \\n<td>---</td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr>  \\n<tr>  \\n<td>Thetic Location</td>  \\n<td>exist-91</td>  \\n<td>location</td>  \\n<td>theme </td>  \\n<td>---</td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr> \\n<tr>  \\n<td>Predicative Location</td>  \\n<td>have-place-91</td>  \\n<td>theme</td>  \\n<td>location</td>  \\n<td>---</td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr>  \\n<tr>  \\n<td>Property Predication</td>  \\n<td>have-mod-91</td>  \\n<td>theme</td>  \\n<td>property</td>  \\n<td>--- </td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr> \\n<tr>  \\n<td rowspan=\\\"3\\\">Object Predication</td>  \\n<td>have-role-91</td>  \\n<td>theme</td>  \\n<td>reference point</td>  \\n<td>object category, arg1</td>  \\n<td>object category, arg2</td>  \\n<td>---</td>  \\n</tr>  \\n<tr>  \\n<td>have-org-role-92</td>  \\n<td>theme</td>  \\n<td>organization</td>  \\n<td>title of role</td>  \\n<td>job description</td>  \\n<td>---</td>  \\n</tr>  \\n<tr>  \\n<td>have-rel-role-92</td>  \\n<td>theme</td>  \\n<td>relative</td>  \\n<td>theme's role</td>  \\n<td>relative's role</td>  \\n<td>relationship basis</td>  \\n</tr>  \\n<tr>  \\n<td>Equational</td>  \\n<td>identity-91</td>  \\n<td>theme</td>  \\n<td>equated referent</td>  \\n<td>---</td>  \\n<td>---</td>  \\n<td>---</td>  \\n</tr>  \\n</table>\\n\\nTable 8: Argument structure of non-verbal clause predicates\\n</div>\\n[Back to Table of Contents](#toc)\"}, {\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 3. Sentence-Level Representation > Part 3-2. UMR relations > Part 3-2-1-1. Stage 0 > Part 3-2-1-1-1. Non-verbal clauses (2/2)\", \"text\": \"(h/ have-91\\n\\t:ARG1 (p/ person\\n\\t\\t:name (n/ name :op1 \\\"Mijiri\\\")) \\n\\t:ARG2 (i/ ɨarayara ‘canoe’\\n\\t\\t:ref-number Singular)\\n\\t:aspect State\\n\\t:modstr FullAff) \\n```\\n<span id=\\\"3-2-1-1-1 (1b)\\\">3-2-1-1-1 (1b)</span> Predicative\\nPossession - English <br />\\n```\\nThe dog is the teacher's.  \\n\\n(b/ belong-91\\n\\t:ARG1 (d/ dog\\n\\t\\t:ref-number Singular) \\n\\t:ARG2 (p/ person\\n\\t\\t:ref-number Singular\\n\\t\\t:ARG0-of (t / teach-01))\\n\\t:aspect State\\n\\t:modstr FullAff) \\n```\\n<span id=\\\"3-2-1-1-1 (1c)\\\">3-2-1-1-1 (1c)</span> Thetic/presentational Location - English <br />\\n```\\nOn the rock was a symbol.  \\n\\n(e/ exist-91\\n\\t:ARG1 (r/ rock\\n\\t\\t:ref-number Singular)\\n\\t:ARG2 (s/ symbol\\n\\t\\t:ref-number Singular)\\n\\t:aspect State\\n\\t:modstr FullAff)  \\n```\\n<span id=\\\"3-2-1-1-1 (1d)\\\">3-2-1-1-1 (1d)</span> Predicative\\nLocation - Yabem (Dempwolff 1939) <br />\\n```\\nàndu  kê-kô \\tmalac  \\nhouse 3SG-be.at village  \\n‘The house is in the village.’\\n(h/ have-place-91\\n\\t:ARG1 (a/ àndu ‘house’\\n\\t\\t:ref-number Singular)\\n\\t:ARG2 (m/ malac ‘village’\\n\\t\\t:ref-number Singular)\\n\\t:aspect State\\n\\t:modstr FullAff)\\n```\\n<span id=\\\"3-2-1-1-1 (1e)\\\">3-2-1-1-1 (1e)</span> Property\\nPredication - English <br />\\n```\\nThe cat is black.  \\n(h/ have-mod-91\\n\\t:ARG1 (c/ cat\\n\\t\\t:ref-number Singular) \\n\\t:ARG2 (b/ black)\\n\\t:aspect State\\n\\t:modstr FullAff)  \\n```\\n<span id=\\\"3-2-1-1-1 (1f)\\\">3-2-1-1-1 (1f)</span> Object Predication - Kukama <br />\\n```\\najan kunumi \\ttsumi  \\nthis young.man \\tshaman  \\n‘This young man is a shaman.’\\n(h/ have-role-91\\n\\t:ARG1 (k/ kunumi ‘young man’\\n\\t\\t:mod (a/ ajan 'this')\\n\\t\\t:ref-number Singular)\\n\\t:ARG3 (t/ tsumi ‘shaman’)\\n\\t:aspect State\\n\\t:modstr FullAff)  \\n```\\n<span id=\\\"3-2-1-1-1 (1g)\\\">3-2-1-1-1 (1g)</span> Object Equational - English <br />\\n```\\nShe is the winner.  \\n(i/ identity-91\\n\\t:ARG1 (p/ person\\n\\t\\t:ref-person 3rd\\n\\t\\t:ref-number Singular) \\n\\t:ARG2 (p2/ person\\n\\t\\t:ARG0-of (w/ win-01))\\n\\t:aspect State\\n\\t:modstr FullAff)\\n```\\n\\n[Back to Table of Contents](#toc)\"}], \"found\": 7}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_T5KUsDWJB6FaYWb18RWfnWwt",
+     "name": "search_annotations",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "三星",
+       "B560"
+      ],
+      "max_results": 3
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_ByYM0G4yKyrDNRwaTVYnCNqo",
+     "name": "search_annotations",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "值得"
+      ],
+      "max_results": 3
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_3STrlgnYT0fEiLOqXuAJjsGq",
+     "name": "search_annotations",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "identity-91",
+       "就",
+       "这"
+      ],
+      "max_results": 3
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_pSE3eX1OXeDJLq0smkZqSlRG",
+     "name": "search_guidelines",
+     "input": {
+      "keywords": [
+       "modal",
+       "evaluative",
+       "worth"
+      ],
+      "max_results": 1
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"language\":\"zh\",\"keywords\":[\"三星\",\"B560\"],\"max_results\":3}",
+       "call_id": "call_T5KUsDWJB6FaYWb18RWfnWwt",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b83168087d18a86c34482392ff6",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"language\":\"zh\",\"keywords\":[\"值得\"],\"max_results\":3}",
+       "call_id": "call_ByYM0G4yKyrDNRwaTVYnCNqo",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b83169887d1913db88b3d60c75d",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"language\":\"zh\",\"keywords\":[\"identity-91\",\"就\",\"这\"],\"max_results\":3}",
+       "call_id": "call_3STrlgnYT0fEiLOqXuAJjsGq",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b8316a887d1bb04cf8c959f84fb",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"keywords\":[\"modal\",\"evaluative\",\"worth\"],\"max_results\":1}",
+       "call_id": "call_pSE3eX1OXeDJLq0smkZqSlRG",
+       "name": "search_guidelines",
+       "type": "function_call",
+       "id": "fc_04de2f00b686917b006af40b8316b487d19f25ea83ac7fddfb",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_T5KUsDWJB6FaYWb18RWfnWwt",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_ByYM0G4yKyrDNRwaTVYnCNqo",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_3STrlgnYT0fEiLOqXuAJjsGq",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1216, \"sentence\": \"由于 看到 他 稍稍 张开 的 嘴唇 露出 一 丝 微笑 ， 我 又 自言自语 地 说 ： “ 在 这 个 熟睡 了 的 小 王子 身上 ， 使 我 非常 感动 的 ， 是 他 对 他 那 朵 花 的 忠诚 ， 是 在 他 心 中 闪烁 的 那 朵 玫瑰花 的 形象 。 这 朵 玫瑰花 ， 即使 在 小 王子 睡着 了 的 时候 ， 也 象 一 盏 灯 的 火焰 一样 在 他 身上 闪耀 着 光辉 … ”这时 ， 我 就 感觉 到 他 更加 脆弱 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1216\\nIndex:    1    2  3    4    5  6    7    8  9 10   11 12 13 14       15 16 17 18 19 20 21 22   23 24 25 26   27   28 29 30 31   32   33 34 35 36 37 38 39 40 41 42 43   44 45 46 47 48 49 50   51 52 53 54     55 56   57 58 59 60     61 62   63 64 65   66   67 68 69   70 71 72 73 74 75 76 77   78   79 80 81   82   83 84   85 86    87 88 89 90   91 92 93   94   95 96\\nWords: 由于   看到   他  稍稍   张开   的  嘴唇   露出   一  丝  微笑   ，  我  又  自言自语     地  说  ：  “  在  这  个  熟睡   了  的  小  王子   身上   ，  使  我  非常   感动   的  ，  是  他  对  他  那  朵  花  的  忠诚   ，  是  在  他  心  中  闪烁   的  那  朵  玫瑰花    的  形象   。  这  朵  玫瑰花    ，  即使   在  小  王子   睡着   了  的  时候   ，  也  象  一  盏  灯  的  火焰   一样   在  他  身上   闪耀   着  光辉   …  ”这时   ，  我  就  感觉   到  他  更加   脆弱   。\\n\\n# sentence level graph:\\n(s1216x97 / causation\\n\\t:ARG1 (s1216x2 / 看到-01\\n\\t\\t:ARG1 (s1216x8 / 露出-01\\n\\t\\t\\t:ARG0 (s1216x7 / 嘴唇\\n\\t\\t\\t\\t:ARG1-of (s1216x5 / 张开-01\\n\\t\\t\\t\\t\\t:degree (s1216x4 / 稍稍)\\n\\t\\t\\t\\t\\t:ARG0 (s1216x3 / individual-person\\n\\t\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t\\t:refer-number singular)))\\n\\t\\t\\t:ARG1 (s1216x11 / 微笑\\n\\t\\t\\t\\t:quant 1\\n\\t\\t\\t\\t:unit (s1216x10 / 丝))\\n\\t\\t\\t:modal-strength (s1216x166 / full-affirmative\\n\\t\\t\\t\\t:conceiver (s1216x13 / individual-person\\n\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t:refer-number singular)))\\n\\t\\t:ARG0 s1216x13)\\n\\t:ARG2 (s1216x17 / 说-01\\n\\t\\t:ARG0 s1216x13\\n\\t\\t:manner (s1216x15 / 自言自语)\\n\\t\\t:mod (s1216x14 / 又)\\n\\t\\t:ARG1 (s1216x113 / and\\n\\t\\t\\t:snt1 (s1216x114 / and\\n\\t\\t\\t\\t:op1 (s1216x44 / 忠诚-01\\n\\t\\t\\t\\t\\t:ARG0 (s1216x37 / individual-person\\n\\t\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t\\t\\t:ARG1 (s1216x42 / 花\\n\\t\\t\\t\\t\\t\\t:mod (s1216x40 / 那)\\n\\t\\t\\t\\t\\t\\t:unit (s1216x41 / 朵)\\n\\t\\t\\t\\t\\t\\t:possessor-of (s1216x39 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t\\t\\t:refer-number singular)))\\n\\t\\t\\t\\t:op2 (s1216x57 / 形象\\n\\t\\t\\t\\t\\t:possessor-of (s1216x55 / 玫瑰花\\n\\t\\t\\t\\t\\t\\t:mod (s1216x53 / 那)\\n\\t\\t\\t\\t\\t\\t:unit (s1216x54 / 朵)\\n\\t\\t\\t\\t\\t\\t:ARG0-of (s1216x51 / 闪烁-01\\n\\t\\t\\t\\t\\t\\t\\t:place (s1216x49 / 心中\\n\\t\\t\\t\\t\\t\\t\\t\\t:possessor-of (s1216x48 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t:refer-number singular)))))\\n\\t\\t\\t\\t:place (s1216x28 / 身上\\n\\t\\t\\t\\t\\t:possessor-of (s1216x27 / 王子\\n\\t\\t\\t\\t\\t\\t:mod (s1216x26 / 小)\\n\\t\\t\\t\\t\\t\\t:mod (s1216x21 / 这)\\n\\t\\t\\t\\t\\t\\t:ARG0-of (s1216x23 / 熟睡-01\\n\\t\\t\\t\\t\\t\\t\\t:aspect performance)\\n\\t\\t\\t\\t\\t\\t:unit (s1216x22 / 个))))\\n\\t\\t\\t:snt1 (s1216y1 / identity-91\\n\\t\\t\\t\\t:ARG0 (s1216x128 / thing\\n\\t\\t\\t\\t\\t:ARG0-of (s1216x30 / 使-01\\n\\t\\t\\t\\t\\t\\t:ARG1 (s1216x31 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t\\t\\t\\t:ARG2 (s1216x33 / 感动-01\\n\\t\\t\\t\\t\\t\\t\\t:degree (s1216x32 / 非常)\\n\\t\\t\\t\\t\\t\\t\\t:ARG0 s1216x31)))\\n\\t\\t\\t\\t:ARG1 s1216x114)\\n\\t\\t\\t:snt2 (s1216x141 / concession\\n\\t\\t\\t\\t:ARG2 (s1216x83 / 闪耀-01\\n\\t\\t\\t\\t\\t:ARG0 (s1216x61 / 玫瑰花\\n\\t\\t\\t\\t\\t\\t:mod (s1216x59 / 这)\\n\\t\\t\\t\\t\\t\\t:unit (s1216x60 / 朵))\\n\\t\\t\\t\\t\\t:aspect activity\\n\\t\\t\\t\\t\\t:ARG1 (s1216x85 / 光辉)\\n\\t\\t\\t\\t\\t:place (s1216x82 / 身上\\n\\t\\t\\t\\t\\t\\t:possessor-of (s1216x81 / individual-person\\n\\t\\t\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t\\t\\t:refer-number singular))\\n\\t\\t\\t\\t\\t:manner (s1216x73 / 像-01\\n\\t\\t\\t\\t\\t\\t:ARG1 (s1216x78 / 火焰\\n\\t\\t\\t\\t\\t\\t\\t:possessor-of (s1216x76 / 灯\\n\\t\\t\\t\\t\\t\\t\\t\\t:unit (s1216x75 / 盏\\n\\t\\t\\t\\t\\t\\t\\t\\t\\t:quant 1)))))\\n\\t\\t\\t\\t:ARG1 (s1216x67 / 睡着-01\\n\\t\\t\\t\\t\\t:ARG0 (s1216x66 / 王子\\n\\t\\t\\t\\t\\t\\t:mod (s1216x65 / 小))\\n\\t\\t\\t\\t\\t:aspect performance)))\\n\\t\\t:result (s1216x91 / 感觉-01\\n\\t\\t\\t:ARG0 (s1216x89 / individual-person\\n\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t:mod (s1216x90 / 就)\\n\\t\\t\\t:ARG1 (s1216x95 / 脆弱-01\\n\\t\\t\\t\\t:ARG0 (s1216x93 / individual-person\\n\\t\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t\\t:degree (s1216x94 / 更加))\\n\\t\\t\\t:modal-strength (s1216x168 / full-affirmative)\\n\\t\\t\\t:temporal (s1216x87 / 这时))\\n\\t\\t:modal-strength (s1216x167 / full-affirmative)))\\n\\n# alignment:\\ns1216x10: 10-10\\ns1216x11: 11-11\\ns1216x113: 0-0\\ns1216x114: 0-0\\ns1216x128: 0-0\\ns1216x13: 0-0\\ns1216x14: 14-14\\ns1216x141: 0-0\\ns1216x15: 15-15\\ns1216x166: 0-0\\ns1216x167: 0-0\\ns1216x168: 0-0\\ns1216x17: 17-17\\ns1216x2: 2-2\\ns1216x21: 21-21\\ns1216x22: 22-22\\ns1216x23: 23-23\\ns1216x26: 26-26\\ns1216x27: 27-27\\ns1216x28: 28-28\\ns1216x3: 0-0\\ns1216x30: 30-30\\ns1216x31: 0-0\\ns1216x32: 32-32\\ns1216x33: 33-33\\ns1216x37: 0-0\\ns1216x39: 0-0\\ns1216x4: 4-4\\ns1216x40: 40-40\\ns1216x41: 41-41\\ns1216x42: 42-42\\ns1216x44: 44-44\\ns1216x48: 0-0\\ns1216x49: 49-49\\ns1216x5: 5-5\\ns1216x51: 51-51\\ns1216x53: 40-40\\ns1216x54: 41-41\\ns1216x55: 55-55\\ns1216x57: 57-57\\ns1216x59: 21-21\\ns1216x60: 41-41\\ns1216x61: 55-55\\ns1216x65: 26-26\\ns1216x66: 27-27\\ns1216x67: 67-67\\ns1216x7: 7-7\\ns1216x73: 0-0\\ns1216x75: 75-75\\ns1216x76: 76-76\\ns1216x78: 78-78\\ns1216x8: 8-8\\ns1216x81: 0-0\\ns1216x82: 28-28\\ns1216x83: 83-83\\ns1216x85: 85-85\\ns1216x87: 21-21\\ns1216x89: 0-0\\ns1216x90: 90-90\\ns1216x91: 91-91\\ns1216x93: 0-0\\ns1216x94: 94-94\\ns1216x95: 95-95\\ns1216x97: 0-0\\ns1216y1: 0-0\\n\\n# document level annotation:\\n(s1216s0 / sentence)\"}, {\"doc\": \"chinese_umr-0004\", \"sentence_number\": 33, \"sentence\": \"这集 也 不是 首部 以 帝国大厦 为 背景 的 《 异世 奇人 》 剧集 ， 早 在 1966 年 的 《 追捕 》 中 就 到 过 这儿 ， 而 他 的 对手 正是 戴 立克 。\", \"annotation\": \"# meta-info\\n# :: snt33\\nIndex: 1  2 3  4  5 6    7 8  9 10 11 12 13 14 15 16 17 18   19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37\\nWords: 这集 也 不是 首部 以 帝国大厦 为 背景 的 《  异世 奇人 》  剧集 ，  早  在  1966 年  的  《  追捕 》  中  就  到  过  这儿 ，  而  他  的  对手 正是 戴  立克 。\\n\\n# sentence level graph:\\n(s33a / and\\n    :op1 (s33i2 / identity-91\\n        :ARG1 (s33x2 / 集\\n            :mod (s33x3 / 这))\\n        :ARG2 (s33x4 / 剧集\\n            :part-of (s33s2 / show\\n                :name (s33n4 / name\\n                    :op1 (s33x14 / 异世)\\n                    :op2 (s33x13 / 奇人))\\n                :ord (s33o / ordinal-entity\\n                    :unit (s33x6 / 部)\\n                    :value 1)\\n                :ARG0-of (s33x11 / 为-02\\n                    :ARG1 (s33x12 / 背景)\\n                    :ARG2 (s33b / building\\n                        :name (s33n / name\\n                            :op1 \\\"帝国大厦\\\"))\\n                    :aspect state)))\\n        :aspect state\\n        :polarity -)\\n    :op2 (s33x / 到-01\\n        :ARG1 (s33x7 / 这儿)\\n        :mod (s33x8 / 就)\\n        :temporal (s33s / show\\n            :name (s33n2 / name\\n                :op1 \\\"追捕\\\")\\n            :temporal (s33d / date-entity\\n                :year 1966))\\n        :mod (s33x9 / 早)\\n        :aspect performance)\\n    :op3 (s33i3 / identity-91\\n        :ARG1 (s33x10 / 对手\\n            :possessor (s33p / person\\n                :refer-number singular\\n                :refer-person 3rd))\\n        :ARG2 (s33e / ethnic-group\\n            :name (s33n3 / name\\n                :op1 \\\"戴\\\"\\n                :op2 \\\"立克\\\"))\\n        :aspect state))\\n\\n# alignment:\\ns33a: 0-0\\ns33b: 0-0\\ns33d: 0-0\\ns33e: 0-0\\ns33i2: 0-0\\ns33i3: 0-0\\ns33n: 0-0\\ns33n2: 0-0\\ns33n3: 0-0\\ns33n4: 0-0\\ns33o: 0-0\\ns33p: 0-0\\ns33s: 0-0\\ns33s2: 0-0\\ns33x: 26-26\\ns33x10: 33-33\\ns33x11: 7-7\\ns33x12: 8-8\\ns33x13: 12-12\\ns33x14: 11-11\\ns33x2: 1-1\\ns33x3: 1-1\\ns33x4: 14-14\\ns33x6: 4-4\\ns33x7: 28-28\\ns33x8: 25-25\\ns33x9: 16-16\\n\\n# document level annotation:\\n(s33s0 / sentence\\n    :temporal ((document-creation-time :before s33d)\\n        (s33x :overlap s33d))\\n    :modal ((root :modal author)\\n        (author :full-negative s33i2)\\n        (author :full-affirmative s33x)\\n        (author :full-affirmative s33i3)\\n        (author :full-affirmative s33x11))\\n    :coref ((s21b :same-entity s33b)\\n        (s1s2 :same-entity s33s2)\\n        (s3e :same-entity s33e)))\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 489, \"sentence\": \"他 常常 说 ： “ 如果 我 叫 一 位 将军 变成 一 只 海鸟 ， 而 这 位 将军 不 服从 我 的 命令 ， 那么 这 就 不 是 将军 的 过错 ，\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt489\\nIndex:  1    2  3  4 5    6  7  8  9 10   11   12 13 14   15 16 17 18 19   20 21   22 23 24   25 26   27 28 29 30 31   32 33   34 35\\nWords: 他  常常   说  ：  “ 如果   我  叫  一  位  将军   变成   一  只  海鸟   ，  而  这  位  将军   不  服从   我  的  命令   ，  那么   这  就  不  是  将军   的  过错   ，\\n\\n# sentence level graph:\\n(s489x3 / 说-01\\n\\t:ARG0 (s489x1 / individual-person\\n\\t\\t:refer-person 3\\n\\t\\t:refer-number singular)\\n\\t:frequency (s489x2 / 常常)\\n\\t:ARG1 (s489x40 / condition\\n\\t\\t:ARG1 (s489x41 / contrast\\n\\t\\t\\t:ARG1 (s489x8 / 叫-02\\n\\t\\t\\t\\t:ARG0 (s489x7 / individual-person\\n\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t\\t:ARG1 (s489x12 / 变成-01\\n\\t\\t\\t\\t\\t:ARG0 (s489x11 / 将军\\n\\t\\t\\t\\t\\t\\t:quant 1\\n\\t\\t\\t\\t\\t\\t:unit (s489x10 / 位))\\n\\t\\t\\t\\t\\t:ARG1 (s489x15 / 海鸟\\n\\t\\t\\t\\t\\t\\t:quant 1\\n\\t\\t\\t\\t\\t\\t:unit (s489x14 / 只))\\n\\t\\t\\t\\t\\t:modal-predicate s489x8\\n\\t\\t\\t\\t\\t:modal-strength (s489x68 / partial-affirmative\\n\\t\\t\\t\\t\\t\\t:conceiver s489x1)))\\n\\t\\t\\t:ARG2 (s489x22 / 服从-01\\n\\t\\t\\t\\t:ARG0 (s489x20 / 将军\\n\\t\\t\\t\\t\\t:unit (s489x19 / 位)\\n\\t\\t\\t\\t\\t:mod (s489x18 / 这))\\n\\t\\t\\t\\t:modal-strength (s489x69 / full-negative)\\n\\t\\t\\t\\t:polarity -\\n\\t\\t\\t\\t:ARG1 (s489x25 / 命令-01\\n\\t\\t\\t\\t\\t:ARG0 (s489x23 / individual-person\\n\\t\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t\\t:refer-number singular))))\\n\\t\\t:ARG2 (s489x34 / 过错\\n\\t\\t\\t:possessor-of (s489x32 / 将军)\\n\\t\\t\\t:mod (s489x29 / 就)\\n\\t\\t\\t:polarity -)\\n\\t\\t:ARG2 (s489y1 / identity-91\\n\\t\\t\\t:ARG0 (s489x28 / 这)\\n\\t\\t\\t:ARG1 s489x34)\\n\\t\\t:modal-strength (s489x70 / neutral-affirmative\\n\\t\\t\\t:conceiver s489x1))\\n\\t:modal-strength (s489x66 / full-affirmative))\\n\\n# alignment:\\ns489x1: 0-0\\ns489x10: 10-10\\ns489x11: 11-11\\ns489x12: 12-12\\ns489x14: 14-14\\ns489x15: 15-15\\ns489x18: 18-18\\ns489x19: 10-10\\ns489x2: 2-2\\ns489x20: 11-11\\ns489x22: 22-22\\ns489x23: 0-0\\ns489x25: 25-25\\ns489x28: 18-18\\ns489x29: 29-29\\ns489x3: 3-3\\ns489x32: 11-11\\ns489x34: 34-34\\ns489x40: 0-0\\ns489x41: 0-0\\ns489x66: 0-0\\ns489x68: 0-0\\ns489x69: 0-0\\ns489x7: 0-0\\ns489x70: 0-0\\ns489x8: 8-8\\ns489y1: 0-0\\n\\n# document level annotation:\\n(s489s0 / sentence)\"}], \"found\": 777}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_pSE3eX1OXeDJLq0smkZqSlRG",
+     "content": "{\"sections\": [{\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 4. Document-Level Representation > Part 4-1. Coreference > Part 4-1-2. Event coreference (1/3)\", \"text\": \"#### Part 4-1-2. Event coreference\\n\\nUMR uses the `:same-event` relation to represent cases where two event mentions refer to  the same event, as in <a href=\\\"#4-1-1 (1)\\\">\\\\[4-1-1 (1)\\\\]</a>.\\n\\n <span id=\\\"4-1-2 (1)\\\" label=\\\"4-1-2 (1)\\\">4-1-2 (1)</span>\\n\\n <span id=\\\"4-1-2 (1a)\\\" label=\\\"4-1-2 (1a)\\\">4-1-2 (1a)</span>\\n```\\nEl-Shater and Malek's property was confiscated and is believed to be worth millions of dollars.\\n(a/ and\\n      :op1 (c/ confiscate-01\\n            :ARG1 (a2/ and\\n                  :op1 (p/ property\\n                        :poss (p2/ person \\n\\t\\t\\t\\t:wiki \\\"Khairat_el-Shater\\\"\\n\\t\\t\\t\\t:name (n/ name :op1 \\\"El-Shater\\\")))\\n                  :op2 (p3/ property\\n                        :poss (p4/ person\\n\\t\\t\\t\\t:wiki -\\n\\t\\t\\t\\t:name (n2/ name :op1 \\\"Malek\\\"))))\\n\\t    :aspect Performance\\n\\t    :modstr FullAff)\\n      :op2 (b/ believe-01\\n            :ARG1 (w/ worth-01\\n                  :ARG1 a2\\n                  :ARG2 (m/ multiple\\n                        :op1 (m2/ monetary-quantity \\n\\t\\t\\t      :quant 1000000\\n                              :unit (d/ dollar)))\\n\\t          :aspect State\\n\\t\\t  :modpred b)\\n\\t    :aspect State\\n\\t    :modstr FullAff))\\n\\n(s1/ sentence\\n  :temporal ((PAST_REF :includes s1c)\\n  \\t     (DCT :overlap s1b)\\n\\t     (s1b :overlap s1w))\\n  :modal ((AUTH :FullAff s1c)\\n  \\t  (AUTH :FullAff NULL_BELIEVER)\\n\\t  (NULL_BELIEVER :FullAff s1b)\\n\\t  (s1b :Unsp s1w)))\\n```\\n <span id=\\\"4-1-2 (1b)\\\" label=\\\"4-1-2 (1b)\\\">4-1-2 (1b)</span>\\n```\\nAbdel-Maksoud stated the confiscation will affect the Brotherhood's financial bases.\\n(s/ state-01\\n      :ARG0 (p/ person\\n           :wiki \\\"Hamdeen_Sabahi\\\"\\n\\t   :name (n/ name :op1 \\\"Abdel-Maksoud\\\"))\\n      :ARG1 (a/ affect-01\\n            :ARG0 (c/ confiscate-01)\\n            :ARG1 (b/ base\\n                  :poss (o/ organization\\n\\t\\t  \\t:wiki \\\"Muslim_Brotherhood\\\"\\n\\t\\t\\t:name (n2/ name :op1 \\\"Brotherhood\\\"))\\n                  :mod (f/ finance))\\n\\t    :aspect Performance\\n\\t    :quot s\\n\\t    :modstr FullAff)\\n      :aspect Performance\\n      :modstr FullAff)\\n\\n(s2/ sentence\\n  :temporal ((s1c :after s2s)\\n  \\t     (s2s :after s2a))\\n  :modal ((AUTH :FullAff s2s)\\n  \\t  (AUTH :FullAff s2p)\\n\\t  (s2p :FullAff s2c)\\n\\t  (s2p :FullAff s2a))\\n  :coref (s1c :same-event s2c))\\n```\\nEvent identity also includes cases where the same underlying event is referred to with two very different linguistic expressions. This is the case for *introduced* and *provide* in <a href=\\\"#4-1-2 (2)\\\">(2)</a>.\\n\\n<span id=\\\"4-1-2 (2)\\\" label=\\\"4-1-2 (2)\\\">4-1-2 (2)</span>\"}], \"found\": 52}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4z / 这)\n        :ARG2 (s4p / product\n            :name (s4n / name\n                :op1 \"三星\"\n                :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4w / 值得-01\n        :ARG0 (s4r / person\n            :refer-person 2nd\n            :refer-number singular)\n        :ARG1 (s4y / 拥有-01\n            :ARG0 s4r\n            :ARG1 s4p\n            :aspect state\n            :modal-strength unspecified)\n        :aspect state))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_04de2f00b686917b006af40b85183c87d1be8a8081236ee5c4",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq9AuOSnKatOsjw3H8xiRsRLoUH9PcC99WxIyVmUqqqg2Tb-acAZ9HH-TQh9GfG0AICoZ65WaYQjOqRYCv65mjOVgF0fKBKkHLuCfofzYXb45SMTYuxx9oMnStKRFuolhyxVlFiIPExvTHWXu4mm3xCS6bLoCZAGOV3Pv8gaFdEpRFgunXel4V5daRLbE4QRN7Kfq5vkQvpffpY6Ih0pOSOhAXPleC7GVaPUl13wfkQiMP9QEgGpnJPUkUSu7vmjvPKd5R6grEARLMNxJgMKJyMPkSbQ2fo6rO_wlbB2AblwYcv1bqp1L57MhMUQYXJNpWmiB7wxTDz0aVnpuc6EZn5i1PAMSfdlkM6VXntlXmitsbV_-xyqJmN-NM1br54ZGQFD1u7li3HF7d5Dv_-NeqgkFv6YoaeI2KXMKTROeWMMI5P76FOBTwXb2iAD1vg98uHkV8m2UkrT55u_TLSOiTDmNbTn9ehd-1A21v1qMFOtOFdM6b3adjcHQoYjizAffAoX8hEoe8jLDmU_Y_DQgLUtmln8PbkQt40bMK0pCq6rap8CvHws94NUYCJ-TKwZi9P4XmJTQ0J6V4Pv2FgF0PNRC8dR7BtYJcksmg3KP8k4qb-Jg6Rbq2rlQUgiLAZY6OYFc6gyCIG8AED1_PU1nOnZLCT5NJCaR9BR7bCjLMCDEhB3Xbdo_GVRwte6n0s_0P0AyHSThkBEMd2u9OAFJ5XfGKQkQgUNw927XvnhlBFq0bvSlOqvLxr0aas4NXx2GNL3d1xThvb6Ifve7tgyquIFZOfRyvbDclvznuyDD5hD5RRKFFBbJsr5v3IlBxXyXCQybdLONrxV47LzdWU9EI6Snst1r9wQhb94W7EK5xdWi9IJQpc0ljdyByZOrgNvMGG04dvV1k3lDWG_VhaswGT-7L9xW1hSfuiCccp1bW0q1xMu9yTfrO4Ofsz-YaERHWzsCgVVs_Xw5y-lsAXLaa9xD5xx_nBjJBbdNp6WT6Xfbnbk5-wkczlcEmbo1IWOnvTAwhhF_Ne_jdeMx2H0FupoPD-QlJPs3_7LbCJjnKAmormoHYQimFemVpc62KV2ZVaezpQQcMSX55JCjgcoMTXJU15Zp7wpKjV5iWTe6al7jBR7Rp6VmCsLAbWU49bQuBJhaB3-xzoWqnLGudCa0S7g8QeniIuKJjXyjdly30xk8UOHNoypGbLnqGv3RCOrZGUZc5PXMysjCF_AEA_fjNV8YftuiQ61i0qsVSlaUnDjMHzHIx4MEC1AVFX5Wevr2Dv1qyDFctUVpXU-jedrnpwd25f9o3PAP40SemIaRNnqWmdCWjqhiFvDKGc5ZSvot5TFxm_brdiWKNlBLtr0aarluosiOtVMX5xylXLldOfHroRbD89Aln0NA9hfEln-A8Pa9WjqYW9S8QPCvIMqbG11TJWgvfCAvPO4pLOH8lATWFFRxo1Hr1KiIIFlrgx_C2jmuUQhJHpsIIC9Ks4KpmjEBWDyWqEi8NbdBYApozSjyro6gmQJr_wYEiXXQQ_fBo3pgC5abnkx5qQfZYyfit47f_f70DDG5jrEn0zC28z67mIfFY-tU1IDtvoZIyBgJNu5ZbvTN1QyFsOoasfZh3mB3m31Ww6Uje9BKaeHu1EK86ipc5P1GvGsdihJwXKr9f90ICV97Y8P17WURePVLzzo5niBiCz8ryZ6AVMD1AY52cJABcGrIcUf7sg2I9slX7jJTQrY2LVB5igmdasY1Jw1noAP_Oi-_4JQGLzpPRPVYl8ZWRLuEo6qbeDkbB-eg2pakvki3nYKqmSK13xnyaXYcq3biuE5zCrVXZ-puQjQNiOjAd4HrFMRXGXpyswri5mqk9R8C90_jd9XpV9OoV2q28yKU-Xi3L5aRT_6AHIWDz5pPXNr5z4WS7jV-rz1WsXrw7OP3fiPzy9Y1hEXKsoiq1TBDnbrR-oLYY8QDQ2tQdpqDvwuFLHvmnt9ql8w8A0fXICSsMXARVbvxk7BxoGZIGaIIeICWjOC2PqGxa8AFwUiQfqIIbhD-bnFwO4LFJCn-_vO31tJk-RZM_vF5UeJ-ZglixsAOAnzCcuPnj1RWCgYS0pmD9cZ07e-dSpL1Mk9_6YZLOFzdUEsW1lc8-s4_2SBnhxbTUBEOfcjP7Aa0Ea_iIPFx_qEgLoxeanQ4qHT6MWCpPI6EXWWPIAt4TVhDvRV8if0mfnTvcoSEnOFeap6rDDMWhaHNYZZ_3owdF1dyO6nClAUGAeMXCkLrBZJsuBBFijDZ315aE82UoL5gIEW40SqjiUbLsDwG8eBBpPVH1EBVAjgfvzJP04w7KaU4GdSKu265Ku1inPsx6JWsgUymkLC1b3h8dAYGLNykyHOB9jV5ET52x65DJbPCNJUX92LfONf73I5a5QKi4e4ZQmva4NtITt33eZJqqdvkd7O8qXy7fimeiOTL_6VCsTIvhG5Y-HVWL0-xE3i7YBd9ah-e2ajeaVTms_vthxQaht7ifW7niP1vzE4NTZZRT1TMxwvgY-Vxowes2TUMoMZXc8VU_bCs0v2pEK8dIq3-gsp4QWmZqFHPRaex0lQSos5BhWNht_Ssn8PwRq_T4pQZuh80H_MWsOH5aT6b7VfNvI6-yhmnY370yn_To84eDZjbOjxDb1RW3eCPI8GYu5eGsLCC_8rLxwORRIDAX6776o8hXQNU1hf3CNDdGcZPdkjwTvgsg-S4NYOpp86yaQd7meWLnL0xpDvnsFFIDpvowfPt--WHr1nR2jlp0p9_n1uuZrf4h8xq6Mlx0hrh2V4Hp_FF7m39oWkN3aPIfVlVY7eAd5UO5X1jutxrk7__Q5QLuo3RDr405L-3iMIHFoaCZOJ3mT4FBnUSvmiRqEV5-oqpeA56TLYuigHGtHAWpYjVoxgNzkvWlMcqt3tkapbKkLLu9IXUhCP4rLp2VA-ZBjTwaO_SROLhEU6gAGMNvDvKlKjTKLBVBayYF7eeCiBoxG5WTgpO9gpI__xh0K3jW94pDFXHTRQoe9fAGL2yJOVOlW7KkPre1UlrI1MLNMa8TkwWPhzWTqfYzYf8bqVmd6zSpEm4zEtLqB6UH_e42GuAG7K_Jj2efFiYj5H8UXTGxgo8d4bMKBXb9rqX0kdfzNR5KmXWCHzvkdJUulknHspY2C3tGgOjzHhxcY5EWrVgbWnGDVO2z-az_gpi0PDBVfAWne7xvwt6TgWBB3zU9zvLnwTbchZXG7--ZZG9aQzhxhj0gUHNe_jXA8G--VKBYB7X8zqTvfUyzXkudQm5ApzQDoRqEXFTatZbZ6Lqx9LnltwH2KZDuLkcrJ_dgfCY3vE5w7YYYbTGRj7r1iHp_-aQ_fN6hQGx2QPLF9_Czy9x01qgCe98UKn2hpShwPTBiH8YT_UcPGgWBkBDsoUxY03assbqW3K_loJm26SYYuSYfAFr8_xaAaa2XJ_T97jrLFrBvHMhNOwKdZcXJw7HVg9R4Zp88D_8Qph8K1RHSgK4llqFX1D1yF-73uj4gOX7G0wgsN-MHlKvdbHR5__83Hbm_ZS-Va3LYsSTu27a9YX8Hb9WioIwEr3JnBDnja2d5qCTiGngnM3_SbTwnR9metS3bHtda1DGDHxbSCrOG24zbLQfs30G2xDB4i7goYsTOhgCxY0RSz10ahWhy7i2vP1cL8LusjTfFkqVbwXxtnH33D3dYZPDmyrA6VCnLhON2UdF_HjDFzn3WXukmNGE2nlkteVVJEfnagAHZKbJUhNZUiymRsctL4EEjWeAc5-UnkeDzpslbX8EaSmBEIzcq5ZrQp0oBfNpFrGjV7czX66LSu_at-w8ryqtJJnJUolwQNSrYdj7lQWNkbyWaCuyhk8M3W0o_B1Obp4P_7tREP5nQhUBkj9hwXm-Q2ccs9n5wBdEm-Y6aCNsv4Skvg9O5tfYy6cBYc5ZMxnpst0_4gIAX2QsdrK2OfrJ1Wwktj1JkwURsXfgW1ssXgb7BC45jeS_KtpeDT6bFl5rfUkLLPki13Wb0XpTCFSu9uj9fWEnoIlcpG05AD6yMam3uMrrnDr03Rh1iSEzGWyuth6GMkN74GSKiecFsm5lqdTjJGKNDdnSod5bN0DHnwDQGH0IWXo1Ol4iFTM1AbkjWkqdbFtolOOqx0hwHvrk9Sx5RFruDvLgn48A9X72Fb9G4dJEfWT-Jpp9yyZOHXnn69aS6o1CE2q2ek0OkpBAObvLBwQyuRl9PCWbSoNjtqMq1GV-HxMKqUDbrOFzb-hXTz900ukmsoTo8VVy0Kfc3j2DGCwKhP8m96EWrIt049XKtRFu-bxJI4_Ut1NP3E7MrndA_GxXxd4GjYv0f6SQG7j0zwBhRwIZm7VWjkjBqnu3meYGz8TVRx7ME8bg2TvTiRIF3iHz9oH3R2M8OExMirxVKO8e3Gu6i6O6GTlgBXio8RBQlM-6KeQpykGk9WYU4o1Smbtr06h02YSsK3gLXprHbHfHTvsDv8jeElxHW2H7klFET8YTcEPpA48wHshsHHDQw90Vw6dfF-JYIYxOSOfV-k979oQQ6CK0Z4QUS9MBjeu_ppSkefmUKFnNxH6i1cTM0psKV0qDUezQwvin-N8goXbUvYusg"
+      },
+      {
+       "id": "msg_04de2f00b686917b006af40b8c618087d1a00ee287790d12c8",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4z / 这)\n        :ARG2 (s4p / product\n            :name (s4n / name\n                :op1 \"三星\"\n                :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4w / 值得-01\n        :ARG0 (s4r / person\n            :refer-person 2nd\n            :refer-number singular)\n        :ARG1 (s4y / 拥有-01\n            :ARG0 s4r\n            :ARG1 s4p\n            :aspect state\n            :modal-strength unspecified)\n        :aspect state))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

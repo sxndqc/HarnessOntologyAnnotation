@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12212
+    },
+    "cache_creation_input_tokens": 12212,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 894,
+    "output_tokens_details": {
+     "thinking_tokens": 410
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 6 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\nTheir graphs:\n\nI checked the gold data for the \"first time\" and \"more than\" constructions. Below is the graph:\n\n- **Ordinal:** \"for the first time\" is shown with `:ord` and `ordinal-entity :value 1`.\n- **Range:** \"in more than eight months\" is a `more-than` time span (`temporal-quantity :quant 8`, unit `month`) attached by `:range` under the ordinal.\n- **Freedom:** this becomes `free-04`, and Edmund Pope is the one who is free, written as a re-entrancy (`s1p`) rather than a second node.\n- **Aspect:** \"tasted\" is a completed past event (`performance`). Being free is a `state`.\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmund_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\nI annotated the sentence as \"Pope\" being identified with a definite description: an `identity-91` with Pope as `:ARG1` and the businessman as `:ARG2`. Two clauses about the businessman, joined by `and`, hang under him as inverse `:ARG1-of` roles.\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :wiki \"Edmund_Pope\"\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s2 / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n**Choices I made:**\n- **Senses:** I checked these against PropBank.\n  - `convict-01`: `:ARG1` is the person convicted, `:ARG2` is what he was convicted of.\n  - `charge-05`: a criminal charge, with the crime as `:ARG2`.\n  - `spy-01`: Pope is its `:ARG0`.\n  - `sentence-01`: `:ARG2` is the punishment (the Russian prison), `:ARG4` is how long it lasts (20 years).\n- **Aspect:**\n  - The conviction and the sentencing are completed past events, so they are `performance`.\n  - The charge is also `performance`, though nothing in the guidelines settles that.\n  - The spying is an event noun, so it is `process`.\n  - The identity is a `state`.\n- **Two judgment calls:**\n  - The root could also be `have-role-91`. I chose `identity-91` because \"the American businessman who…\" is a definite description rather than a category.\n  - The wiki title \"Edmund_Pope\" is my assumption from the document's subject; the sentence itself only says \"Pope\".\n  - I didn't find a gold example of this exact construction to compare against.\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n\nI checked `pardon` in PropBank and used `pardon-01` (\"legally relieve of guilt\"): Putin is the ARG0 (the one who pardons) and \"him\" is the ARG1 (the person pardoned). The gold data had nothing on this sentence or a similar pardon, so the rest follows the guidelines.\n\n- **Putin's title:** \"Russian President\" uses `have-org-role-92`, with Russia as `:ARG2` and `president` as `:ARG3`.\n- **\"Him\":** this is a 3rd-person singular `person`. Linking it to the person named earlier (probably Edmund Pope) happens at the document level, not here.\n- **\"For health reasons\":** I wrote this as `:cause (reason :mod health)`, with a node for \"reasons\". One gold sentence (\"for moral reasons\") uses `:ARG1-of cause-01` with `reason` as `:ARG0` instead, so the gold may differ here.\n- **Aspect:** `performance`, because the pardon is a completed past event.\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h2 / health))\n    :aspect performance)\n\nI used fly-01, whose ARG1 is the passenger. Pope is that passenger, and nobody is named as the one who flew him. The node's alignment and the document-level links will be added in the later step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :mod (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :part-of (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\nA few choices in the graph:\n- **Destination:** \"to the U.S. military base\" is `:goal`, following the PropBank example \"fly to San Francisco\".\n- **Pope:** a `person` with the name \"Pope\". I took the name from the sentence alone; I couldn't see the earlier sentences.\n- **Aspect:** `performance`, because the flight is finished and reached its destination.\n- **The base:** \"military\" and \"U.S.\" are both `:mod` on `base`. Ramstein is a `city` placed on the base with `:place`, and it is `:part-of` Germany. No gold example for \"military base\" or \"Ramstein\" came up, so the structure of this phrase is my own judgment.\n- **Wiki title for Ramstein:** I used \"Ramstein-Miesenbach\" for the town. \"Ramstein_Air_Base\" would also be a reasonable choice.\n\nThis sentence:\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6d / day\n        :quant (s6s2 / several)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :after s6s)\n               (s6s :after s6r)\n               (document-creation-time :overlap s6h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s6s)\n            (author :full-affirmative s6r)\n            (author :full-affirmative s6h2))\n    :coref ((s5p :same-entity s6p)\n            (s5b :same-entity s6t)))\n\nI didn't check these choices with the search tools.\n\n- **Time:**\n  - The days at the medical center are still to come, so the spending is placed after the document creation time.\n  - The return follows the stay (\"before he returns home\"), so it is placed after the spending.\n  - Being Sherry's husband is a state that holds now, so it overlaps the document creation time.\n- **Modality:** the author asserts all three events plainly. Under the guidelines, \"will\" counts as full-affirmative, not as a weaker strength.\n- **Coreference:**\n  - \"He\" is the same person as \"Pope\" in sentence 5.\n  - \"There\" is the same place as the military base at Ramstein in sentence 5.\n- **Possible gaps against the gold:**\n  - I didn't link the medical center to the base (for example as part of it).\n  - I didn't treat \"the next several days\" as a time expression with its own place in the time ordering.\n  - I didn't order the stay relative to the flight in sentence 5; I placed it against the document creation time instead.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

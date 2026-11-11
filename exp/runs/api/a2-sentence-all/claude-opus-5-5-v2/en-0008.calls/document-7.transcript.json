@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-7.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12382
+    },
+    "cache_creation_input_tokens": 12382,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 829,
+    "output_tokens_details": {
+     "thinking_tokens": 333
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 7 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nTheir graphs:\n\nI annotated the sentence as \"Pope\" being identified with a definite description: an `identity-91` with Pope as `:ARG1` and the businessman as `:ARG2`. Two clauses about the businessman, joined by `and`, hang under him as inverse `:ARG1-of` roles.\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :wiki \"Edmund_Pope\"\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s2 / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n**Choices I made:**\n- **Senses:** I checked these against PropBank.\n  - `convict-01`: `:ARG1` is the person convicted, `:ARG2` is what he was convicted of.\n  - `charge-05`: a criminal charge, with the crime as `:ARG2`.\n  - `spy-01`: Pope is its `:ARG0`.\n  - `sentence-01`: `:ARG2` is the punishment (the Russian prison), `:ARG4` is how long it lasts (20 years).\n- **Aspect:**\n  - The conviction and the sentencing are completed past events, so they are `performance`.\n  - The charge is also `performance`, though nothing in the guidelines settles that.\n  - The spying is an event noun, so it is `process`.\n  - The identity is a `state`.\n- **Two judgment calls:**\n  - The root could also be `have-role-91`. I chose `identity-91` because \"the American businessman who…\" is a definite description rather than a category.\n  - The wiki title \"Edmund_Pope\" is my assumption from the document's subject; the sentence itself only says \"Pope\".\n  - I didn't find a gold example of this exact construction to compare against.\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n\nI checked `pardon` in PropBank and used `pardon-01` (\"legally relieve of guilt\"): Putin is the ARG0 (the one who pardons) and \"him\" is the ARG1 (the person pardoned). The gold data had nothing on this sentence or a similar pardon, so the rest follows the guidelines.\n\n- **Putin's title:** \"Russian President\" uses `have-org-role-92`, with Russia as `:ARG2` and `president` as `:ARG3`.\n- **\"Him\":** this is a 3rd-person singular `person`. Linking it to the person named earlier (probably Edmund Pope) happens at the document level, not here.\n- **\"For health reasons\":** I wrote this as `:cause (reason :mod health)`, with a node for \"reasons\". One gold sentence (\"for moral reasons\") uses `:ARG1-of cause-01` with `reason` as `:ARG0` instead, so the gold may differ here.\n- **Aspect:** `performance`, because the pardon is a completed past event.\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h2 / health))\n    :aspect performance)\n\nI used fly-01, whose ARG1 is the passenger. Pope is that passenger, and nobody is named as the one who flew him. The node's alignment and the document-level links will be added in the later step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :mod (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :part-of (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\nA few choices in the graph:\n- **Destination:** \"to the U.S. military base\" is `:goal`, following the PropBank example \"fly to San Francisco\".\n- **Pope:** a `person` with the name \"Pope\". I took the name from the sentence alone; I couldn't see the earlier sentences.\n- **Aspect:** `performance`, because the flight is finished and reached its destination.\n- **The base:** \"military\" and \"U.S.\" are both `:mod` on `base`. Ramstein is a `city` placed on the base with `:place`, and it is `:part-of` Germany. No gold example for \"military base\" or \"Ramstein\" came up, so the structure of this phrase is my own judgment.\n- **Wiki title for Ramstein:** I used \"Ramstein-Miesenbach\" for the town. \"Ramstein_Air_Base\" would also be a reasonable choice.\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6d / day\n        :quant (s6s2 / several)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect performance)\n\nThis sentence:\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n\nIts graph:\n\n# ::snt 7\n# sentence level graph:\n(s7r / remission-02\n    :ARG1 (s7d / disease :wiki \"Bone_tumor\"\n        :name (s7n / name :op1 \"bone\" :op2 \"cancer\")\n        :mod (s7f / form)\n        :mod (s7r2 / rare)\n        :possessor (s7p / person :wiki \"Edmond_Pope\"\n            :name (s7n2 / name :op1 \"Pope\")))\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c / country :wiki \"Russia\"\n            :name (s7n3 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)\n\nI had no gold example of \"in remission\" to copy, so a few choices here are judgement calls:\n\n- **Concept and roles:** I used PropBank `remission-02` (\"abate in intensity\"). Its `:ARG1` is the thing that abates, so the cancer is `:ARG1` and Pope is linked as its `:possessor`. Another reading would make Pope the `:ARG1` and attach the cancer with `:source`.\n- **\"a rare form of bone cancer\":** In a gold example, \"a form of asbestos\" is annotated as `asbestos :mod (form)`. I did the same here, and added `rare` as a second `:mod`.\n- **The disease:** I wrote \"bone cancer\" as a named `disease`, the way gold examples treat \"cancer\". The wiki title \"Bone_tumor\" is my guess.\n- **Pope:** He is \"Pope\" here, a person probably named in full in an earlier sentence. The wiki value \"Edmond_Pope\" is my assumption.\n- **The \"when\" clause:** The arrest is the remission's `:temporal`, with performance aspect (a completed past event). The remission is a state.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS4QoKEAgTGAI4AUIIdGhpbmtpbmcSDN7C92n0Dc/I7PVgchoMCNS+XlF2XlHSSsypIjBaItJ8qs349v1Q5z0h34MRwZGJzT1xbyy9J86CtfXWIB0eYdB6HJiGfSS/i94fSiwq/gny9ekhg5P/mKDzjqAuVYLWMm+YZNnK0ef+JB2VB1o/KQ1wlaw/bweL0kjA3yllpo+4QQzNoOn1N4pm4VOA1TO38/RoZt4Sug4vDt6AMpJ0Jxd/ydeCkS30hkIwzwTtMXwuzvzlY7YN0omo+SKL0M/x38V/fkc4eL81iHuAJjMPy8yKn6fKcJRhOJqaeyqtLGpwTU86JsKiQzx9J6cP7msZG/Jj7tBWGGbmP0bqjxnxMSuhvwy1GhFMWSl6VO/MzOVuPBo6vUOo/jdKxsz0y0VuqlqZYfiDTqAHBDm2Li1LUy6Wh6AMakRmwgrrRRYlpwcx5VZa7em9OvQFFGP3IQUSDCXSrnyOcsWtggpVVel9hmwK/kDch86dIn5MO1phkFdY8GknDHitu2sd5gE0kwnKRsJxKALZFuA6KNN5XTl6vZsiPm103uNRtWxxWAexnee2fIqx04WZByjLgAkwHlU9fGsZ7t/pECz7R5/SMUQ29x7QDfQjy8R+1AFqKeffkXvUMz7Qo9SPuxDw65Ji5sGpjGz3w4YsQgCpvDxMuha1siuqFxB3kNGRJMF3WCHoJxnULcYsDd7ny/wdH3F8xa0/R054dDff/uZSAEh+/GnFTeHP8lVZCT4WCv4cK3y8L3iTw+gKSjxkpYmSlfUkhiDv+KLsilfYPAZ1WXP8oo1f4uwhx0RYQsgeMpFXrZUj8x4N+w8GCRl1jA/hT9Qs+cB4r1Coft01Bx+taf4brEKK4PE9vkghbOp1h2W3Z82vwSvLpf4YH9+ROSM25M6iIuVHi00hxj4p50ogvZtt34hmPrG5hacFJ8u5vyj4W75dI0xAuUZEoqTHdY84wWlN9jf5OBD5fqhYKcM5pDFCskbzswt49pnvWCoPxVucyObcmV/Fkm3kjY2EGdJ8U0iatDlCWbcTVVJjZcTOAug0nXvaHHiyK6ug3GpHRqLjour7k6iy4ML1pg4adRdgikQceAPKVxolhs7v/2LXbfHrupQPsq59CEQfEftmTAY4BuVNUwNGIq6OUV+AEZkMUpHC08U9nCxosqW8DIVyeTJTT0Ki29KMqPWGRxEg+EdnmX5CysnS86OdZSeGUnKu1a5xZnpJWnMKqr3GAiPYFF88yUB8L6QC8KEKQwh0kMdqFPcaiySb6HfkEbycm4o7shfAuLj+vq7jKhWZOAhTBnbWJSj3a66JYjNV3Dy4ewxHLGdIt+qO41w9cIFEzOtcJf8F3BsnJ0kV0alNu02pUpchRI/HueYxOpDSGPD1VPZFpPIUUegbjuehwL6EVzlZPEwps8mYsinr9g0R/9dWc7GPdMC+Cu575Q/edELFKp4eNhsLCRXsQKsP7p97zn9/TEI0a86wBEuq42I2i/GgUjYqmxdmPce+aZINEoyGlf6HbOjRMXSK1WJRvDxetEgmpAjkCL1H4xZ37PLVG59YXkiLuBh7rseZbNYSpjCDAxPdnTKoMf4LS41tdX6c2x77CumNpqTWFns0SGvHksbM4bsNH1uIqpNMgTA7GjB33iRcHnoEPrFJAlvVWsiqOW9P/3K7cdSK21bgybj5+nPrOghbsgTEGGQZsjo8jgUFzZns3XApVgfPCtgtBZMq0BKOZqpbMXDDngwJx2bJDzvISdzdovtqxhap274J1uTVdhTJTjIS5WuRaPnTds9BaKDIwemCLrvpy/dwlKdlJGiun3dSbzwYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s7a)\n               (s7a :overlap s7r))\n    :modal ((root :modal author)\n            (author :full-affirmative s7r)\n            (author :full-affirmative s7a))\n    :coref ((s6p :same-entity s7p)\n            (s4c :same-entity s7c)))\n\nI didn't check these links against gold data or the full guidelines; two of them are judgment calls:\n\n- **Time:** The arrest (`s7a`) is a completed past event, so it is placed before the document-creation time. Pope's remission (`s7r`) was the state he was in \"when he was arrested\", so it overlaps the arrest. I placed the arrest against the document-creation time, not the conviction in sentence 2 (`s2c2`). It must have come before that conviction, but the gold may order it from that event instead.\n- **Certainty:** The author states both the remission and the arrest outright, so both are full-affirmative from the author.\n- **Same entity:** I linked each mention to its closest earlier mention:\n  - **Pope (`s7p`):** linked to \"he\" in sentence 6 (`s6p`).\n  - **Russia (`s7c`):** linked to Russia in sentence 4 (`s4c`). The prison in sentence 2 is also Russian, but sentence 4's mention is closer.\n  - **Cancer:** not linked. It might be one of the \"health reasons\" in sentence 4, but the text doesn't say so clearly.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

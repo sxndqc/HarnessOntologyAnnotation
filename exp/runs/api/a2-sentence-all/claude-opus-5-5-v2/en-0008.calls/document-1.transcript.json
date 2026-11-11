@@ -1,0 +1,196 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9520
+    },
+    "cache_creation_input_tokens": 9520,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 218,
+    "output_tokens_details": {
+     "thinking_tokens": 101
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1816
+    },
+    "cache_creation_input_tokens": 1816,
+    "cache_read_input_tokens": 9520,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 435,
+    "output_tokens_details": {
+     "thinking_tokens": 114
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 1 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\nIts graph:\n\nI checked the gold data for the \"first time\" and \"more than\" constructions. Below is the graph:\n\n- **Ordinal:** \"for the first time\" is shown with `:ord` and `ordinal-entity :value 1`.\n- **Range:** \"in more than eight months\" is a `more-than` time span (`temporal-quantity :quant 8`, unit `month`) attached by `:range` under the ordinal.\n- **Freedom:** this becomes `free-04`, and Edmund Pope is the one who is free, written as a re-entrancy (`s1p`) rather than a second node.\n- **Aspect:** \"tasted\" is a completed past event (`performance`). Being free is a `state`.\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmund_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSgAcKEAgTGAI4AUIIdGhpbmtpbmcSDCYyeUBoJ/Yk/dJr0BoMCnobFjnP090FIV3SIjBShBdzorDK6/v4FU4eb/8NVOa+FYpHIDzQr4UHqp0RMkfClb0r5kyYfoJ94lH/laAqnQbczFyF64Bu4Ep7wwSrCqqiqW9qnrpL75sx0LZCvVlDrNR0AKGDtn30whUA5qZ3EQqrRsniMwRUfi/yJwc7riDkSvUmLvAgBe+nFaIH0WuQP/wjeT5DOG5BggbLxeAXnq6IehBHJAd9F36ZYhNjn6HSlO+ziY0bCLIDmvzghzFNsNE0jB7DJ0Y61Gkw2g1J7xEU+n+fAaQlkUUwe3kEpQZpUw7uE5bzLAmH5sthW2kSe8u3AQQbmQZ3kYnp68dwZr2DLevJorjH8PptWgBbKP0ezo3jA7ml7zsDUAKlLgiT3FCvAnZpECuSp3GxTdsXexsZQ9GUsJQvs2iGqPp+Nzp4oAQcUCe9TpSUTHnQpMHFu60nCORpN/6PCMEhe7MN3SLAPZZGJbz4ennVy4fTtZOKdIooibP8PQCw+RfJGL6qTKAxgmUDP0P9vo/US8D9TaxdwJmlKo1OC57qeTNZNy8OJMmAU1j6Hqp4BpQbDiPdi32XmP0e5nd/sQ/UAC2HcLM7a1OmsSBPiJdEP1AT0aT1/SvqECqmGQfUSTgbeGcCyBZDG9AZYcUc4VMdvCB2KihaCScsPPSmitLMtRsCnVuQ1vLZIuq445Tx4qvbMsqTwk8KzULkDA2ART3Q9VxkYD5pL9rp4R750i6I4aKjfjUe8XkPxi8vSzs+1ZLp8bWAM5wXXZelSmcyaLMGuMfYeu38CiIYTNT7EexacmSIpCqtaRnHumJZwanj+UuGVDUWCuqVeDnksml80SdnygJAXp5MhgMQWR3POlXKeJHG0WsxxI7R8ETRA4rWoEJFYzI+m7K43a80LdLPTFvOFFEJtmyy4KHYal1C2FmZPkzM+HloICKWS8J7cenUeJELdMaMdcffg5+1m6Wy1y2pdrFbaQobrg28pwIY2iz9KiQ4QZR8qI4sJGfSTr9BORFheJHBvhZAteTAbL3xbdnj6zUJ+CzdbpeWuaHzvQW3qkApxRL/kJD1vMrq1u5neZhhb4ikDrdlB4pv00zkErz5Aiykr9ciVHsf3CoJj7jejCV5SGSTRMH8iLXfy3LHSLAXzxgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_019v2FARTv7LbNZSNKaBFUn9",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "today",
+       ":contained",
+       "document-creation-time :depends-on"
+      ],
+      "max_results": 2
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_019v2FARTv7LbNZSNKaBFUn9",
+     "content": "{\"gold\": [{\"doc\": \"english_umr-0578\", \"sentence_number\": 4, \"sentence\": \"Although preliminary findings were reported more than a year ago , the latest results appear in today 's New England Journal of Medicine , a forum likely to bring new attention to the problem .\", \"annotation\": \"# meta-info :: sent_id = nw.wsj_0003.4\\n# :: snt4\\nIndex: 1           2           3           4           5           6           7           8           9           10          11          12          13          14          15          16          17          18          19          20          21          22          23          24          25          26          27          28          29          30          31          32          33          34          35\\nWords: Although    preliminary findings    were        reported    more        than        a           year        ago         ,           the         latest      results     appear      in          today       's          New         England     Journal     of          Medicine    ,           a           forum       likely      to          bring       new         attention   to          the         problem     .\\n\\n# sentence level graph:\\n(s4a / appear-01\\n    :ARG1 (s4t4 / thing\\n        :ARG2-of (s4r3 / result-01\\n            :mod (s4l / last)))\\n    :place (s4p3 / publication-91\\n        :ARG4 (s4j / journal :wiki \\\"The_New_England_Journal_of_Medicine\\\"\\n            :name (s4n / name :op1 \\\"New\\\" :op2 \\\"England\\\" :op3 \\\"Journal\\\" :op4 \\\"of\\\" :op5 \\\"Medicine\\\")\\n            :ARG1-of (s4h / have-role-91\\n                :ARG3 (s4f / forum\\n                    :ARG0-of (s4b / bring-01\\n                        :ARG1 (s4a2 / attend-02\\n                        :ARG1 (s4p / problem)\\n                        :ARG1-of (s4n2 / new-02\\n                            :ARG2 s4p))\\n                        :ARG2 s4p\\n                        :aspect activity)))\\n        :ARG6 (s4t / today)))\\n    :concession (s4r2 / report-01\\n        :ARG1 (s4t2 / thing\\n            :refer-number plural\\n            :ARG1-of (s4f2 / find-01)\\n            :mod (s4p2 / preliminary))\\n        :temporal (s4b2 / before\\n            :op1 (s4n3 / now)\\n            :quant (s4m3 / more-than\\n                :op1 (s4t3 / temporal-quantity :quant 1\\n                :unit (s4y / year))))\\n        :aspect performance)\\n    :aspect state)\\n\\n# alignment:\\ns4a: 14-14\\ns4t4: 13-13\\ns4r3: 13-13\\ns4l: 12-12\\ns4p3: 0-0\\ns4j: 18-22\\ns4n: 18-22\\ns4h: 0-0\\ns4f: 25-25\\ns4b: 28-28\\ns4a2: 30-30\\ns4n2: 29-29\\ns4p: 33-33\\ns4t: 16-16\\ns4r2: 5-5\\ns4t2: 3-3\\ns4f2: 3-3\\ns4p2: 2-2\\ns4b2: 10-10\\ns4n3: 10-10\\ns4m3: 6-7\\ns4t3: 8-9\\ns4y: 9-9\\n\\n# document level annotation:\\n(s4s0 / sentence\\n    :coref ((s4t4 :subset-of s4a2)\\n            (s4p :same-entity s3c5))\\n    :temporal ((document-creation-time :before s4r2)\\n            (document-creation-time :contains s4a)\\n            (document-creation-time :depends-on s4b2)\\n            (document-creation-time :after s4b)\\n            (document-creation-time :depends-on s4t))\\n    :modal ((root :modal author)\\n            (author :full-affirmative s4a)\\n            (author :full-affirmative s4r2)\\n            (author :partial-affirmative s4b)))\"}, {\"doc\": \"english_umr-0239\", \"sentence_number\": 3, \"sentence\": \"<Builder> what are we building today?\", \"annotation\": \"# meta-info :: sent_id = minecraft-3-30-broken-heart_1103.3 :: type = partial_conversion\\n# :: snt3\\nIndex: 1         2         3         4         5         6\\nWords: <Builder> what      are       we        building  today?\\n\\n# sentence level graph:\\n(s3b / build-01\\n     :ARG0 (s3w / we)\\n     :ARG1 (s3a / umr-unknown)\\n     :temporal (s3t / today))\\n\\n# alignment:\\n\\n# document level annotation:\"}], \"found\": 26, \"left_out\": \"3 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQStwcKEAgTGAI4AUIIdGhpbmtpbmcSDK0Cq0ATmNZ1Jz9CahoMhERPpkS01HcfHy7RIjBUVsoCIQQQua+qwr5kOKJvcbPayTBit6AWq7/WNxq77Bp0O5vwqGJMK1QVneEi6Ywq1AaKvhQNd+QvXK428CpPQrnLWXn+cXI2wF792eWiBE72+q6+xT9PXqMxb3GWtvJmpj9FKJk9G75A2FMbPgOU/rT3l0IU3c79HsCPVarffinAun2ffzjKKwahh1PkQKjoaaUDJ1L3M1mnU0pYa8ep85aFwyldNwul2q5+XVudCpu6Xw3BCy5NB+I0Tej4DMvVRCZVsxMEEQ8z+9iIwu2ik6bgTKc+VlPaefqAdhxgwDR4FQpG1eFOB0F3klRGEIFI1BPJlmw7OD0WTwUjc6sW0U3ANXe6+dw/dLzzUWPRt6Tiuw6Xe2SB5aqMficP1y7Iw7Tl8zuF+SBla1+AleHLGNI6TTKt+42BBkk9t1+Q8jSyEVSLTmrTBH215nYLmSYFqM6ci56NMmQq3Ur/4we+mJf4MVOkMfX7trxXSzMPoJ9P8F4V5FrcH8woKniOml36LRWP5LKWJeMWh05KsVpO0GnGfDspiRH3toQUGhtfGDuJrRMuHRPTL6/EduEvbTpXsVMZQe241eGBftzJbEEcZfjOufeCrlDVeMvxNL31+c6qD0j+KqB3GnEGCbnBlh9HG5PivFPzr2xS7R1gSMFJXJ1sOzVn242tQSU2eHwsfGHfuK9/SA7sNRsEU1VtgA0QXHIULL06qN4ZCT9zHM/byrOQnqneUkUJD+I6nc57SDpPezx8REF7JnbwMhOhr5vD8A7NZO4VKO/LzqvW8HBscAil6+wgRu+ucaqvjz90o+sihck7Hue1GdvBCmLWP8Xioa0o/Jn/BXh3de9Pn3lEluFaogXKZyvstOeTriT5u8JIaTRY2pVxhxRs4Ikf77NGhnr5f/wmCFfG1XY7jLxvcl4fU0ylR77NCbEWwPb2ajbA/robLyp7TlQ6FLPF/V7ti/RYkA8/M4maXvDlya0yw0ZCmv4whqRSDc3FZlZZ829cXRL5MCNsHHfKwrknhV44gXWzYLsI7PjmW2DERRqdaLwSelxAcMq86sKiCRDTnn6Joe8bwlwAFUKyhJL0iyQKCh3e1Y6BCTmc7gWBWmY6Jg2O7FRfduwyHhjG84jw7Bo2svXhnEIaebPBnD8UN2y3YSK0QvmkdWQZG9/eL7ShAzbUHzfFp415tcFdUZealodV/x1+G2kYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s1t2)\n               (s1t2 :contains s1t)\n               (s1t :overlap s1f))\n    :modal ((root :modal author)\n            (author :full-affirmative s1t)\n            (author :full-affirmative s1f)))\n\nI looked at one gold example of \"today\" to check the date pattern. I didn't check the other choices against gold data, so they're less certain.\n\n- **Time:** \"today\" is a relative date, so it depends on the document creation time. The tasting falls inside \"today\". I put being free (`s1f`) as overlapping the tasting, since his freedom begins at that moment. This one is a judgement call; `:after` or no link at all would also be defensible.\n- **Modal:** the author states both the tasting and his being free as plain fact, so both are full-affirmative from the author.\n- **Coreference:** none, since this is the first sentence and Edmund Pope appears only once in it.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,272 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-8.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9144
+    },
+    "cache_creation_input_tokens": 9144,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 252,
+    "output_tokens_details": {
+     "thinking_tokens": 78
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2924
+    },
+    "cache_creation_input_tokens": 2924,
+    "cache_read_input_tokens": 9144,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 89,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6172
+    },
+    "cache_creation_input_tokens": 6172,
+    "cache_read_input_tokens": 12068,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1284,
+    "output_tokens_details": {
+     "thinking_tokens": 464
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 8 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n8\tDoctors will examine him for signs that the cancer may have come back while he [was] awaiting trial in a Russian jail.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSrwYKEAgTGAI4AUIIdGhpbmtpbmcSDBkyzgeOnAX24rMblRoMALBv/MCv6BSxf87HIjA/Y+pv7/GXG0g2u64fXhHQ6U8PGXepZ5Zy4aq1XvhXNnm7VUTxL+O4rQRmtbs7oC0qzAXpQCfcY5dXOuzdSTTV6EHXoz6SgAaXzItwRTstcJqzB6M5vFAKJWM3L6KKWbMY6eEJexPMFdX6r24KuMCMoY7/IDC+tQMfi7LOUOenhCS/Nz6NIwV5Hy3d5cPBDJRTMCsrDHC8SasYX918MZWfiSq1kdXT+bdQDCJFachSWUaDlPi1q9S8krdhXoC0pDcWPib4rS0x7+AngbTvaMeEEeie6e8MP1wE19eW7qr2cvVRWdpOcIMsW1gAFXWSg2lX66482gf1gDTsAioLbWwKmgBOwupGY1uROsknhhHn40GMJ7Npp5ncfZdI/7EsttDAEIOK18Ag/u9aCPPqgSlH/PdNsKFWAtuRJHCQc730sMGQNRb8YifsD5IIulF1n/KW6Wl/6e1JbkjDXINq5UFe0hJRi/KsEvGNB+jlMgtPI4jgSykNsdJ8y16qt8JMi1/iTfvdlb841HAUcHSzDFh88rClJ+ugxfxe5pxb4ZgN1nbXTUKJrVKn8/pZxUshfccvXEnK/YCUcMJN4tPe7X5K20CpuqHuoHoXyFWuyqPFBrx8ouycNAmER0m5+PNKxcQG96YRIn/R0vPUagUEEFrkipaxUKYHoSvLoY4Zi0fL/+PRKRVbpcwsOoIRDMyti2bdl6W6TfQbn6CiVA8MfqKVqrLkq1cFN0iFrXANuMGKYzq2ZwkuEGcDXlaW9+DVU8XG0RHAotOT1+5SYKwqKSTKFAoH5oOdrx5EQnYJTfCT9JmXFV+txE6em406wSeSVm1oQOjcsVSskgj1CQ7GtJoSi5m/QHK4QaMSnK3ErqbwxCavsHnkL6ZRD618YRjzfbZP3x9LkgYCg+SdRomPXKgQKk6G+lXTXWcagiqVzRJ+SN69xXpR19oxKydMyXLXXkI46LQpbwyQHqUXV8ObIohkmzOJHpYijPgG6Orze1QwaNYRQXsZ7r46XQb9gNPfShgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01CUeVKua7fpgywmK76TDSdn",
+     "input": {
+      "lemmas": [
+       "examine",
+       "come_back",
+       "await",
+       "signal",
+       "try"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01UjnKUz7ETvXiXNxWeKMhdK",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "Doctors will examine him"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01CUeVKua7fpgywmK76TDSdn",
+     "content": "## examine\n\n### examine-01 (look at closely)\n\n- ARG0: examiner\n- ARG1: thing examined\n- ARG2: in search of what\n\nExample 1 (passivized): [Valley Federal]-1 is currently being examined *trace*-1 by regulators.\n- ARGM-TMP: currently\n- ARG1: *trace*\n- ARG0: by regulators\n- rel: examined\n\nExample 2 (active): Mr. Paul says that he has feelers out over much of the globe and that potential buyers from as far away as Japan and Italy have examined the collection.\n- ARG0: potential buyers from as far away as Japan and Italy\n- ARG1: the collection\n- rel: examined\n\nExample 3 (Both args): his examination of Mr. Lorin\n- ARG0: his\n- ARG1: of Mr. Lorin\n- rel: examination\n\nExample 4 (arg 1 only): After hours of meticulous examination of each address book,\n- ARGM-MNR: meticulous\n- ARG1: of each address book,\n- rel: examination\n\nExample 5 (both args): international examination of one of the most troubling mysteries in US - Soviet relations\n- ARG0: international\n- ARG1: of one of the most troubling mysteries in US - Soviet relations\n- rel: examination\n\nExample 6 (with args 1 and 2): The applications for such technology include examination of the body for asymmetries\n- ARG1: of the body\n- ARG2: for asymmetries\n- rel: examinations\n\n## come_back\n\nNot in PropBank.\n\n## await\n\n### await-01 (wait for)\n\n- ARG1: wait-er (not waiter, that's a different sense)\n- ARG2: thing waited for\n- ARGM: period of time waited through\n\nExample 1 (typical usage): Trading is expected to remain subdued as the market awaits tomorrow's release of the jobs data with the hope that it will point toward a decline in interest rates.\n- ARG1: the market\n- ARG2: tomorrow's release of the jobs data\n- ARGM-MNR: with the hope that it will point toward a decline in interest rates\n- rel: awaits\n\n## signal\n\n### signal-07 (show, cause to see, communicate by signaling, message)\n\n- ARG0: shower\n- ARG1: thing seen/shown\n- ARG2: seer\n- ARG3: subject-matter of the signals (what they relate to)\n\nExample 1 (signal-v: no seer, nominal thing seen): I would be very surprised if his departure signals any change in strategy or change in profit expectations.''\n- ARG0: his departure\n- ARG1: any change in strategy or change in profit expectations\n- rel: signals\n\nExample 2 (signal-v: with seer, sentential thing seen): Moreover, some analysts said they expect a foreign paper company with deeper pockets than Georgia-Pacific to end up acquiring Nekoosa, *trace* signaling to the rest of the industry that hostile bids are unproductive.\n- ARG0: *trace*\n- ARG2: to the rest of the industry\n- ARG1: that hostile bids are unproductive\n- rel: signaling\n\nExample 3 (signal-v: different kind of seer): Mr. Simmons said the results signal a turnaround for the maker of wire and wire products, which has struggled to remain competitive in the face of lower-priced, imported steel.\n- ARG0: the results\n- ARG1: a turnaround\n- ARG2: for the maker of wire and wire products, which has struggled to remain competitive in the face of lower-priced, imported steel\n- rel: signal\n\nExample 4 (sign-n: args 0 and 2): His signs to the people\n- ARG0: His\n- ARG2: to the people\n- rel: signs\n\nExample 5 (signal-n: autogen1): their signal to the world that now is the time to get tough onprices\n- ARG0: their\n- ARG2: to the world\n- ARG1: that now is the time to get tough on prices\n- rel: signal\n\nExample 6 (signal-n: arg3): It has sent mixed signals about its willingness to take part in the exchange - rate mechanism of the European Monetary System\n- ARG1: mixed\n- ARG3: about its willingness to take part in the exchange-rate mechanism of the European Monetary System\n- rel: signals\n\n## try\n\n### try-01 (attempt)\n\n- ARG0: Agent/Entity Trying\n- ARG1: thing tried\n\nExample 1 (predicative arg1): Newsweek is trying to keep pace with rival Time magazine.\n- ARG0: Newsweek\n- ARG1: to keep pace with rival Time magazine\n- rel: trying\n\nExample 2 (nominal Arg1): Banks have tried packaging before.\n- ARG0: Banks\n- ARG1: packaging\n- ARGM-TMP: before\n- rel: tried\n\nExample 3 (serial verb, almost): But the effort is also being made [*] to try and cause jurors not to decide things rationally.\n- ARG0: [*]\n- ARG1: cause jurors not to decide things rationally\n- rel: try\n\n### try-02 (lawsuit)\n\n- ARG0: litigant\n- ARG1: entity tried (defendant/case)\n- ARG2: adjudicator\n- ARG3: tried for: crime/accusation\n\nExample 1 (misparsed passive): The case wasn't tried in court.\n- ARG1: The case\n- ARGM-NEG: n't\n- ARGM-LOC: in court\n- rel: tried\n\nExample 2 (Arg 3 as ' on trial over' rather than 'on trial for'): Mr. Stanley is on trial over charges that he violated aproclamation , issued by the South African administrator generalearlier this year , which made it a crime punishable by two yearsin prison for any person to `` insult , disparate or belittle ''the election commission .\n- ARG1: Mr. Stanley\n- ARG3: over charges that he violated a proclamation , issued by the South African administrator general earlier this year , which made it a crime punishable by two years in prison for any person to `` insult , disparate or belittle '' the election commission\n- rel: trial\n\nExample 3 (Example with arg 1): The judge scheduled to preside over his trial\n- ARG1: his\n- rel: trial\n\nExample 4 (Another arg 1 example): another defense attorney in Saddam Hussein's trial\n- ARG1: Saddam Hussein's\n- rel: trial\n\nExample 5 (Args 0, 1, and 3.): Wennerstrom's trial for libel against Mikael Blomkvist\n- ARG0: Wennerstrom's\n- ARG3: for libel\n- ARG1: against Mikael Blomkvist\n- rel: trial\n\nExample 6 (Slightly different use of arg 1): a fair celebrity trial in California\n- ARGM-MNR: fair\n- ARG1: celebrity\n- ARGM-LOC: in California\n- rel: trial\n\n### try-04 (various idtioms: try one's hand at,   try one's patience, etc.)\n\n- ARG0: tryer\n- ARG1: thing tried (hand, patience)\n- ARG2: attribute of Arg 1\n\nExample 1 (go on, give it a shot): As previously reported, the account is troubled, with Philip Morris asking Backer Spielvogel Bates, Ogilvy& Mather, and possibly others to try their hand at developing new creative work.\n- ARG0: Backer Spielvogel Bates, Ogilvy& Mather, and possibly others\n- ARG1: their hand\n- ARG2: at developing new creative work\n- rel: try\n\nExample 2 (gimme a break): She haggled forever over a backpack, and was really trying my patience.\n- ARG0: She\n- ARGM-ADV: really\n- ARG1: my patience\n- rel: trying",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01UjnKUz7ETvXiXNxWeKMhdK",
+     "content": "{\"gold\": [], \"found\": 0, \"left_out\": \"1 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_019mxYz9cE9aDZrYh3BertFZ",
+     "input": {
+      "lemmas": [
+       "come",
+       "return",
+       "signify",
+       "jail"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_019mxYz9cE9aDZrYh3BertFZ",
+     "content": "## come\n\n### come-01 (motion)\n\n- ARG1: entity in motion / 'comer'\n- ARG2: extent -- rare\n- ARG3: start point\n- ARG4: end point\n\nExample 1 (destination): Mrs. Yeargin came to work on weekends.\n- ARG1: Mrs Yeargin\n- ARG4: to work\n- ARGM-TMP: on weekends\n- rel: came\n\nExample 2 (with purpose): Students, teachers, and parents came to testify on her behalf.\n- ARG1: Students, teachers, and parents\n- ARGM-PRP: to testify on her behalf\n- rel: came\n\nExample 3 (destination as by-phrase): You may come by the agency to read but not copy the books.\n- ARG1: You\n- ARGM-MOD: may\n- ARG4: by the agency\n- ARGM-PRP: to read but not copy the books\n- rel: come\n\nExample 4 (come back (not phrasal)): They aren't going to come back to the US.\n- ARG1: They\n- ARGM-DIR: back\n- ARG4: to the US\n- rel: to come\n\nExample 5 (nice syntactic reversal): ``So crunch, crunch, crunch, bang, bang, bang -- here-4 come [*T*-4] the ringers from above, making a very obvious exit while the congregation is at prayer,'' he says.\n- ARG4: [*T*-4]\n- ARG1: the ringers\n- ARG3: from above\n- ARGM-ADV: making a very obvious exit while the congregation is at prayer\n- rel: come\n\nExample 6 (temporal coming): It is also the sovereign power that, come 1997, will take over this British colony.\n- ARG1: 1997\n- rel: come\n\nExample 7 (coming on): Although Bausch remains the leader among the six majors, Johnson& Johnson, with its new disposables, is coming on fast.\n- ARGM-ADV: Although Bausch remains the leader among the six majors\n- ARG1: Johnson& Johnson, with its new disposables,\n- ARGM-DIR: on\n- ARGM-MNR: fast\n- rel: coming\n\nExample 8 (another with start point): But at the time when he stood to speak , I was in the restroom and sort of coming back from the restroom\n- ARGM-TMP: at the time when he stood to speak\n- ARG1: I\n- ARGM-ADV: sort of\n- ARG3: back from the restroom\n- rel: coming\n\nExample 9 (arg1): Haha , that s what I said in conversation with someone last night , she 's the second coming of Dan Quayle !\n- ARGM-TMP: second\n- ARG1: of Dan Quayle\n- rel: coming\n\n### come-12 (come to: speaking of)\n\n- ARG1: topic\n\nExample 1 (Zen-like blase): But as the French embody a Zen-like state of blase when-1 it comesto athletics [*T*-1] (try finding a Nautilus machine in Paris), myfellow conventioners were having none of it.\n- ARG1: to athletics\n- ARGM-TMP: [*T-1*]\n- rel: comes\n\n### come-02 (pursue (often with after), pursuing)\n\n- ARG0: pursuer\n- ARG1: goal\n\nExample 1 (come after): Portfolio managers come after the highest rates.\n- ARG0: Portfolio managers\n- ARG1: after the highest rates\n- rel: come\n\nExample 2 (Both args): He runs the risk of their coming after him immediately\n- ARG0: their\n- ARG1: after him\n- ARGM-TMP: immediately\n- rel: coming\n\n### come-03 (arise (from))\n\n- ARG1: thing (often state) arising\n- ARG2: source, basis on which arg1 comes to be  (not start point of motion!)\n\nExample 1 (arise in): Part of the charm comes in recognizing one's self in the novel.\n- ARG1: Part of the charm\n- ARG2: in recognizing one's self in the novel\n- rel: comes\n\nExample 2 (arise of): Ringers are filled with the solemn intoxication that-1 *trace*-1 comes of intricate ritual faultlessly performed.\n- ARGM-SLC: that -> the solemn intoxication\n- ARG1: *trace*-1 (= that)\n- ARG2: of intricate ritual faultlessly performed\n- rel: comes\n\nExample 3 (origin of being): Yes , I do recall Bill Buckingham making comments about , you know , the apes and monkeys - *PRO*-3 coming from apes and monkeys .\n- ARG1: *PRO*-3\n- ARG2: from apes and monkeys\n- rel: coming\n\n### come-04 (become, various near-idioms)\n\n- ARG1: object\n- ARG2: attribute on arg1\n\nExample 1 (come true): Its forecasts didn't come true.\n- ARG1: Its forecasts\n- ARGM-NEG: didn't\n- ARG2: true\n- rel: come\n\nExample 2 (come as): That may not come as a surprise to Americans who have watched the Japanese snap up properties in the U.S. from golf courses to a stake in Rockefeller Center.\n- ARG1: That\n- ARGM-MOD: may\n- ARGM-NEG: not\n- ARG2: as a surprise to Americans who have watched the Japanese snap up properties in the U.S. from golf courses to a stake in Rockefeller Center\n- rel: come\n\nExample 3 (result in): They do at least come around to [*] saying that the courts might want to end ``rigid affirmative action programs.''\n- ARG1: They\n- ARGM-ADV: at least\n- ARGM-DIR: around\n- ARG2: to [*] saying that the courts might want to end ``rigid affirmative action programs\n- rel: come\n\nExample 4 (come of age): The attack commercial has come of age in an off-election year.\n- ARG1: The attack commercial\n- ARG2: of age\n- ARGM-TMP: in an off-election year\n- rel: come\n\nExample 5 (come under scrutiny): But the growing controversy comes as many practices historically accepted as normal here -- such as politicians accepting substantial gifts from businessmen or having extramarital affairs -- are coming under close ethical scrutiny.\n- ARG1: many practices historically accepted as normal here -- such as politicians accepting substantial gifts from businessmen or having extramarital affairs --\n- ARG2: under close ethical scrutiny\n- rel: coming\n\nExample 6 (come to a head): The ``one-yen'' controversy first came to a head last week when the city of Hiroshima announced that Fujitsu won a contract to design a computer system to map its waterworks.\n- ARG1: The ``one-yen'' controversy\n- ARGM-TMP: first\n- ARG2: to a head\n- ARGM-TMP: last week\n- ARGM-TMP: when the city of Hiroshima announced that Fujitsu won a contract to design a computer system to map its waterworks\n- rel: came\n\nExample 7 (come to a halt): Despite the economic slowdown, there are few clear signs that growth is coming to a halt.\n- ARG1: growth\n- ARG2: to a halt\n- rel: coming\n\nExample 8 (come to an end): ``Actually, [the long deterioration in daily newspapers]-1 shows signs of [*]-1 coming to an end, and the industry looks pretty healthy.''\n- ARG1: [*]\n- ARG2: to an end\n- rel: coming\n\n### come-05 (pertaining to a purchase)\n\n- ARG1: commodity\n- ARG2: buyer\n- ARG3: price\n\nExample 1 (non-specific price): Chateau Yquem now comes dear.\n- ARG1: Chateau Yquem\n- ARGM-TMP: now\n- ARG3: dear\n- rel: comes\n\n### come-to-terms-14 (acclimate to fate)\n\n- ARG0: entity coming to terms\n- ARG2: with who/what\n\nExample 1 (come to terms): In the coming decade, analysts say, U.S.-Japanese relations will be tested as Tokyo comes to terms with its new status as the region's economic behemoth.\n- ARG0: Tokyo\n- ARG2: with its new status as the region's economic behemoth\n- rel: comes to terms\n\n### come-16 (amount to)\n\n- ARG1: thing(s) being counted\n- ARG2: sum, total, amount\n\nExample 1 (so, it comes to this): Last year, the Cowboys' share of that pie came to $17.6 million.\n- ARGM-TMP: Last year\n- ARG1: the Cowboys' share of that pie\n- ARG2: to $17.6 million\n- rel: came\n\n### come-28 (serial verb construction)\n\n- ARG0: subject\n- ARG1: subsequent action\n\nExample 1 (both args): I 'm studying abroad for a year and [my boyfriend]-1 is going [*-1]-2 to come *PRO*-2 visit me a few times times .\n- ARG0: [*-1]-2\n- ARG1: *PRO*-2 visit me a few times times\n- rel: come\n\nExample 2: if you-1 want *-1 to come skiing/snowboarding this Saturday you can join the event here\n- ARG0: *-1\n- ARG1: skiing/snowboarding this Saturday\n- rel: come\n\n## return\n\n### return-01 (come back)\n\n- ARG1: entity in motion\n- ARG2: (extent -- rare)\n- ARG3: start point\n- ARG4: end point\n- ARGM: medium\n\nExample 1 (typical): I-1 need *trace*-1 to return on Tuesday.\n- ARG1: *trace*\n- ARGM-TMP: on Tuesday\n- rel: return\n\nExample 2 (metaphorical): Parents are returning to the cloth diaper.\n- ARG1: Parents\n- ARG4: to the cloth diaper\n- rel: returning\n\nExample 3 (Example of end point as 'return to ...\"): they expect a return to full operations by Saturday\n- ARG4: to full operations\n- ARGM-TMP: by Saturday\n- rel: return\n\nExample 4 (Example with arg 1 and 4): their return to black townships across the country\n- ARG1: their\n- ARG4: to black townships across the country\n- rel: return\n\nExample 5 (Example with args 0 and 4): their return to Earth\n- ARG1: their\n- ARG4: to Earth\n- rel: return\n\nExample 6 (Example with arg 1): The possible return of the verification team\n- ARG1: of the verification team\n- rel: return\n\nExample 7 (revert to): a return to Soviet-era symbolism in Russia\n- ARG4: to Soviet-era symbolism in Russia\n- rel: return\n\n### return-02 (give back)\n\n- ARG0: giver\n- ARG1: thing given\n- ARG2: entity given to\n\nExample 1 (Japanese baseball): Fans politely return foul balls to stadium ushers.\n- ARG0: Fans\n- ARGM-MNR: politely\n- ARG1: foul balls\n- ARG2: to stadium ushers\n- rel: return\n\nExample 2 (seeking comment): Charles LaBella didn't return phone calls seeking comment.\n- ARG0: Charles LaBella\n- ARGM-NEG: n't\n- ARG1: phone calls seeking comment\n- rel: return\n\nExample 3 (Example with all args): his return toast to Mr. Nixon\n- ARG0: his\n- ARG1: toast\n- ARG2: to Mr. Nixon\n- rel: return\n\nExample 4 (Example with args 1 and 2): the return of cheaper shares to the lender\n- ARG1: of cheaper shares\n- ARG2: to the lender\n- rel: return\n\nExample 5 (Example with all args): Their return of our refugees to their homes\n- ARG0: Their\n- ARG1: of our refugees\n- ARG2: to their homes\n- rel: return\n\nExample 6 (Possibly confusing use): Jack's safe return\n- ARG1: Jack's\n- ARGM-MNR: safe\n- rel: return\n\nExample 7 (Args 1 and 2): The return of East Jerusalem to the Palestinians\n- ARG1: of East Jerusalem\n- ARG2: to the Palestinians\n- rel: return\n\n### return-03 (bring back)\n\n- ARG0: entity bring something back\n- ARG1: thing brought back\n- ARG2: attribute of arg1, state arg1 is brought back to\n\nExample 1 (transitive active): The company had returned the plant to routine inspection in August.\n- ARG0: The company\n- ARG1: the plant\n- ARG2: to routine inspection\n- ARGM-TMP: in August\n- rel: returned\n\nExample 2 (Example with arg 1): the best punt return , quarterback sack , etc\n- ARG1: punt\n- rel: return\n\nExample 3 (Example with arg 0 and arg 1): The mechine's ball return was broken.\n- ARG0: The mechine's\n- ARG1: ball\n- rel: return\n\n### return-04 (send back)\n\n- ARG0: sender\n- ARG1: thing sent\n- ARG2: sent-to\n\nExample 1 (all args): Mr. Koskotas is fighting extradition proceedings that [*T*-2] would return him to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete.\n- ARG0: [*T*-2]\n- ARGM-RCL: that -> extradition proceedings\n- ARGM-MOD: would\n- ARG1: him\n- ARG2: to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete\n- rel: return\n\n### return-05 (exchange, trade)\n\n- ARG0: agent, entity trading\n- ARG1: theme\n- ARG2: other exchanger\n- ARG3: secondary theme\n\nExample 1 (Args 1,3): North Korea agreed to dismantle its nuclear program in return for economic aid.\n- ARG1: for economic aid\n- ARG3: North Korea agreed to dismantle its nuclear program\n- rel: return\n\nExample 2 (Example with args 1): in return for removing all our tariff barriers\n- ARG1: for removing all our tariff barriers\n- rel: return\n\nExample 3 (Often in the form of 'in return for'): In return for services rendered\n- ARG1: for services rendered\n- rel: return\n\nExample 4 (It is rare to find this with more than arg 1): In return for your patience\n- ARG1: for your patience\n- rel: return\n\n### return-06 (give a dividend)\n\n- ARG0: thing providing a dividend\n- ARG1: dividend, earnings\n- ARG2: recipient\n\nExample 1 (Monitary example (usual use)): a 0.89 % return on assets for Security Pacific\n- ARG1: 0.89 %\n- ARG0: on assets\n- ARG2: for Security Pacific\n- rel: return\n\nExample 2 (the return percentage can be 'earnings'): KKR racked up annual returns of 60 % in the three years it owned Storer .\n- ARGM-TMP: annual\n- ARG1: of 60 %\n- rel: returns\n\nExample 3 (Non-monitary example): Returns from just under a third of the polling stations\n- ARG0: from just under a third of the polling stations\n- rel: Returns\n\nExample 4 (Arg 0 is often inanimate): A return of investments of 32%\n- ARG0: on investments\n- ARG1: of 32%\n- rel: return\n\nExample 5 (Animate arg 2): whose returns after tax have trailed tuition increases\n- ARG2: whose\n- ARGM-TMP: after tax\n- rel: returns\n\n## signify\n\n### signify-01 (denote, mean, stand for, be indicative of)\n\n- ARG0: entity holding meaning, signaling\n- ARG1: what arg0 signifies, means\n\nExample 1 (transitive): Uptick -- An expression signifying that a transaction in a listed security occurred at a higher price than the previoustransaction in that security .\n- ARG0: An expression\n- ARG1: that a transaction in a listed security occurred at a higher price than the previous transaction in that security\n- rel: signifying\n\nExample 2 (transitive): `` He does n't signify what people want, so the unrest will go on , '' Mr. Oldenburg predicts .\n- ARG0: He\n- ARGM-NEG: n't\n- ARG1: what people want\n- rel: signify\n\nExample 3 (Both args): The town's generous library budget is significant of the value its residents place on learning .\n- ARG0: The town's generous library budget\n- ARG1: of the value its residents place on learning\n- rel: significant\n\nExample 4 (with GOL): In truth, the electoral result seemed significant to me of the fact that, as I have thought and said for many years now, thiscountry is quite politically ill.\n- ARGM-ADV: In truth\n- ARG0: the electoral result\n- ARGM-GOL: to me\n- ARG1: of the fact that, as I have thought and said for many years now, this country is quite politically ill\n- rel: significant\n\n## jail\n\n### jail-01 (put in jail)\n\n- ARG0: court, judge, jury\n- ARG1: criminal\n- ARG2: term\n- ARG3: cause, misdeed\n\nExample 1 (with term): Four years ago, he jailed all nine members of the Cambria County School Board for several hours after they defied his order to extend the school year by several weeks to make up for time lost during a teachers' strike.\n- ARGM-TMP: Four years ago\n- ARG0: he\n- ARG1: all nine members of the Cambria County School Board\n- ARG2: for several hours\n- ARGM-TMP: after they defied his order to extend the school year by several weeks\n- ARGM-PRP: to make up for time lost during a teachers' strike\n- rel: jailed\n\nExample 2 (with crime): And so it seems to be with the case of Elizabeth Morgan, [the Washington, D.C., plastic surgeon]-1 jailed *trace*-1 in a child custody case for refusing to reveal the whereabouts of her daughter.\n- ARG1: *trace*\n- ARGM-LOC: in a child custody case\n- ARG3: for refusing to reveal the whereabouts of her daughter\n- rel: jailed",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 8\n# sentence level graph:\n(s8e / examine-01\n    :ARG0 (s8d / doctor\n        :refer-number plural)\n    :ARG1 (s8p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s8s / signal-07\n        :ARG1 (s8r / return-01\n            :ARG1 (s8c / cancer)\n            :temporal (s8a / await-01\n                :ARG1 s8p\n                :ARG2 (s8t / try-02\n                    :ARG1 s8p\n                    :aspect process)\n                :place (s8j / jail\n                    :mod (s8c2 / country\n                        :wiki \"Russia\"\n                        :name (s8n / name :op1 \"Russia\")))\n                :aspect activity)\n            :modal-strength neutral-affirmative\n            :aspect performance)\n        :aspect state)\n    :aspect performance)\n\nMy choices:\n- **examine-01:** The doctors are its `:ARG0`, \"him\" is its `:ARG1`, and the \"signs\" go in `:ARG2` because PropBank defines that role as \"in search of what\". The examining has not happened yet (\"will\"), but it is a single event that is meant to be completed, so its aspect is `performance`.\n- **signs → signal-07:** PropBank has no rolesets for \"sign\" or \"come back\" as a phrasal verb. I used `signal-07` here; its `:ARG1` is the thing shown, which is the cancer coming back. I chose aspect `state` for it.\n- **come back → return-01:** Since \"come back\" has no roleset of its own, I used `return-01` (\"come back\"), with the cancer as its `:ARG1`. Because of \"may\", it is marked `:modal-strength neutral-affirmative`.\n- **while he was awaiting trial → await-01:** This is a `:temporal` modifier of the return. In `await-01` the person waiting is `:ARG1`, the trial (`try-02`, aspect `process`) is `:ARG2`, and the waiting is ongoing, so its aspect is `activity`.\n- **Russian jail:** The jail has `:place`, and \"Russian\" is a `:mod` holding the named country Russia.\n- **Same person three times:** \"him\", the person waiting and the person on trial are all one node (`s8p`), used again in each place.\n\nI could not find gold examples of this construction to compare against. The least certain choices are `signal-07` for \"signs\" and its `state` aspect.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

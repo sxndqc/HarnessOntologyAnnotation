@@ -1,0 +1,224 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 258,
+    "cache_read_input_tokens": 5910,
+    "output_tokens": 62,
+    "reasoning_tokens": 27,
+    "openai_usage": {
+     "input_tokens": 6168,
+     "input_tokens_details": {
+      "cache_write_tokens": 255,
+      "cached_tokens": 5910
+     },
+     "output_tokens": 62,
+     "output_tokens_details": {
+      "reasoning_tokens": 27
+     },
+     "total_tokens": 6230
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 2050,
+    "cache_read_input_tokens": 6165,
+    "output_tokens": 50,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 8215,
+     "input_tokens_details": {
+      "cache_write_tokens": 2047,
+      "cached_tokens": 6165
+     },
+     "output_tokens": 50,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 8265
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 1 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\nIts graph:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1b / 比例\n        :mod (s1p / 屏幕)\n        :value \"16:9\")\n    :op2 (s1k / 宽屏\n        :quant 21.5\n        :unit (s1y / 英寸))\n    :op3 (s1i / identity-91\n        :ARG1 (s1f / 分辨率\n            :possessor s1k\n            :mod (s1z / 最佳))\n        :ARG2 (s1m / product-of\n            :op1 1920\n            :op2 1080)\n        :aspect state))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_Cv8GyV646l4KGU2LYYv2DGdP",
+     "name": "search_guidelines",
+     "input": {
+      "keywords": [
+       "temporal",
+       "state",
+       "document-creation-time"
+      ],
+      "max_results": 2
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0f4df4cf280cee9a006af40bab565487d1b972cb2fd20a2f69",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq9AutjTSvNXl127mHfBPjVSHF7uPM3RI18GssapfMx8Fa1Nfrz5ouCTtDtf3GU7HEiTVRXIXrXWeCQPeEDgTk6-vMQq5QoHyIZO4iH8kDRyUDwDvZWzIN2QLxAdaFuQGhGqFIy5dK0o_bv7jXe3jNjn6I3Vu745EHhzEz4gNRo0USsLIxc85Wpqt-4CtXqAAUf0obWpaXj8wjtDgraz32o79pYU41u8WO4vcytmFQyax85EqDQ6YOWvN3HsbJ1aeMuddIb8wogdGWExBp5BH5jqtZW7THsWBOuhEjbrEhbhaUh_6fG03kkiYzzW8rfjImp_eA6sgHnwA5LTb4qxCXLbsOMF-UY-i4N9O2okIc0cs603LPsY9HddMrpzIDmHRNZcgjcHwczUSkYLwvJeSVHyOuKvUtMhpiro1hhxaTAaf-OUsKbStVjRaX-kQLJx-ufxrY_xVUs1_88lklEESr0LI8L966tVgpsaY0sJ-ZvPpU_F982wAlbpJKr9ESihvB8MaA1yq71NU-cnPgJElKJG83FDQapbO7wB76ixRvuRGJ5vAc83qV2pstXKF_kh1UkIcMKsoctu5qb10FtwdCxZVRZffoVhyBnhyP1tkt3PtO9pICQn4e5JxW7irCQk4QtYpWN8FL6ehHaX1noEkJd9svMRDQnHpU7JWB1t9wrU_aymm4s45JexXM_5smFpc2nCtKqLRwRGT3qukmT7O7He8EuFG-3uZK750YpCHvHRXIIJLpiWH6qBWx7DVJIAgnwFKo9fP65bcZaqYBRbyL3ZiVgQhKStaf6sYpwUI6uwtfGsiyWp3-zN7DYwuwwKB9FeWZe4fwymmx3hlc06cgv_Nue_Co0V2K5M0gqZlS5a6dERdxYvvEcJZ4dzdA_siKVaWNZ6xmmCLR3ghiztQZOjGF4wIGoKLydwilU-kG25ZMdfvSLV9bPD1ii8VvsuwMPn5rA_oSeGD6SnISntVJQJH1PyvpXM9tHXszuiluqwSjEkluznN6_JO-s5waKs62JjutEoy25F9GT3FkXA_MixDylzhRHU6E-iLssfINtNsyubBhSqMsYyOzF2I_M56h7wcVCLTBoMZY10Ad-yXQ3F48R2IOQVCfv-ewQXVrXilwNXPXSb9_YW847u0DD_z76f1-Bs81s_IepnZla9vHFL4RFNYamW0N8RX9eeqEMctJqoPS9O3lEDJcpjCCDPFxiBRwrUtsv0vp4ZjW2Zsktq8izT4qDoNVeyI97Zgbni0SORY3VMHAYimFk0mXh4HDxN6tuk82JGd3x1xtmTeK92SEPDYTIalSU4jW__CjTHidm3z-RFYA051_aFk0W56Osdd0pGi5-YWp9G5P8_IwXwu6x1CUnqAOx8VfhnD9Qi4_XLOYuE9k5GwdXWzf7ZZyHnBkba6XSSJdbdwLt5FoA6rc9-zHfax4J1UClL7QZclVH7EoM2RKw6hIUoDqOmIFaj5aDCpnkrzQ2E4QsJ2FJHTeH7G_8uuQxiNPwsIrr9qujRQNwcNTAeIdaSDDOZNbPI-qJnDdSzgH1pKkrGYu3YaQnU9VpPgc418xwviLAJRY5yd65fW_pjhepf6ygRyj9cxBZ9F3gu-FWb-NSuAw2o6xN1GjpROUgsiqolP5Qpm-BkaNzi7XQgGhkSVm8yJ63a9z4JLvUXuUv7WaMLDBZnUygZzzqfiAroxJJ4w7bs9QBpMHBpWdVrh-FgBenM8kscTmzU7vxDgOIP4xF7J1cbFkpwVvoprULLpyTxT_UNnNCKAn9eEQxLsTNwUkFVN3ogA9L8fNSZICDHe9fodXBT5mvYWAgnRt6cTvJzX46fwWUmiC2ze48uRxOeyLwfKEqHJpX7awtUmadYAvLW9bRKfuF9DnMkr3Mi6DNGhCkKLx9l2oHQR3cZbVVMeDPoDHYGKvhqZ_8s9c40oNVyyJo0GXntQcgw1b_RJfScu9PsGHl8U="
+      },
+      {
+       "arguments": "{\"keywords\":[\"temporal\",\"state\",\"document-creation-time\"],\"max_results\":2}",
+       "call_id": "call_Cv8GyV646l4KGU2LYYv2DGdP",
+       "name": "search_guidelines",
+       "type": "function_call",
+       "id": "fc_0f4df4cf280cee9a006af40bac650c87d18fae3d8603571ecb",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_Cv8GyV646l4KGU2LYYv2DGdP",
+     "content": "{\"sections\": [{\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 4. Document-Level Representation > Part 4-2. Temporal Dependency > Part 4-2-2-1. Choosing the right temporal relation > Part 4-2-2-1-1. Special cases (1/3)\", \"text\": \"##### Part 4-2-2-1-1. Special cases\\n\\nThere are certain types of modal constructions that require special treatment in the temporal annotation. Events that are related in the modal dependency are generally related in the temporal dependency as well. The rest of this section covers event-event relations; when time expressions are present in the text, those temporal relations should be annotated in addition to the ones described below.\\n\\n**Complement-taking predicates**\\n\\nEvents that are linked with a `:modpred` relation in the sentence-level modal annotation should also be linked in the temporal dependency. The complement-taking predicate acts as the reference time for its complement. That is, the complement is the child of the complement-taking predicate in the temporal dependency. There can be various types of temporal relations between complement-taking predicates and their complements, shown in <a href=\\\"#4-2-2-1-1 (1)\\\">(1)</a>-<a href=\\\"#4-2-2-1-1 (3)\\\">(3)</a>.\\n\\n<span id=\\\"4-2-2-1-1 (1)\\\" label=\\\"4-2-2-1-1 (1)\\\">4-2-2-1-1 (1)</span>\\n\\n```\\nI saw him knock on the door.\\n\\n(s1s/ see-01\\n\\t:ARG0 (s1p/ person\\n\\t\\t:ref-person 1st\\n\\t\\t:ref-number Singular)\\n\\t:ARG1 (s1k/ knock-01\\n\\t\\t:ARG0 (s1p2/ person\\n\\t\\t\\t:ref-person 3rd\\n\\t\\t\\t:ref-number Singular)\\n\\t\\t:ARG1 (s1d/ door\\n\\t\\t\\t:ref-number Singular))\\n\\t\\t:aspect Performance\\n\\t\\t:modpred s1s)\\n\\t:aspect State\\n\\t:modstr FullAff)\\n\\n(s/ sentence\\n\\t:temporal ((PAST_REF :contained s1s)\\n\\t\\t (s1s :overlap s1k)))\\n```\\n\\n<span id=\\\"4-2-2-1-1 (2)\\\" label=\\\"4-2-2-1-1 (2)\\\">4-2-2-1-1 (2)</span>\\n\\n```\\nI want to cook dinner.\\n(s1w/ want-01\\n\\t:ARG0 (s1p/ person\\n\\t\\t:ref-person 1st\\n\\t\\t:ref-number Singular)\\n\\t:ARG1 (s1c/ cook-01\\n\\t\\t:ARG0 s1p\\n\\t\\t:ARG1 (s1d/ dinner)\\n\\t\\t:aspect Performance\\n\\t\\t:modpred s1w)\\n\\t:aspect State\\n\\t:modstr FullAff)\\n\\n(s/ sentence\\n\\t:temporal ((PRESENT_REF :contained s1W)\\n\\t\\t (s1w :after s1c)))\\n```\\n\\n<span id=\\\"4-2-2-1-1 (3)\\\" label=\\\"4-2-2-1-1 (3)\\\">4-2-2-1-1 (3)</span>\\n\\n```\\nI wish she had read the book.\\n(s1w/ wish-01\\n\\t:ARG0 (s1p/ person\\n\\t\\t:ref-person 1st\\n\\t\\t:ref-number Singular)\\n\\t:ARG1 (s1r/ read-01\\n\\t\\t:ARG0 (s1p2/ person\\n\\t\\t\\t:ref-person 3rd\\n\\t\\t\\t:ref-number Singular)\\n\\t\\t:ARG1 (s1b/ book\\n\\t\\t\\t:ref-number Singular)\\n\\t\\t:aspect Performance\\n\\t\\t:modpred s1w)\\n\\t:aspect State\\n\\t:modstr FullAff)\\n\\n(s/ sentence\\n\\t:temporal ((PRESENT_REF :contained s1W)\\n\\t\\t (s1w :before s1c)))\\n```\\n\\nIn cases where there are multiple complements of the same predicate, the annotator must consider whether the complements are ordered with respect to each other. When they are ordered, only one complement is annotated as the child of the main predicate in the temporal dependency. The remaining complement(s) are then linked to other complements in whichever way most fully specifies their temporal ordering. The complement which is closest in time to the main predicate is the one that is linked to the main predicate.\\n\\n<span id=\\\"4-2-2-1-1 (4)\\\" label=\\\"4-2-2-1-1 (4)\\\">4-2-2-1-1 (4)</span>\"}, {\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 3. Sentence-Level Representation > Part 3-3. UMR attributes > Part 3-3-1. Aspect > Part 3-3-1-3. State (3/4)\", \"text\": \"There is a type of event, called “inactive actions” by Croft (2012), which is semantically intermediate between states and processes. In many languages, they can be construed either way. For example, English *lie* can occur in the Progressive (*Bill **is lying** on the bed*) or the Simple Present (*The Sandias **lie** to the east of Albuquerque*). And across languages there is variation as to the default construal of\\ninactive actions. The most frequent inactive actions are posture verbs\\n(*sit, stand, lie, hang*), perception verbs (*see/look at, watch,\\nhear/listen to, feel*), some sensation verbs (*ache*), mental activity\\nverbs (*think, understand*), and verbs of operation/function (*work* in\\n*This washing machine **works/is working***). For the UMR annotation,\\ninactive actions in all constructions are annotated as\\n```state```. If it is unclear whether an event\\nrefers to a ```state``` or an\\n```atelic process```, then the\\n```imperfective``` annotation value is used.\\n\\nThere are different types of states, shown in\\n<a href=\\\"#3-3-1-3 (4)\\\">(4)</a>, which can optionally be distinguished in\\nthe aspect annotation.\\n\\n<span id=\\\"3-3-1-3 (4)\\\" label=\\\"3-3-1-3 (4)\\\">3-3-1-3 (4)</span>\\n\\n<span id=\\\"3-3-1-3 (4a)\\\" label=\\\"3-3-1-3 (4a)\\\">3-3-1-3 (4a)</span> \\n```\\nMy cat is black and white.\\n(h/ have-mod-91\\n\\t:ARG1 (c/ cat\\n\\t\\t:poss (p/ person\\n\\t\\t\\t:ref-person 1st\\n\\t\\t\\t:ref-number Singular)\\n\\t\\t:ref-number Singular)\\n\\t:ARG2 (a/ and\\n\\t\\t:op1 (b/ black)\\n\\t\\t:op2 (w/ white)\\n\\t:aspect Inherent State\\n\\t:modstr FullAff)\\n```\\n<span id=\\\"3-3-1-3 (4b)\\\" label=\\\"3-3-1-3 (4b)\\\">3-3-1-3 (4b)</span>   \\n```\\nMy cat is hungry.\\n(h/ hunger-01\\n\\t:ARG0 (c/ cat\\n\\t\\t:poss (p/ person\\n\\t\\t\\t:ref-person 1st\\n\\t\\t\\t:ref-number Singular))\\n\\t\\t:ref-number Singular)\\n\\t:aspect Reversible State\\n\\t:modstr FullAff)\\n```\\n<span id=\\\"3-3-1-3 (4c)\\\" label=\\\"3-3-1-3 (4c)\\\">3-3-1-3 (4c)</span>   \\n```\\nThe wine glass is shattered.\\n(s/ shatter-01\\n\\t:ARG1 (g/ glass\\n\\t\\t:purpose (w/ wine)\\n\\t\\t:ref-number Singular)\\n\\t:aspect Irreversible State\\n\\t:modstr FullAff)\\n```\\n<span id=\\\"3-3-1-3 (4d)\\\" label=\\\"3-3-1-3 (4d)\\\">3-3-1-3 (4d)</span>  \\n```\\nIt is 2:30pm.\\n(b/ be-temporally-at-91\\n\\t:ARG1 (n/ now)\\n\\t:ARG2 (d/ date-entity\\n\\t\\t:time 14:30)\\n\\t:aspect Point State\\n\\t:modstr FullAff)\\n```\"}], \"found\": 110}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s1i))\n    :modal ((root :modal author)\n            (author :full-affirmative s1i)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "msg_0f4df4cf280cee9a006af40baff37887d18e08ed052a5e29d4",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s1i))\n    :modal ((root :modal author)\n            (author :full-affirmative s1i)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

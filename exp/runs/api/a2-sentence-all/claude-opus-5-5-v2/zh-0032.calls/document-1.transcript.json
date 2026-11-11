@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1012
+    },
+    "cache_creation_input_tokens": 1012,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 936,
+    "output_tokens_details": {
+     "thinking_tokens": 367
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\nIts graph:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1p2 / province\n                                :wiki \"Fukushima_Prefecture\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产\n                :source s1c2)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect performance))\n\nNotes:\n- I couldn't find any gold examples of 达成共识 or 核电站 to follow, so how I've laid those parts out is my own call.\n- 排海 isn't in Chinese PropBank, so I wrote it as 排海-00.\n- I joined the three clauses with one flat `and`. I didn't nest the \"并\" pair (参与 and 恢复) under a second `and`, and I didn't make them the content of the 共识.\n- 就…问题 attaches as `:topic` of 共识, not of 达成.\n- 福岛 is a named `province`, linked to the plant by `:place`.\n- Both future events take their aspect from \"将\": 参与 is `activity` and 恢复 is `performance`. 监测 and 进口 are nominal events, so their aspect is `process`. 逐步 is `:manner`.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSqwsKEAgTGAI4AUIIdGhpbmtpbmcSDOhzDaA5LI89Ef8QVhoMS7Q0sIyzVSHh24FWIjBZjZF0d1jdJvXiUIiaxF0bde4hUEsYpRVO+5Boonywg9VBuq3uPPqHblj+6Otbf9UqyApPETwlPi0Kkej483NhgUWQIZf+SgKXZVUOeRSqH/8tOqgq5HSl1zVyAc7TdMUkC6d5y7I6SMF9UdauefVwBXKBjRDYapsRcibjcXjYztVIQDP4i9fuuTQLKaTGespokw/55u/VtL67u38/zhcOATpNJxYQb7buTOdVmsKxuh+ko+gc9nbr4rthJTo0hM0jdmcJHhLT48t74+dRRWZRNwLrZNovQRUZIm5LzwPt0EBWMTSCPYAFTsQr17LqegDy03RE7idmKP/5qJP/MMwwsTzbufutuO5MoSsNcta1V4eWhNF7e7Q2ueo/xdPkPecs1QfEbequlrgkqt48vcw1dCM9RkcIez2bvsS80+onGqJxsvkjxy6ISy/LiPGldLi64rfMQfM2Zg8GXuvVeMv2jkkYi5KTtdnk/OMUqdBiHZ7XjBjq3ac4nNJxH3gzhxIkk/FhAEJ+ke1rxvciUNAc3jA4cB/j1JEP0/QTsfPjwJSbDSDGcwxt8j4/2hQd8EoD7lVsSgA9mahmJacTylJLuJkaHXyOzly0ciEmwXlK+RXjvMKJugo3HYyOMZTB+L31DCB/PKS/oYeLB3G+9CEiGOEVfy8sPS9/djDT+rYKFOueln+s5RyTISqHxsqAtEAkDFfq0urgyTJ/IJX1CAfgtphy2G45FIByQHpkQi021uaiQAjEobNZx7arLlKdiClro/N63mXeiRQuFjvjDfDMmeQ8KASkJRN5Xb3sJVg0aWIWJUDYFR7oGW3Tj6e0T8/0Bfq1gYXjk6PoC6/A89Aq6rpDicvVt0rK3W9ZG94Xs/1kDtvmk/VUBmMSvSpmc1irjjIOxBo97geHGqDrgxIxW4UGggNCVLtBUKcoy8YVJdtFmtaH3xnpF1WJeJrOZ12186if8bgSP9zVQHZ81T9SL6uELJZeAVSoABjfsGuR1IL3pELXlNcFrdAT3M5u3pmlWVfqRQuNNXRUQImx2VHlGLyoP6myLDgohrScWNP/5SBowkNE9VVJQwgiEbIhPP61bulBip3GzaYzXRsa6St1hzcStis8dHi8VvjMuw1x1Sqslw8CiQBjQ4AjP2wN0QJGw8EI0CQzeK+AAzDGVShVuxs/BW/VWbaCmA81SqB+B77gHVb9fKQ43jDnRs9MWu+PW4ZM02QcmE7XLNc0ikzlDTnyJPIzyfdN+KQokRSzYiYEQac5QXLFenFJGNR7UoSHURosVAkq0n7WxWPjdT9tV7hGqYLDkaHkgbz64wWZhYgKe1QdQfLuFdT/U/X2zNcKNk2YGWpatAHXR4Dbi4fjashIikjb/ftS9xmqX8ReyRrtBQ7XQjawfS1tmJr69au67dJApiValLiCWKDYkb9EZyFgkXY1m4VrdEoQnZte7maztRysd7WRKpLAhWERk/k0LZd+awulQ/QUZbe0mwKsRfqNH4itUfC2uHl300j8GBVFPX7/PUccdD0EQqKiLRGw6utjV65DL3DnMtd8AHQ9CwjWK6tffXLGpAX3r6hjDzShfrINMBsjzMyCbD7nHMt8gQZaznMFHAH0Qeif055IiBh774Pib4WQwCqOYxdYN8PYq7B55+F6mTjIVuG+JTiReVlNIJHJNHwnk4GsC2JarDidwcsA8Qbu66DIbrW6l0tRW8PpNlzWE7fbt0Kcct7wd1UgPLy2M0fHg56qskACR6/NSP4r964YL2/9xIvYENl83bRvhD8P82W3ZrMLXW+XtRvJb0LAMDMy6QAtZdeITf/N8FzMgT0/zk9ag+Yx+dsYbk6dsRiAzUsB4jZ9RhHYwxDIxguCz2qC9hgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s1d)\n               (document-creation-time :overlap s1p)\n               (document-creation-time :after s1c3)\n               (s1c3 :overlap s1j)\n               (document-creation-time :after s1h2)\n               (s1h2 :overlap s1j2))\n    :modal ((root :modal author)\n            (author :full-affirmative s1d)\n            (author :full-affirmative s1p)\n            (author :full-affirmative s1c3)\n            (author :full-affirmative s1j)\n            (author :full-affirmative s1h2)\n            (author :full-affirmative s1j2)))\n\nI didn't call any tools, so none of these choices were checked against the guidelines or gold annotations.\n\n- **Time:** Reaching the consensus (达成) happened before the document was written. The wastewater discharge (排海) is taken as still going on, so it overlaps the writing time. That is my own judgement from what I know of the real events, not something the sentence says. Joining the monitoring (参与) and resuming imports (恢复) come later because of 将. Each of the two noun events (监测, 进口) overlaps the verb it belongs to. I tied the future events to the document creation time rather than to 达成; anchoring them as \"after 达成\" would also be defensible.\n- **Modality:** Every event is a plain statement by the author, so all six are `full-affirmative` under `author`. That includes the two future events, since 将 counts as a firm \"will\" and not a hedge.\n- **Coreference:** There is none, because this is the first sentence and there is nothing earlier to link to. China (`s1c`) appears several times in the graph, but within one sentence that is handled by reusing the variable.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

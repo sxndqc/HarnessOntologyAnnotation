@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-3.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9116
+    },
+    "cache_creation_input_tokens": 9116,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 243,
+    "output_tokens_details": {
+     "thinking_tokens": 87
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 3 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n3\tHe denied any wrongdoing .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSyAYKEAgTGAI4AUIIdGhpbmtpbmcSDIzwnp36nnrgeWn2TRoMuiL9MePHAieeoVZaIjAeLyACS9PiWPNCHXae9kwqlEU+PMUd88Uw541fvKkBj+b2QPcYuzCQuS51aHZAzksq5QVXto21WaYJFnjWuiqXfCRbS3IzvT2Q0WgB37uGYZDOqen0DquQu20hScV6x/oPSDNui8NaMd3kbcy1zDnRgg7kt+dtdFeB6+rQX+HqhNH0S4c9KGbOkNYxi4+3Y0AKY6zvbT3OXHQDm7E9fHRtA5w+MV3XYt0zcIn3hd7FfMHxj6uv3Ilc78Jw2wJT8d/GGY80xxnxKZo7M6yBsUdH4vgdqRlxK7RYj0OUZK+UveYpXWqm+W1sFeZ+TUaRIMzGfRwdWeQywq9qpj+aEUwtGGgiKZW4A1TydJap2buZrnQYDKWdqYm1JYgANvj0ZnApvUw5IzT4FR8mJNCs65YYViofUi6wuflnuzwTKMsAJCr8Kv7puo8B2G4Wtupg6A/jqccGJi2e3d9oPimwgv4/Gi4Rbjyz1EK1p0QA3SCy34JSt37CSFNk8nSzg2cq/uS6i4OS9tNW5aV75yUlU9kZSGKlER/3UkNJriLy81ukboB3LIYLSMJ59uXR1WFZyIz7BRmOr4+njzdOhDZH3yWDDC9QNwC9w74colq/gi0XCu5cSFX45FhZUYs0ix0RSyRRvUXsY+v8GEzw7BSFsWA84Ice6DURefgdNBIxYh6L7FS8WFgsleR3DgT/e4zu0sizhkjzz0siLWqJr6+NxqVD3UhVHrYGhS2vZGWn0zrkz6KS05Nvbwqr1RhKmLxKumuuvtjoFanDfsstOD+dMXM1/AcBKft99Cf2ocQdLy6QPZMziaSoza/JJvpm4dlB2JMHmHIavySWNTCno/uZgvhBPXnqex23rsRoLE13BbTnoNz8Y/+3Ybv+IapU6xM9UKzyIQCebOJl4PSV6jKJ+JQNqkoMrNCV6U3W0TakUk8wekUOfgXsx8gwe/6sAFrfEo0ZfZntNB5GQ0UhS67PsXdtGHw+5ZrzIIeslq+OzM1ZKF1zY/4+PFpS3R9dFK2WRe/uoI8M+Ujh0qmo0+dpLZBgVhN3pVYGBVsYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

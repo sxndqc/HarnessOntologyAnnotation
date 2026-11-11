@@ -18,6 +18,8 @@ sys.path.insert(0, os.path.join(EXP, "lib"))
 sys.path.insert(0, EXP)
 sys.path.insert(0, os.path.join(EXP, "scripts"))
 import breakdown as B  # noqa: E402
+import charts as C  # noqa: E402
+import cost as K  # noqa: E402
 
 RUNS = os.path.join(EXP, "runs")
 ZH, EN = ["zh-0028", "zh-0032"], ["en-0008"]
@@ -25,7 +27,13 @@ DOCS = ZH + EN
 SUBS = B.SUBS
 NAME = {"s1-abridged": "s1-abridged：缩略版 guideline", "s1-full": "s1-full：完整 guideline",
         "s2-search": "s2-search：缩略版 + guideline 搜索", "s2-propbank": "s2-propbank：缩略版 + PropBank",
-        "s2-gold": "s2-gold：缩略版 + gold 例子", "a1-sentence-propbank": "a1：PropBank，一句句跑（ablation）"}
+        "s2-gold": "s2-gold：缩略版 + gold 例子", "s3-all": "s3-all：缩略版 + 三个工具",
+        "a1-sentence-propbank": "a1：PropBank，一句句跑", "a2-sentence-all": "a2：三个工具，一句句跑"}
+HEATCOL = {"s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank", "s2-gold": "+gold",
+           "s3-all": "+三个工具", "a1-sentence-propbank": "a1", "a2-sentence-all": "a2"}
+SHORTNAME = {"s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
+             "s2-gold": "+gold", "s3-all": "+三个工具", "a1-sentence-propbank": "a1 一句句·PropBank",
+             "a2-sentence-all": "a2 一句句·三个工具"}
 CLAUDE, SOL, ASTRA = "claude-opus-5-5-v2", "gpt-6.1-sol-medium", "gpt-6-astra-medium"
 
 
@@ -109,6 +117,22 @@ def trace_stats(method, sub, label, docs):
     return out
 
 
+def _measured_as(sub, lab, key):
+    """K.measured for a run whose label is not in K.PRICES (the old-prompt Claude runs), priced as key."""
+    d = os.path.join(RUNS, "api", sub, lab)
+    out = {}
+    for f in os.listdir(d):
+        if f.endswith(".trace.json"):
+            t = json.load(open(os.path.join(d, f), encoding="utf-8"))
+            ins = outs = 0.0
+            for c in t["calls"]:
+                i, o = K.priced(key, c["usage"])
+                ins += i
+                outs += o
+            out[f[:-11]] = (ins, outs)
+    return out
+
+
 def v1_autoaligned():
     """The old-prompt runs (label claude-opus-5-5) with the alignment removed and computed by autoalign."""
     import run as R
@@ -143,7 +167,10 @@ code{background:#f2f2f2;padding:0 .25rem;border-radius:3px}
 ul{padding-left:1.3rem} li{margin:.2rem 0}
 details{margin:.6rem 0} summary{cursor:pointer;font-weight:600}
 nav a{margin-right:.8rem}
-@media (prefers-color-scheme: dark){body{background:#111;color:#e6e6e6} th{background:#222} th,td{border-color:#333}
+.tiles{display:flex;gap:12px;flex-wrap:wrap;margin:.6rem 0}
+.tile{border:1px solid rgba(11,11,11,.10);border-radius:8px;padding:10px 14px;min-width:220px}
+.tl{font-size:.82rem;color:#52514e} .tv{font-size:2rem;font-weight:600} .td{font-size:.82rem;color:#52514e}
+@media (prefers-color-scheme: dark){.tl,.td{color:#aaa} .tile{border-color:#333} body{background:#111;color:#e6e6e6} th{background:#222} th,td{border-color:#333}
  tr.sep td{background:#181818;color:#999} code{background:#222} .note,.lead{color:#aaa} h2{border-color:#333}}
 """
 
@@ -157,8 +184,8 @@ def main():
              "从仓库里的分数和记录生成。测试数据和打分方式与 DMR 2026 UMR parsing shared task 一致（UMR 2.2 官方测试集和 gold）。</p>" % e(commit))
     P.append("<nav>" + "".join('<a href="#%s">%s</a>' % (a, t) for a, t in [
         ("summary", "要点"), ("setup", "设定"), ("main", "主表"), ("methods", "三种方法"), ("chat", "chat"),
-        ("prompt", "prompt 版本"), ("breakdown", "分项"), ("ablation", "ablation"), ("usage", "工具与用量"),
-        ("caveats", "局限"), ("files", "文件")]) + "</nav>")
+        ("prompt", "prompt 版本"), ("breakdown", "分项"), ("ablation", "一句句跑"), ("alltools", "三个工具"),
+        ("usage", "工具与用量"), ("cost", "花费"), ("caveats", "局限"), ("files", "文件")]) + "</nav>")
 
     # ---------------------------------------------------------------- summary
     P.append('<h2 id="summary">要点</h2><ul>')
@@ -169,9 +196,14 @@ def main():
           "<li><b>五个条件之间总分差别很小</b>（Claude API 中文 48.1–50.0）；资源的作用在分项里：PropBank 让谓词义项和核心角色标签提高"
           " 9–17 分，gold 例子让共指和人称/数提高，guideline 搜索让角色标签提高约 10 分；几乎所有资源都让文档级模态关系略降。</li>",
           "<li><b>Claude 三种方法（API、Claude Code、claude.ai chat）总分基本一样</b>；Claude Code 的 s1-full 偏低（41.8）。</li>",
-          "<li><b>GPT（gpt-6.1-sol）和 Claude 总分接近</b>：中文每个条件都是 Claude 略高（差 0.6–4.3）；英文各有高低，"
-          "GPT 拿到完整 guideline（full、+search）后高于 Claude。GPT 调用工具的次数是 Claude 的几倍到几十倍，但分数没有因此更高。</li>",
-          "<li><b>一句句跑的 ablation</b>（a1）和整篇一次标的 s2-propbank 总分相差 2 分以内。</li>",
+          "<li><b>GPT（gpt-6.1-sol）和 Claude 总分接近</b>：前五个条件和 a1，中文都是 Claude 略高（差 0.6–4.3）；"
+          "三个工具都给时（s3-all、a2）GPT 更高。英文各有高低，GPT 拿到完整 guideline（full、+search）或三个工具后高于 Claude。"
+          "GPT 调用工具的次数是 Claude 的几倍到几十倍；只给一个工具时，多查并没有让分数更高。</li>",
+          "<li><b>一句句跑</b>：只给 PropBank 时（a1）和整篇一次标相差 2 分以内；<b>三个工具都给、一句句跑（a2）是中文目前最好的设置</b>"
+          "（Claude 50.8、GPT 51.6，Smatch 60.9、61.7），两个模型这时都查得最多。三个工具都给但整篇一次标（s3-all）时，"
+          "GPT 中文 50.1、英文 56.9，Claude 中文 48.8、英文 51.8（Claude 只查了 2–3 次）。</li>",
+          "<li><b>全量估算</b>（中文 15 篇 + 英文 5 篇，这 8 个条件全跑）：Claude Opus 5.5 约 $230，gpt-6.1-sol 约 $70；"
+          "最贵的是一句句跑的两个条件。按 3 篇外推，误差大约 ±50%。</li>",
           "<li><b>对齐不让模型写，由程序自动生成</b>：gold 的图配自动对齐，中文 juːmæʧ 87.4、英文 65.9（英文 gold 自己的对齐有不少错位）。"
           "自动对齐比模型自己写的对齐还好（同样的图高 3–9 分）。</li>"]
     P.append("</ul>")
@@ -186,7 +218,9 @@ def main():
         ["s2-search", "缩略版 + search_guidelines 工具（搜完整 guideline）"],
         ["s2-propbank", "缩略版 + propbank_lookup 工具"],
         ["s2-gold", "缩略版 + search_annotations 工具（shared task 训练数据的 gold，不含测试句子）"],
-        ["a1-sentence-propbank", "s2-propbank 的资源，一句句跑：先每句单独标句子图；全部标完后，每句再给它和前五句的原文与图，标这一句的文档级关系"]]))
+        ["s3-all", "缩略版 + 三个工具都能用（search_guidelines、propbank_lookup、search_annotations）；只用 API"],
+        ["a1-sentence-propbank", "s2-propbank 的资源，一句句跑：先每句单独标句子图；全部标完后，每句再给它和前五句的原文与图，标这一句的文档级关系；只用 API"],
+        ["a2-sentence-all", "s3-all 的资源（三个工具），一句句跑，做法同 a1；只用 API"]]))
     P.append("<h3>方法和模型</h3>")
     P.append(table(["方法", "模型 / 标签", "说明"], [
         ["API", "claude-opus-5-5（标签 claude-opus-5-5-v2）", "effort medium，adaptive thinking；不开拒答回退，每个回答都出自这个模型"],
@@ -210,6 +244,17 @@ def main():
 
     # ---------------------------------------------------------------- main
     P.append('<h2 id="main">主表：API，每个条件（juːmæʧ F / Smatch F）</h2>')
+    cats = [SHORTNAME[s] for s in B.API_SUBS]
+    ch = []
+    for lang, ds in (("中文（zh-0028 + zh-0032）", ZH), ("英文（en-0008）", EN)):
+        series = []
+        for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL)):
+            series.append((name, slot, [(m("api", s, lab, ds) or {}).get("juːmæʧ F") for s in B.API_SUBS]))
+        refs = [("Orange %.1f" % m("shared-task", "", "orange", ds)["juːmæʧ F"], m("shared-task", "", "orange", ds)["juːmæʧ F"])]
+        ch.append(C.grouped_hbar("juːmæʧ F，%s" % lang, cats, series, 70, refs=refs, label_w=140, width=530))
+    P.append('<div class="vizrow">%s</div>' % "".join(ch))
+    P.append('<p class="note">每个条件两根条：Claude Opus 5.5（蓝）和 GPT-6.1 Sol（橙），effort 都是 medium。竖线是参赛队伍 Orange 在同样文件上的分数。'
+             "条尾的数字只标每个模型最高的一项，其余在悬停提示和下表里。</p>")
     rows = []
     for sub in B.API_SUBS:
         r = [NAME[sub]]
@@ -232,6 +277,13 @@ def main():
 
     # ---------------------------------------------------------------- methods
     P.append('<h2 id="methods">Claude 的三种方法：API、Claude Code、chat（juːmæʧ F）</h2>')
+    series = []
+    for name, slot, method, lab in (("API", 1, "api", CLAUDE), ("Claude Code", 2, "harness", "claude-code"),
+                                    ("claude.ai chat", 3, "chat", "claude-ai")):
+        series.append((name, slot, [(m(method, s, lab, ZH) or {}).get("juːmæʧ F") for s in SUBS]))
+    P.append(C.grouped_hbar("juːmæʧ F，中文两篇，同一个模型（Claude Opus 5.5）的三种用法", [SHORTNAME[s] for s in SUBS], series, 60,
+                            label_w=110, width=560))
+    P.append('<p class="note">没有条的格子是没跑（chat 只做了 abridged；chat 的 +PropBank 只有 zh-0032 一篇，不在两篇合计里）。</p>')
     rows = []
     for sub in SUBS:
         r = [NAME[sub]]
@@ -283,6 +335,25 @@ def main():
     P.append("<p>每一行是一项检查的正确率（%）；“相对 abridged”的表是每个条件减去同一模型 s1-abridged 的分差。"
              "同样的表也在 <code>exp/breakdown.md</code>。</p>")
     systems = [("Claude API", "api", CLAUDE), ("GPT API", "api", SOL)]
+    keys = ["juːmæʧ F", "Smatch F", "b_event_sense", "a_event_concept", "a_entity_concept", "d_core_args_event",
+            "d_core_args_abstract", "e_core_labels", "e_peripheral_labels", "c_aspect", "c_refer", "f_name_tokens",
+            "g_reentrancy", "h_temporal", "i_modal", "j_coref_chain"]
+    hm = []
+    for title, lab in (("Claude Opus 5.5", CLAUDE), ("GPT-6.1 Sol", SOL)):
+        base = m("api", "s1-abridged", lab, ZH)
+        cols = B.API_SUBS[1:]
+        vals = []
+        for k in keys:
+            row = []
+            for sub in cols:
+                x = m("api", sub, lab, ZH)
+                row.append(None if not x or x.get(k) is None or base.get(k) is None else x[k] - base[k])
+            vals.append(row)
+        hm.append(C.heatmap("%s：相对 abridged 的变化（中文，分）" % title, [B.NAMES.get(k, k) for k in keys],
+                            [HEATCOL[s] for s in cols], vals, vmax=20, label_w=190, cell=(60, 22)))
+    P.append('<div class="vizrow">%s</div>' % "".join(hm))
+    P.append('<p class="note">每格是这个条件减去同一模型 s1-abridged 的分差：蓝 = 更高，红 = 更低，灰 = 不变；±20 分以上颜色不再加深。'
+             "a1 = PropBank 一句句跑，a2 = 三个工具一句句跑。精确数值见悬停提示和下面的表。</p>")
     for lang, ds in (("中文（zh-0028 + zh-0032）", ZH), ("英文（en-0008）", EN)):
         P.append("<h3>%s：每个条件的绝对分数</h3>" % lang)
         cols = [("%s %s" % (n, B.SHORT[s]), mm, s, l) for n, mm, l in systems for s in B.API_SUBS]
@@ -308,18 +379,56 @@ def main():
         P.append(md_table(B.table([("gpt-6-astra %s" % B.SHORT[s], "api", s, ASTRA) for s in SUBS], ds)) + "</details>")
 
     # ---------------------------------------------------------------- ablation
-    P.append('<h2 id="ablation">ablation：一句句跑（a1）对整篇一次标（s2-propbank）</h2>')
+    P.append('<h2 id="ablation">一句句跑对整篇一次标：a1（PropBank）对 s2-propbank，a2（三个工具）对 s3-all</h2>')
+    cats = ["PropBank：整篇", "PropBank：一句句", "三个工具：整篇", "三个工具：一句句"]
+    pairs = ["s2-propbank", "a1-sentence-propbank", "s3-all", "a2-sentence-all"]
+    ch = []
+    for lang, ds in (("中文", ZH), ("英文", EN)):
+        series = [(name, slot, [(m("api", s, lab, ds) or {}).get("juːmæʧ F") for s in pairs])
+                  for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL))]
+        ch.append(C.grouped_hbar("juːmæʧ F，%s" % lang, cats, series, 70, label_w=130, width=520))
+    P.append('<div class="vizrow">%s</div>' % "".join(ch))
     for lang, ds in (("中文", ZH), ("英文", EN)):
         cols, delta = [], {}
         for n, mm, l in systems:
-            cols += [("%s 整篇" % n, mm, "s2-propbank", l), ("%s 一句句（差）" % n, mm, "a1-sentence-propbank", l)]
-            delta["%s 一句句（差）" % n] = "%s 整篇" % n
+            cols += [("%s PropBank 整篇" % n, mm, "s2-propbank", l), ("%s PropBank 一句句（差）" % n, mm, "a1-sentence-propbank", l),
+                     ("%s 三个工具 整篇" % n, mm, "s3-all", l), ("%s 三个工具 一句句（差）" % n, mm, "a2-sentence-all", l)]
+            delta["%s PropBank 一句句（差）" % n] = "%s PropBank 整篇" % n
+            delta["%s 三个工具 一句句（差）" % n] = "%s 三个工具 整篇" % n
         P.append("<h3>%s</h3>" % lang + md_table(B.table(cols, ds, delta)))
     P.append('<p class="note">a1 每篇的调用次数 = 2 × 句数（Claude 和 GPT 各 54 次）；每次调用的 prompt 和完整对话在 '
              "<code>runs/api/a1-sentence-propbank/&lt;标签&gt;/&lt;文件&gt;.calls/</code>。</p>")
 
+    # ---------------------------------------------------------------- all three tools
+    P.append('<h2 id="alltools">三个工具都能用：模型查了什么</h2>')
+    rows = []
+    for sub in ("s3-all", "a2-sentence-all"):
+        for title, lab in (("Claude Opus 5.5", CLAUDE), ("GPT-6.1 Sol", SOL)):
+            for d in DOCS:
+                t = json.load(open(os.path.join(RUNS, "api", sub, lab, d + ".trace.json"), encoding="utf-8"))
+                cnt = {}
+                for c in t["calls"]:
+                    for x in c["tool_calls"]:
+                        cnt[x["name"]] = cnt.get(x["name"], 0) + 1
+                x = m("api", sub, lab, [d])
+                rows.append([NAME[sub], title, d, cnt.get("search_guidelines", 0), cnt.get("propbank_lookup", 0),
+                             cnt.get("search_annotations", 0), fmt(x["juːmæʧ F"]), fmt(x["Smatch F"])])
+    P.append(table(["条件", "模型", "文件", "search_guidelines", "propbank_lookup", "search_annotations", "juːmæʧ F", "Smatch F"], rows,
+                   note="Claude 两种方案都从不搜 guideline：整篇一次标时每篇只查 2–3 次，一句句跑时每篇 18–30 次，最多的是 gold 例子。"
+                        "GPT 三个工具都用：整篇一次标时每篇 15–16 次，一句句跑时每篇 91–170 次。"))
+
     # ---------------------------------------------------------------- usage
     P.append('<h2 id="usage">工具调用和用量</h2>')
+    tool_subs = ["s2-search", "s2-propbank", "s2-gold", "s3-all", "a1-sentence-propbank", "a2-sentence-all"]
+    series = []
+    for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL)):
+        vals = []
+        for sub in tool_subs:
+            st = [x for x in trace_stats("api", sub, lab, DOCS) if x]
+            vals.append(sum(x[0] for x in st) / len(st) if st else None)
+        series.append((name, slot, vals))
+    P.append(C.grouped_hbar("每篇平均工具调用次数（三篇平均）", [SHORTNAME[s] for s in tool_subs], series,
+                            140, step=20, label_w=150, width=620, fmt="%.0f"))
     rows = []
     for sub in B.API_SUBS:
         for title, method, lab in (("Claude API", "api", CLAUDE), ("GPT-sol API", "api", SOL),
@@ -336,6 +445,40 @@ def main():
                    note="花费：Claude API 按 Opus 5.5 的价格算（输入 $4、输出 $20、写缓存 $5、读缓存 $0.20，每百万 token）；"
                         "Claude Code 是它自己报的 API 价格折算（实际走订阅）；GPT 没有算钱，以 OpenAI 控制台为准。"
                         "Claude Code 的工具调用只数运行 tools/ 命令的次数（不算 Read、Grep 等）。"))
+
+    # ---------------------------------------------------------------- cost
+    P.append('<h2 id="cost">花费：整个实验跑一遍要多少钱（估算）</h2>')
+    est = K.estimate(("zh", "en"))
+    tot = {lab: sum(r["total"] for r in est if r["label"] == lab) for lab in K.PRICES}
+    zh_tot = {lab: sum(r["full"]["zh"] or 0 for r in est if r["label"] == lab) for lab in K.PRICES}
+    tiles = []
+    for lab, name in ((CLAUDE, "Claude Opus 5.5"), (SOL, "GPT-6.1 Sol")):
+        tiles.append('<div class="tile"><div class="tl">%s，8 个条件全量（中文 + 英文）</div><div class="tv">$%.0f</div>'
+                     '<div class="td">其中中文 15 篇 $%.0f</div></div>' % (e(name), tot[lab], zh_tot[lab]))
+    P.append('<div class="tiles">%s</div>' % "".join(tiles))
+    series = [(name, slot, [next((r["total"] for r in est if r["label"] == lab and r["sub"] == s), None) for s in B.API_SUBS])
+              for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL))]
+    P.append(C.grouped_hbar("每个条件全量的估算花费（中文 15 篇 + 英文 5 篇）", [SHORTNAME[s] for s in B.API_SUBS], series, 80,
+                            unit="", step=10, label_w=150, width=620, fmt="$%.0f"))
+    rows = [[r["model"], NAME[r["sub"]], "$%.2f" % r["sample_cost"], "$%.0f" % (r["full"]["zh"] or 0),
+             "$%.0f" % (r["full"]["en"] or 0), "$%.0f" % r["total"]] for r in est]
+    P.append(table(["模型", "条件", "这 3 篇实际（按价格算）", "全量中文（15 篇）", "全量英文（5 篇）", "全量合计"], rows,
+                   note="做法：把这 3 篇的用量按价格算成钱，分成输入侧（输入、写缓存、读缓存）和输出侧（输出，含思考），按语言外推到全部测试文件："
+                        "输出侧按词数放大；输入侧在 s1-abridged、s1-full 按文件数（主要是每篇都一样的 guideline），一句句跑的按句数，其余按词数。"
+                        "只有 3 篇，误差大约 ±50%%；英文 en-0000 有 2,120 个词，整篇一次标可能碰到输出上限。价格（每百万 token）："
+                        "claude-opus-5-5 输入 $4、写缓存 $5、读缓存 $0.20、输出 $20；gpt-6.1-sol 输入 $2、读缓存 $0.10、输出 $10；"
+                        "gpt-6-astra 输入 $10、读缓存 $1、输出 $50（OpenAI 价格页，2026 年 11 月）。gpt-6-astra 只跑过前 5 个条件，"
+                        "全量约 $%.0f。Claude Code 和 chat 走订阅，不在这里。" % tot[ASTRA]))
+    spent = {}
+    for sub in os.listdir(os.path.join(RUNS, "api")):
+        for lab in os.listdir(os.path.join(RUNS, "api", sub)):
+            key = CLAUDE if lab.startswith("claude") else lab
+            if key not in K.PRICES:
+                continue
+            for d, (i, o) in K.measured(sub, lab).items() if lab in K.PRICES else _measured_as(sub, lab, key).items():
+                spent[key] = spent.get(key, 0) + i + o
+    P.append('<p class="note">到目前为止 API 实际用掉的（按上面的价格算，所有跑过的 API 运行）：Claude 约 $%.0f，gpt-6.1-sol 约 $%.0f，'
+             "gpt-6-astra 约 $%.0f。</p>" % (spent.get(CLAUDE, 0), spent.get(SOL, 0), spent.get(ASTRA, 0)))
 
     # ---------------------------------------------------------------- caveats
     P.append('<h2 id="caveats">局限和下一步</h2><ul>'
@@ -356,8 +499,8 @@ def main():
              "<li>分项表：<code>exp/breakdown.md</code>；本页：<code>exp/report.html</code>（<code>python3 exp/scripts/report.py</code>）。</li></ul>")
 
     page = ("<!DOCTYPE html>\n<html lang=\"zh\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" "
-            "content=\"width=device-width, initial-scale=1\"><title>UMR 标注实验结果</title><style>%s</style></head>"
-            "<body>\n%s\n</body></html>\n" % (CSS, "\n".join(P)))
+            "content=\"width=device-width, initial-scale=1\"><title>UMR 标注实验结果</title><style>%s%s</style></head>"
+            "<body>\n%s\n<script>%s</script></body></html>\n" % (CSS, C.CSS, "\n".join(P), C.JS))
     with open(os.path.join(EXP, "report.html"), "w", encoding="utf-8") as f:
         f.write(page)
     print("wrote exp/report.html (%d characters)" % len(page))

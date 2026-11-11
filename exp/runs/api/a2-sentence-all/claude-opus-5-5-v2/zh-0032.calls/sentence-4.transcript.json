@@ -1,0 +1,280 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-4.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9191
+    },
+    "cache_creation_input_tokens": 9191,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 316,
+    "output_tokens_details": {
+     "thinking_tokens": 105
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2873
+    },
+    "cache_creation_input_tokens": 2873,
+    "cache_read_input_tokens": 9191,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 737,
+    "output_tokens_details": {
+     "thinking_tokens": 631
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4739
+    },
+    "cache_creation_input_tokens": 4739,
+    "cache_read_input_tokens": 12064,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 538,
+    "output_tokens_details": {
+     "thinking_tokens": 22
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 4 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n4\t福岛 第一 核电厂 受 2011 年 东日本 大地震 及 引发 的 海啸 损毁 ， 导致 冷却 系统 停止 运作 ， 东京 电力公司 注入 海水 直接 冷却\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS/AYKEAgTGAI4AUIIdGhpbmtpbmcSDESz+/uTlcWkWqTwixoMyu3PR8Cxxd8y8mLYIjCqsKqq872hFFK9ag/aPcUauQhjjTB8cyG8vq9+BXitxrFhRG5vAxVsTEin4lGAdxMqmQarvi2bZsSR2ft9uAyheDWP2OYkBj5F9CYY/P2YWlzWz5mh84I3bYUtiN8zXbXz+RdZN2ObxQRIL0ZxGQce/+B2v3UJu93Ad0khY463DtSkLd+4CEHDpCi3dlSs1IFqDCGasKRfbosAXTJra1wglVdtuOGeqlSxiXES9cydvYNcOp43eZnJR0+my2DLQsHzY29k7rvNZligbYhdFoqkbs2YDf3SMw9cyKPn3xUtgyviWeUVtgPZkmGDkGHk3fOOiOZUmOjUeC0okqhEuO2bFB/u8qqvfCBCtsLDeI4RRAwnvXSi4b18P625XmLGuM0Fn1Sc2ToDdpQfoxRII1oQ4pB/ow9/wl7+1I1553uEUnLVVo49DO97ABw4VC7+mKsr23RUw6bPxOhLKjyA2BfDIokQVTxmFC5x1xVQuW2Q4Pvqf9K2zyklE5foi0dXJODGrP9KjeGLtQYlbZ1cL8f+vm0VB9eKjDczM57J+LvkkqZ2ki8Ri31Mc+DcWEcCoLGVL8YfFiQ4RhT3XaQ78HNDPyq+IGnVXViGIfWKDePraEv2r+788e+ju7BjisFnal1dlOfY1xmb0+jMLzgSA7Sd7R16ISYTKR207u7e8w62av7VpBSkx+KPOR0cjwoiS8uuFE8FolrpNmVbvfRX+03e8buWznJ5YBJsVYk3LCokrLxQZaJ/+QyRZGgWT1yZaD/7fgNQXYpBBhPXwLB5RFDoa1uR6JE8MU/k1M07fsUbzu/hmzY0U3HQOB7j5EJnhsLc4gQ0OAd9TK38afKiJCfWybDbrtL8RUjUKLXzgKSD/iC/vyzjSlU2WWV2le8W0lmURbaPtW6G2cT1l3vCs7U28Fygs9ckcDpn+8DfNw2vwvw0vv/sD3SaL9iiFGbbWBrpKptAUsyLd8JHwBSoyDeX7eOlVcbq8GUxMRQclSuU+zCDv5o7n9vUm0HLzPZKrfj14ppbFLnMOt1qyymgXykd7QlA+j6MdMRbUbVX/45RcV8DsExOz6b2WMVMvpJjWBgO/kpD6pC6aqkdlNA2wjDjRp6WrYr8zIFVVBwNGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01BxC1LiyzxQEJyQ1SgVF8wp",
+     "input": {
+      "lemmas": [
+       "损毁",
+       "导致",
+       "引发",
+       "停止",
+       "运作",
+       "注入",
+       "冷却"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_011Pje94FRvNQKdPT5m8cfXT",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "核电厂",
+       "福岛"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01BxC1LiyzxQEJyQ1SgVF8wp",
+     "content": "## 损毁\n\n### 损毁-01\n\n- ARG0: agent/cause\n- ARG1: thing arg0 damages\n\nExample 1: 祭祀 完毕 之後 ， 或许是 因为 王朝 的 更迭 ， 或许是 一 种 *PRO* 藉由 焚烧 上达 天神 用意 ， *OP* *T*-2 精美 的 神像 与 礼器 在 熊熊烈火 中 焚烧 、 损毁 ， 再 埋入 土坑 之中\n- ARG1: *OP* *T*-2 精美 的 神像 与 礼器\n- ARGM-LOC: 在 熊熊烈火 中\n- ARGM-PRP: 或许是 一 种 *PRO* 藉由 焚烧 上达 天神 用意\n- ARGM-PRP: 或许是 因为 王朝 的 更迭\n- ARGM-TMP: 祭祀 完毕 之後\n- rel: 损毁\n\n## 导致\n\n### 导致-01\n\n- ARG0: cause\n- ARG1: result\n\nExample 1: ７０年代 ， 美国 钢铁厂 的 兼并 直接 导致 了 一些 大型 一体化 钢铁 公司 的 诞生\n- ARG0: 美国 钢铁厂 的 兼并\n- rel: 导致\n\nExample 2: 任何 延误 都 会 让 蛇头 *PRO* 有机可乘 ， 散播 特赦 的 谣言 ， 导致 大量 儿童 涌入\n- ARG0: 任何 延误\n- rel: 导致\n\n## 引发\n\n### 引发-01\n\n- ARG0: cause\n- ARG1: result\n\nExample 1: 特别是 有关 香港 回归 后 与 内地 经贸 关系 的 法律 调整 问题 ， 引发 了 与会者 的 积极 讨论 。\n- ARG0: 有关 香港 回归 后 与 内地 经贸 关系 的 法律 调整 问题\n- rel: 引发\n\n### 引发-02\n\n- ARG0: cause\n- ARG1: theme\n- ARG2: predicate\n\nExample 1: 此 *OP* *T*-2 先进 的 电子 撞车 传感器 在 更 短 时间 内 ， 引发 防撞 气囊 *PRO* 迅速 起爆\n- ARG0: 此 *OP* (*T*-2)->(电子撞车传感器) 先进 的 电子 撞车 传感器\n- ARGM-LOC: 在 更 短 时间 内\n- rel: 引发\n\n## 停止\n\n### 停止-01\n\n- ARG0: agent/cause\n- ARG1: thing stopped\n\nExample 1: 在 伊 入侵 科威特 之后 ， 中国 立即 停止 了 对 伊 的 军事 销售\n- ARG0: 中国\n- ARG1: 对 伊 的 军事 销售\n- ARGM-ADV: 立即\n- ARGM-TMP: 在 伊 入侵 科威特 之后\n- rel: 停止\n\nExample 2: *pro* 停止 *PRO* 实行 中央 计划 经济\n- ARG0: *pro*\n- ARG1: *PRO* 实行 中央 计划 经济\n- rel: 停止\n\nExample 3: 但 这 次 欧洲 统一 货币 的 尝试 因 第一 次 世界 大战 而 被 迫 *PRO* 停止\n- ARG1: *PRO*\n- rel: 停止\n\n## 运作\n\n### 运作-01\n\n- ARG0: agent\n- ARG1: thing arg0 operates/runs\n\nExample 1: 土地 基金 将 独立 於 与 外汇 基金 之外 ， 由 香港 金融 管理局 在 财政司 司长 的 指导 下 运作\n- ARG1: 土地 基金\n- ARG0: 由 香港 金融 管理局\n- ARGM-LOC: 在 财政司 司长 的 指导 下\n- ARGM-ADV: 将\n- rel: 运作\n\nExample 2: 香港 经贸 事务 一如既往 地 运作\n- ARG1: 香港 经贸 事务\n- ARGM-ADV: 一如既往 地\n- rel: 运作\n\nExample 3: 各 地区 、 各 部门 要 关心 *RNR*-1 和 支持 金融 机构 的 健康 发展 ， 维护 金融 机构 信誉 ， 按 市场 经济 原则 规范 运作 ， 为 *PRO* 建立 新型 的 银 企 关系 创造 *OP* *T*-2 良好 的 经济 环境\n- ARG0: 各 地区 、 各 部门\n- ARGM-MNR: 按 市场 经济 原则 规范\n- rel: 运作\n\n## 注入\n\n### 注入-01\n\n- ARG0: agent/cause\n- ARG2: entity filled\n- ARG1: thing arg2 is filled with\n\nExample 1: 厦门港 今年 成为 *OP* 海峡 两 岸 *T*-3 直航 试点港 后 ， 货物 运输 被 注入 了 *OP* *T*-1 新 的 生机 和 活力\n- ARG1: *OP* *T*-1 新 的 生机 和 活力\n- ARG2: 货物 运输\n- ARGM-TMP: 厦门港 今年 成为 *OP* 海峡 两 岸 *T*-3 直航 试点港 后\n- rel: 注入\n\nExample 2: 第六 届 远东 及 南 太平洋 地区 残疾人 运动会 的 举行 ， 必 将 给 她 注入 *OP* *T*-1 新 的 活力\n- ARG0: 第六 届 远东 及 南 太平洋 地区 残疾人 运动会 的 举行\n- ARG1: *OP* *T*-1 新 的 活力\n- ARG2: 给 她\n- ARGM-ADV: 将\n- ARGM-ADV: 必\n- rel: 注入\n\nExample 3: 深圳 有关 *OP* *T*-1 负责 官员 表示 ， *pro* 要 将 “ 深业 控股 ” 建成 *OP* 深圳 *T*-2 参与 国际 资本 市场 的 “ 龙头 ” 机构 ， 适当 时候 将 注入 母公司 的 优质 资产 加快 发展\n- ARG0: *pro*\n- ARG1: 母公司 的 优质 资产\n- ARGM-ADV: 将\n- ARGM-TMP: 适当 时候\n- rel: 注入\n\n## 冷却\n\n### 冷却-01\n\n- ARG0: agent/cause\n- ARG1: thing arg0 cools down\n\nExample 1: 「 场地 的 限制 」 则 是 *OP* 捶丸 *T*-2 逐渐 冷却 ， 并 未 广泛 流行 的 原因\n- ARG1: 捶丸\n- ARGM-ADV: 逐渐\n- ARGM-PRP: *T*-2\n- rel: 冷却",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_011Pje94FRvNQKdPT5m8cfXT",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01RwBtkHYRJKCwbkWkU8HHTU",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "地震",
+       "海啸"
+      ],
+      "max_results": 2
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01RwBtkHYRJKCwbkWkU8HHTU",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0013\", \"sentence_number\": 2, \"sentence\": \"据 中央 气象署 的 观测 资料 显示 ， 震中 位于 北纬 23.77 度 、 东经 121.66 度 ， 其 地震 里氏 震级 达到 ML 7.2 级 ， 震源 深度 为 15.5 千米 ， 并 在 花莲 县 秀林 乡 和平 村 观测 到 中央 气象署 地震 分级 中 最大 烈度 6 强 的 地震 和 麦加利 地震 烈度 表 中 的 8 （VIII） 度 。\", \"annotation\": \"# meta-info\\n# :: snt2\\nIndex:  1    2      3  4    5    6    7  8    9   10   11    12 13 14   15     16 17 18 19   20   21   22   23 24  25 26 27   28   29 30   31   32 33 34 35   36 37   38 39   40 41   42 43   44     45   46   47 48   49   50 51 52 53   54 55     56   57   58 59 60 61 62       63 64 65\\nWords: 据  中央   气象署    的  观测   资料   显示   ，  震中   位于   北纬   23.77 度  、  东经   121.66 度  ，  其  地震   里氏   震级   达到   ML 7.2 级  ，  震源   深度   为  15.5 千米   ，  并  在  花莲   县  秀林   乡  和平   村  观测   到  中央   气象署    地震   分级   中  最大   烈度   6  强  的  地震   和  麦加利    地震   烈度   表  中  的  8  （VIII）   度  。\\n\\n# sentence level graph:\\n(s2a3 / and\\n\\t:op1 (s2x17 / 显示-01\\n\\t\\t:ARG0 (s2x2 / 资料\\n\\t\\t\\t:mod (s2x3 / 观测\\n\\t\\t\\t\\t:possessor (s2g / government-organization\\n\\t\\t\\t\\t\\t:name (s2n / name\\n\\t\\t\\t\\t\\t\\t:op1 \\\"中央\\\"\\n\\t\\t\\t\\t\\t\\t:op2 \\\"气象署\\\"))))\\n\\t\\t:ARG1 (s2a / and\\n\\t\\t\\t:op1 (s2h / have-place-91\\n\\t\\t\\t\\t:ARG1 (s2x16 / 震中)\\n\\t\\t\\t\\t:ARG2 (s2a2 / and\\n\\t\\t\\t\\t\\t:op1 (s2l2 / location\\n\\t\\t\\t\\t\\t\\t:direction (s2x14 / 北)\\n\\t\\t\\t\\t\\t\\t:unit (s2x15 / 度)\\n\\t\\t\\t\\t\\t\\t:quant 23.77)\\n\\t\\t\\t\\t\\t:op2 (s2l / location\\n\\t\\t\\t\\t\\t\\t:direction (s2x12 / 东)\\n\\t\\t\\t\\t\\t\\t:unit (s2x13 / 度)\\n\\t\\t\\t\\t\\t\\t:quant 121.66)))\\n\\t\\t\\t:op2 (s2x7 / 达到-01\\n\\t\\t\\t\\t:ARG0 (s2x9 / 震级\\n\\t\\t\\t\\t\\t:mod (s2x10 / 里氏)\\n\\t\\t\\t\\t\\t:mod (s2x11 / 地震))\\n\\t\\t\\t\\t:ARG1 (s2s / seismic-quantity\\n\\t\\t\\t\\t\\t:unit (s2x8 / 级)\\n\\t\\t\\t\\t\\t:quant 7.2)\\n\\t\\t\\t\\t:aspect state)\\n\\t\\t\\t:op3 (s2i2 / identity-91\\n\\t\\t\\t\\t:ARG1 (s2x5 / 深度\\n\\t\\t\\t\\t\\t:possessor (s2x6 / 震源))\\n\\t\\t\\t\\t:ARG2 (s2d / distance-quantity\\n\\t\\t\\t\\t\\t:unit (s2x4 / 千米)\\n\\t\\t\\t\\t\\t:quant 15.5)))\\n\\t\\t:aspect state)\\n\\t:op2 (s2x / 观测\\n\\t\\t:ARG1 (s2a4 / and\\n\\t\\t\\t:op1 (s2i3 / identity-91\\n\\t\\t\\t\\t:ARG1 (s2e / earthquake\\n\\t\\t\\t\\t\\t:name (s2n2 / name\\n\\t\\t\\t\\t\\t\\t:op1 \\\"地震\\\")\\n\\t\\t\\t\\t\\t:possessor (s2x18 / 烈度\\n\\t\\t\\t\\t\\t\\t:mod (s2x20 / 最大)))\\n\\t\\t\\t\\t:ARG2 (s2s2 / seismic-quantity\\n\\t\\t\\t\\t\\t:quant 6\\n\\t\\t\\t\\t\\t:unit (s2x19 / 强)))\\n\\t\\t\\t:op2 (s2i4 / identity-91\\n\\t\\t\\t\\t:ARG2 (s2s3 / seismic-quantity\\n\\t\\t\\t\\t\\t:quant 8)\\n\\t\\t\\t\\t:unit (s2x23 / 度)\\n\\t\\t\\t\\t:place (s2x21 / 表\\n\\t\\t\\t\\t\\t:mod (s2x22 / 烈度\\n\\t\\t\\t\\t\\t\\t:possessor (s2e2 / earthquake\\n\\t\\t\\t\\t\\t\\t\\t:name (s2n3 / name\\n\\t\\t\\t\\t\\t\\t\\t\\t:op1 \\\"麦加利\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\t:op2 \\\"地震\\\"))))))\\n\\t\\t:aspect performance)\\n\\t:place (s2c3 / county\\n\\t\\t:name (s2n4 / name\\n\\t\\t\\t:op1 \\\"花莲\\\"\\n\\t\\t\\t:op2 \\\"县\\\"\\n\\t\\t\\t:op3 \\\"秀林\\\"\\n\\t\\t\\t:op4 \\\"乡\\\"\\n\\t\\t\\t:op5 \\\"和平\\\"\\n\\t\\t\\t:op6 \\\"村\\\")))\\n\\n# alignment:\\ns2a: 0-0\\ns2a2: 0-0\\ns2a3: 0-0\\ns2a4: 0-0\\ns2c3: 0-0\\ns2d: 0-0\\ns2e: 0-0\\ns2e2: 0-0\\ns2g: 0-0\\ns2h: 0-0\\ns2i2: 0-0\\ns2i3: 0-0\\ns2i4: 0-0\\ns2l: 0-0\\ns2l2: 0-0\\ns2n: 0-0\\ns2n2: 0-0\\ns2n3: 0-0\\ns2n4: 0-0\\ns2s: 0-0\\ns2s2: 0-0\\ns2s3: 0-0\\ns2x: 5-5\\ns2x10: 21-21\\ns2x11: 20-20\\ns2x12: 15-15\\ns2x13: 13-13\\ns2x14: 11-11\\ns2x15: 13-13\\ns2x16: 9-9\\ns2x17: 7-7\\ns2x18: 50-50\\ns2x19: 52-52\\ns2x2: 6-6\\ns2x20: 49-49\\ns2x21: 59-59\\ns2x22: 50-50\\ns2x23: 13-13\\ns2x3: 5-5\\ns2x4: 32-32\\ns2x5: 29-29\\ns2x6: 28-28\\ns2x7: 23-23\\ns2x8: 26-26\\ns2x9: 22-22\\n\\n# document level annotation:\\n(s2s0 / sentence\\n\\t:temporal ((s2x17 :before s2x7)\\n\\t\\t(document-creation-time :before s2x17)\\n\\t\\t(s2x17 :overlap s2x3)\\n\\t\\t(s2x17 :contained s2x))\\n\\t:modal ((author :full-affirmative s2x17)\\n\\t\\t(author :full-affirmative s2x7)\\n\\t\\t(author :full-affirmative s2x17)\\n\\t\\t(author :full-affirmative s2x)\\n\\t\\t(root :full-affirmative s2x)))\"}, {\"doc\": \"chinese_umr-0013\", \"sentence_number\": 7, \"sentence\": \"过去 50 年 间 台湾 共 发生 7 次 规模 达 7.0 以上 的 地震 ， 最近 一次 震级 7.0 以上 的 地震 为 2006 年 恒春 地震 。\", \"annotation\": \"# meta-info\\n# :: snt7\\nIndex:    1  2  3  4    5  6    7 8  9   10 11  12   13 14   15 16   17   18   19  20   21 22   23 24   25 26   27   28 29\\nWords: 过去   50 年  间  台湾   共  发生   7 次  规模   达  7.0 以上   的  地震   ，  最近   一次   震级   7.0 以上   的  地震   为  2006 年  恒春   地震   。\\n\\n# sentence level graph:\\n(s7a / and\\n\\t:op1 (s7x / 发生-01\\n\\t\\t:ARG1 (s7x2 / 地震\\n\\t\\t\\t:mod (s7s2 / seismic-quantity\\n\\t\\t\\t\\t:quant 7.0\\n\\t\\t\\t\\t:scale (s7x10 / 以上)))\\n\\t\\t:aspect performance\\n\\t\\t:mod (s7f / frequency-quantity\\n\\t\\t\\t:unit (s7x3 / 次)\\n\\t\\t\\t:quant 7)\\n\\t\\t:place (s7r / region\\n\\t\\t\\t:name (s7n2 / name\\n\\t\\t\\t\\t:op1 \\\"台湾\\\"))\\n\\t\\t:temporal (s7x5 / 过去50年间))\\n\\t:op2 (s7i2 / identity-91\\n\\t\\t:ARG1 (s7x4 / 地震\\n\\t\\t\\t:mod (s7x7 / 最近)\\n\\t\\t\\t:unit (s7x8 / 次)\\n\\t\\t\\t:quant (s7x9 / 1)\\n\\t\\t\\t:mod (s7s / seismic-quantity\\n\\t\\t\\t\\t:quant 7.0\\n\\t\\t\\t\\t:scale (s7x12 / 以上)))\\n\\t\\t:ARG2 (s7e / earthquake\\n\\t\\t\\t:name (s7n / name\\n\\t\\t\\t\\t:op1 \\\"恒春\\\"\\n\\t\\t\\t\\t:op2 \\\"地震\\\")\\n\\t\\t\\t:temporal (s7d / date-entity\\n\\t\\t\\t\\t:year 2006))\\n\\t\\t:aspect state))\\n\\n# alignment:\\ns7a: 0-0\\ns7d: 0-0\\ns7e: 0-0\\ns7f: 0-0\\ns7i2: 0-0\\ns7n: 0-0\\ns7n2: 0-0\\ns7r: 0-0\\ns7s: 0-0\\ns7s2: 0-0\\ns7x: 7-7\\ns7x10: 13-13\\ns7x12: 13-13\\ns7x2: 15-15\\ns7x3: 9-9\\ns7x4: 15-15\\ns7x5: 1-1\\ns7x7: 17-17\\ns7x8: 9-9\\ns7x9: 0-0\\n\\n# document level annotation:\\n(s7s0 / sentence\\n\\t:temporal ((s7x5 :contained s7x)\\n\\t\\t(document-creation-time :before s7x))\\n\\t:modal ((root :modal author)\\n\\t\\t(author :full-affirmative s7x)\\n\\t\\t(author :full-affirmative s7i2)\\n\\t\\t(author :full-affirmative s7a)))\"}], \"found\": 8}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS/wUKEAgTGAI4AUIIdGhpbmtpbmcSDDQavMq6g0PXzySt3BoMt5HvhqV4hTLLoHZtIjBWoLhztjsjhPpiStqgNeqcRc/I/ZxMsPF4YfJ6GP8DcKTjarjlNj4hzQUGie4PT7kqnAU5UpLp6Povlv8Sl95dzTaBCYafVGnITvbGm6OgUl/9Tu/thAMwPvjFH5ilUE4m0w/Gf+25+yfJr0Iap0lWjxkU3NfkILL5/p8G2sf8jg0qMI3OtnnZpm1/hEgEza993NU14of+qyfGK3vxaW836ZnN1EWRvbZNhscAMsXQz/QccEAq285l9jwOuIEWRUST442qK+yTpbgdaKMPEywmeposbGAvfST6jk7zA7HSWmj7OAk1WdCerdtMQ8KECp5t6O8JojayJE/1lgwXjWyDwzxVimjEBWVa7UbhYaP4CDmubeUlOTHfu6lO0S8VFI4ulv9j7kmHjOp3PxlhJrICk+7wQ5t1RTkZnbMShbaeAWVkRvdW/zP61HaxHFNbt0NhoASY2i6ZjD3+lWSXZnGL1G8ykbancRiViiuZoavcJqiHDD5UoKg6abAkk6rWvfmX5BG3dSJtILH53+GU8ZtI+RmDVBsPSBVZOMO4HaFF2ouRWJVHVFrPa5K4KEAkIXZryhDpEMQsZpxn6meCOHEDtq4igYdI465SWKuZz2cRNOrrgHDVI6r3kZ5cuJbKQejUkxioko1PgHmJkeHeTWNbVHZcwyF/pADk7/j+cmibmLbLGgsBBJNrO6GDRejUwdo1Pqz9zw682WUzqiiKMUk2gX0RDQ6dDdqIxWvvTQ5GG2VHiTy23bgtQfM8ZfU4ZxW1w8JHmilcrfDSPiS7sXtm+tBIqUmG0kRs/Pu8VbWK63gjL8sZkkww2ncBuMGfIpRX9eSALQPOE3T93LzJt21PKCoNuWyNjTg5P4IA6N61Va9F0zPbMF2V8MV6Oy9TLnroTuiOteE2UK451Z41uxo0Picu5oHQsVY5+/zVc2YRw+j4FaI2TfsIvvoq6KCHkhgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4d / 导致-01\n        :ARG0 (s4s / 损毁-01\n            :ARG0 (s4a2 / and\n                :op1 (s4e / earthquake\n                    :name (s4n2 / name :op1 \"东日本\" :op2 \"大地震\")\n                    :temporal (s4d2 / date-entity :year 2011))\n                :op2 (s4h / 海啸\n                    :ARG1-of (s4y2 / 引发-01\n                        :ARG0 s4e\n                        :aspect performance)))\n            :ARG1 (s4f / facility\n                :name (s4n / name :op1 \"福岛\" :op2 \"第一\" :op3 \"核电厂\"))\n            :aspect performance)\n        :ARG1 (s4t / 停止-01\n            :ARG1 (s4y / 运作-01\n                :ARG1 (s4x / 系统\n                    :mod (s4l / 冷却))\n                :aspect activity)\n            :aspect performance)\n        :aspect performance)\n    :op2 (s4z / 注入-01\n        :ARG0 (s4c / company\n            :name (s4n3 / name :op1 \"东京\" :op2 \"电力公司\"))\n        :ARG1 (s4w / 海水)\n        :purpose (s4l2 / 冷却-01\n            :ARG0 s4c\n            :ARG1 s4f\n            :manner (s4z2 / 直接)\n            :aspect performance)\n        :aspect performance))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

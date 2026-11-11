@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-12.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5121
+    },
+    "cache_creation_input_tokens": 5121,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1182,
+    "output_tokens_details": {
+     "thinking_tokens": 674
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 12 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n7\t高清 的 HDMI 接口 成为 现在 市场 的 主流 ， 很 有 可能 HDMI 就 是 2012 的 一 个 趋势 ， 同时 还 保留 有 VGA 的 接口 ， 让 消费者 在 不同 需求 上 得到 满足 。\n\n8\t福韵 B560 系列 的 诠释 有 ： “ 福运 ” 、 “ 幸福 ” 、 和 拥有 贵族 的 “ 韵 ” 味 。\n\n9\t左右上角 的 两 条 龙 设计 的 毫 无 瑕疵 ， 机身 背后 写 有 一 个 大大 的 “ 福 ” 字 ， 并且 拥有 古代 龙纹 图案 ， 这些 都 有 浓郁 的 中国 元素 。\n\n10\t金黄色 的 B560 系列 看 起来 更 符合 龙年 的 韵味 ， 背部 的 福 字 也 更加 现眼 . 。\n\n11\t中国人 的 习俗 ， 把 龙 当做 为 吉祥物 。\n\nTheir graphs:\n\nI read the sentence as three linked clauses, joined by `and`:\n1. HDMI is now the market's mainstream.\n2. HDMI is very likely to be a 2012 trend.\n3. VGA ports are kept too, so consumers' different needs are met.\n\nThe senses come from Chinese PropBank. Five choices were judgement calls rather than checked rules:\n- **很有可能 (\"very likely\")**: I put it on the second clause as `:modal-strength partial-affirmative` with no node of its own. A gold search for 很有可能 found nothing, and the gold examples of 可能 were not the same construction.\n- **Satisfying needs**: I treated 得到满足 (\"get satisfied\") as plain `满足-01`, with the consumers as the ones satisfied (`:ARG2`) and their needs as `:ARG1`.\n- **HDMI and VGA**: I annotated both as named entities of type `product`. I did not check this type in the guidelines or the gold data.\n- **成为 (\"become\")**: I gave it `:aspect state`, reading \"has become the mainstream now\" as a current state.\n- **Dropped words**: 就, 很 and 一个 have no node of their own; 同时 (\"at the same time\") is kept as a `:temporal`.\n\n# ::snt 7\n# sentence level graph:\n(s7a / and\n    :op1 (s7c / 成为-01\n        :ARG0 (s7j / 接口\n            :mod (s7g / 高清)\n            :mod (s7p / product\n                :name (s7n / name :op1 \"HDMI\")))\n        :ARG1 (s7z / 主流\n            :poss (s7s / 市场))\n        :temporal (s7x / 现在)\n        :aspect state)\n    :op2 (s7i / identity-91\n        :ARG1 (s7p2 / product\n            :name (s7n2 / name :op1 \"HDMI\"))\n        :ARG2 (s7q / 趋势\n            :quant 1\n            :temporal (s7d / date-entity :year 2012))\n        :aspect state\n        :modal-strength partial-affirmative)\n    :op3 (s7b / 保留-01\n        :ARG1 (s7j2 / 接口\n            :mod (s7p3 / product\n                :name (s7n3 / name :op1 \"VGA\")))\n        :mod (s7h / 还)\n        :temporal (s7t / 同时)\n        :aspect state\n        :purpose (s7r / 让-02\n            :ARG1 (s7k / 消费者)\n            :ARG2 (s7m / 满足-01\n                :ARG1 (s7x2 / 需求-01\n                    :ARG0 s7k\n                    :mod (s7y / 不同)\n                    :aspect state)\n                :ARG2 s7k\n                :aspect performance)\n            :aspect performance)))\n\n我把句子分析为：「福韵 B560 系列的诠释」是一个事件名词，它通过「有」引出三项内容。\n\n1. **「有」**：用 **有-07**，这个义项在 PropBank 里的意思是「ARG0 包含 ARG1 里的这些项」。这里的 ARG0 是「诠释」，ARG1 是后面列出的几项。体（aspect）标为 `state`。\n2. **「诠释」**：用 **诠释-01**，它的 ARG1 是这个系列。因为它是事件名词，所以体标为 `process`。\n3. **「福韵 B560 系列」**：处理成一个以 `系列` 为中心的节点，用 `:mod` 连到一个命名实体 `product`，名称为「福韵」「B560」。用 `product` 这个类型是我的判断，没有在标注数据里核对过。\n4. **三项内容**：用 `and` 并列：「福运」「幸福」，以及 **拥有-01**（ARG1 为「韵味」，`:mod` 为「贵族」）。「拥有」在这里表达的是一种状态，所以体标为 `state`。\n\n有一处不太确定：原文把「韵」加了引号，「韵」和「味」是两个分开的词。我还是把它们合成一个概念 `韵味`，所以这个节点可能无法和单个词对齐。\n\n# ::snt 8\n# sentence level graph:\n(s8x / 有-07\n    :ARG0 (s8x2 / 诠释-01\n        :ARG1 (s8x3 / 系列\n            :mod (s8p / product\n                :name (s8n / name :op1 \"福韵\" :op2 \"B560\")))\n        :aspect process)\n    :ARG1 (s8a / and\n        :op1 (s8x4 / 福运)\n        :op2 (s8x5 / 幸福)\n        :op3 (s8x6 / 拥有-01\n            :ARG1 (s8x7 / 韵味\n                :mod (s8x8 / 贵族))\n            :aspect state))\n    :aspect state)\n\n# ::snt 9\n# sentence level graph:\n(s9a / and\n    :op1 (s9s / 设计-01\n        :ARG1 (s9l / 龙\n            :quant 2\n            :place (s9j / 左右上角))\n        :manner (s9w / 无-01\n            :ARG1 (s9x / 瑕疵)\n            :degree (s9h / 毫)\n            :aspect state)\n        :aspect performance)\n    :op2 (s9a2 / and\n        :op1 (s9x2 / 写-01\n            :ARG1 (s9z / 字\n                :quant 1\n                :mod (s9f / 福)\n                :mod (s9d / 大大))\n            :ARG2 (s9b / 背后\n                :part-of (s9j2 / 机身))\n            :aspect state)\n        :op2 (s9y / 拥有-01\n            :ARG0 s9j2\n            :ARG1 (s9t / 图案\n                :mod (s9l2 / 龙纹)\n                :mod (s9g / 古代))\n            :aspect state))\n    :op3 (s9y2 / 有-01\n        :ARG0 (s9z2 / 这些)\n        :ARG1 (s9y3 / 元素\n            :mod (s9c / country\n                :wiki \"China\"\n                :name (s9n / name :op1 \"中国\"))\n            :mod (s9n2 / 浓郁))\n        :mod (s9d2 / 都)\n        :aspect state))\n\nI worked from PropBank and the abridged guidelines. The gold examples I found were in a different annotation style, so I built this graph by the guidelines alone. These choices are the least certain:\n\n- **Senses:** 设计-01, 写-01 and 拥有-01 come from PropBank. 无 was not looked up, so 无-01 for 毫无瑕疵 (\"flawless\") is a guess. Following the guidelines, it might need to be 无-00. For 有 in 这些都有……元素 I picked 有-01 (possession). 有-03 (existence) was the other option.\n- **毫无瑕疵:** I treated it as a state 无-01 with 瑕疵 as its :ARG1 and 毫 as :degree, attached as the :manner of 设计-01. Two other options were 瑕疵 with :polarity -, or the whole phrase as one fixed concept.\n- **写有:** I took 有 after 写 as a result marker, so it is not its own node. I gave 写-01 aspect state, since the character is there as an inscription. 背后 (part of 机身) is the :ARG2 location of 写-01.\n- **Clause structure:** 并且 joins the \"written on the back\" clause and the \"has ancient dragon patterns\" clause in an inner `and`. The flawless-design clause and the \"these all have Chinese elements\" clause are joined in an outer `and` with no word behind it. I took 机身 as the owner (:ARG0) of 拥有-01. That subject is not stated in the sentence; I inferred it.\n- **中国:** It is a named entity (country, wiki \"China\") used as a :mod of 元素.\n\nI annotated sentence 10 as two clauses joined by `and`, both describing present states:\n\n- **First clause:** I used `看-05` for 看起来 (\"looks\"). A gold example (zh-0001, sentence 25) puts the clause being judged in its `:ARG0`, so I did the same. 符合-01 (\"be consistent with\") takes the B560 series as `:ARG0` and the charm (韵味) of the Year of the Dragon (龙年) as `:ARG1`.\n- **Second clause:** 现眼 (\"conspicuous\") is not in Chinese PropBank, so it becomes `现眼-00`. Its subject is the 福 character, placed on the back (背部).\n- **更 / 更加 (\"more\"):** I wrote these as plain `:degree` modifiers. Gold sometimes uses `have-degree-91` for comparison instead, so this choice may differ from the expert annotation.\n- **B560 系列:** I made 系列 (\"series\") the head. B560 is a `product` named entity attached with `:mod`, and 金黄色 (\"golden\") is another `:mod`. This structure is my own choice; I didn't check it against gold.\n- **龙年:** a plain concept, not a `date-entity`.\n- **也 (\"also\"):** `:mod`.\n\n# ::snt 10\n# sentence level graph:\n(s10a / and\n    :op1 (s10k / 看-05\n        :ARG0 (s10f / 符合-01\n            :ARG0 (s10x / 系列\n                :mod (s10p / product\n                    :name (s10n / name :op1 \"B560\"))\n                :mod (s10j / 金黄色))\n            :ARG1 (s10y / 韵味\n                :possessor (s10l / 龙年))\n            :degree (s10g / 更)\n            :aspect state)\n        :aspect state)\n    :op2 (s10h / 现眼-00\n        :ARG0 (s10z / 字\n            :mod (s10f2 / 福)\n            :place (s10b / 背部))\n        :degree (s10g2 / 更加)\n        :mod (s10e / 也)\n        :aspect state))\n\nI treated the sentence as a habitual event, \"(by) the custom of the Chinese people, the dragon is regarded as a mascot\", built around `当做-01`.\n\n# ::snt 11\n# sentence level graph:\n(s11x / 当做-01\n    :ARG0 (s11p / 中国人\n        :refer-number plural)\n    :ARG1 (s11l / 龙)\n    :ARG2 (s11j / 吉祥物)\n    :manner (s11s / 习俗\n        :possessor s11p)\n    :aspect habitual)\n\n- **Predicate and roles:** I checked `当做-01` in Chinese PropBank. The roles are ARG0 = who does the considering, ARG1 = what is considered, ARG2 = what it is considered as. So 中国人 is ARG0, 龙 (dragon) is ARG1 and 吉祥物 (mascot) is ARG2. 为 is read as part of 当做为 and gets no node of its own.\n- **Aspect:** `habitual`, because a custom is something people do again and again.\n- **习俗 (custom):** It is not in PropBank, so it is a plain noun. Its link to the main event is the least certain choice. I put it as `:manner`, with 中国人 as its `:possessor` written once and reused. Another reading would make it the head of an identity clause (\"the custom of the Chinese people is to treat the dragon as a mascot\").\n- **中国人:** I kept it as one concept with plural number. I did not split it into `person` plus a country named \"中国\", mainly so it lines up with the single word in the sentence. I am not sure which form the gold data uses.\n\nThis sentence:\n\n12\t在 龙年 快 要 到来 之 时 还 不 赶快 把 “ 福韵 ” 带 回家 ！\n\nIts graph:\n\nI read the sentence as an advertising line: \"As the Year of the Dragon is about to arrive, why not hurry and bring 'Fuyun' home!\"\n\n# ::snt 12\n# sentence level graph:\n(s12b / 带-02\n    :ARG0 (s12p / person\n        :refer-person 2nd)\n    :ARG1 (s12f / product\n        :name (s12n / name\n            :op1 \"福韵\"))\n    :ARG3 (s12h / 回家)\n    :manner (s12g / 赶快)\n    :mod (s12h2 / 还)\n    :temporal (s12s / 时\n        :temporal-of (s12d / 到来-01\n            :ARG0 (s12l / 龙年)\n            :mod (s12k / 快)\n            :aspect performance))\n    :mode imperative\n    :modal-strength partial-affirmative\n    :aspect performance)\n\nChoices I made that are open to question:\n- **还不赶快 (\"why not hurry\")**: I read this as a rhetorical push to act, not a real negation. So the main verb has `:mode imperative`, `:modal-strength partial-affirmative` and no `:polarity -`. The gold example 赶快写信告诉我 handles a command the same way.\n- **赶快**: it is not in PropBank, so it is a plain `:manner` modifier and not an event.\n- **带 (\"bring\")**: I chose sense `带-02`, whose `:ARG3` is the destination. The text splits 回家 off as its own word, so I used it as the destination concept rather than making it a second event (`回家-01`). That is the least certain part of the graph.\n- **在…之时 (\"when…\")**: built as `时 :temporal-of 到来-01`, following a gold example with 之时.\n- **快要 (\"about to\")**: shown as `:mod 快`. I gave 到来 the aspect `performance`; a finer value such as `inceptive` might fit better.\n- **Other nodes**: I typed 福韵 as a `product` named entity. The unstated addressee is a 2nd-person `person` node with no word in the sentence.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :after s12d)\n               (s12d :overlap s12b))\n    :modal ((root :modal author)\n            (author :full-affirmative s12d)\n            (author :partial-affirmative s12b))\n    :coref ((s10l :same-entity s12l)\n            (s10x :same-entity s12f)))\n\nI didn't use any tools for this sentence, so nothing here was checked against the guidelines or the gold data. The three least certain points are the `s12b` timing, its strength and the 福韵 link.\n\n- **Timing:** 到来 (`s12d`, the Year of the Dragon arriving) is still to come, so it is after the document date. I placed the bringing home (`s12b`) as overlapping it, following 在…之时 (\"when\"). An alternative was to order it before the arrival or after the document date.\n- **Strength:** I gave `s12b` partial-affirmative to match the sentence graph's reading of 还不赶快 as a push to act. Gold may mark commands as neutral-affirmative instead.\n- **Left out:**\n  - 时 (`s12s`) has no temporal parent of its own.\n  - The unstated addressee (`s12p`) has no modal relation.\n- **Coreference:**\n  - 龙年 here is the same Year of the Dragon as in sentence 10 (`s10l`).\n  - I linked 福韵 to the B560 series in sentence 10 (`s10x`), its closest earlier mention. The product node `s10p` was the other option.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

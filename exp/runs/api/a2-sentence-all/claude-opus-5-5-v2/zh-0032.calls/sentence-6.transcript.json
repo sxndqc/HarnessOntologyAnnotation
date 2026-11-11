@@ -1,0 +1,273 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-6.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9148
+    },
+    "cache_creation_input_tokens": 9148,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 189,
+    "output_tokens_details": {
+     "thinking_tokens": 25
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1898
+    },
+    "cache_creation_input_tokens": 1898,
+    "cache_read_input_tokens": 9148,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 385,
+    "output_tokens_details": {
+     "thinking_tokens": 282
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4028
+    },
+    "cache_creation_input_tokens": 4028,
+    "cache_read_input_tokens": 11046,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 570,
+    "output_tokens_details": {
+     "thinking_tokens": 11
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 6 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n6\t日本 称呼 核废水 为 “ 处理水 ” ， 中国 称为 “ 核污染水 ”\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSoQUKEAgTGAI4AUIIdGhpbmtpbmcSDBPWBhiW/C7+FjyHrxoMNJ1L64JgSiN9jOwpIjANMvUvTAhwsRCapOVh2LlWqCWo2r0kW4AeyKUZhzndAWlxLpNp9lbR6oXScMEK90oqvgQ0rHpxPKakP7u0bp2eqX7ZxDyFXlUpe4WMF/bBIg9Dn+qb8lqXbiLM9LXx6oLxtNaRZcARe4QVV9YPW2y2e/PKJFCEIFA63sAB3TTR1YzYgbRmqDhvt7C8oRrfrKR4amjSS0qZcvmtU8ej7BQd7H7OUpxFp6v2v8gpFiTq2i9xiO+9ZGm/vSB8u3j/VVZefnED08LXVsDJ8CP5ct0qD4roFqhJ5x2xqje7leUfVJJWUkMLagpZ9qJzhKdsvism5aStIcHTC+bgf6njoPeWROVPK+dTBSQu6BjueLNhcMac/VE05qdFB494nv9It/YjgFd4NH6F9tu3/1lbkFQ4064Yyo4qElHl/HigOEASMEXEUfRX4zOo7UQawqyQqHQvewOe0Anr1Cd3vzoadUyKp+nW5lWedfm8k/3NE4hkyOEAULb19T9+w2wKjSlRF6o6gZL5TjmZ9ydN5c49HAfA/2/J9doA46EO91UdbR3yt1+9uZ/y9Fz1y86MlpCjO4nhP/OWrWjYQOqaMzyyhCtCDJaX49nXmXTG1ZReKeod0EDiQUExSuKLBC3ACkq+FbLny+Ewz0nxkvkDBhCkKvq8jxOoGH59OLYh3cTvtmQQrrgszhUum7b7ap7IdwFqx4jB0+wGX8Z9x8nKZL+Rpmi9v6PQ1f8E37QWhU1BG12vrcx5vl2yj6SNton75sEHT0w+gJu3VwuoEjzbigm3/Xl/ZTivTIY/wcEj+zS2DDpw5eXnWwK+/woZycNUDDvEO+tBGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_015xH2QdgU6kLPaoxL9xBKnR",
+     "input": {
+      "lemmas": [
+       "称呼",
+       "称为",
+       "称"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_015w9EZCPGdQrQeKmg6szJig",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "核废水"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_015xH2QdgU6kLPaoxL9xBKnR",
+     "content": "## 称呼\n\n### 称呼-01\n\n- ARG0: agent\n- ARG1: entity arg0 calls\n- ARG2: name arg1 is called\n\nExample 1: 他 用 「 语言流 」 称呼 自己 的 语法\n- ARG0: 他\n- ARG1: 自己 的 语法\n- ARG2: 用 「 语言流 」\n- rel: 称呼\n\nExample 2: 一时 之间 很多 朋友 都 不 称呼 我 的 名字 ， 而 叫 我 「 女 状元 的 爸爸 」\n- ARG0: 很多 朋友\n- ARG2: 我 的 名字\n- ARGM-ADV: 不\n- ARGM-ADV: 都\n- ARGM-TMP: 一时 之间\n- rel: 称呼\n\nExample 3: *OP* 而 *pro* 吃 食 *T*-3 的 便 是 *OP* *T*-2 用 台语 称呼 —— 『 菜头糕 』 的 萝卜糕\n- ARG1: *T*-2\n- ARG2: —— 『 菜头糕 』\n- ARGM-MNR: 用 台语\n- rel: 称呼\n\nExample 4: 反正 *OP* *T*-1 买 *pro* 的 人 也 都 不 问 *pro* *pro* 如何 称呼\n- ARG1: *pro*\n- ARGM-ADV: 如何\n- rel: 称呼\n\n## 称为\n\n### 称为-01\n\n- ARG0: name giver\n- ARG1: name receiver\n- ARG2: name\n\nExample 1: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话 ， 那么 文部 草原 应当 称为 *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARG1: 文部 草原\n- ARG2: *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARGM-CND: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话\n- rel: 称为\n\nExample 2: 防城港 、 钦州 、 北海 和 湛江 ， 被 人们 称为 西南 出海 大 通道 的 “ 龙头 ”\n- ARG0: 人们\n- ARG1: 防城港 、 钦州 、 北海 和 湛江\n- ARG2: 西南 出海 大 通道 的 “ 龙头 ”\n- rel: 称为\n\n## 称\n\n### 称-01\n\n- ARG0: name assigner\n- ARG1: name receiver\n- ARG2: name\n\nExample 1: *OP* 人 称 *T*-1 黄河 \" 金三角 \" 的 风陵渡 经济 开发区\n- ARG0: 人\n- rel: 称\n\nExample 2: 无怪乎 日本人 视 之 *PRO* 为 大自然 的 馈赠 ， 称 之 *PRO* 为 \" 圣岳 \"\n- ARGM-ADV: 无怪乎\n- ARG0: 日本人\n- rel: 称\n\nExample 3: *pro* 与 法国 的 科涅克 白酒 、 英国 的 苏格兰 威士忌 并 称 世界 三 大 蒸馏 名 酒 之一\n- ARG0: *pro*\n- ARGM-ADV: 并\n- rel: 称\n\nExample 4: １８６５年 ， 意大利 、 法国 、 比利时 和 瑞士 曾经 签署 过 欧洲 历史 上 第一 个 统一 货币 条约 ， 史 称 《 拉丁 统一 货币 条约 》 。\n- ARG0: 史\n- rel: 称\n\nExample 5: 所以 *pro* 称 不 上 创作型 歌手\n- ARG1: *pro*\n- rel: 称\n\n### 称-02\n\n- ARG0: claimer\n- ARG1: thing claimed\n\nExample 1: 科特迪瓦 财长 称 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 科特迪瓦 财长\n- rel: 称\n\nExample 2: 据 有关 人士 称 ， 这 是 世界 上 首 次 对 野生 大 熊猫 数量 进行 \" 户口化 \" 管理 ， 将 有助于 *PRO* 确定 中国 野生 大 熊猫 的 真实 数量 。\n- ARG0: 有关 人士\n- rel: 称\n\n### 称-03\n\n- ARG0: agent\n- ARG1: thing weighed",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_015w9EZCPGdQrQeKmg6szJig",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQShQsKEAgTGAI4AUIIdGhpbmtpbmcSDFO3bvB+iBO3V4oqsRoMITrKV9USZrEN5MejIjA0u3hFce7VWyhepHrJj7rZPw8btJhG8HpizEkSbQihCUG9QkdfIy+jLsUe/sfNksoqogqM63OCWUKB0M5pO6KVQ+LcloEWHpmKbIgXVjaEvvNR7TfXkjJJOmQJKR1S7FOZ2NR53KMaiC/aRdqTZyGXK0UMIysxSpUrvhiig8vxHa2dUlspMboHFXAklBCdkNKnw53LEslQ3CCSTDREXT7vBSfBlKZJE2P+8DVu0Q8CqoScL061WI5A/Eyd4mJ06wjAObbGr18gxHxt5g/DExYeknI+C6wZert1sDwv2hZ1iZBz8DO3Bb0kh5dl29WFNUkxE13douBM+sJ0ViIzqj6rglbpepPD3bDjvX60/CEaXZFVb8RfSX/PBCKshbMiGw6Va8T0XGxk7eF/EAC0worcc3opVyxz2NPtqk3nOMs67iZ6+dcCEY9Xg3TR6mQhyjFYNjf95w5Rvb5hN9OB1YDllwLtvNfLUUodp/tADqVkfE90t3LEa4OhOJOOgeZ4JlXMzhxer14tAcc+WtYcyZzFvfJC/o33RndVQe7wBO1GTpPqaI2cjnbJ87rkFzcdwaSIO/J90rYYMLYrLxAWtQSwY3pAFx1BLG7l7ym+hB3GzxsUXip4TeWZKHiQtz/XE7/or4l8UXk1bWI7MTkfYgX73c6Gc5bkF1YR5pRPxqiNdgOZWv3pODcTzhqg8s6aqJ1MBBPC/96XuUovhovnW5pbx9ta7EblnSPGN9YMG3Ltgu5AC6qtk0nXeUMFp66u3xEQUeGBW25qruZk8CMlo1QesOWzSbZXUh2urfDIiSe7kmuuQe/CUzqHet/zGBYaFxQL2OVPBYiWCszT4H64MYEvv26qgXXobwz5R8B4GRPOPAyq9Yf4oH8wuRnhwDtmxkLt2ta6GP068Ta6fIYmeFMsnVJXgraTp2dcPbJlDSkejic0qzyT/OrwP2UtJ/qHp8bPeUssq7R631MnQNSjeMko354iFGMejAqt4trrkRzUc1ThZYIehq0mxEtso/JDuB7UsVYaVqvfTKW6NOqgDtfnnFNujNTkLD4blzozT8oJli8TRhAIACSt8aqeW8gGXl9NL7Ffro2hgjS9YtLys/v8tuEub8tGK6YEpUVQpOiDWoLtme/QAKE/xNyHGdJ+0RMW/1IH2OUmAp0sHeKHXCHkziPrGVSo7yGQ0k6zDHXBcXkfCmLorwXjrHkWp4RhRYeoOF5mPl0bUCiomlm1Vtt/xAMPo9x0wn5rSlyCVfE5+ywjc/kAq9OpGOQ5GH7a0JVNJmNJKuD2MMLkCVD8W6WkyLn6ibRs3lwfw5Rm5plnKWvUwBV/hvAoBJEeCI4pfNc4mPwRJfcUbbrDl6yjikaLxB7FmcCh4rGjqeO+RKfJpHN8ueFFyxxySJd27njS2n9pbzHEh09TEEkR7QyU6MLO0Yt6VxQXz356ucMUOWRj3w8DbdHRDBOcHpaGnFi6WOOGxjRYfvL+subc/BLmzPhkUBDfQcZWeD9aUUiAiiajpUXvA3lIew1tFReFTSUXds+fA1D19HYNNcFi5oPRoHFx6cEUAeZUPJFSabgH86h533oncsc2ovIkCqrWHUy197/uM+5buwucKeqPnF/WHn4JDplWBCqX8mBl6Sthhb7Vi60K5C2w0h3GuoyV1PcIew96rmzKZRjMBeYlh/YKcarVfl+4/dYxGlHOqWFfZmmG1PK/CkpfAfG+A3DyncQLiG50vvvWY6PydEqPL2UxDUtDE5lPyG6y2x0wusPjqamGrwAMDoiXl+aVPo1QgJx4LtCG6oXlcrbzmmwkCUulLkCB3ZyhiUAYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01QxmsWDMt33E7RXDBPz6owX",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "称为-01"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01QxmsWDMt33E7RXDBPz6owX",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0001\", \"sentence_number\": 5, \"sentence\": \"由于 其 荒诞不经 的 内容 ， 该 周报 被 称为 美国 历史 上 最富 创意 的 报纸 。\", \"annotation\": \"# meta-info\\n# :: snt5\\nIndex: 1  2 3    4 5  6 7 8  9 10 11 12 13 14 15 16 17 18\\nWords: 由于 其 荒诞不经 的 内容 ， 该 周报 被 称为 美国 历史 上  最富 创意 的  报纸 。\\n\\n# sentence level graph:\\n(s5x / 称为-01\\n    :ARG1 (s5x2 / 周报\\n        :mod (s5x3 / 该))\\n    :ARG2 (s5x4 / 报纸\\n        :ARG1-of (s5h / have-degree-91\\n            :ARG2 (s5x5 / 富-01\\n                :ARG1 (s5x6 / 创意)\\n                :aspect state)\\n            :ARG3 (s5x7 / 最))\\n        :temporal (s5x8 / 上\\n            :op1 (s5x9 / 历史\\n                :place (s5c / country\\n                    :name (s5n / name\\n                        :op1 \\\"美国\\\")))))\\n    :reason (s5x10 / 内容\\n        :possessor s5x2\\n        :mod (s5x11 / 荒诞不经))\\n    :aspect performance)\\n\\n# alignment:\\ns5c: 0-0\\ns5h: 0-0\\ns5n: 0-0\\ns5x: 10-10\\ns5x10: 5-5\\ns5x11: 3-3\\ns5x2: 8-8\\ns5x3: 7-7\\ns5x4: 17-17\\ns5x5: 14-14\\ns5x6: 15-15\\ns5x7: 14-14\\ns5x8: 13-13\\ns5x9: 12-12\\n\\n# document level annotation:\\n(s5s0 / sentence\\n    :temporal ((document-creation-time :depends-on s5x)\\n        (s5x :overlap s5x5))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s5x5)\\n        (author :full-affirmative s5x))\\n    :coref ((s4n :same-entity s5x2)))\"}, {\"doc\": \"chinese_umr-0010\", \"sentence_number\": 4, \"sentence\": \"在 中国 民间 有 一种 习俗 ， 当 男女 结婚 时 ， 新郎 将 给予 新娘 一部分 财产 或 首饰 ， 以 作为 结婚 聘礼 ， 这种 习俗 被 称为 “ 彩礼 ” 。\", \"annotation\": \"# meta-info\\n# :: snt4\\nIndex:  1    2    3  4    5    6  7  8    9   10 11 12   13 14   15   16     17   18 19   20 21 22   23   24   25 26   27   28 29   30 31   32 33 34\\nWords: 在  中国   民间   有  一种   习俗   ，  当  男女   结婚   时  ，  新郎   将  给予   新娘   一部分    财产   或  首饰   ，  以  作为   结婚   聘礼   ，  这种   习俗   被  称为   “  彩礼   ”  。\\n\\n# sentence level graph:\\n(s4a2 / and\\n\\t:op1 (s4h / have-91\\n\\t\\t:ARG1 (s4x / 习俗\\n\\t\\t\\t:unit (s4x2 / 种)\\n\\t\\t\\t:quant 1\\n\\t\\t\\t:ARG1-of (s4x15 / 称为-01\\n\\t\\t\\t\\t:ARG2 (s4n2 / name\\n\\t\\t\\t\\t\\t:ARG2 (s4x16 / 彩礼))\\n\\t\\t\\t\\t:aspect habitual\\n\\t\\t\\t\\t:mode imperative))\\n\\t\\t:aspect habitual\\n\\t\\t:place (s4x6 / 民间\\n\\t\\t\\t:mod (s4c / country\\n\\t\\t\\t\\t:name (s4n / name\\n\\t\\t\\t\\t\\t:op1 \\\"中国\\\"))))\\n\\t:op2 (s4x17 / 给予-01\\n\\t\\t:ARG0 (s4x11 / 新郎)\\n\\t\\t:ARG1 (s4x10 / 新娘)\\n\\t\\t:ARG2 (s4a / and\\n\\t\\t\\t:op1 (s4x7 / 财产\\n\\t\\t\\t\\t:quant (s4x8 / 一部分))\\n\\t\\t\\t:op2 (s4x9 / 首饰))\\n\\t\\t:purpose (s4x12 / 聘礼\\n\\t\\t\\t:mod (s4x13 / 结婚))\\n\\t\\t:temporal (s4x3 / 时\\n\\t\\t\\t:op1 (s4x4 / 结婚-01\\n\\t\\t\\t\\t:ARG0 (s4x5 / 男女)))\\n\\t\\t:aspect habitual))\\n\\n# alignment:\\ns4a: 0-0\\ns4a2: 0-0\\ns4c: 0-0\\ns4h: 0-0\\ns4n: 0-0\\ns4n2: 0-0\\ns4x: 6-6\\ns4x10: 16-16\\ns4x11: 13-13\\ns4x12: 25-25\\ns4x13: 10-10\\ns4x15: 30-30\\ns4x16: 32-32\\ns4x17: 15-15\\ns4x2: 5-5\\ns4x3: 11-11\\ns4x4: 10-10\\ns4x5: 9-9\\ns4x6: 3-3\\ns4x7: 18-18\\ns4x8: 17-17\\ns4x9: 20-20\\n\\n# document level annotation:\\n(s4s0 / sentence\\n\\t:temporal ((s4x4 :contained s4x17))\\n\\t:modal ((root :modal author)\\n\\t\\t(author :full-affirmative s4x15)\\n\\t\\t(author :full-affirmative s4h)\\n\\t\\t(author :full-affirmative s4x17)\\n\\t\\t(author :neutral-affirmative s4x5)))\"}, {\"doc\": \"chinese_umr-0020\", \"sentence_number\": 4, \"sentence\": \"在 中国 民间 有 一种 习俗 ， 当 男女 结婚 时 ， 新郎 将 给予 新娘 一部分 财产 或 首饰 ， 以 作为 结婚 聘礼 ， 这种 习俗 被 称为 “ 彩礼 ” 。\", \"annotation\": \"# meta-info\\n# :: snt4\\nIndex:  1    2    3  4    5    6  7  8    9   10 11 12   13 14   15   16     17   18 19   20 21 22   23   24   25 26   27   28 29   30 31   32 33 34\\nWords: 在  中国   民间   有  一种   习俗   ，  当  男女   结婚   时  ，  新郎   将  给予   新娘   一部分    财产   或  首饰   ，  以  作为   结婚   聘礼   ，  这种   习俗   被  称为   “  彩礼   ”  。\\n\\n# sentence level graph:\\n(s4a / and\\n\\t:op1 (s4x4 / 有-05\\n\\t\\t:ARG1 (s4x5 / 习俗\\n\\t\\t\\t:unit (s4x6 / 种\\n\\t\\t\\t\\t:quant (s4x7 / 一))\\n\\t\\t\\t:aspect habitual)\\n\\t\\t:aspect habitual\\n\\t\\t:place (s4l / location\\n\\t\\t\\t:part (s4c / country\\n\\t\\t\\t\\t:name (s4n2 / name\\n\\t\\t\\t\\t\\t:op1 \\\"中国\\\")\\n\\t\\t\\t\\t:mod (s4x18 / 民间))))\\n\\t:op2 (s4x8 / 给予-01\\n\\t\\t:ARG0 (s4x15 / 新郎)\\n\\t\\t:ARG1 (s4x14 / 新娘)\\n\\t\\t:ARG2 (s4a2 / and\\n\\t\\t\\t:op1 (s4x12 / 财产\\n\\t\\t\\t\\t:quant (s4x13 / 一部分))\\n\\t\\t\\t:op2 (s4x11 / 首饰))\\n\\t\\t:purpose (s4x9 / 聘礼\\n\\t\\t\\t:mod (s4x10 / 结婚))\\n\\t\\t:mod (s4t / temporal\\n\\t\\t\\t:op1 (s4x16 / 结婚-01\\n\\t\\t\\t\\t:ARG0 (s4x17 / 男女)))\\n\\t\\t:ARG1 (s4x2 / 习俗))\\n\\t:op3 (s4x / 称为-01\\n\\t\\t:ARG1 (s4x3 / 习俗\\n\\t\\t\\t:mod (s4x19 / 这种))\\n\\t\\t:ARG2 (s4d / dowry\\n\\t\\t\\t:name (s4n / name\\n\\t\\t\\t\\t:op1 \\\"彩礼\\\"))))\\n\\n# alignment:\\ns4a: 0-0\\ns4a2: 0-0\\ns4c: 0-0\\ns4d: 0-0\\ns4l: 0-0\\ns4n: 0-0\\ns4n2: 0-0\\ns4t: 0-0\\ns4x: 30-30\\ns4x10: 10-10\\ns4x11: 20-20\\ns4x12: 18-18\\ns4x13: 17-17\\ns4x14: 16-16\\ns4x15: 13-13\\ns4x16: 10-10\\ns4x17: 9-9\\ns4x18: 3-3\\ns4x19: 27-27\\ns4x2: 6-6\\ns4x3: 6-6\\ns4x4: 4-4\\ns4x5: 6-6\\ns4x6: 5-5\\ns4x7: 5-5\\ns4x8: 15-15\\ns4x9: 25-25\\n\\n# document level annotation:\\n(s4s0 / sentence\\n\\t:temporal ((document-creation-time :overlap s4x4)\\n\\t\\t(s4x4 :depends-on s4x8)\\n\\t\\t(s4x4 :depends-on s4t)\\n\\t\\t(s4x4 :overlap s4x))\\n\\t:modal ((root :modal author)\\n\\t\\t(author :full-affirmative s4x5)\\n\\t\\t(author :full-affirmative s4x4))\\n\\t:coref ((s4x7 :same-entity s4x19)\\n\\t\\t(s4x5 :same-event s4x3)))\"}], \"found\": 4}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS6QUKEAgTGAI4AUIIdGhpbmtpbmcSDCLujTAOQTLnLpOTmxoMmho3ZR2b4mmnACdWIjAoRzux6BC8dJ4gqNQ7ZKtj2w5x0NdPl3lPEdS8/SJzmi2LbzcO4Ge18ikoTSMX9+oqhgX08XX9d1oSMX5WVNGhaPbg77YDen9IzRg0YPmWb4H3akFl7tgYMw9yUX6KdNUj8IW7E8tGDYQpIHJ6jmCn5fthZuFENu1LiiuJvdz+yiJG3Ji1ORorkvpi2JODVsQZryT428ROth+9byLX3AAQlDZaRFoxXHUotezWmXpL29ebWoooMWIMpgxaWTyeXjJzaLiDYmCuLnlfbEr03RSH8TwjzIBc1nU1836IS02xg/7wKV0S/l7Ze3/oqhAQAbMP3Q7o2RrE/mzSDvIOuMhDvNOE1bMbf6UiGK+H6Zzb1GgA8d+npFcwYIuTZzCqAVW3n1qTf9ACpfS4edmqsoANQbeO94JpsRvA6DPdmXK4et7ynEhq/koWzo89Z6ioNIk8FaxxJur+hgixgB9bU3LCfjjmMrmbN0f04pqROr5LR+9KJ04nmSAEhK0dSgcXMMuiac98/3CNoEpHhJdF5wUqp3iQNKSRhT2+BtixYwbWZe3M+uCbANU1WLR7RMyPt45XR8+zac2K+LFO96h6RvjpMGUsWxQUHowEh4CTBK7ndThzlEOJKufnnC0FBiw0+RIcxbR4aSshpwD8sfc6E/thlc4+yNDm5L2nVMnQCSSgEe2yddrkK96yCgS/Y4mEoUpAFSm0SQvk0lHD4Pmko5I+3Hmc5ape7Y3sEU1x54biHJa8yrnVvic2Fyt4TLNjaFR2dw1P+jSNEH9b6uZrCTjTUxU8iDywKkgR7gN8xTlg863iC9KQa/UQR5sA8xhudvhp9f44WIzrZwoEY1DlK0+qisj9l3ByMa/rDNEcFqlsxK8E9zD/mp5QoM1TwUhz5etBioCeP/b8QMzYCsex6XC3YFRn/pwLQjRJGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6x / 称呼-01\n        :ARG0 (s6c / country\n            :name (s6n / name :op1 \"日本\"))\n        :ARG1 (s6x2 / 核废水)\n        :ARG2 (s6x3 / 处理水)\n        :aspect habitual)\n    :op2 (s6x4 / 称为-01\n        :ARG0 (s6c2 / country\n            :name (s6n2 / name :op1 \"中国\"))\n        :ARG1 s6x2\n        :ARG2 (s6x5 / 核污染水)\n        :aspect habitual))\n\nI made these choices in the graph:\n\n- **Senses and roles:** I looked up 称呼 and 称为 in Chinese PropBank. Each has only one naming sense: ARG0 is the one giving the name, ARG1 the thing named and ARG2 the name. 核废水 is the ARG1 of both verbs, so it is written once and reused (`:ARG1 s6x2`).\n- **Linking the two clauses:** Nothing but a comma joins them, so I used `and`. The two clauses do contrast in meaning, so `contrast-91` is a reasonable alternative.\n- **Aspect:** I used `habitual` for both verbs, since each describes how a country usually refers to the water. A gold sentence (chinese_umr-0010) also gives 称为 habitual, but that was my judgment call.\n- **Concepts:** 核废水, 处理水 and 核污染水 are each one concept, written as the words appear. I left out the quotation marks around the names. The gold data has no other example of 核废水 to compare with.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

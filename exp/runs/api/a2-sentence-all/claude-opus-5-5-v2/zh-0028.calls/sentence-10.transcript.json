@@ -1,0 +1,276 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-10.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 182
+    },
+    "cache_creation_input_tokens": 182,
+    "cache_read_input_tokens": 8982,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 252,
+    "output_tokens_details": {
+     "thinking_tokens": 80
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6838
+    },
+    "cache_creation_input_tokens": 6838,
+    "cache_read_input_tokens": 9164,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 160,
+    "output_tokens_details": {
+     "thinking_tokens": 50
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5251
+    },
+    "cache_creation_input_tokens": 5251,
+    "cache_read_input_tokens": 16002,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1080,
+    "output_tokens_details": {
+     "thinking_tokens": 379
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 10 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n10\t金黄色 的 B560 系列 看 起来 更 符合 龙年 的 韵味 ， 背部 的 福 字 也 更加 现眼 . 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSzQYKEAgTGAI4AUIIdGhpbmtpbmcSDJK7RQWYYy6UQstEXRoMbibi3uVzwERn8j/QIjDJsk1OqiHuokXtVvinKywsSXEr2i2YJOhjxpi9iSH1dAZYfJ5DIVEPnF9wv1B7d4wq6gUwJ4+rYEagnEvvt30ZgwSUq7HJpIkBT+LwsaJypUcBfpKmpV3a/TMhyySn3McDFopVIg2aX8S7UQX0fRnwlwrYfHc9/cKoQbVPia7L4URncWOCZSHHFne2itddeTLJPYAdgXVzrrri5WOwythlfRTjQroCikvUC17V2y+B02AYmikWrsn6DxGoTkwqjMP9XSvCT7exxehS92esPGXxYLWWnsI/ZFRspfZ1E5eeVZ0MbE7qhHPD9zFSfdUWJBQeN7kXWt/oo98Us6EKFM1mGWRLh4mvzWPrFh32jRESrrZr8RNAfg6+Bn3r5fSViLtY6KrYj5BK/Zh05zZy2fU0/4Awaiwl2aQ2Kp92IUKc1nAEQeQfOjGITOWsl/JdcHnne4Jax4ytE+EPj0i5f6vJQeqi/mKTjQstH2/8/rTQ0T/U7DYv3GQAvpL2NcCqdbDzwwB3YnD3wlmrH+itBdd4FAMvMglbGZI+dhfaU/Lc1vTyXb4GB3LE8zFeVkHOCVZPbiLDLuM1cLljr2R5sAwvteAoInelJWuZ935vuAnQ8D8daiUQ2UzyxyknSOExoalAENVgZl/2MOgFLX2JsJ7X6K/nRxkmdd0O4HfAuApIbcpr8XRGb+V94166Mz+earz7Rr3SMmxNTD7RfkR8tKXuj7pLRMq4Vps0vYOsWPfjo18qfHnq4LIVEhXStelDcUD9RX9Ht0l7zMbZD8AQrGVrKb8yA7BwRPd57ODf6vKPWmWstwoWjI1KEbfqgWZlMIlML5driQDVpNsUTAPkHgFmEONFADZDlAanti5xxM/dtlXofbxbFiz4+sEWF8FucZiOd975dZLmUHTjqzWwLQNmd4EBPpEcB3qz7azEudSf4JkUnLe2a68qJR9CEh8+6NgLKgr06BR1/4HU5F4U/tjPeAeevyJT01+ZurWMiSECj0pH8+oQJVYgDceGZ601fkC5ngp9IiJwIf1a5ffysJKilU9g7s9R326/DdliiBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01JyHzzpqQmwWEg7LpwoL49Y",
+     "input": {
+      "lemmas": [
+       "符合",
+       "看",
+       "现眼",
+       "看起来"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01MnKFX6StoJWAhLP3pn3yiR",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "看起来",
+       "更"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01JyHzzpqQmwWEg7LpwoL49Y",
+     "content": "## 符合\n\n### 符合-01\n\n- ARG0: theme\n- ARG1: consistent with\n\nExample 1: 中 美 保持 友好 既 符合 两 国 人民 利益 ， 也 有利于 亚太 地区 乃至 世界 的 和平 与 稳定\n- ARG0: 中 美 保持 友好\n- ARG1: 两 国 人民 利益\n- rel: 符合\n\n## 看\n\n### 看-01\n\n- ARG0: entity described\n- ARG1: entity arg0 depends\n\nExample 1: 根据 *OP* 双方 商定 *T*-1 的 规则 ， 如果 两 队 以 ７ ： ７ 战平 ， 那么 *pro* 最后 要 看 中国队 的 聂卫平 和 韩国队 的 曹薰铉 的 比赛 结果 来 决定 胜负\n- ARG0: *pro*\n- ARG1: 中国队的聂卫平和韩国队的曹薰铉的比赛 结果\n- ARGM-ADV: 最后\n- ARGM-ADV: 那么\n- ARGM-CND: 如果 两 队 以 ７ ： ７ 战平\n- ARGM-MNR: 根据 *OP* 双方 商定 *T*-1 的 规则\n- rel: 看\n\n### 看-02\n\n- ARG0: agent\n- ARG1: entity arg0 looks at, read (book), watches (movie), sees or visits (doctor), etc\n\nExample 1: 那么 *pro* 赶紧 再 看 一眼 富士 的 顶峰\n- ARG0: *pro*\n- ARG1: 富士 的 顶峰\n- ARGM-ADV: 一眼\n- ARGM-ADV: 再\n- ARGM-ADV: 赶紧\n- ARGM-ADV: 那么\n- rel: 看\n\nExample 2: *PRO* 就 进出口 商品 种类 来 看 ， 机电 产品 在 浦东 新区 进口 货物 中 独占鳌头\n- ARG0: *PRO*\n- ARGM-ADV: 就 进出口 商品 种类\n- rel: 看\n\nExample 3: 传销 停 、 看 、 听\n- ARG1: 传销\n- rel: 看\n\nExample 4: \n\n### 看-03\n\n- ARG0: people described\n- ARG1: entity arg0 cannot see\n\nExample 1: *pro* 街 边 巷 尾 ， 看 不 到 欧元 的 宣传品\n- ARG0: *pro*\n- ARG1: 欧元 的 宣传品\n- ARGM-LOC: 街 边 巷 尾\n- rel: 看\n\nExample 2: 现在 ， 热战 和 冷战 虽 已 成为 过去 ， 但 动荡 和 冲突 仍 看 不 到 尽头\n- ARG1-PSE: 尽头\n- ARG1-PSR: 动荡 和 冲突\n- ARGM-ADV: 仍\n- ARGM-ADV: 但\n- ARGM-CND: 热战 和 冷战 虽 已 成为 过去\n- ARGM-TMP: 现在\n- rel: 看\n\n### 看-04\n\n- ARG0: thing which appears to be true\n\nExample 1: 毛健 博士 看 上去 相当 疲惫\n- ARG0: 毛健 博士\n- ARG0-PRD: 相当 疲惫\n- rel: 看\n\n### 看-05\n\n- ARG0: entity looked at\n\nExample 1: 杰米·莱得奈普 *PRO* 看 起来 像 阿里巴巴\n- ARG0: *PRO*\n- rel: 看\n\n### 看-06\n\n- ARG0: people described\n- ARG1: entity arg0 doesn't feel comfortable seeing\n\nExample 1: 许多 *OP* *T*-1 孜孜兀兀 ， 好 不 容易 干到 主管 的 欧吉桑们 ， 往往 看 不 惯 年轻 一 代 的 率性 与 散漫\n- ARG0: 许多 *OP* *T*-1 孜孜兀兀 ， 好 不 容易 干到 主管 的 欧吉桑们\n- ARG1: 年轻 一 代 的 率性 与 散漫\n- ARGM-ADV: 往往\n- rel: 看\n\n### 看-07\n\n- ARG0: people described\n- ARG1: entity arg0 can tell\n- ARG2: from where arg0 can tell\n\nExample 1: 人人 身 上 带 著 一 张 *OP* *T*-1 记录 *RNR*-2 分析 自己 DNA 的 生物 晶片 ， 上头 不仅 看 得 出 身体 的 情况 ， 甚至 可以 预知 *PRO* 将来 可能 罹患 哪些 疾病\n- ARG2: 上头\n- ARG1: 身体 的 情况\n- ARGM-DIS: 不仅\n- rel: 看\n\nExample 2: 但 *PRO* 看 得 出来 ， 她 很 开心\n- ARG0: *PRO*\n- rel: 看\n\n### 看-08\n\n- ARG0: people described\n- ARG1: entity arg0 can not tell\n- ARG2: from where arg0 can not tell\n\nExample 1: 这 篇 *OP* *T*-1 深 受 鲁迅 《 阿Ｑ 正传 》 影响 的 小说 中 ， *pro* 从 小说 本身 看 不 出 主角 憨钦仔 *OP* *T*-4 确切 的 年岁\n- ARGM-LOC: 这 篇 深 受 鲁迅 《 阿Ｑ正传 》 影响 的 小说 中\n- ARG0: *pro*\n- ARG1: 主角 憨钦仔 确切的 年岁\n- ARG2: 从 小说 本身\n- rel: 看\n\n### 看-09\n\n- ARG0: agent\n- ARG1: entity (Arg1-MWE)\n\nExample 1: \n\n### 看-010\n\n- ARG0: agent\n- ARG1: patient\n- ARG2: entity arg0 regards arg1 as\n\nExample 1: 警察 为了 *PRO* 炫耀 扫黄 战果 ， *pro* 哪里 把 小姐 当 人 看 ！\n- ARG0: *pro*\n- ARGM-ADV: 哪里\n- ARG1: 小姐\n- rel: 看\n\n### 看-011\n\n- ARG0: agent\n- ARG1: arg0's thought or point of view\n\nExample 1: *pro* 以 职工 月均 工薪 的 1.5 — 3.5 倍 给付 医生 的 工资 ， 我 看 *pro* 靠谱 ！\n- ARG0: 我\n- ARG1: 靠谱\n- rel: 看\n\n### 看-012\n\n- ARG0: agent\n- ARG1: thing arg0 does not understand\n\nExample 1: 你们 看 不 懂 正体字\n- ARG0: 你们\n- ARG1: 正体字\n- rel: 看\n\n### 看-013\n\n- ARG0: agent\n- ARG1: entity arg0 despise\n\nExample 1: 大 contraband 犯 赖昌星 都 看 不 起 一些 *OP* *T*-1 进出 厦门 红楼 的 腐败 官员\n- rel: 看\n\n### 看-014\n\n- ARG0: agent\n- ARG1: entity described\n\nExample 1: *T*-2 连 自己 的 家产 也 看 不 住 *-3 的 大哥\n- ARG0: *T*-2 大哥\n- ARGM-DIS: 也\n- rel: 看\n\n### 看-015\n\n- ARG0: agent\n- ARG1: entity arg0 thinks highly of\n\nExample 1: 外国人 看 得 起 我们\n- ARG0: 外国人\n- ARG1: 我们\n- rel: 看\n\n## 现眼\n\nNot in PropBank.\n\n## 看起来 (found as 看)\n\n### 看-01\n\n- ARG0: entity described\n- ARG1: entity arg0 depends\n\nExample 1: 根据 *OP* 双方 商定 *T*-1 的 规则 ， 如果 两 队 以 ７ ： ７ 战平 ， 那么 *pro* 最后 要 看 中国队 的 聂卫平 和 韩国队 的 曹薰铉 的 比赛 结果 来 决定 胜负\n- ARG0: *pro*\n- ARG1: 中国队的聂卫平和韩国队的曹薰铉的比赛 结果\n- ARGM-ADV: 最后\n- ARGM-ADV: 那么\n- ARGM-CND: 如果 两 队 以 ７ ： ７ 战平\n- ARGM-MNR: 根据 *OP* 双方 商定 *T*-1 的 规则\n- rel: 看\n\n### 看-02\n\n- ARG0: agent\n- ARG1: entity arg0 looks at, read (book), watches (movie), sees or visits (doctor), etc\n\nExample 1: 那么 *pro* 赶紧 再 看 一眼 富士 的 顶峰\n- ARG0: *pro*\n- ARG1: 富士 的 顶峰\n- ARGM-ADV: 一眼\n- ARGM-ADV: 再\n- ARGM-ADV: 赶紧\n- ARGM-ADV: 那么\n- rel: 看\n\nExample 2: *PRO* 就 进出口 商品 种类 来 看 ， 机电 产品 在 浦东 新区 进口 货物 中 独占鳌头\n- ARG0: *PRO*\n- ARGM-ADV: 就 进出口 商品 种类\n- rel: 看\n\nExample 3: 传销 停 、 看 、 听\n- ARG1: 传销\n- rel: 看\n\nExample 4: \n\n### 看-03\n\n- ARG0: people described\n- ARG1: entity arg0 cannot see\n\nExample 1: *pro* 街 边 巷 尾 ， 看 不 到 欧元 的 宣传品\n- ARG0: *pro*\n- ARG1: 欧元 的 宣传品\n- ARGM-LOC: 街 边 巷 尾\n- rel: 看\n\nExample 2: 现在 ， 热战 和 冷战 虽 已 成为 过去 ， 但 动荡 和 冲突 仍 看 不 到 尽头\n- ARG1-PSE: 尽头\n- ARG1-PSR: 动荡 和 冲突\n- ARGM-ADV: 仍\n- ARGM-ADV: 但\n- ARGM-CND: 热战 和 冷战 虽 已 成为 过去\n- ARGM-TMP: 现在\n- rel: 看\n\n### 看-04\n\n- ARG0: thing which appears to be true\n\nExample 1: 毛健 博士 看 上去 相当 疲惫\n- ARG0: 毛健 博士\n- ARG0-PRD: 相当 疲惫\n- rel: 看\n\n### 看-05\n\n- ARG0: entity looked at\n\nExample 1: 杰米·莱得奈普 *PRO* 看 起来 像 阿里巴巴\n- ARG0: *PRO*\n- rel: 看\n\n### 看-06\n\n- ARG0: people described\n- ARG1: entity arg0 doesn't feel comfortable seeing\n\nExample 1: 许多 *OP* *T*-1 孜孜兀兀 ， 好 不 容易 干到 主管 的 欧吉桑们 ， 往往 看 不 惯 年轻 一 代 的 率性 与 散漫\n- ARG0: 许多 *OP* *T*-1 孜孜兀兀 ， 好 不 容易 干到 主管 的 欧吉桑们\n- ARG1: 年轻 一 代 的 率性 与 散漫\n- ARGM-ADV: 往往\n- rel: 看\n\n### 看-07\n\n- ARG0: people described\n- ARG1: entity arg0 can tell\n- ARG2: from where arg0 can tell\n\nExample 1: 人人 身 上 带 著 一 张 *OP* *T*-1 记录 *RNR*-2 分析 自己 DNA 的 生物 晶片 ， 上头 不仅 看 得 出 身体 的 情况 ， 甚至 可以 预知 *PRO* 将来 可能 罹患 哪些 疾病\n- ARG2: 上头\n- ARG1: 身体 的 情况\n- ARGM-DIS: 不仅\n- rel: 看\n\nExample 2: 但 *PRO* 看 得 出来 ， 她 很 开心\n- ARG0: *PRO*\n- rel: 看\n\n### 看-08\n\n- ARG0: people described\n- ARG1: entity arg0 can not tell\n- ARG2: from where arg0 can not tell\n\nExample 1: 这 篇 *OP* *T*-1 深 受 鲁迅 《 阿Ｑ 正传 》 影响 的 小说 中 ， *pro* 从 小说 本身 看 不 出 主角 憨钦仔 *OP* *T*-4 确切 的 年岁\n- ARGM-LOC: 这 篇 深 受 鲁迅 《 阿Ｑ正传 》 影响 的 小说 中\n- ARG0: *pro*\n- ARG1: 主角 憨钦仔 确切的 年岁\n- ARG2: 从 小说 本身\n- rel: 看\n\n### 看-09\n\n- ARG0: agent\n- ARG1: entity (Arg1-MWE)\n\nExample 1: \n\n### 看-010\n\n- ARG0: agent\n- ARG1: patient\n- ARG2: entity arg0 regards arg1 as\n\nExample 1: 警察 为了 *PRO* 炫耀 扫黄 战果 ， *pro* 哪里 把 小姐 当 人 看 ！\n- ARG0: *pro*\n- ARGM-ADV: 哪里\n- ARG1: 小姐\n- rel: 看\n\n### 看-011\n\n- ARG0: agent\n- ARG1: arg0's thought or point of view\n\nExample 1: *pro* 以 职工 月均 工薪 的 1.5 — 3.5 倍 给付 医生 的 工资 ， 我 看 *pro* 靠谱 ！\n- ARG0: 我\n- ARG1: 靠谱\n- rel: 看\n\n### 看-012\n\n- ARG0: agent\n- ARG1: thing arg0 does not understand\n\nExample 1: 你们 看 不 懂 正体字\n- ARG0: 你们\n- ARG1: 正体字\n- rel: 看\n\n### 看-013\n\n- ARG0: agent\n- ARG1: entity arg0 despise\n\nExample 1: 大 contraband 犯 赖昌星 都 看 不 起 一些 *OP* *T*-1 进出 厦门 红楼 的 腐败 官员\n- rel: 看\n\n### 看-014\n\n- ARG0: agent\n- ARG1: entity described\n\nExample 1: *T*-2 连 自己 的 家产 也 看 不 住 *-3 的 大哥\n- ARG0: *T*-2 大哥\n- ARGM-DIS: 也\n- rel: 看\n\n### 看-015\n\n- ARG0: agent\n- ARG1: entity arg0 thinks highly of\n\nExample 1: 外国人 看 得 起 我们\n- ARG0: 外国人\n- ARG1: 我们\n- rel: 看",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01MnKFX6StoJWAhLP3pn3yiR",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1366, \"sentence\": \"这样 倒 更 好 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1366\\nIndex:    1  2  3  4  5\\nWords: 这样   倒  更  好  。\\n\\n# sentence level graph:\\n(s1366x4 / 好-01\\n\\t:ARG0 (s1366x1 / 这样)\\n\\t:degree (s1366x3 / 更)\\n\\t:mod (s1366x2 / 倒))\\n\\n# alignment:\\ns1366x1: 1-1\\ns1366x2: 2-2\\ns1366x3: 3-3\\ns1366x4: 4-4\\n\\n# document level annotation:\\n(s1366s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1346, \"sentence\": \"“ 今天 晚上 ， 我 会 怕 得 更 厉害 … ”\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1346\\nIndex: 1    2    3  4  5  6  7  8  9   10 11 12\\nWords: “ 今天   晚上   ，  我  会  怕  得  更  厉害   …  ”\\n\\n# sentence level graph:\\n(s1346x15 / say\\n\\t:ARG1 (s1346x6 / 会-02\\n\\t\\t:ARG0 (s1346x7 / 怕-01\\n\\t\\t\\t:degree (s1346x10 / 厉害\\n\\t\\t\\t\\t:degree (s1346x9 / 更)))\\n\\t\\t:temporal (s1346x3 / 晚上\\n\\t\\t\\t:temporal (s1346x2 / 今天))))\\n\\n# alignment:\\ns1346x10: 10-10\\ns1346x15: 0-0\\ns1346x2: 2-2\\ns1346x3: 3-3\\ns1346x6: 6-6\\ns1346x7: 7-7\\ns1346x9: 9-9\\n\\n# document level annotation:\\n(s1346s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1213, \"sentence\": \"就 好象 在 地球 上 没有 比 这 更 脆弱 的 了 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1213\\nIndex:  1    2  3    4  5    6  7  8  9   10 11 12 13\\nWords: 就  好象   在  地球   上  没有   比  这  更  脆弱   的  了  。\\n\\n# sentence level graph:\\n(s1213x2 / 像-01\\n\\t:mod (s1213x1 / 就)\\n\\t:ARG1 (s1213x6 / 有-03\\n\\t\\t:polarity -\\n\\t\\t:ARG1 (s1213x19 / thing\\n\\t\\t\\t:mod (s1213x10 / 脆弱\\n\\t\\t\\t\\t:degree (s1213x9 / 更)\\n\\t\\t\\t\\t:compared-to (s1213x8 / 这)))\\n\\t\\t:place (s1213x4 / 地球)\\n\\t\\t:smood (s1213x12 / 了)))\\n\\n# alignment:\\ns1213x1: 1-1\\ns1213x10: 10-10\\ns1213x12: 12-12\\ns1213x19: 0-0\\ns1213x2: 0-0\\ns1213x4: 4-4\\ns1213x6: 6-6\\ns1213x8: 8-8\\ns1213x9: 9-9\\n\\n# document level annotation:\\n(s1213s0 / sentence)\"}], \"found\": 25}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSwAYKEAgTGAI4AUIIdGhpbmtpbmcSDHKSm+1igPT9uzL6XBoM9Q/NGjB8Q+TTJFSSIjAeeGkT0tEg5WG0YDS2UA1mefUHMkGTK5ZZpBpOGzWECjqZ5iiFwfnhpQaaC9RUes4q3QVLa6PrRICrlcB9W7yKlBiyNWqqa1yOVCa/KjkjMWHwW2I7/5ydw4Esv8OY9rFko9s30CHwR0LRWhXBh5c2miSrJQMpiBJsQU9kASN9bTfVD6p4XKyC9rbhIbWe6Hvv0rKltW7w3Xm+6S0jbyqxHz6NEzxxN4MJ5LgkBrRNJHEXNWTG/8d1I2Q/Zn+861ybNdXvWfLbh0MkDzCEO49+pbb1bSmOEfERU48AWTDy3C4uTh+iD1h342zUsves/GY12Zp2hr+kR15PvZJ0tZouPSaIRaRVlF5xesvbhKQ1kjkMiLVWi46MLHSqynDWbmgIRmTSKH69PsZw29JbayIHvrNzNJPoNwFS6qx55Dl2lIpt2LuRELQzPm/M3m0UfpZ+1N0h9auvi0DtX5rKYDVBXjBbz/9EKxejt4/yS/AIaq6PV2j40RLMeG6v2EfyOgcOdz7eEhQ21y90lrCHLiy8d4R2fPlQHhBGPFzixIbSDWbuJw6qEuZBH49mtA369s8BiixMQ+BucNdW+aGttKBaCXw3SQnUXQEGeiLo50sqvog2nkJH+4zMUcBVnyYfJ4HIvV0t/I29MRBtDznEDAfEi783t/AJyjv/2t5mxjBfoRx0LtKAQYxhpj3ryyfY9brrhdZXKJgiT+giU/JkkLLq145tOQcqldzX0zlJNHKpwQMfz0sx7q/JGekwlSEiRMzdQnmLDYmhNrxygSQN4Yde3AFgkbpNIB5b81y9wdMNasrFafQXWWr25wWGeLJqnfBIGc7BylPd5sWDsjaGUnsdCigv9qwboGLAye8SY+JxKf833eglPJdbOTtm+vYJpRV74VLVBN7Ko6M9oHtgKhQHd9CM08On1O+Sr3bzBfoq2NRH0JCtVAxhAQYGB6EMu4kFHiDRD3qyGkPcg++8rguR6s6+FfVX+9iHJynmXyvCu7yabbrVcF8f6CYDW3eMs/hrOI+cfM6luclaehZSJ4NnGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01M7BRPkcQh4et79qFJo3ECY",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "看起来",
+       "have-degree-91"
+      ],
+      "max_results": 4
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01M7BRPkcQh4et79qFJo3ECY",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0001\", \"sentence_number\": 29, \"sentence\": \"由于 《 世界 新闻 周报 》 的 新闻 「 看起来 有 这么 一回事 」 ， 有时 会 导致 了 不明就里 的 中文 媒体 引用 报导 ， 成为 网络 谣言 ， 特别 是 关于 外星人 飞碟 的 假 报导 。\", \"annotation\": \"# meta-info\\n# :: snt29\\nIndex: 1  2 3  4  5  6 7 8  9 10  11 12 13  14 15 16 17 18 19 20   21 22 23 24 25 26 27 28 29 30 31 32 33 34  35 36 37 38 39\\nWords: 由于 《 世界 新闻 周报 》 的 新闻 「 看起来 有  这么 一回事 」  ，  有时 会  导致 了  不明就里 的  中文 媒体 引用 报导 ，  成为 网络 谣言 ，  特别 是  关于 外星人 飞碟 的  假  报导 。\\n\\n# sentence level graph:\\n(s29h / have-reason-91\\n    :ARG1 (s29c / consecutive\\n        :op1 (s29x7 / 导致-01\\n            :ARG1 (s29a / and\\n                :op1 (s29x10 / 引用-01\\n                    :ARG0 (s29x12 / 媒体\\n                        :medium (s29x13 / 中文))\\n                    :ARG1 (s29x2 / 新闻)\\n                    :mod (s29x14 / 不明就里)\\n                    :aspect performance)\\n                :op2 (s29x11 / 报导-01\\n                    :ARG0 s29x12\\n                    :ARG1 s29x2\\n                    :mod s29x14\\n                    :aspect performance))\\n            :frequency (s29x9 / 有时)\\n            :aspect performance)\\n        :op2 (s29x8 / 成为-01\\n            :ARG0 (s29x17 / 报导-01\\n                :mod (s29x18 / 假)\\n                :topic (s29x19 / 飞碟\\n                    :possessor (s29x20 / 外星人))\\n                :mod (s29x21 / 特别))\\n            :ARG1 (s29x15 / 谣言\\n                :place (s29x16 / 网络))\\n            :aspect performance))\\n    :ARG2 (s29x3 / 有-04\\n        :ARG0 (s29x22 / 新闻\\n            :part (s29n / newspaper\\n                :name (s29n2 / name\\n                    :op1 \\\"《\\\"\\n                    :op2 \\\"世界\\\"\\n                    :op3 \\\"新闻\\\"\\n                    :op4 \\\"周报\\\"\\n                    :op5 \\\"》\\\")))\\n        :ARG1 (s29x4 / 事\\n            :unit (s29x5 / 回)\\n            :mod (s29x6 / 这么))\\n        :aspect state\\n        :manner (s29x / 看-05\\n            :ARG0 s29x22\\n            :aspect state)))\\n\\n# alignment:\\ns29a: 0-0\\ns29c: 0-0\\ns29h: 0-0\\ns29n: 0-0\\ns29n2: 0-0\\ns29x: 10-10\\ns29x10: 24-24\\ns29x11: 25-25\\ns29x12: 23-23\\ns29x13: 22-22\\ns29x14: 20-20\\ns29x15: 29-29\\ns29x16: 28-28\\ns29x17: 25-25\\ns29x18: 37-37\\ns29x19: 35-35\\ns29x2: 4-4\\ns29x20: 34-34\\ns29x21: 31-31\\ns29x22: 4-4\\ns29x3: 11-11\\ns29x4: 13-13\\ns29x5: 13-13\\ns29x6: 12-12\\ns29x7: 18-18\\ns29x8: 27-27\\ns29x9: 16-16\\n\\n# document level annotation:\\n(s29s0 / sentence\\n    :temporal ((document-creation-time :before s29x)\\n        (s29x :overlap s29x2)\\n        (s29x2 :overlap s29x3)\\n        (s29x :overlap s29x7)\\n        (s29x7 :overlap s29x10)\\n        (s29x10 :overlap s29x11)\\n        (s29x10 :overlap s29x8))\\n    :modal ((root :modal author)\\n        (author :partial-affirmative s29x3)\\n        (author :full-affirmative s29x)\\n        (author :full-affirmative s29x10)\\n        (author :full-affirmative s29x11)\\n        (author :full-affirmative s29x7)\\n        (author :full-affirmative s29x8))\\n    :coref ((s28x2 :same-entity s29n2)))\"}, {\"doc\": \"chinese_umr-0001\", \"sentence_number\": 25, \"sentence\": \"该刊 编辑 告诉 米勒 ， 他 写 的 新闻 表面 上 必须 「 看起来 有 这么 一回事 」 ， 因为 他们 必须 同时 满足 一半 认真 的 读者 ， 与 另一半 纯粹 把 这些 新闻 当 笑话 看 的 读者 。\", \"annotation\": \"# meta-info\\n# :: snt25\\nIndex: 1  2  3  4  5 6 7 8 9  10 11 12 13 14  15 16 17  18 19 20 21 22 23 24 25 26 27 28 29 30 31  32 33 34 35 36 37 38 39 40 41\\nWords: 该刊 编辑 告诉 米勒 ， 他 写 的 新闻 表面 上  必须 「  看起来 有  这么 一回事 」  ，  因为 他们 必须 同时 满足 一半 认真 的  读者 ，  与  另一半 纯粹 把  这些 新闻 当  笑话 看  的  读者 。\\n\\n# sentence level graph:\\n(s25x / 告诉-01\\n    :ARG0 (s25x29 / 编辑\\n        :ARG3-of (s25h2 / have-org-role-91\\n            :ARG2 (s25x3 / 刊\\n                :mod (s25x4 / 该))))\\n    :ARG1 (s25h / have-reason-91\\n        :ARG1 (s25x5 / 必须-01\\n            :ARG0 (s25x6 / 新闻\\n                :ARG1-of (s25x7 / 写-01\\n                    :ARG0 s25i3\\n                    :aspect habitual))\\n            :ARG1 (s25x8 / 看-05\\n                :ARG0 (s25x18 / 有-04\\n                    :ARG1 (s25x19 / 事\\n                        :mod (s25x20 / 这么)\\n                        :unit (s25x28 / 回)\\n                        :quant 1)\\n                    :aspect state)\\n                :manner (s25x9 / 表面上)\\n                :aspect state)\\n            :aspect state)\\n        :ARG2 (s25x10 / 必须-01\\n            :ARG1 (s25x11 / 满足-01\\n                :ARG2 (s25a / and\\n                    :op1 (s25x13 / 者\\n                        :ARG0-of (s25x14 / 读-01\\n                            :manner (s25x15 / 认真)\\n                            :aspect habitual)\\n                        :mod (s25x27 / 一半))\\n                    :op2 (s25x16 / 者\\n                        :ARG0-of (s25x17 / 读-01\\n                            :aspect habitual)\\n                        :ARG0-of (s25x21 / 看-10\\n                            :ARG1 (s25x22 / 新闻\\n                                :mod (s25x25 / 这些)\\n                                :refer-number plural)\\n                            :ARG2 (s25x23 / 笑话)\\n                            :manner (s25x24 / 纯粹)\\n                            :aspect habitual)\\n                        :mod (s25x26 / 另一半)))\\n                :temporal (s25x12 / 同时)\\n                :aspect state)\\n            :aspect state)\\n        :aspect state)\\n    :ARG2 (s25i3 / individual-person\\n        :name (s25n / name\\n            :op1 \\\"米勒\\\"))\\n    :aspect state)\\n\\n# alignment:\\ns25a: 0-0\\ns25h: 0-0\\ns25h2: 0-0\\ns25i3: 0-0\\ns25n: 0-0\\ns25x: 3-3\\ns25x10: 12-12\\ns25x11: 24-24\\ns25x12: 23-23\\ns25x13: 28-28\\ns25x14: 28-28\\ns25x15: 26-26\\ns25x16: 28-28\\ns25x17: 28-28\\ns25x18: 15-15\\ns25x19: 17-17\\ns25x20: 16-16\\ns25x21: 38-38\\ns25x22: 9-9\\ns25x23: 37-37\\ns25x24: 32-32\\ns25x25: 34-34\\ns25x26: 31-31\\ns25x27: 25-25\\ns25x28: 17-17\\ns25x29: 2-2\\ns25x3: 1-1\\ns25x4: 1-1\\ns25x5: 12-12\\ns25x6: 9-9\\ns25x7: 7-7\\ns25x8: 38-38\\ns25x9: 10-10\\n\\n# document level annotation:\\n(s25s0 / sentence\\n    :temporal ((document-creation-time :before s25x)\\n        (s25x :overlap s25x5)\\n        (s25x5 :overlap s25x7)\\n        (s25x5 :overlap s25x8)\\n        (s25x8 :overlap s25x18)\\n        (s25x5 :overlap s25x10)\\n        (s25x10 :overlap s25x11)\\n        (s25x11 :overlap s25x14)\\n        (s25x11 :overlap s25x17)\\n        (s25x11 :overlap s25x21))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s25x7)\\n        (author :full-affirmative s25x18)\\n        (author :full-affirmative s25x8)\\n        (author :full-affirmative s25x5)\\n        (author :full-affirmative s25x14)\\n        (author :full-affirmative s25x17)\\n        (author :full-affirmative s25x21)\\n        (author :full-affirmative s25x11)\\n        (author :full-affirmative s25x10)\\n        (author :full-affirmative s25h)\\n        (author :full-affirmative s25x)\\n        (author :full-affirmative s25x29)\\n        (s25x29 :full-affirmative s25x5)\\n        (s25x5 :unspecified s25x18)\\n        (s25x29 :full-affirmative s25x5)\\n        (s25x5 :unspecified s25x8)\\n        (author :full-affirmative s25x29)\\n        (author :full-affirmative s25x29)\\n        (author :full-affirmative s25x29)\\n        (author :full-affirmative s25x29)\\n        (s25x29 :full-affirmative s25x10)\\n        (s25x10 :unspecified s25x11)\\n        (author :full-affirmative s25x29)\\n        (author :full-affirmative s25x29)\\n        (author :full-affirmative s25x29))\\n    :coref ((s23i2 :same-entity s25i3)))\"}, {\"doc\": \"chinese_umr-0001\", \"sentence_number\": 30, \"sentence\": \"其中 最 著名 的 就是 「 木乃伊 怀孕 」 的 新闻 。\", \"annotation\": \"# meta-info\\n# :: snt30\\nIndex: 1  2 3  4 5  6 7   8  9 10 11 12\\nWords: 其中 最 著名 的 就是 「 木乃伊 怀孕 」 的  新闻 。\\n\\n# sentence level graph:\\n(s30x / 著名-01\\n    :ARG0 (s30x2 / 新闻\\n        :ARG1-of (s30i2 / identity-91\\n            :ARG2 (s30x3 / 怀孕-01\\n                :ARG0 (s30x4 / 木乃伊)\\n                :aspect process)))\\n    :mod (s30x5 / 其中)\\n    :ARG2-of (s30h / have-degree-91\\n        :ARG3 (s30x6 / 最))\\n    :aspect state)\\n\\n# alignment:\\ns30h: 0-0\\ns30i2: 0-0\\ns30x: 3-3\\ns30x2: 11-11\\ns30x3: 8-8\\ns30x4: 7-7\\ns30x5: 1-1\\ns30x6: 2-2\\n\\n# document level annotation:\\n(s30s0 / sentence\\n    :temporal ((document-creation-time :before s30x)\\n        (s30x :overlap s30x3))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s30x3)\\n        (author :full-affirmative s30x))\\n    :coref ((s30x2 :subset-of s29x2)))\"}, {\"doc\": \"chinese_umr-0001\", \"sentence_number\": 14, \"sentence\": \"其中 最大宗 可 算是 外星人 地球 活动 。\", \"annotation\": \"# meta-info\\n# :: snt14\\nIndex: 1  2   3 4  5   6  7  8\\nWords: 其中 最大宗 可 算是 外星人 地球 活动 。\\n\\n# sentence level graph:\\n(s14x / 算是-01\\n    :ARG0 (s14i2 / implicit-argument\\n        :ARG1-of (s14h / have-degree-91\\n            :ARG1 (s14x3 / 大)\\n            :ARG2 (s14x4 / 最)\\n            :ARG5 (s14x5 / 其中))\\n        :unit (s14x2 / 宗))\\n    :ARG1 (s14x6 / 活动-01\\n        :ARG0 (s14x7 / 外星人)\\n        :place (s14p / planet\\n            :name (s14n / name\\n                :op1 \\\"地球\\\"))\\n        :aspect activity)\\n    :aspect state)\\n\\n# alignment:\\ns14h: 0-0\\ns14i2: 0-0\\ns14n: 0-0\\ns14p: 0-0\\ns14x: 4-4\\ns14x2: 2-2\\ns14x3: 2-2\\ns14x4: 2-2\\ns14x5: 1-1\\ns14x6: 7-7\\ns14x7: 5-5\\n\\n# document level annotation:\\n(s14s0 / sentence\\n    :temporal ((document-creation-time :before s14x)\\n        (s14x :overlap s14x6))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s14x6)\\n        (author :neutral-affirmative s14x)))\"}], \"found\": 18}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I annotated sentence 10 as two clauses joined by `and`, both describing present states:\n\n- **First clause:** I used `看-05` for 看起来 (\"looks\"). A gold example (zh-0001, sentence 25) puts the clause being judged in its `:ARG0`, so I did the same. 符合-01 (\"be consistent with\") takes the B560 series as `:ARG0` and the charm (韵味) of the Year of the Dragon (龙年) as `:ARG1`.\n- **Second clause:** 现眼 (\"conspicuous\") is not in Chinese PropBank, so it becomes `现眼-00`. Its subject is the 福 character, placed on the back (背部).\n- **更 / 更加 (\"more\"):** I wrote these as plain `:degree` modifiers. Gold sometimes uses `have-degree-91` for comparison instead, so this choice may differ from the expert annotation.\n- **B560 系列:** I made 系列 (\"series\") the head. B560 is a `product` named entity attached with `:mod`, and 金黄色 (\"golden\") is another `:mod`. This structure is my own choice; I didn't check it against gold.\n- **龙年:** a plain concept, not a `date-entity`.\n- **也 (\"also\"):** `:mod`.\n\n# ::snt 10\n# sentence level graph:\n(s10a / and\n    :op1 (s10k / 看-05\n        :ARG0 (s10f / 符合-01\n            :ARG0 (s10x / 系列\n                :mod (s10p / product\n                    :name (s10n / name :op1 \"B560\"))\n                :mod (s10j / 金黄色))\n            :ARG1 (s10y / 韵味\n                :possessor (s10l / 龙年))\n            :degree (s10g / 更)\n            :aspect state)\n        :aspect state)\n    :op2 (s10h / 现眼-00\n        :ARG0 (s10z / 字\n            :mod (s10f2 / 福)\n            :place (s10b / 背部))\n        :degree (s10g2 / 更加)\n        :mod (s10e / 也)\n        :aspect state))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

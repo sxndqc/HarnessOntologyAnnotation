@@ -1,0 +1,219 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-5.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9160
+    },
+    "cache_creation_input_tokens": 9160,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 251,
+    "output_tokens_details": {
+     "thinking_tokens": 70
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3569
+    },
+    "cache_creation_input_tokens": 3569,
+    "cache_read_input_tokens": 9160,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1113,
+    "output_tokens_details": {
+     "thinking_tokens": 540
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 5 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n5\t方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSzAYKEAgTGAI4AUIIdGhpbmtpbmcSDGYaCLFC3NIpfl2bDBoMdkvNJiGC24ndhPpUIjA2hHLce+ggrkfucJMebYu9Uz7mj3QWd6t7msGDLl05eC7WVk0qNrpwwXCz/PksPfkq6QUwlmuGf86lHRNOYYaMA0ZCFV5Bs3EqJMn/mMYVfZUKvOCxUatUX/AKVrpX4NBrErSGVCmAmDeS358QZXldRYPWWHpZMlPDoqJ+BeJlMJ4eiNygieBf1pm1r2h+zsRaBGR+w4y+teS6IyWgJDD025yFGUbQGb9m7N1at9oet1GMdrxqtALiUJz/OnNSw12x9S9ZDtDcKLvwAWTAN3qY7CquF8cRlBBgZF3yLwt7dG/Ieh3wmAJIRKFQ9TS+XFOkkG4HhfuDHYg8Of8z//nDbE19M/6N9bsjIC2mbLbauwKqTf5zL0OEl33QYiNaNpnHgdVQXbhWw9370UdKhZYDQcxMX/Pv0fM8nooHtc5ZsYptviTBpUfjsL9oBQzlfBjtEooyXqlASLh78rQRLr+bKGaZwpX7u3aCkjf/C6CePXZF6phNT1igcyy5nFYsukoyhdadjqKlkjYfds7T3XkzAA7qJuNNCLWfaFJ/QrEgIQryhEN42jU7qQLB+HlwgV8scTdPNa23BlsbuXbmtt8V9oXR/0hC1eBfeLTwrFxA5BaODnYhzfMMxgGt7tpaOZ7JkM6aRM0BAWPSnDm5EFcHydFR+2ko4kamjslLTguJUvHGQqQgK4Z1W+Uynos7sTzN7OBvHDW9/dZeFwJyvcHTO2yQcXMXw10cmEI/ssS+15EkU5xHudqvYTglQKP/IFvyVoUHraxsHrUdwbh0zWGg92Ms+1UGBckxsnwpDbYGuhk5k5853RFrRc5OQ8zjzKS4TGj/JiKQREQ5Uu+7UOLiTOxjiHkUMTmcTd2g7a888Vm/92ErqHTdnWG6AQUaoHg/SJ/+Cj9s19cYR654NkR6DD6tvFCWh+OQYAJVyrw1K5Q/m5/I/iWQPzvSR/g7Qdb8Uu46vf7Hh37OypcRzUQs+8OHQvUqIARxqaUNGCipXjVvMETr392wX9ssfJicFnapE5hpGWICqWgKfwCdDZENim+WizRpPvFgE0fPGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01M1gFE9qD7NNyKG41Gfm82h",
+     "input": {
+      "lemmas": [
+       "像",
+       "设计",
+       "打座",
+       "打坐",
+       "立姿",
+       "笔挺"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01X7n77tyt9EH8SWnKzv2hDd",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "像",
+       "有点"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01M1gFE9qD7NNyKG41Gfm82h",
+     "content": "## 像\n\n### 像-01\n\n- ARG0: entity described\n- ARG1: entity arg0 resembles\n\nExample 1: 岸 边 的 繁枝 茂叶 恰 像 她 的 翡翠 项链\n- ARG0: 岸 边 的 繁枝 茂叶\n- ARG1: 她 的 翡翠 项链\n- ARGM-ADV: 恰\n- rel: 像\n\n### 像-02\n\n- ARG0: entity described\n- ARG1: predicate\n\nExample 1: 它 看起来 就 像 ， 天哪 ， 共和党 要是 *pro* 能 争取 到 任何 东西 都 算 *PRO* 运气 了\n- ARG0: 它\n- ARGM-ADV: 看起来\n- ARGM-DIS: 就\n- ARG1: 天哪 ， 共和党 要是 能 争取 到 任何 东西 都 算 运气 了\n- rel: 像\n\n### 像-03\n\n- ARG0: entity described\n- ARG1: example\n\nExample 1: 但 关键 问题 就 像 刚才 荣智健 先生 说 了\n- ARGM-DIS: 但\n- ARG0: 关键 问题\n- ARGM-ADV: 就\n- ARG1: 刚才 荣智健 先生 说了\n- rel: 像\n\n## 设计\n\n### 设计-01\n\n- ARG0: agent\n- ARG1: thing designed\n\nExample 1: *OP* 建设者们 为 这 片 开发区 设计 *T*-1 的 战略 步骤 是 *\n- ARG0: 建设者们\n- ARG1: *T*-1\n- ARGM-BNF: 为 这 片 开发区\n- rel: 设计\n\nExample 2: 海龟 的 形象 由 意大利 知名 图案 设计师 瓦·隆巴多 设计\n- ARG1: 海龟 的 形象\n- ARG0: 由 意大利 知名 图案 设计师 瓦·隆巴多\n- rel: 设计\n\nExample 3: *OP* *T*-2 按 现代 城市 功能 要求 设计 的 莫家街 旧城 改造 工程 ， 由 港商 投资 五千万 元 独家 承建\n- ARG0: *T*-2\n- ARGM-MNR: 按 现代 城市 功能 要求\n- rel: 设计\n\n### 设计-02\n\n- ARG0: agent\n- ARG1: thing designed\n- ARG2: place arg1 is designed to be\n\n## 打座\n\nNot in PropBank.\n\n## 打坐\n\n### 打坐-01\n\n- ARG0: person sitting in meditation\n\nExample 1: *PRO* 一 想起 他们 ， 我 每 天 打坐 、 吃素 ， 心 里 总 不 能 平静\n- ARG0: 我\n- ARGM-ADV: 每 天\n- ARGM-ADV: *PRO* 一 想起 他们\n- rel: 打坐\n\n## 立姿\n\nNot in PropBank.\n\n## 笔挺\n\n### 笔挺-01\n\n- ARG0: theme\n\nExample 1: *OP* *T*-1 西服 笔挺 的 “ 白领 ”\n- ARG0-PSE: 西服\n- rel: 笔挺",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01X7n77tyt9EH8SWnKzv2hDd",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1401, \"sentence\": \"我 有点 象 要 死去 似的 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1401\\nIndex:  1    2  3  4    5    6  7\\nWords: 我  有点   象  要  死去   似的   。\\n\\n# sentence level graph:\\n(s1401x3 / 像-01\\n\\t:ARG0 (s1401x1 / individual-person\\n\\t\\t:refer-person 1\\n\\t\\t:refer-number singular)\\n\\t:ARG1 (s1401x4 / 要-01\\n\\t\\t:ARG0 (s1401x5 / 死去-01\\n\\t\\t\\t:ARG0 s1401x1\\n\\t\\t\\t:modal-strength (s1401x15 / neutral-affirmative)))\\n\\t:degree (s1401x2 / 有点-01))\\n\\n# alignment:\\ns1401x1: 0-0\\ns1401x15: 0-0\\ns1401x2: 2-2\\ns1401x3: 0-0\\ns1401x4: 4-4\\ns1401x5: 5-5\\n\\n# document level annotation:\\n(s1401s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1183, \"sentence\": \"由于 渴 我 有点 发烧 ， 我 看 着 这些 星星 ， 象是 在 做梦 一样 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1183\\nIndex:    1  2  3    4    5  6  7  8  9   10   11 12   13 14   15   16 17\\nWords: 由于   渴  我  有点   发烧   ，  我  看  着  这些   星星   ，  象是   在  做梦   一样   。\\n\\n# sentence level graph:\\n(s1183x18 / and\\n\\t:op1 (s1183x20 / causation\\n\\t\\t:ARG1 (s1183x2 / 渴-01\\n\\t\\t\\t:ARG0 (s1183x3 / individual-person\\n\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t:refer-number singular))\\n\\t\\t:ARG2 (s1183x5 / 发烧-01\\n\\t\\t\\t:ARG0 s1183x3\\n\\t\\t\\t:degree (s1183x4 / 有点)))\\n\\t:op2 (s1183x13 / 像-01\\n\\t\\t:ARG0 (s1183x8 / 看-01\\n\\t\\t\\t:ARG0 (s1183x7 / individual-person\\n\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t:aspect activity\\n\\t\\t\\t:ARG1 (s1183x11 / 星星\\n\\t\\t\\t\\t:mod (s1183x10 / 这些)))\\n\\t\\t:ARG1 (s1183x15 / 做梦-01\\n\\t\\t\\t:aspect activity\\n\\t\\t\\t:ARG0 s1183x7)))\\n\\n# alignment:\\ns1183x10: 10-10\\ns1183x11: 11-11\\ns1183x13: 0-0\\ns1183x15: 15-15\\ns1183x18: 0-0\\ns1183x2: 2-2\\ns1183x20: 0-0\\ns1183x3: 0-0\\ns1183x4: 4-4\\ns1183x5: 5-5\\ns1183x7: 0-0\\ns1183x8: 8-8\\n\\n# document level annotation:\\n(s1183s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1264, \"sentence\": \"小 王子 瞅见 了 ， 笑 着 说 ： “ 你 画 的 猴面包树 ， 有点 象 白菜 … ”\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1264\\nIndex:  1    2    3  4  5  6  7  8  9 10 11 12 13       14 15   16 17   18 19 20\\nWords: 小  王子   瞅见   了  ，  笑  着  说  ：  “  你  画  的  猴面包树     ，  有点   象  白菜   …  ”\\n\\n# sentence level graph:\\n(s1264x21 / and\\n\\t:op1 (s1264x3 / 瞅见-01\\n\\t\\t:aspect performance\\n\\t\\t:ARG0 (s1264x2 / 王子\\n\\t\\t\\t:mod (s1264x1 / 小))\\n\\t\\t:modal-strength (s1264x36 / full-affirmative))\\n\\t:op2 (s1264x8 / 说-01\\n\\t\\t:ARG0 s1264x2\\n\\t\\t:manner (s1264x6 / 笑-01\\n\\t\\t\\t:aspect activity)\\n\\t\\t:ARG1 (s1264x17 / 像-01\\n\\t\\t\\t:ARG1 (s1264x18 / 白菜)\\n\\t\\t\\t:degree (s1264x16 / 有点)\\n\\t\\t\\t:ARG0 (s1264x14 / 猴面包树\\n\\t\\t\\t\\t:ARG1-of (s1264x12 / 画-01\\n\\t\\t\\t\\t\\t:ARG0 (s1264x11 / individual-person\\n\\t\\t\\t\\t\\t\\t:refer-person 2\\n\\t\\t\\t\\t\\t\\t:refer-number singular))))\\n\\t\\t:modal-strength (s1264x37 / full-affirmative)))\\n\\n# alignment:\\ns1264x1: 1-1\\ns1264x11: 0-0\\ns1264x12: 12-12\\ns1264x14: 14-14\\ns1264x16: 16-16\\ns1264x17: 0-0\\ns1264x18: 18-18\\ns1264x2: 2-2\\ns1264x21: 0-0\\ns1264x3: 3-3\\ns1264x36: 0-0\\ns1264x37: 0-0\\ns1264x6: 6-6\\ns1264x8: 8-8\\n\\n# document level annotation:\\n(s1264s0 / sentence)\"}], \"found\": 71}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS2A4KEAgTGAI4AUIIdGhpbmtpbmcSDF+yKEZGNLE3GYc1rBoM9zgb1KAbmArvuqN5IjC1fqprE3K/SgoizKfaxlX4XyZFJsSN4WB2M/Rcs15f2fti697q1lVIAybEwCQvU9gq9Q1CkhbbaYeTeShvR4R98BGpZ0UZXfAs2Tu6U7g/rt7a5Iggu5g7K5qVnikM/zEM+iMKuLpMO9qjo78xjL/H9DgpKSYxbnDA4FJ90tukbrsIVt3ONzR6qxu6aUJgOe2HMfO1S7oL6HohMga7Wp5wr4m12fqtx2kw6w+NYvOk5UIvm5nC9jtWFrhcSSuhbGPS46PSzGkWnJxMOKUGPo5btPvSM9g8Hb05+cEhZVk+2Gxrm1mGE1nwObKQvN/EevNzirSxrVRNxxa83mUU825Y1OO058i1mwa9YWLXNeoBkZzy1cgqo8ebCQrX6mb3p3ByPbuyaAEXQXRzVOke9DQVp5XjLQ+fxjziOlZAbY+traz3nBWABaR/zTMpbU5A+KkvlhAq3tRRAO0kJZmmuJrWylRTKecIME6hFV4zqT7XIgvHhdHHLGLI/Ks2NOCbxcz8gtnjxqUEK2RQQis+fmwxUDqhGs8qQF0nCp/Cr6lREq+BFIkXzsFoDeFDqEnfX2yaL8KJTJq9w5C9HJuGrhkTtnJ35Z8V/ZpD48DPLPb3EqgZ7sfEYr9EyGkPfiz7Dg1ZiZnfut1tOvCTKc77cIrZHEyAh2iMNnzwSxE76luiG0y5fQVPEvxpdflAGJdF5D8jNZ25jOEy+yl2P5m7Wln6F16q/QNfT2vgFX6qEZOlIii7mgGuabrnKfYe3N0+jsmzU7b3+rzynkGBKyIcnjB8QaSvRK3z8oCF85r9is5LyYPjDSOHI9m3h7Snz5ub/q09pdBCV9AMiKlPxmboqSnXTWS7kUYFImnJJmhj0tTPqlCF2OJ5JfoIiCquI21uIGDImPxWuQ7wiU4cd7J88832a5b4/ClTk0HURWKjTYAXogO595DxtMbxpmiW8Sxyk5oz2vSB38fAuhH70eHpJhPZBzFIgah0MGI9xyoGe5jNZS0mvgZK1VsWeyikdaKNiZrcKmETFl1N5xcFnl5caQSYSHR1/6D2dV+/2tx9wnpmbdT2S9Yq+5oJirvHs28Dq6ph9DuFbAf8CJJtvCtnY+gzxyCRpGLTphIr5upmCDVoWdk6hZYw7oJ0GTpZMdLqndap98FZ7cRfey/0lq7kr9SN0hVXl/Jx242WKEJxWjq5mLzEb3uy0zJor0RYXGDfI2GOE+GpNhA1ObJJR/RzsxSVq2nJf0uUXAjSHjKgjzgYMDjx5Y/6yBgDdwpix65NT8vIzhcClivXARf0ug8zjYO01u85y7XmZEU7KXQS2nehoq1N8XqHfso65V5veUuJhaAbkUTBQNZplKm06LBhB25bP3hhDyfYilTMnHfAM/CTcXwZu0rp/e8GD97vNyOfPG8mKlJlx9QYwKIwq7/DJzcnTbkB61KUrTBgk5Uci60Cg1jDWftL4vpXWP1kQI1Wx0wA7Ea6cKzM+hfWMCudg2TQBcl182PPqSw/0bwa9Zf8bxZdcUjZGTi8qAI0JsTo+xb6zw/E6QueGmgWcz86da1HaB5j0XRd1XjRhCvmReQ0o4YDigrY9d45ZRwbh05Ssno8PluCViyNxaX4vKdAYn5EsTM4h6q7vM/seF2dI9aMyHU2SdhSgZpGY0TQSTq6Ma5jXsyOM5np3IZK/EZ5v6rua33mPLpnIPTut5MtKK6gggMJWbSGnz0KQQuJKhlUhU2LSaTmDjpax8J6Ufj1l/iePZwvq5ukgW/oCrJiykzVCdMJh2z9EoBxhbyYZ6EelxrSobbyefyH+n0KRRh12fy8Tpr1pDN+ljpfKRisXaTbyR+Lp2didAAdg78Ut6F1dvthR1VQ5zf4LkX+XszuCj/NAnFF4X+O4Xyp2alJhrpI51wDCwYUOE/tVV4oNYj0COByiuxeCIZq9JOilvqexujPuTPAmvJWZ5BPHyNa/fhl0rydlP0ThhcdS4VB2nEnOFZ/1/GCvn7t9Ce4RakMbbvqSUhLJl5PWUxFzDzyejcZLzMfPvttZmtpCgfM48wuwCAjKgq9fKUWW1//4FNJjoHuWqi51h8zpHZ9mvEaxs3DTV9zeGf6x+uq9/FknMcMzOABHN5/4BnH7NBzAbaqU70igK2w8GN4ny7pTXhLa46AitP2WNnEb0sqY3mx1ggg59gKGnZH1hKxpLbMVSnW5fs7/NaxN+IjLgAs/P62zO6EYboDdw0HoWIuBCd/gEAYHBUciro91iuya0I0JKK96H7nw71mGFgb7en/dTUMpZ3/SfGSqAxVI7oXsE5/em+18WddkCcWcwwrSZPWucB6v6+LbJhszAiJa5t04hGtJauoWsjFkUklVrWfdljp+Avj7Y1z7vKe87hzRvyY6qE0nsExT5il0Gi6YX+UPssM5bXRWewwZJkyjCBwbIXgZ1KeQxS8x81QsV7jiBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I read the sentence as \"The square-body and square-base design and the upright posture look a little like the aura of a master sitting in meditation.\" The main predicate is 像-01 (\"resemble\"): its `:ARG0` is the thing being described (the design and the posture, joined with `and`) and its `:ARG1` is what it looks like (气势, \"aura\"). 有点 (\"somewhat\") is `:degree`, following a gold example with the same 有点 像 pattern.\n\nThree choices are uncertain:\n- **打座:** The sentence writes 打座, which is not in PropBank, so it is 打座-00. PropBank has the standard spelling 打坐 as 打坐-01, and the gold may use that instead.\n- **设计 (\"design\"):** I treated it as an event noun, 设计-01 with `:aspect process`. The gold may instead treat it as a plain noun.\n- **方形 and 笔挺:** Both are plain `:mod` modifiers here, not separate events.\n\n# ::snt 5\n# sentence level graph:\n(s5x / 像-01\n    :ARG0 (s5a / and\n        :op1 (s5s / 设计-01\n            :ARG1 (s5a2 / and\n                :op1 (s5j / 机身\n                    :mod (s5f / 方形))\n                :op2 (s5d / 底座\n                    :mod (s5f2 / 方形)))\n            :aspect process)\n        :op2 (s5l / 立姿\n            :mod (s5b / 笔挺)))\n    :ARG1 (s5q / 气势\n        :mod (s5d2 / 打座-00\n            :ARG0 (s5m / 大师)\n            :aspect activity))\n    :degree (s5y / 有点)\n    :aspect state)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

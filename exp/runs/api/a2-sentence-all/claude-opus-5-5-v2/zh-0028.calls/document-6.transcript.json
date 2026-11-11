@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3084
+    },
+    "cache_creation_input_tokens": 3084,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 904,
+    "output_tokens_details": {
+     "thinking_tokens": 390
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 6 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\n5\t方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。\n\nTheir graphs:\n\nThe sentence reads as a list of three specs for one display: \"16:9 screen ratio, 21.5-inch widescreen, its best resolution is 1920×1080.\" I joined the three parts with an `and` and annotated \"为\" as `identity-91`. I found no gold examples with 分辨率, 英寸 or 屏幕, so these choices are mine and not copied from the data:\n\n- **16:9:** I wrote the ratio as a `string-entity` holding \"16:9\" and linked it with `:quant`.\n- **1920 × 1080:** I wrote it as `product-of` with the two numbers.\n- **21.5 英寸:** this is a `distance-quantity` with 英寸 as its unit.\n- **最佳:** I kept it as one modifier word, not split into 佳 plus a degree marker.\n- **它:** this is a `thing` (3rd person, singular) and is the possessor of the resolution.\n\n    # ::snt 1\n    # sentence level graph:\n    (s1a / and\n        :op1 (s1x / 比例\n            :mod (s1x2 / 屏幕)\n            :quant (s1r / string-entity\n                :value \"16:9\"))\n        :op2 (s1x3 / 宽屏\n            :mod (s1d / distance-quantity\n                :quant 21.5\n                :unit (s1x4 / 英寸)))\n        :op3 (s1i / identity-91\n            :ARG1 (s1x5 / 分辨率\n                :mod (s1x6 / 最佳)\n                :possessor (s1t / thing\n                    :refer-person 3rd\n                    :refer-number singular))\n            :ARG2 (s1p / product-of\n                :op1 1920\n                :op2 1080)\n            :aspect state))\n\nI annotated sentence 2 as follows:\n\n- **Main predicate:** 配备 is PropBank `配备-01`. Its ARG0 is the agent, ARG1 the thing equipped and ARG2 the place it is fitted to. In 它配备了…接口, 它 is the device the ports are on, so I made it `:ARG2`, as in PropBank's examples. There is no agent. 它 is a 3rd-person singular `thing`.\n- **Aspect:** 了 marks a completed event, so the aspect is `performance`.\n- **而且 and 还:** both are `:mod` nodes. The gold examples of 而且 I found were partial conversions using `progression`, which isn't a standard concept, so I didn't follow them.\n- **The ports:** 接口 has `:quant 2`. 种 is a classifier, so it gets no node. The search found no gold example with 接口 to copy.\n- **The listed ports:** I put the two port types under `:mod` as an `and` of two named `product`s. \"VGA\" in brackets is an alternative name for D-Sub, so I attached it to D-Sub as another `:mod` product. Both are judgement calls. The list names every port, so an identity-style reading would also be defensible, and VGA could have been treated as a second name.\n\n# ::snt 2\n# sentence level graph:\n(s2x / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2p / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :mod (s2p2 / product\n                    :name (s2n2 / name :op1 \"VGA\")))\n            :op2 (s2p3 / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h / 还)\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3f / 方便-01\n    :ARG0 (s3t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3u / 用户)\n    :ARG2 (s3l / 连接-01\n        :ARG0 s3u\n        :ARG1 (s3s / 设备\n            :example (s3a / and\n                :op1 (s3p / product\n                    :name (s3n / name :op1 \"PS3\"))\n                :op2 (s3p2 / product\n                    :name (s3n2 / name :op1 \"Xbox360\"))\n                :op3 (s3b / 蓝光机)\n                :op4 (s3e / et-cetera)))\n        :aspect state)\n    :temporal (s3b2 / 拨接-01\n        :ARG0 s3t\n        :ARG1 (s3s2 / 设备\n            :mod (s3d / 电脑))\n        :aspect state\n        :modal-strength neutral-affirmative)\n    :mod (s3h / 还)\n    :aspect state\n    :modal-strength neutral-affirmative)\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4t / thing\n            :mod (s4z / 这))\n        :ARG2 (s4p / product\n            :wiki \"-\"\n            :name (s4n / name :op1 \"三星\" :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4z2 / 值得-01\n        :ARG1 (s4y / 拥有-01\n            :ARG0 (s4p2 / person\n                :refer-person 2nd\n                :refer-number singular)\n            :ARG1 s4p\n            :aspect state\n            :modal-strength neutral-affirmative)\n        :aspect state))\n\nI read the sentence as \"The square-body and square-base design and the upright posture look a little like the aura of a master sitting in meditation.\" The main predicate is 像-01 (\"resemble\"): its `:ARG0` is the thing being described (the design and the posture, joined with `and`) and its `:ARG1` is what it looks like (气势, \"aura\"). 有点 (\"somewhat\") is `:degree`, following a gold example with the same 有点 像 pattern.\n\nThree choices are uncertain:\n- **打座:** The sentence writes 打座, which is not in PropBank, so it is 打座-00. PropBank has the standard spelling 打坐 as 打坐-01, and the gold may use that instead.\n- **设计 (\"design\"):** I treated it as an event noun, 设计-01 with `:aspect process`. The gold may instead treat it as a plain noun.\n- **方形 and 笔挺:** Both are plain `:mod` modifiers here, not separate events.\n\n# ::snt 5\n# sentence level graph:\n(s5x / 像-01\n    :ARG0 (s5a / and\n        :op1 (s5s / 设计-01\n            :ARG1 (s5a2 / and\n                :op1 (s5j / 机身\n                    :mod (s5f / 方形))\n                :op2 (s5d / 底座\n                    :mod (s5f2 / 方形)))\n            :aspect process)\n        :op2 (s5l / 立姿\n            :mod (s5b / 笔挺)))\n    :ARG1 (s5q / 气势\n        :mod (s5d2 / 打座-00\n            :ARG0 (s5m / 大师)\n            :aspect activity))\n    :degree (s5y / 有点)\n    :aspect state)\n\nThis sentence:\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6h / have-91\n    :ARG1 (s6p / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s6x / 接口\n        :quant 3\n        :unit (s6x2 / 个)\n        :ARG1-of (s6i / identity-91\n            :ARG2 (s6a / and\n                :op1 (s6x3 / 电源)\n                :op2 (s6x4 / HDMI)\n                :op3 (s6x5 / VGA))\n            :mod (s6x6 / 分别-01)\n            :aspect state))\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS0QsKEAgTGAI4AUIIdGhpbmtpbmcSDBo3a7O7DUyp1xwGLhoMseJE4YfzSCsq8X5+IjBSKKhkfNFOjILLG1hnDhM2U53Op4KefO13p7lR5JG4KSNuvrvwAQ439CcUjbI3Wp0q7gql1gIlEZLuuIn7LPmyf/6V2Dsfd63ilBrffxWbK1FnSBvdEsc8A4IbRuf3n9+KfUG4QkKM/CAhhU4Fk78XHOaK/cQ4SPX9wqdMDIEUeEGd3WmVFTSsphspdhXSuqksbnz2dbptpoFADnfE4p7c/EzDLzE3fxyV13oXtjzVa9pQUuMG5ONXWMFQV1iQNa7o7+m6rMp4nRzM7wmhrW9sUSFY90J+a9wRqx05Me+j7IzRO5QsSajEPUgUsKGjwmdpDwDRk68B+2mxN04F6xSm64W08HS5nZmeyJjlX+eL9qaJltloTZ62FlTW1n78vJpF6oIUI8PgZnVY5UBtFytOyMgNeIgNL3Nbm1snbQbSZ+kCJST63ueDDtUV67S+YuCHPavG+MoY7csEe/MkLOs/ecTCsLdRC9GjcAZEMZ13r1wZjMwJq82IxL2gOAE1q186fGdUk69LbemnRqbig/KRneZmYTN4MloDld/n03mq9cRWhQUSx1GLxWdTzynU2vSHBmGuDsM5t9L/Iaorov614wbkswgttNj89PWFGJBd0EqJz5OYvl7CMA/PgZrMseBGPgPE1HiAL7scVe/pY8RsyFvAvabM+89hkQXbDUzkydNwQ+guHgJ3s6Kl7ieGgDyVBY+ofZAPjA4Na7pV7q3CKzFxa1S2iLmDs5BwxXViJOnm24I8587URbN9CPraeDfnizh+6D78gt6hjJQU7XFzRy1kg7UIO5ECBh3uPpituYFFT+8wrELTIYUiOc/tHH/jmkWrMAixnAgtGpGJ52F8Bf4dGVzbgaTjDRgIgekaEfWcCaCkrTJRriaCPs82KyDnQKojZCwfEYVUFARoAWzu7/v1Zn6Ykh0VDbDtBiUNLvvfWKIe+/6jSkQpqEMvKRVfu3/0dumKyAppKmXcC+2+b0DktG/7tDho55lLNBfUJeFTI5TF2HerpD22MI6j/Ew5cyrk+tIS+OtjTgE/gHuXN5jdqynGECNHdPgMbe4KgOm7I6Wp0ZIW1pPnMxoMAYbB5QPMQ0RxvijaJ6qV3I6uZo9RzYMbUFg/Tr6y+VS7Gt5iPk30JjgRtmirqkZxEnTNopVozIJfCa69PFTPeM13VrJiBg7kGM747Is7tfZhYhoiavtFHZktSttVixgBasjffx1+DdkvskUGIRWh2uLUNkb7XBurhOnyxS+AvYDPYPh2+VO+RdmbUTJyyQLzwggQ6EnbiNMkukAmTniPPF1aYPT0T6iw8HihvZpcCb3lRiwBl04OrMwYg+4XuUSxGUVG78T7p+U4rzKfQgeni3Sq5MfQMv313Ij/ow+oNzek9mKXZNcgzJVfDP88ONa2qZyxhCCaJk3qEgi89CxWuKQVkcYgBNf6LFA6TVsRIRRoy3Nd7y1+YhvfDzb5l7S5U0+syaMMSP1k5w7bg0ROgF14wv+vqI3uPnwALCoDX6MkYuKwJtsh+KWE4BoD9P2AYNi2NGc27qf7hrbFDjS/6irtBvuXiyx29rTkZNUGQOd+depw0Q0rBivz5bLJyhiMRNCDdz5cQ3/B2d8ld8spbxaU1wtSb7Yjz/PZQdrfezg5OQMINrfh0gW6F3odkC7aQNC0E4sY2+jtn1WN9MZQABChfwIYZ6Jbt8Vx49gnHVc9o7FHyqXGiJY3yIXyMeKMN8ZBvslsjmXWXcRvEqwrb5GVzOzjBPixMxdUGlF8gV3lOCQEPC7AzDuSyhktNCbXZxf+PKTwARJ88JsogNrbsPXd0TRR7TjX0xrrd6n9rNS/nYmbqLiE5NCfXzfmh+TYYQS5AVPlEjlXUE7i37X6TUvhdg6IbCrqV2YnHziV891qoKXpBMKf85fcfpkeV7YHlP7RGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n    (d / document\n        :temporal ((document-creation-time :overlap s6h)\n                   (s6h :overlap s6i))\n        :modal ((root :modal author)\n                (author :full-affirmative s6h)\n                (author :full-affirmative s6i))\n        :coref ((s4p :same-entity s6p)\n                (s2p3 :same-entity s6x4)\n                (s2p2 :same-entity s6x5)))\n\nI chose these relations by applying the guidelines. I did not run any tool checks this time.\n\n- **Events:** I treated two nodes as events: `have-91` (s6h, \"it has three ports\") and `identity-91` (s6i, \"which are…\"). Both are states that hold now, so each overlaps document creation time. I left out 分别-01 (s6x6) because it only acts as a modifier.\n- **Modal:** the author states both events plainly, so both are full-affirmative.\n- **它 (s6p):** I linked it to its nearest earlier mention, the 三星 B560 named in sentence 4 (s4p). The pronouns in sentences 1–3 refer to the same monitor.\n- **HDMI and VGA:** I linked these to the HDMI and VGA product nodes in sentence 2 (s2p3 and s2p2). This is the least certain part. In sentence 6 they are plain nouns naming the ports, not named products, and the gold may not link them.\n- **接口 (ports):** I did not link these to sentence 2. That sentence counts two ports and this one counts three, so they are not clearly the same set.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

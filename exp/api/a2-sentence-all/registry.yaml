@@ -1,0 +1,67 @@
+# a2-sentence-all（直接调 API）：ablation：s3-all 的条件（缩略版 guideline + 三个工具）一句句跑。
+# 第一波 sentence：每句单独一次调用，只给这一句，写这一句的句子图。
+# 第二波 document：全部句子图都标好之后，每句再一次调用：给这一句和它前面最多五句（文档开头不足五句就从第一句给起）的
+# 原文和句子图，写这一句的文档级关系。两波的结果拼成整篇的回答，再和其他子实验一样打分。
+# 语法是 SkillParseUMR skillsets/REGISTRY.md 的最小子集（for_each、window），见 exp/lib/registry.py。
+# 本文件由 exp/scripts/make_subexps.py 生成。
+
+waves:
+  - name: sentence
+    start: graph
+    parallel: 8
+    init_input:
+      for_each:
+        sentence: annotation.sents
+      context:
+        lang: annotation.lang
+        doc_id: annotation.name
+        n: annotation.sentences
+        num: sentence.index
+      input:
+        line: sentence.line
+  - name: document
+    start: relations
+    parallel: 8
+    init_input:
+      for_each:
+        sentence: annotation.sents
+        tree: worktree.sentence
+      context:
+        lang: annotation.lang
+        doc_id: annotation.name
+        n: annotation.sentences
+        num: sentence.index
+        prev_lines:
+          window: annotation.sents
+          range: [-5, 0]
+          pick: line
+        prev_graphs:
+          window: worktree.sentence
+          range: [-5, 0]
+          pick: graph
+      input:
+        line: sentence.line
+        graph: tree.graph
+
+skills:
+  graph:
+    path: graph
+    guideline: guidelines/umr_guidelines_abridged.md
+    tools: [search_guidelines, propbank_lookup, search_annotations]
+    input:
+      line: str
+    emit:
+      graph: str                # 这一句的 # ::snt N / # sentence level graph:
+    store: [graph]
+  relations:
+    path: relations
+    guideline: guidelines/umr_guidelines_abridged.md
+    tools: [search_guidelines, propbank_lookup, search_annotations]
+    input:
+      line: str
+      graph: str
+    emit:
+      relations: str            # 这一句的 # document level relations:
+    store: [relations]
+
+dispatcher: {}

@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-3.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3436
+    },
+    "cache_creation_input_tokens": 3436,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 2157,
+    "output_tokens_details": {
+     "thinking_tokens": 1254
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 3 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\n2\t中国 官媒 报道 ， 中国 和 日本 主管 部门 持续 多轮 磋商 福岛 “ 核 污染 水 ” 排海 问题 后 ， 日本 欢迎 在 国际 原子能 机构 框架 下 设立 确保 中国 等 利益 相关 国家 有效 参与 ， 并 确保 独立 采样 和 实验室 分析 的 长期 国际 监测 安排 ， 中国 将 在 实施 监测 措施 后 ， 基于 科学 证据 逐步 恢复 符合 标准 的 日本 水产 进口\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1p2 / province\n                                :wiki \"Fukushima_Prefecture\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产\n                :source s1c2)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect performance))\n\nNotes:\n- I couldn't find any gold examples of 达成共识 or 核电站 to follow, so how I've laid those parts out is my own call.\n- 排海 isn't in Chinese PropBank, so I wrote it as 排海-00.\n- I joined the three clauses with one flat `and`. I didn't nest the \"并\" pair (参与 and 恢复) under a second `and`, and I didn't make them the content of the 共识.\n- 就…问题 attaches as `:topic` of 共识, not of 达成.\n- 福岛 is a named `province`, linked to the plant by `:place`.\n- Both future events take their aspect from \"将\": 参与 is `activity` and 恢复 is `performance`. 监测 and 进口 are nominal events, so their aspect is `process`. 逐步 is `:manner`.\n\n# ::snt 2\n# sentence level graph:\n(s2b / 报道-01\n    :ARG0 (s2g / 官媒\n        :mod (s2c / country :wiki \"China\"\n            :name (s2n / name :op1 \"中国\")))\n    :ARG1 (s2a / and\n        :op1 (s2h / 欢迎-01\n            :ARG0 (s2j / country :wiki \"Japan\"\n                :name (s2n2 / name :op1 \"日本\"))\n            :ARG1 (s2s / 设立-01\n                :ARG1 (s2p / 安排-01\n                    :ARG1 (s2m / 监测-01\n                        :aspect process)\n                    :mod (s2l / 长期)\n                    :mod (s2g2 / 国际)\n                    :ARG0-of (s2q / 确保-01\n                        :ARG1 (s2c2 / 参与-01\n                            :ARG0 (s2c3 / 国家\n                                :refer-number plural\n                                :example (s2c4 / country :wiki \"China\"\n                                    :name (s2n3 / name :op1 \"中国\"))\n                                :ARG0-of (s2x / 相关-01\n                                    :topic (s2l2 / 利益)\n                                    :aspect state))\n                            :ARG1 s2m\n                            :manner (s2y / 有效)\n                            :aspect activity)\n                        :aspect state)\n                    :ARG0-of (s2q2 / 确保-01\n                        :ARG1 (s2a2 / and\n                            :op1 (s2c5 / 采样-01\n                                :mod (s2d / 独立)\n                                :aspect process)\n                            :op2 (s2f / 分析-01\n                                :place (s2s2 / 实验室)\n                                :aspect process))\n                        :aspect state)\n                    :aspect process)\n                :place (s2k / 框架\n                    :mod (s2o / organization :wiki \"International_Atomic_Energy_Agency\"\n                        :name (s2n4 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\")))\n                :modal-strength neutral-affirmative\n                :aspect performance)\n            :temporal (s2a3 / after\n                :op1 (s2c6 / 磋商-01\n                    :ARG0 (s2b2 / 部门\n                        :mod (s2z / 主管)\n                        :mod (s2a4 / and\n                            :op1 (s2c7 / country :wiki \"China\"\n                                :name (s2n5 / name :op1 \"中国\"))\n                            :op2 (s2j2 / country :wiki \"Japan\"\n                                :name (s2n6 / name :op1 \"日本\"))))\n                    :ARG1 (s2w / 问题\n                        :topic (s2e / 排海-00\n                            :ARG1 (s2w2 / 水\n                                :mod (s2h2 / 核)\n                                :ARG1-of (s2w3 / 污染-01\n                                    :aspect state)\n                                :source (s2f2 / province :wiki \"Fukushima_Prefecture\"\n                                    :name (s2n7 / name :op1 \"福岛\")))\n                            :aspect process))\n                    :ARG1-of (s2c8 / 持续-01\n                        :aspect activity)\n                    :frequency (s2r / 轮\n                        :quant (s2d2 / 多))\n                    :aspect performance))\n            :aspect performance)\n        :op2 (s2r2 / 恢复-02\n            :ARG0 s2c\n            :ARG1 (s2i / 进口-01\n                :ARG0 s2c\n                :ARG1 (s2w4 / 水产\n                    :source s2j\n                    :ARG0-of (s2f3 / 符合-01\n                        :ARG1 (s2b3 / 标准)\n                        :aspect state))\n                :aspect habitual)\n            :manner (s2z2 / 逐步)\n            :ARG1-of (s2j3 / 基于-01\n                :ARG1 (s2e2 / 证据\n                    :mod (s2k2 / 科学))\n                :aspect state)\n            :temporal (s2a5 / after\n                :op1 (s2s3 / 实施-01\n                    :ARG0 s2c\n                    :ARG1 (s2c9 / 措施\n                        :mod (s2m2 / 监测-01\n                            :aspect process))\n                    :aspect performance))\n            :aspect performance))\n    :aspect performance)\n\nThis sentence:\n\n3\t日本 首相 岸田 文雄 表示 ， 国际 原子能 机构 将 扩展 对 “ 处理 水 ” 排海 的 监测 计划 ， 而 目前 他 不知道 中国 具体 何时 会 恢复 进口 日本 水产\n\nIts graph:\n\n# ::snt 3\n# sentence level graph:\n(s3b / 表示-01\n    :ARG0 (s3p / person\n        :name (s3n / name :op1 \"岸田\" :op2 \"文雄\")\n        :ARG1-of (s3h / have-org-role-92\n            :ARG2 (s3c / country\n                :name (s3n2 / name :op1 \"日本\"))\n            :ARG3 (s3s / 首相)))\n    :ARG1 (s3c2 / contrast-91\n        :ARG1 (s3k / 扩展-01\n            :ARG0 (s3o / organization\n                :name (s3n3 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\"))\n            :ARG1 (s3j / 计划-01\n                :ARG1 (s3j2 / 监测-01\n                    :ARG0 s3o\n                    :ARG1 (s3p2 / 排海-00\n                        :ARG1 (s3w / 水\n                            :ARG1-of (s3c3 / 处理-02\n                                :aspect performance))\n                        :aspect process)\n                    :aspect process)\n                :aspect state)\n            :aspect performance)\n        :ARG2 (s3z / 知道-01\n            :ARG0 s3p\n            :ARG1 (s3h2 / 恢复-02\n                :ARG0 (s3c4 / country\n                    :name (s3n4 / name :op1 \"中国\"))\n                :ARG1 (s3j3 / 进口-01\n                    :ARG0 s3c4\n                    :ARG1 (s3s2 / 水产\n                        :mod s3c)\n                    :aspect activity)\n                :temporal (s3a / amr-unknown\n                    :mod (s3j4 / 具体))\n                :aspect performance)\n            :temporal (s3m / 目前)\n            :polarity -\n            :modal-strength full-negative\n            :aspect state))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s3b)\n               (document-creation-time :overlap s3h)\n               (s3b :after s3k)\n               (s3k :overlap s3j)\n               (s3j :after s3j2)\n               (present-reference :depends-on s3m)\n               (s3m :overlap s3z)\n               (s3z :after s3h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s3b)\n            (author :full-affirmative s3h)\n            (author :full-affirmative s3p)\n            (s3p :full-affirmative s3k)\n            (s3p :full-affirmative s3j)\n            (s3j :unspecified s3j2)\n            (s3p :full-affirmative s3p2)\n            (s3p :full-affirmative s3c3)\n            (s3p :full-negative s3z)\n            (s3p :full-affirmative s3h2)\n            (s3p :full-affirmative s3j3))\n    :coref ((s2j :same-entity s3c)\n            (s2c :same-entity s3c4)\n            (s2o :same-entity s3o)\n            (s2m :same-event s3j2)\n            (s2e :same-event s3p2)\n            (s2w2 :same-entity s3w)\n            (s2r2 :same-event s3h2)\n            (s2i :same-event s3j3)\n            (s2w4 :same-entity s3s2)))\n\nI wrote these from the guidelines summary alone. I didn't look anything up in the full guidelines, the gold annotations or PropBank, so several choices below are my own calls:\n\n- **目前 (\"currently\"):** I hung it on `present-reference`, treating it as a vague time word like 现在. It could also go on `document-creation-time`, like 今天.\n- **The speaker's view:** Kishida (`s3p`) is the conceiver of everything he reports. His not knowing (`s3z`) is `full-negative`. I marked the resumption of imports (`s3h2`) as `full-affirmative` from him, because only the timing is unknown, not whether it will happen.\n- **The monitoring plan:** the monitoring (`s3j2`) is `unspecified` under the plan (`s3j`) and placed after it in time. This follows the rule for events under a predicate like \"plan\", applied to a noun.\n- **Links to sentence 2:**\n  - China (`s3c4`) links to `s2c`, its last mention in sentence 2.\n  - Japan (`s3c`) links to `s2j`, its last mention in sentence 2.\n  - I treated the IAEA's monitoring here (`s3j2`) as the same event as the international monitoring in sentence 2 (`s2m`). That link is the least certain one.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

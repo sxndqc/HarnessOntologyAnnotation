@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 776
+    },
+    "cache_creation_input_tokens": 776,
+    "cache_read_input_tokens": 8904,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 495,
+    "output_tokens_details": {
+     "thinking_tokens": 88
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 1 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\nIts graph:\n\nThe sentence reads as a list of three specs for one display: \"16:9 screen ratio, 21.5-inch widescreen, its best resolution is 1920×1080.\" I joined the three parts with an `and` and annotated \"为\" as `identity-91`. I found no gold examples with 分辨率, 英寸 or 屏幕, so these choices are mine and not copied from the data:\n\n- **16:9:** I wrote the ratio as a `string-entity` holding \"16:9\" and linked it with `:quant`.\n- **1920 × 1080:** I wrote it as `product-of` with the two numbers.\n- **21.5 英寸:** this is a `distance-quantity` with 英寸 as its unit.\n- **最佳:** I kept it as one modifier word, not split into 佳 plus a degree marker.\n- **它:** this is a `thing` (3rd person, singular) and is the possessor of the resolution.\n\n    # ::snt 1\n    # sentence level graph:\n    (s1a / and\n        :op1 (s1x / 比例\n            :mod (s1x2 / 屏幕)\n            :quant (s1r / string-entity\n                :value \"16:9\"))\n        :op2 (s1x3 / 宽屏\n            :mod (s1d / distance-quantity\n                :quant 21.5\n                :unit (s1x4 / 英寸)))\n        :op3 (s1i / identity-91\n            :ARG1 (s1x5 / 分辨率\n                :mod (s1x6 / 最佳)\n                :possessor (s1t / thing\n                    :refer-person 3rd\n                    :refer-number singular))\n            :ARG2 (s1p / product-of\n                :op1 1920\n                :op2 1080)\n            :aspect state))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS2QYKEAgTGAI4AUIIdGhpbmtpbmcSDK8swcq0QvsUQvNYThoMgl4OjZqeWEbKW3qiIjCQVn0y8tC36OHY9/bus73EnByx8Lv5eOELgHLRhalx7bD0EfdlaLoYH9xIEGDx92cq9gUV+DspvwyS/8Py/GF3auIC9pkg0ino3krRWwa5SpstCmj+RqC9S9q5b4/pvA3PnVm7yWM+fkE/FuDSwJQuI3GFlU2lmzdEXWkRgUt7rS4gaDioJrGoz8woRNTV4mZkZVVQ6BezIM3MxZBhBgHKQqcumevEhReEPm9IZkqwXhmayTwvn7NiK5BTGvJyUDYkAnUHN+8QY6YVBAesXdjGuRilSN2aunFDpsPM49VAieDjWM2+H19S465+9uFbb6CDW3WZwhtiaWzy0MbDNogibHmqYq9d1d3qO78hYug3n7zewTI5ZPnUdLujgtmdHrfBPzreZOEpaMipmsKypU+84BWbzXvi231pAJxuAZlmOw/aDaNKFaDl5HXPIVYjzeWHh1M6caMMZTW3/8pFL91UtCDN7vbpPpGE8l1bVMKMuh+2xbvX9WwLL0hvigoR+BqIoEWbnBZ0ogtXKA3lzADyRRbwkY3QZCGe5T5fyFGE8H5lN6t5US3B/hw3NDPC7IwTIFpWMHdNz7Ry7edZHFFn8EB8K5Mito/y+9lRejccYPduRDAf2QtYEBXdCdGOA7rD0xzbEOeWH207t6OUeNdF+6ij6p818/gdTna5Fp8IqhsA6Bo0DaCf9J3QAKVjk9n1JKDUqot2N5HttIeFK0Fv5XV+JzsdJIy4BMry7KuZPxcO7PZgyNkYmUCgDMXHaKi2FyL1mKAU0qUfMnO8srgOklQAVlQcXkqUOpQR/oq9F6a0Z+jEhWyuNZ9nv/YHn7v/KD9VnzQf3JhUnsQJrZHeUjNJZzxNvCDpkB2ooARe0bb7esFGwFY6FpvuOGG0+LenvLpZVykVvdi8MDvhjrTQrwo/H2Zqh8pc8tLgsZlAoW6jfDMEZadKSiRrAx2tWIiybcmid9/Zsl6YmX6WsnbSQVH668Jx/ZusC9kuECbfSPlzOLwS+jTEa4zJMd0pFr5zqqfzf6oU0ybg0Iha2LmgFlf9/WdrixrnW6x90DdQ/NYPQfQ8ZyzAsxgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n    (d / document\n        :temporal ((document-creation-time :overlap s1i))\n        :modal ((root :modal author)\n                (author :full-affirmative s1i)))\n\nThis is the first sentence, so the relations come from the guidelines alone; I didn't check them against gold data.\n\n- **Events:** `s1i` (`identity-91`, \"its best resolution is 1920×1080\") is the only event. The rest of the graph (the ratio, the widescreen size, `and`, `product-of`) is entities or quantities and gets no temporal or modal relation.\n- **Temporal:** the sentence has no time expression and no earlier event to use as a reference. So `s1i` takes `document-creation-time` as its parent, with `:overlap` because it is a present state.\n- **Modal:** the author states the spec plainly, so it gets `root :modal author` and `author :full-affirmative s1i`.\n- **Coreference:** there is no earlier sentence to link to. 它 (`s1t`) seems to point to the display named by 宽屏 (`s1x3`). But both are in this one sentence, and the guidelines say coreference within a sentence is shown in the graph, not as a `:coref` triple. So `:coref` is empty.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

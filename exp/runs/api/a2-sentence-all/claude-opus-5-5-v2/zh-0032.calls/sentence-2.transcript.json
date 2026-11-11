@@ -1,0 +1,285 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-2.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9318
+    },
+    "cache_creation_input_tokens": 9318,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 370,
+    "output_tokens_details": {
+     "thinking_tokens": 114
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5594
+    },
+    "cache_creation_input_tokens": 5594,
+    "cache_read_input_tokens": 9318,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1244,
+    "output_tokens_details": {
+     "thinking_tokens": 1142
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1269
+    },
+    "cache_creation_input_tokens": 1269,
+    "cache_read_input_tokens": 14912,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1475,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 2 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n2\t中国 官媒 报道 ， 中国 和 日本 主管 部门 持续 多轮 磋商 福岛 “ 核 污染 水 ” 排海 问题 后 ， 日本 欢迎 在 国际 原子能 机构 框架 下 设立 确保 中国 等 利益 相关 国家 有效 参与 ， 并 确保 独立 采样 和 实验室 分析 的 长期 国际 监测 安排 ， 中国 将 在 实施 监测 措施 后 ， 基于 科学 证据 逐步 恢复 符合 标准 的 日本 水产 进口\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS6AYKEAgTGAI4AUIIdGhpbmtpbmcSDFbabwt30SyE1NAenBoMAXgdMqYcq+F9mmtNIjB/pMIJKfhygE1usJ7JTotos9KrfAb+NEgsFsKl0ARZIfw0vIhlI0Bk8bYv4k6vpmIqhQZmNuzgfCgIrrxROQzu5aDMneS4NuxMVJ0I3lEt6MzY5EaM6LgNeSfZOFxZgfRdjORtK+t40Q6+uYb4syFzuZUvPhlYlPWAkDfjKRvctACARKEcE+afOUQrSqH26/bxft4SvP73fIWLVEyJdBaZ7+km1ERCJx/2OsTKia0pjDp+oDWJu7m6vkStW/SviARsxh9jYI8Ui9s6fy7vK2PzDgtltJDmFaTPyAdT8jHpc6/Pd8zFGddBdbC2RThB49sK2HNbdEE8SpkvfZMpsY1unZccesTQPw6Do7S3YCFAp6vXBRXVXtcQzIA5gEfbW+Yw+Pbz54ncjfaOquH4YEx75X5vOCrChrGGNPbZUFlnRNPsxS5yK9GnMOswFSkaQrKrIkZEabeDBVmrTAdDRmPBBHzt+rkflpdQLOCJVk8ymlnhXKYblGd69hclWKha778cR5EWYM6ptY+q1Sa/KRRwKtL+jBZbu3x1kSaoEdA0aagXUvX5Nu64gT7WW6KaWgK2CVudwluzxLjtzw1NGALgzYRVPuPdbh6kUsxEUzyet1fLk1JS7U7L+wnnUH1oSf/FFSt6IT0vR+OZsX4vMaFObL14cowIpW/IxomCMEONQ/f7kyvmxJMdn4KLakFINFxeSHTKAadwr3gTRbJQg6H257IzdvAm4aEHMW4svrQPyds5qeqdfX5RkYwidhhgMHHAS+vgAvVHSOKZEYZ9hFJgzsKzOAQWa+6HLMeqMk1peGdAGZWu4ihJgKtf32bCdP0pHY0JhwT/6ROvMxKY4zAZaivPWrgrQcVFeDo7wCR/WldYGXZfKOp6MQ8Z9KtvDbYPj1PJCEmYqy9RcmHSx6PySGQToK3mAg45L2hbTTQu4btbmXG/6qpxKxtjWTK95htI/bcckK6eGLhaK2Qbf1BUyUFox/WYoew0yXUtk4CPQUtCb5CI3iyS2vwwfAam2up2gpAab+v5+vPM3dj+kVAIsTTT7a6IpWVVWBJwmaTe0KLNGdrMw1wRo7m4kC4y8n7NViLQRVBfzBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01V72t1xdY9aYE5MrBoAdssm",
+     "input": {
+      "lemmas": [
+       "报道",
+       "持续",
+       "磋商",
+       "欢迎",
+       "设立",
+       "确保",
+       "参与",
+       "采样",
+       "分析",
+       "监测",
+       "安排",
+       "实施",
+       "恢复",
+       "符合",
+       "进口",
+       "基于",
+       "污染",
+       "相关"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_015ip2qjxJKhdwszJb4e84vZ",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "排海",
+       "核污染水"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01V72t1xdY9aYE5MrBoAdssm",
+     "content": "## 报道\n\n### 报道-01\n\n- ARG0: reporter\n- ARG1: thing reported\n\nExample 1: 眼下 ， 西班牙 大众 传媒 每 天 都 在 连篇累牍 地 报道 欧元 及 其 相关 情况\n- ARGM-ADV: 眼下\n- ARG0: 西班牙 大众 传媒\n- ARGM-TMP: 每 天\n- ARGM-ADV: 都\n- ARGM-ADV: 在\n- ARGM-ADV: 连篇累牍 地\n- rel: 报道\n\nExample 2: 媒介 报道 ， 沿海 地区 仅 苏 、 浙 、 沪 三 地 国际 集装箱 码头 已 达到 二十多 个 。\n- ARG0: 媒介\n- rel: 报道\n\n## 持续\n\n### 持续-01\n\n- ARG0: thing described\n- ARG1: duration\n\nExample 1: 二十一 颗 彗核 撞击 时间 持续 五 天 半 。\n- ARG0: 二十一 颗 彗核 撞击 时间\n- ARG1: 五 天 半\n- rel: 持续\n\nExample 2: 两 岸 关系 持续 *PRO* 低迷\n- ARG0: 两 岸 关系\n- ARG0-PRD: *PRO* 低迷\n- rel: 持续\n\n### 持续-02\n\n- ARG0: thing described\n- ARG1: end point\n\nExample 1: 中国 经济 发展 的 传奇 将 持续 到 *OP* *T*-2 新 的 世纪\n- ARG0: 中国 经济 发展 的 传奇\n- ARG1: *OP* *T*-2 新 的 世纪\n- ARGM-ADV: 将\n- rel: 持续\n\n## 磋商\n\n### 磋商-01\n\n- ARG0: agent\n- ARG1: thing arg0 negotiates about\n\nExample 1: 双方 就 有关 具体 问题 进行 了 磋商 ， 并 达成 了 *OP* *T*-1 广泛 的 一致\n- ARG0: 双方\n- ARG1: 就 有关 具体 问题\n- rel: 磋商\n\n## 欢迎\n\n### 欢迎-01\n\n- ARG0: entity extending welcome\n- ARG1: entity receiving welcome\n- ARG2: predicate\n\nExample 1: 德 外长 欢迎 北约 对 塞族 的 最后 通牒\n- ARG0: 德 外长\n- rel: 欢迎\n\nExample 2: 他 代表 中国 政府 欢迎 与会者 *PRO* 今年 ９月 赴 中国 香港 出席 国际 货币 基金 组织 临委会 下 一 次 会议 和 １９９７年 年会 。\n- ARG0: 他\n- rel: 欢迎\n\n## 设立\n\n### 设立-01\n\n- ARG0: establisher\n- ARG1: theme\n- ARG2: purpose\n\nExample 1: 天津港 保税区 是 中国 *OP* *T*-1 最早 设立 的 保税区 之一 。\n- ARGM-ADV: 最早\n- rel: 设立\n\nExample 2: *PRO* 召回 朝鲜 军事 停战 委员会 朝方 代表团 以及 设立 朝鲜 人民军 板门店 代表处 *PRO* 作为 协商 机构\n- ARG0: *PRO*\n- rel: 设立\n\nExample 3: 中国 企业 迄今 已 在 南非 设立 各 类 机构 四十多 个\n- ARG0: 中国 企业\n- ARGM-ADV: 迄今\n- ARGM-ADV: 已\n- ARGM-LOC: 在 南非\n- rel: 设立\n\nExample 4: 近 几 年 台湾 厂商 也 在 广东 设立 七千多 家 加工 企业 。\n- ARG0: 台湾 厂商\n- ARGM-ADV: 也\n- ARGM-LOC: 在 广东\n- rel: 设立\n\n## 确保\n\n### 确保-01\n\n- ARG0: agent/cause\n- ARG1: thing guaranteed\n\nExample 1: 四 、 人民 银行 要 认真 做好 对 金融 机构 的 监管 工作 ， 确保 金融 体系 的 稳定\n- ARG0: 人民 银行\n- ARG1: 金融 体系 的 稳定\n- rel: 确保\n\nExample 2: 深圳市 政府 已 与 “ 深圳 高速 ” 签订 了 “ 专营 协议 ” ， 确保 它 在 公路 建设 方面 有 优先 发展权\n- ARG0: 深圳市 政府\n- ARG1: 它 在 公路 建设 方面 有 优先 发展权\n- rel: 确保\n\nExample 3: 临立会 的 成员 会 谅解 并 合作 确保 草案 *PRO* 得以 迅速 通过\n- ARG0: 临立会 的 成员\n- ARG1: 草案\n- ARG1-PRD: *PRO* 得以 迅速 通过\n- rel: 确保\n\n## 参与\n\n### 参与-01\n\n- ARG0: participant\n- ARG1: activity\n\nExample 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。\n- ARG0: 日本 进出口 银行\n- rel: 参与\n\nExample 2: 法国 从来 没有 参与\n- ARG0: 法国\n- ARGM-ADV: 从来\n- rel: 参与\n\n## 采样\n\n### 采样-01\n\n- ARG0: agent\n- ARG1: a whole mass that arg0 takes specimen from\n\nExample 1: 中华 民国 *OP* *T*-1 驻 法 代表处 向 游离 辐射 防护局 和 家乐福 超商 采样 探询\n- ARG0: 中华 民国 驻 法 代表处\n- ARG1: 向 游离 辐射 防护局 和 家乐福 超商\n- rel: 采样\n\n## 分析\n\n### 分析-01\n\n- ARG0: analyzer\n- ARG1: thing analyzed\n\nExample 1: 俄罗斯 航天 飞行 控制 中心 技术 委员会 今天 开会 分析 了 *OP* 两 次 对接 *T*-1 失败 的 原因 并 决定 *pro* ９月 ２日 进行 第三 次 对接 。\n- ARG0: 俄罗斯 航天 飞行 控制 中心 技术 委员会\n- ARG1: *OP* 两 次 对接 *T*-1 失败 的 原因\n- ARGM-TMP: 今天\n- rel: 分析\n\nExample 2: 据 权威 人士 分析\n- ARG0: 权威 人士\n- rel: 分析\n\n### 分析-02\n\n- ARG0: analyzer\n- ARG1: conclusion\n\nExample 1: 有关 人士 分析 ， *PRO* 加快 水运 港口 建设 ， 是 江西省 继 京九 铁路 通车 后 ， 区位 优势 得到 进一步 改善 的 又 一 标志 。\n- ARG0: 有关 人士\n- ARG1: *PRO* 加快 水运 港口 建设 ， 是 江西省 继 京九 铁路 通车 后 ， 区位 优势 得到 进一步 改善 的 又 一 标志\n- rel: 分析\n\n## 监测\n\n### 监测-01\n\n- ARG0: monitor\n- ARG1: thing monitored\n\nExample 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中\n- ARG0: 联合国\n- ARG1: *T*-1\n- ARGM-TMP: 自 １９９３年 以来\n- rel: 监测\n\n## 安排\n\n### 安排-01\n\n- ARG0: arranger\n- ARG1: thing arranged\n- ARG2: for whom the arrangement is made\n\nExample 1: 此外 ， 中国 在 航天 技术 和 激光 技术 领域 安排 了 四百多 个 课题 的 研究\n- ARG0: 中国\n- ARGM-LOC: 在 航天 技术 和 激光 技术 领域\n- rel: 安排\n\nExample 2: 在 该 名 ＂ 老细 ＂ 安排 下 ， 两 人 在 二月 底 到 港 。\n- ARG0: 该 名 ＂ 老细 ＂\n- rel: 安排\n\n### 安排-02\n\n- ARG0: arranger\n- ARG1: party arranged\n- ARG2: predicate\n\nExample 1: 海协 安排 专家 *PRO* 介绍 案件 的 具体 情况 ， 并 回答 问题\n- ARG0: 海协\n- rel: 安排\n\n## 实施\n\n### 实施-01\n\n- ARG0: agent\n- ARG1: theme\n\nExample 1: 中国 海关 总署 将 实施 对 知识 产权 的 保护 措施\n- ARG0: 中国 海关 总署\n- ARGM-ADV: 将\n- rel: 实施\n\nExample 2: 结售 制度 和 *OP* *T*-2 新 的 核销 制度 在 西藏 全面 实施\n- ARG1: 结售 制度 和 *OP* (*T*-2)->(核销制度) 新 的 核销 制度\n- ARGM-LOC: 在 西藏\n- ARGM-ADV: 全面\n- rel: 实施\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 符合\n\n### 符合-01\n\n- ARG0: theme\n- ARG1: consistent with\n\nExample 1: 中 美 保持 友好 既 符合 两 国 人民 利益 ， 也 有利于 亚太 地区 乃至 世界 的 和平 与 稳定\n- ARG0: 中 美 保持 友好\n- ARG1: 两 国 人民 利益\n- rel: 符合\n\n## 进口\n\n### 进口-01\n\n- ARG0: importer\n- ARG1: thing imported\n- ARG2: entity arg1 is imported from\n\nExample 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期\n- ARG0: 外商 投资 企业\n- ARG1: 设备 和 原材料\n- ARGM-ADV: 免税\n- rel: 进口\n\nExample 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备\n- ARG0: 中国\n- ARG1: 技术 和 成套 设备\n- ARG2: 从 三十多 个 国家 和 地区\n- ARGM-ADV: 与 此 同时\n- rel: 进口\n\nExample 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口\n- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物\n- rel: 进口\n\nExample 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品\n- ARG1: 初级 形状 塑料\n- ARG1-QTY: 一百一十万 吨\n- ARGM-ADV: 其中\n- rel: 进口\n\n## 基于\n\n### 基于-01\n\n- ARG0: theme\n- ARG1: based on\n\nExample 1: *PRO* 基于 以上 认识\n- ARG0: *PRO*\n- ARG1: 以上 认识\n- rel: 基于\n\n## 污染\n\n### 污染-01\n\n- ARG0: cause,agent\n- ARG1: theme\n\nExample 1: 这 种 方法 不 会 污染 环境 。\n- ARG0: 这 种 方法\n- rel: 污染\n\nExample 2: 这 个 *OP* *T*-2 严重 污染 的 第三 大 淡水湖\n- ARGM-ADV: 严重\n- rel: 污染\n\n## 相关\n\n### 相关-01\n\n- ARG0: entities which are relevant\n\nExample 1: *OP* *T*-2 与 澳门 政权 交接 密切 相关 的 “ 三 大 问题 ” 的 解决\n- ARG0: *T*-2\n- ARG0-CRD: 与 澳门 政权 交接\n- ARGM-ADV: 密切\n- rel: 相关",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_015ip2qjxJKhdwszJb4e84vZ",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01FsLyM8CEG1VtHSqvBuK4JV",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "官媒"
+      ],
+      "max_results": 2
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01FsLyM8CEG1VtHSqvBuK4JV",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "text": "# ::snt 2\n# sentence level graph:\n(s2b / 报道-01\n    :ARG0 (s2g / 官媒\n        :mod (s2c / country :wiki \"China\"\n            :name (s2n / name :op1 \"中国\")))\n    :ARG1 (s2a / and\n        :op1 (s2h / 欢迎-01\n            :ARG0 (s2j / country :wiki \"Japan\"\n                :name (s2n2 / name :op1 \"日本\"))\n            :ARG1 (s2s / 设立-01\n                :ARG1 (s2p / 安排-01\n                    :ARG1 (s2m / 监测-01\n                        :aspect process)\n                    :mod (s2l / 长期)\n                    :mod (s2g2 / 国际)\n                    :ARG0-of (s2q / 确保-01\n                        :ARG1 (s2c2 / 参与-01\n                            :ARG0 (s2c3 / 国家\n                                :refer-number plural\n                                :example (s2c4 / country :wiki \"China\"\n                                    :name (s2n3 / name :op1 \"中国\"))\n                                :ARG0-of (s2x / 相关-01\n                                    :topic (s2l2 / 利益)\n                                    :aspect state))\n                            :ARG1 s2m\n                            :manner (s2y / 有效)\n                            :aspect activity)\n                        :aspect state)\n                    :ARG0-of (s2q2 / 确保-01\n                        :ARG1 (s2a2 / and\n                            :op1 (s2c5 / 采样-01\n                                :mod (s2d / 独立)\n                                :aspect process)\n                            :op2 (s2f / 分析-01\n                                :place (s2s2 / 实验室)\n                                :aspect process))\n                        :aspect state)\n                    :aspect process)\n                :place (s2k / 框架\n                    :mod (s2o / organization :wiki \"International_Atomic_Energy_Agency\"\n                        :name (s2n4 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\")))\n                :modal-strength neutral-affirmative\n                :aspect performance)\n            :temporal (s2a3 / after\n                :op1 (s2c6 / 磋商-01\n                    :ARG0 (s2b2 / 部门\n                        :mod (s2z / 主管)\n                        :mod (s2a4 / and\n                            :op1 (s2c7 / country :wiki \"China\"\n                                :name (s2n5 / name :op1 \"中国\"))\n                            :op2 (s2j2 / country :wiki \"Japan\"\n                                :name (s2n6 / name :op1 \"日本\"))))\n                    :ARG1 (s2w / 问题\n                        :topic (s2e / 排海-00\n                            :ARG1 (s2w2 / 水\n                                :mod (s2h2 / 核)\n                                :ARG1-of (s2w3 / 污染-01\n                                    :aspect state)\n                                :source (s2f2 / province :wiki \"Fukushima_Prefecture\"\n                                    :name (s2n7 / name :op1 \"福岛\")))\n                            :aspect process))\n                    :ARG1-of (s2c8 / 持续-01\n                        :aspect activity)\n                    :frequency (s2r / 轮\n                        :quant (s2d2 / 多))\n                    :aspect performance))\n            :aspect performance)\n        :op2 (s2r2 / 恢复-02\n            :ARG0 s2c\n            :ARG1 (s2i / 进口-01\n                :ARG0 s2c\n                :ARG1 (s2w4 / 水产\n                    :source s2j\n                    :ARG0-of (s2f3 / 符合-01\n                        :ARG1 (s2b3 / 标准)\n                        :aspect state))\n                :aspect habitual)\n            :manner (s2z2 / 逐步)\n            :ARG1-of (s2j3 / 基于-01\n                :ARG1 (s2e2 / 证据\n                    :mod (s2k2 / 科学))\n                :aspect state)\n            :temporal (s2a5 / after\n                :op1 (s2s3 / 实施-01\n                    :ARG0 s2c\n                    :ARG1 (s2c9 / 措施\n                        :mod (s2m2 / 监测-01\n                            :aspect process))\n                    :aspect performance))\n            :aspect performance))\n    :aspect performance)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

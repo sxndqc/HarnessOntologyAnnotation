@@ -1,0 +1,272 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-2.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9147
+    },
+    "cache_creation_input_tokens": 9147,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 209,
+    "output_tokens_details": {
+     "thinking_tokens": 31
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2263
+    },
+    "cache_creation_input_tokens": 2263,
+    "cache_read_input_tokens": 9147,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 501,
+    "output_tokens_details": {
+     "thinking_tokens": 400
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 527
+    },
+    "cache_creation_input_tokens": 527,
+    "cache_read_input_tokens": 11410,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 801,
+    "output_tokens_details": {
+     "thinking_tokens": 143
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 2 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQStwUKEAgTGAI4AUIIdGhpbmtpbmcSDNTwK7VuHKicUKIJxxoMLlfHBrzxpzPFoQc3IjCJAAJBJqll0gmz7vPr98qr/9ZYGhIgzpaf3aBUL+djGi3Yv1LOPqJD0rAfYGccl2wq1AQAIeTMHMPmyavb/GMAKOpVvX51GXxe/hz+Wa+hDUlEEbDTaa7rZ0hSXeRRSK8O31vmrDhE6nlsC8Aturvv5HEWQeO5IcI0ZN+uhO48ksibmp8LoiTs3dUjIdJsIV9uBBu4BaTfkrBaA+To2g1wvmSC94PvMhNeifP56IBPrpBwLAD16fDcZ3xyd+F7GVoyQ1N89x/M7pyWX70DhrT165eLyTN2MswHXfMiv1a2nUifHz7+YmRp9dSgy+aU57dGwTEu5XOJRMQ4+FMaPxDu/AZcPa+ztnSLf3LrfUJjsin59omFwFZ613/vaVKpWJDt+/BNaLvBVJEymJe2B/iP/qOE7fFFOO8Nxye2vkZhIjNCqcdQk/915V2NqkbqNzyEqcGUSYTo68lJL0dlLOa5aSvacnvW6px0gkSUImb28rkPWLJInMvNtN5LI9KiZCQYGMzFyuRolzJL1/3w8d5QvGzM9kcIP8Ejx3ocTnMXgMTkvkpsnhStdV5S1JnJ4Ml6ei4VOfYbR8xxu9R1BOYW7/1wF1PNzQEWioPK8RWF6lc78j2MDDPNiUHU85qr97U5lj++uzbRAz0OogxAOwcOlBF8bkIZBBs21/5o8Z1Ix2oU9g6V4cUp9u/JiRQuO3hJr8XN3dCgSlhYOJMoqsS+S3xS9oJeUs6BFiNOoqSwe7Mz7nYviWpsgsTn2YQ1CWVT8yE5BosygFiCafLSwu8AFWr36+Ccg09h7ej6Evcgm4RQyG1AAnVQffZG+ELzyFdsF9FdgUawgou/90B8RFsK++HDb7uvIRgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01Y7UEru1TUnSh5bfx3SsxGt",
+     "input": {
+      "lemmas": [
+       "配备"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01Bg8KtWaYgRQWsUJ2kMhg7H",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "而且"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01Y7UEru1TUnSh5bfx3SsxGt",
+     "content": "## 配备\n\n### 配备-01\n\n- ARG0: agent\n- ARG1: entity equipped/allocated\n- ARG2: location\n\nExample 1: 而且 ， *pro* 这 颗 卫星 上 配备 了 *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG0: *pro*\n- ARG1: *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG2: 这 颗 卫星 上\n- ARGM-ADV: 而且\n- rel: 配备\n\nExample 2: 政府 各 机关 也 配备 了 双语 译员\n- ARG1: 双语 译员\n- ARG2: 政府 各 机关\n- ARGM-ADV: 也\n- rel: 配备",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01Bg8KtWaYgRQWsUJ2kMhg7H",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 383, \"sentence\": \"而且 ， 老虎 是 不 会 吃 草 的 ” 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt383\\nIndex:    1  2    3  4  5  6  7  8  9 10 11\\nWords: 而且   ，  老虎   是  不  会  吃  草  的  ”  。\\n\\n# sentence level graph:\\n(s383x12 / say\\n\\t:ARG1 (s383x14 / progression\\n\\t\\t:ARG2 (s383x6 / 会-02\\n\\t\\t\\t:ARG0 (s383x3 / 老虎)\\n\\t\\t\\t:ARG1 (s383x7 / 吃-01\\n\\t\\t\\t\\t:ARG1 (s383x8 / 草))\\n\\t\\t\\t:mode judgement\\n\\t\\t\\t:polarity -)))\\n\\n# alignment:\\ns383x12: 0-0\\ns383x14: 0-0\\ns383x3: 3-3\\ns383x6: 6-6\\ns383x7: 7-7\\ns383x8: 8-8\\n\\n# document level annotation:\\n(s383s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 974, \"sentence\": \"它 上面 全 是 干巴巴 的 ， 而且 又 尖利 又 咸涩 ，\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt974\\nIndex:  1    2  3  4      5  6  7    8  9   10 11   12 13\\nWords: 它  上面   全  是  干巴巴    的  ，  而且   又  尖利   又  咸涩   ，\\n\\n# sentence level graph:\\n(s974x14 / progression\\n\\t:ARG1 (s974x5 / 干巴巴\\n\\t\\t:mod (s974x3 / 全-01))\\n\\t:ARG1 (s974y1 / identity-91\\n\\t\\t:ARG0 (s974x2 / 上面\\n\\t\\t\\t:possessor-of (s974x1 / individual-person\\n\\t\\t\\t\\t:refer-person 3\\n\\t\\t\\t\\t:refer-number singular))\\n\\t\\t:ARG1 s974x5)\\n\\t:ARG2 (s974x20 / and\\n\\t\\t:op1 (s974x10 / 尖利-01)\\n\\t\\t:op2 (s974x12 / 咸涩)\\n\\t\\t:ARG0 s974x2))\\n\\n# alignment:\\ns974x1: 0-0\\ns974x10: 10-10\\ns974x12: 12-12\\ns974x14: 0-0\\ns974x2: 2-2\\ns974x20: 0-0\\ns974x3: 3-3\\ns974x5: 5-5\\ns974y1: 0-0\\n\\n# document level annotation:\\n(s974s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1062, \"sentence\": \"而且 ， 我 甚至 会 喜欢 那 风 吹 麦浪 的 声音 … ”\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1062\\nIndex:    1  2  3    4  5    6  7  8  9   10 11   12 13 14\\nWords: 而且   ，  我  甚至   会  喜欢   那  风  吹  麦浪   的  声音   …  ”\\n\\n# sentence level graph:\\n(s1062x15 / say\\n\\t:ARG1 (s1062x17 / progression\\n\\t\\t:ARG2 (s1062x5 / 会-02\\n\\t\\t\\t:ARG0 (s1062x6 / 喜欢-01\\n\\t\\t\\t\\t:ARG0 (s1062x3 / individual-person\\n\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t\\t:ARG1 (s1062x12 / 声音\\n\\t\\t\\t\\t\\t:mod (s1062x9 / 吹-02\\n\\t\\t\\t\\t\\t\\t:ARG0 (s1062x8 / 风)\\n\\t\\t\\t\\t\\t\\t:ARG1 (s1062x10 / 麦浪))\\n\\t\\t\\t\\t\\t:mod (s1062x7 / 那)))\\n\\t\\t\\t:mod (s1062x4 / 甚至))))\\n\\n# alignment:\\ns1062x10: 10-10\\ns1062x12: 12-12\\ns1062x15: 0-0\\ns1062x17: 0-0\\ns1062x3: 0-0\\ns1062x4: 4-4\\ns1062x5: 5-5\\ns1062x6: 6-6\\ns1062x7: 7-7\\ns1062x8: 8-8\\ns1062x9: 9-9\\n\\n# document level annotation:\\n(s1062s0 / sentence)\"}], \"found\": 13}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_017fDqoUUL8RjEZvQTpgxSJa",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "接口"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_017fDqoUUL8RjEZvQTpgxSJa",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSlQgKEAgTGAI4AUIIdGhpbmtpbmcSDNicEqXatzAJLx8vYRoM/y0UNn8ALcZmaoSIIjDPpz/BxcAkRD8p9FopbrRG/MxyPMSPqndRQ9g/8cPae05RBJ7ZhkJMGVxPPkEUMdoqsgdUsf4Rw8SqHYOtppJiJcGIB0co4Muxhnu937lkRjs7zAhLMHe/m7/IqL0khOSnoLMwd7fp/1RZ0KrgsCRzXtkRrj8PHx7B9uTR/SoQHjZBvyAaqP8lu9knvbEOT5q1anmXX3TXcxGRU5rvy5CFEfvBUbJA0fHOPNQZ62u9jP7xD+XvnO9o32jAK145P4mADQW4KkhA2GbRiE+b+kuFDVXNBAcEaW48BRpMwIzL4j43bZ1pc29muzEatBTVsV5d04GNo4wGo4hQEeuE/jYx92xEoGsiB0B4s9bSIlCp7iCgng1HqYR01EXCJe9rXZMdaNQ700On2MkE/pfxlYjKRp+ZzYtldl9eCf0sJkD8hgUmasKqJ7EWD83CdZlDLAzCwuKc3qijKNG59+kSoAGs6E2+AMNYY7wXDFz2+9uZIqkmxxtCLCOmn4lW9voW6XCNTEyURJzkx/uBVAA9JlwAyX8DuwX25DGfQgFUzGfO+mnmtGpyWXcpZmrwMcES8b6izHyKTlKDzZJhw8A7ZQgEwvw3pZF+EqLtHXlTaXIeYvaaCDvwAw2nmPjxrqMpSBVzSTd/xGPif2cd4TB2A8MRKdFX/43Ulr+8B5b/oA6LN+vvQFbsOIeA5w/vKdLH4ZsXUzMfVwr5FXpSr2WZtb9edmjj2nhGBy+UeT5xplo4ZN5uF7vg1AnvGGhvHqLQ8M0bOC6Ftlsr4n7tupatjZZIA/QJJtz5Ri4ZePbj/Q6XEJBouKZoBqhnxhfFl1NDCuv/Ekchc2W/IFnkGxLNS6D1MGKnZiUyb1zMBFytrEFMf/mTUOH2AfMUbCRxmfRe9BLTdIOrV4NRjRCiZFy5qFSZ0tk5QDgMAgqFxGcxFXwBau8EJCjr8MmmeCVpzZv77a3BMu0dz5UkMQJOixf1mZZaEBkYeJF7Sfh4NER0/h14ncyXs/gG2FZS+9W1BmfJqWYl4puHBJZChLE1DtW7jODzC5zMU3O8ZI8OPCqSwdPQWqcY9GosEPy7kE2Gtjv6iX/tErccz/iHCSnejtmQ2a1GeGLJnPWvpjDCgyNqVAmDxRAIN8aIwIvsmyJs1EUyVK74Xqq5EqHW+94oWHP3yvZxagMUZdFX4pJty3iQAj0guQh8vFI4N+OAdpEBe7ku5MdHCyeg9LEcUCc481TPg1B+OUKzLJDdjNNFQyhSM2OalcOaSAzqguLvBjHPoM1dgVzthfAPZfa3dxmr8EAg+48Ni/4/17AzYRNXsFvoqHOixcElQ6xhGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I annotated sentence 2 as follows:\n\n- **Main predicate:** 配备 is PropBank `配备-01`. Its ARG0 is the agent, ARG1 the thing equipped and ARG2 the place it is fitted to. In 它配备了…接口, 它 is the device the ports are on, so I made it `:ARG2`, as in PropBank's examples. There is no agent. 它 is a 3rd-person singular `thing`.\n- **Aspect:** 了 marks a completed event, so the aspect is `performance`.\n- **而且 and 还:** both are `:mod` nodes. The gold examples of 而且 I found were partial conversions using `progression`, which isn't a standard concept, so I didn't follow them.\n- **The ports:** 接口 has `:quant 2`. 种 is a classifier, so it gets no node. The search found no gold example with 接口 to copy.\n- **The listed ports:** I put the two port types under `:mod` as an `and` of two named `product`s. \"VGA\" in brackets is an alternative name for D-Sub, so I attached it to D-Sub as another `:mod` product. Both are judgement calls. The list names every port, so an identity-style reading would also be defensible, and VGA could have been treated as a second name.\n\n# ::snt 2\n# sentence level graph:\n(s2x / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2p / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :mod (s2p2 / product\n                    :name (s2n2 / name :op1 \"VGA\")))\n            :op2 (s2p3 / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h / 还)\n    :aspect performance)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

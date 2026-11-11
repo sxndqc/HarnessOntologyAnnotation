@@ -1,0 +1,422 @@
+I checked the gold data for the "first time" and "more than" constructions. Below is the graph:
+
+- **Ordinal:** "for the first time" is shown with `:ord` and `ordinal-entity :value 1`.
+- **Range:** "in more than eight months" is a `more-than` time span (`temporal-quantity :quant 8`, unit `month`) attached by `:range` under the ordinal.
+- **Freedom:** this becomes `free-04`, and Edmund Pope is the one who is free, written as a re-entrancy (`s1p`) rather than a second node.
+- **Aspect:** "tasted" is a completed past event (`performance`). Being free is a `state`.
+
+# ::snt 1
+# sentence level graph:
+(s1t / taste-01
+    :ARG0 (s1p / person
+        :wiki "Edmund_Pope"
+        :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+    :ARG1 (s1f / free-04
+        :ARG1 s1p
+        :aspect state)
+    :temporal (s1t2 / today)
+    :ord (s1o / ordinal-entity
+        :value 1
+        :range (s1m / more-than
+            :op1 (s1t3 / temporal-quantity
+                :quant 8
+                :unit (s1m2 / month))))
+    :aspect performance)
+
+I annotated the sentence as "Pope" being identified with a definite description: an `identity-91` with Pope as `:ARG1` and the businessman as `:ARG2`. Two clauses about the businessman, joined by `and`, hang under him as inverse `:ARG1-of` roles.
+
+# ::snt 2
+# sentence level graph:
+(s2i / identity-91
+    :ARG1 (s2p / person
+        :wiki "Edmund_Pope"
+        :name (s2n / name :op1 "Pope"))
+    :ARG2 (s2b / businessman
+        :mod (s2c / country
+            :wiki "United_States"
+            :name (s2n2 / name :op1 "America"))
+        :ARG1-of (s2a / and
+            :op1 (s2c2 / convict-01
+                :ARG1 s2b
+                :ARG2 (s2c3 / charge-05
+                    :ARG1 s2b
+                    :ARG2 (s2s2 / spy-01
+                        :ARG0 s2b
+                        :aspect process)
+                    :aspect performance)
+                :temporal (s2w / week
+                    :mod (s2l / last))
+                :aspect performance)
+            :op2 (s2s / sentence-01
+                :ARG1 s2b
+                :ARG2 (s2p2 / prison
+                    :mod (s2c4 / country
+                        :wiki "Russia"
+                        :name (s2n3 / name :op1 "Russia")))
+                :ARG4 (s2t / temporal-quantity
+                    :quant 20
+                    :unit (s2y / year))
+                :aspect performance)))
+    :aspect state)
+
+**Choices I made:**
+- **Senses:** I checked these against PropBank.
+  - `convict-01`: `:ARG1` is the person convicted, `:ARG2` is what he was convicted of.
+  - `charge-05`: a criminal charge, with the crime as `:ARG2`.
+  - `spy-01`: Pope is its `:ARG0`.
+  - `sentence-01`: `:ARG2` is the punishment (the Russian prison), `:ARG4` is how long it lasts (20 years).
+- **Aspect:**
+  - The conviction and the sentencing are completed past events, so they are `performance`.
+  - The charge is also `performance`, though nothing in the guidelines settles that.
+  - The spying is an event noun, so it is `process`.
+  - The identity is a `state`.
+- **Two judgment calls:**
+  - The root could also be `have-role-91`. I chose `identity-91` because "the American businessman who…" is a definite description rather than a category.
+  - The wiki title "Edmund_Pope" is my assumption from the document's subject; the sentence itself only says "Pope".
+  - I didn't find a gold example of this exact construction to compare against.
+
+# ::snt 3
+# sentence level graph:
+(s3d / deny-01
+    :ARG0 (s3p / person
+        :refer-person 3rd
+        :refer-number singular)
+    :ARG1 (s3d2 / do-02
+        :ARG0 s3p
+        :ARG1 (s3t / thing
+            :mod (s3a / any)
+            :ARG1-of (s3w / wrong-02))
+        :aspect process)
+    :aspect performance)
+
+I checked `pardon` in PropBank and used `pardon-01` ("legally relieve of guilt"): Putin is the ARG0 (the one who pardons) and "him" is the ARG1 (the person pardoned). The gold data had nothing on this sentence or a similar pardon, so the rest follows the guidelines.
+
+- **Putin's title:** "Russian President" uses `have-org-role-92`, with Russia as `:ARG2` and `president` as `:ARG3`.
+- **"Him":** this is a 3rd-person singular `person`. Linking it to the person named earlier (probably Edmund Pope) happens at the document level, not here.
+- **"For health reasons":** I wrote this as `:cause (reason :mod health)`, with a node for "reasons". One gold sentence ("for moral reasons") uses `:ARG1-of cause-01` with `reason` as `:ARG0` instead, so the gold may differ here.
+- **Aspect:** `performance`, because the pardon is a completed past event.
+
+# ::snt 4
+# sentence level graph:
+(s4p / pardon-01
+    :ARG0 (s4p2 / person
+        :wiki "Vladimir_Putin"
+        :name (s4n / name :op1 "Vladimir" :op2 "Putin")
+        :ARG1-of (s4h / have-org-role-92
+            :ARG2 (s4c / country
+                :wiki "Russia"
+                :name (s4n2 / name :op1 "Russia"))
+            :ARG3 (s4p3 / president)))
+    :ARG1 (s4p4 / person
+        :refer-person 3rd
+        :refer-number singular)
+    :cause (s4r / reason
+        :mod (s4h2 / health))
+    :aspect performance)
+
+I used fly-01, whose ARG1 is the passenger. Pope is that passenger, and nobody is named as the one who flew him. The node's alignment and the document-level links will be added in the later step.
+
+# ::snt 5
+# sentence level graph:
+(s5f / fly-01
+    :ARG1 (s5p / person
+        :name (s5n / name :op1 "Pope"))
+    :goal (s5b / base
+        :mod (s5m / military)
+        :mod (s5c / country
+            :wiki "United_States"
+            :name (s5n2 / name :op1 "U.S."))
+        :place (s5c2 / city
+            :wiki "Ramstein-Miesenbach"
+            :name (s5n3 / name :op1 "Ramstein")
+            :part-of (s5c3 / country
+                :wiki "Germany"
+                :name (s5n4 / name :op1 "Germany"))))
+    :aspect performance)
+
+A few choices in the graph:
+- **Destination:** "to the U.S. military base" is `:goal`, following the PropBank example "fly to San Francisco".
+- **Pope:** a `person` with the name "Pope". I took the name from the sentence alone; I couldn't see the earlier sentences.
+- **Aspect:** `performance`, because the flight is finished and reached its destination.
+- **The base:** "military" and "U.S." are both `:mod` on `base`. Ramstein is a `city` placed on the base with `:place`, and it is `:part-of` Germany. No gold example for "military base" or "Ramstein" came up, so the structure of this phrase is my own judgment.
+- **Wiki title for Ramstein:** I used "Ramstein-Miesenbach" for the town. "Ramstein_Air_Base" would also be a reasonable choice.
+
+# ::snt 6
+# sentence level graph:
+(s6s / spend-02
+    :ARG0 (s6p / person
+        :refer-person 3rd
+        :refer-number singular)
+    :ARG1 (s6d / day
+        :quant (s6s2 / several)
+        :mod (s6n / next))
+    :place (s6c / center
+        :mod (s6m / medical)
+        :place (s6t / there))
+    :temporal (s6b / before
+        :op1 (s6r / return-01
+            :ARG1 s6p
+            :ARG4 (s6h / home)
+            :companion (s6p2 / person
+                :name (s6n2 / name :op1 "Sherry")
+                :ARG1-of (s6h2 / have-rel-role-92
+                    :ARG2 s6p
+                    :ARG3 (s6w / wife)
+                    :aspect state))
+            :aspect performance))
+    :aspect performance)
+
+# ::snt 7
+# sentence level graph:
+(s7r / remission-02
+    :ARG1 (s7d / disease :wiki "Bone_tumor"
+        :name (s7n / name :op1 "bone" :op2 "cancer")
+        :mod (s7f / form)
+        :mod (s7r2 / rare)
+        :possessor (s7p / person :wiki "Edmond_Pope"
+            :name (s7n2 / name :op1 "Pope")))
+    :temporal (s7a / arrest-01
+        :ARG1 s7p
+        :place (s7c / country :wiki "Russia"
+            :name (s7n3 / name :op1 "Russia"))
+        :aspect performance)
+    :aspect state)
+
+I had no gold example of "in remission" to copy, so a few choices here are judgement calls:
+
+- **Concept and roles:** I used PropBank `remission-02` ("abate in intensity"). Its `:ARG1` is the thing that abates, so the cancer is `:ARG1` and Pope is linked as its `:possessor`. Another reading would make Pope the `:ARG1` and attach the cancer with `:source`.
+- **"a rare form of bone cancer":** In a gold example, "a form of asbestos" is annotated as `asbestos :mod (form)`. I did the same here, and added `rare` as a second `:mod`.
+- **The disease:** I wrote "bone cancer" as a named `disease`, the way gold examples treat "cancer". The wiki title "Bone_tumor" is my guess.
+- **Pope:** He is "Pope" here, a person probably named in full in an earlier sentence. The wiki value "Edmond_Pope" is my assumption.
+- **The "when" clause:** The arrest is the remission's `:temporal`, with performance aspect (a completed past event). The remission is a state.
+
+# ::snt 8
+# sentence level graph:
+(s8e / examine-01
+    :ARG0 (s8d / doctor
+        :refer-number plural)
+    :ARG1 (s8p / person
+        :refer-person 3rd
+        :refer-number singular)
+    :ARG2 (s8s / signal-07
+        :ARG1 (s8r / return-01
+            :ARG1 (s8c / cancer)
+            :temporal (s8a / await-01
+                :ARG1 s8p
+                :ARG2 (s8t / try-02
+                    :ARG1 s8p
+                    :aspect process)
+                :place (s8j / jail
+                    :mod (s8c2 / country
+                        :wiki "Russia"
+                        :name (s8n / name :op1 "Russia")))
+                :aspect activity)
+            :modal-strength neutral-affirmative
+            :aspect performance)
+        :aspect state)
+    :aspect performance)
+
+My choices:
+- **examine-01:** The doctors are its `:ARG0`, "him" is its `:ARG1`, and the "signs" go in `:ARG2` because PropBank defines that role as "in search of what". The examining has not happened yet ("will"), but it is a single event that is meant to be completed, so its aspect is `performance`.
+- **signs → signal-07:** PropBank has no rolesets for "sign" or "come back" as a phrasal verb. I used `signal-07` here; its `:ARG1` is the thing shown, which is the cancer coming back. I chose aspect `state` for it.
+- **come back → return-01:** Since "come back" has no roleset of its own, I used `return-01` ("come back"), with the cancer as its `:ARG1`. Because of "may", it is marked `:modal-strength neutral-affirmative`.
+- **while he was awaiting trial → await-01:** This is a `:temporal` modifier of the return. In `await-01` the person waiting is `:ARG1`, the trial (`try-02`, aspect `process`) is `:ARG2`, and the waiting is ongoing, so its aspect is `activity`.
+- **Russian jail:** The jail has `:place`, and "Russian" is a `:mod` holding the named country Russia.
+- **Same person three times:** "him", the person waiting and the person on trial are all one node (`s8p`), used again in each place.
+
+I could not find gold examples of this construction to compare against. The least certain choices are `signal-07` for "signs" and its `state` aspect.
+
+# ::snt 9
+# sentence level graph:
+(s9s / say-01
+    :ARG0 (s9p / person
+        :ARG1-of (s9h / have-org-role-92
+            :ARG3 (s9s2 / spokeswoman)))
+    :ARG1 (s9s3 / suffer-01
+        :ARG0 (s9p2 / person
+            :name (s9n / name :op1 "Pope"))
+        :ARG1 (s9a / and
+            :op1 (s9m / malnutrition)
+            :op2 (s9p3 / pressure
+                :mod (s9b / blood)
+                :ARG1-of (s9h2 / high-02
+                    :aspect state)))
+        :aspect state)
+    :aspect performance)
+
+My notes on the choices:
+- **Spokeswoman:** I followed two gold examples, which show "spokeswoman" as a `person` with `have-org-role-92`. This sentence names no organization, so the role has no `:ARG2`.
+- **Pope:** I treated "Pope" as the person's name. Earlier sentences probably give the full name (likely Edmund Pope), but only "Pope" appears here, so the name has one `:op`.
+- **Senses:** PropBank confirms `say-01` (the spokeswoman is `:ARG0`, what she said is `:ARG1`) and `suffer-01` (Pope is `:ARG0`, the illnesses are `:ARG1`).
+- **"High blood pressure":** this is `pressure`, with `blood` as `:mod` and `high-02` as `:ARG1-of`. I didn't look up `high-02` in PropBank, so that sense is unchecked.
+- **Aspect of "was suffering":** this was a close call. I chose `state` because suffering from an illness is a condition, not a process. Since the verb is in the progressive, the gold annotation may use `activity` instead.
+- **No `:quote`:** this is indirect speech, not a quotation, so I left it out.
+
+# document level relations:
+(d / document
+    :temporal ((document-creation-time :depends-on s1t2)
+               (s1t2 :contains s1t)
+               (s1t :overlap s1f))
+    :modal ((root :modal author)
+            (author :full-affirmative s1t)
+            (author :full-affirmative s1f)))
+
+I looked at one gold example of "today" to check the date pattern. I didn't check the other choices against gold data, so they're less certain.
+
+- **Time:** "today" is a relative date, so it depends on the document creation time. The tasting falls inside "today". I put being free (`s1f`) as overlapping the tasting, since his freedom begins at that moment. This one is a judgement call; `:after` or no link at all would also be defensible.
+- **Modal:** the author states both the tasting and his being free as plain fact, so both are full-affirmative from the author.
+- **Coreference:** none, since this is the first sentence and Edmund Pope appears only once in it.
+I added these relations for the five events of this sentence (being identified as the businessman, the conviction, the charge, the spying and the sentencing), the time expression "last week", and Pope. I didn't search the guidelines or the gold data before writing them, so the two uncertain points below are judgment calls.
+
+(d / document
+    :temporal ((document-creation-time :depends-on s2w)
+               (s2w :contained s2c2)
+               (s2w :contained s2s)
+               (s2c2 :before s2c3)
+               (document-creation-time :overlap s2i))
+    :modal ((root :modal author)
+            (author :full-affirmative s2i)
+            (author :full-affirmative s2c2)
+            (author :full-affirmative s2s)
+            (author :full-affirmative s2c3)
+            (s2c3 :unspecified s2s2))
+    :coref ((s1p :same-entity s2p)))
+
+- **Time:** "last week" depends on the document creation time, and both the conviction and the sentencing fall inside that week. The charge comes before the conviction. Pope being the businessman holds now, so it overlaps the document creation time.
+- **Modality:** The author states the identity, the conviction, the sentencing and the charge as facts.
+- **Coreference:** Pope here is the same person as Edmund Pope in sentence 1. The businessman is not linked to Pope separately, because the sentence already identifies the two.
+
+**Judgment calls:**
+- **The spying:** It is only what Pope was charged with. I put it under the charge as `unspecified`, as with complements of other predicates. The other option was for the author or the charge to assert it outright (`full-affirmative`).
+- **Left out on purpose:** The spying has no temporal parent of its own. There is also no link to sentence 1, such as the sentencing happening before Pope "tasted freedom", because neither ordering seemed clear enough to annotate.
+I followed the abridged guidelines' own worked example, which uses this exact sentence and graph. I did not run any searches.
+
+(d / document
+    :temporal ((document-creation-time :before s3d)
+               (s3d :before s3d2))
+    :modal ((root :modal author)
+            (author :full-affirmative s3p)
+            (s3p :full-affirmative s3d)
+            (s3d :unspecified s3d2))
+    :coref ((s2p :same-entity s3p)))
+
+- **Temporal:** The denial happened before the document was written. The alleged wrongdoing comes before the denial.
+- **Modal:** The author asserts that "he" denied it, so "he" is the one whose view the denial expresses. Under the denial, whether the wrongdoing happened is left `unspecified`.
+- **Coreference:** I linked "He" to `s2p` ("Pope" in sentence 2), as the example does. One judgment call: `s2b` ("the American businessman") is the same person and appears later in sentence 2. A rule of always linking to the very latest mention would point to `s2b` instead.
+- **Left out:** `wrong-02` (`s3w`) gets no temporal or modal relation, because the example gives it none.
+(d / document
+    :temporal ((s1t :before s4p)
+               (document-creation-time :overlap s4h))
+    :modal ((root :modal author)
+            (author :full-affirmative s4p)
+            (author :full-affirmative s4h))
+    :coref ((s3p :same-entity s4p4)
+            (s2c4 :same-entity s4c)))
+
+I didn't search the guidelines or the gold data for this answer. These relations come from the abridged guidelines and the earlier sentences.
+
+- **Temporal:**
+  - **The pardon (`s4p`):** I placed it before Pope tasted freedom in sentence 1 (`s1t`), since the pardon had to come first. This was a choice between parents: the gold may instead hang it from `document-creation-time` as a past event, or after the sentencing in sentence 2 (`s2s`).
+  - **Putin's presidency (`s4h`):** this is a state that holds now, so it overlaps `document-creation-time`.
+- **Modal:** the author states both the pardon and Putin's role as fact, so both are `full-affirmative` from the author.
+- **Coreference:**
+  - "him" (`s4p4`) is the "He" of sentence 3 (`s3p`), the nearest earlier mention of Pope.
+  - Russia (`s4c`) is the same country as the "Russian prison" in sentence 2 (`s2c4`).
+I placed the flight after Putin's pardon (sentence 4), linked "Pope" to "him" in sentence 4, and linked "U.S." to "America" in sentence 2. I didn't call any of the tools for this step; these choices come from the guidelines given.
+
+(s5s0 / sentence
+    :temporal ((s4p :after s5f))
+    :modal ((root :modal author)
+            (author :full-affirmative s5f))
+    :coref ((s4p4 :same-entity s5p)
+            (s2c :same-entity s5c)))
+
+- **Temporal:** the flight (`s5f`) has no time expression of its own. Its reference time is the pardon (`s4p`), and I took it to come after that. The gold could instead anchor it on "today" from sentence 1 or on the document creation time. I chose the pardon because it is the closest clear reference time.
+- **Modal:** the author states the flight as a plain fact, so it is `full-affirmative` from the author.
+- **Coreference:**
+  - "Pope" (`s5p`) is the same person as "him" in sentence 4 (`s4p4`), which is the nearest earlier mention.
+  - "U.S." (`s5c`) is the same country as "America" in sentence 2 (`s2c`).
+  - Russia, Ramstein and Germany have no earlier mention to link to.
+(d / document
+    :temporal ((document-creation-time :after s6s)
+               (s6s :after s6r)
+               (document-creation-time :overlap s6h2))
+    :modal ((root :modal author)
+            (author :full-affirmative s6s)
+            (author :full-affirmative s6r)
+            (author :full-affirmative s6h2))
+    :coref ((s5p :same-entity s6p)
+            (s5b :same-entity s6t)))
+
+I didn't check these choices with the search tools.
+
+- **Time:**
+  - The days at the medical center are still to come, so the spending is placed after the document creation time.
+  - The return follows the stay ("before he returns home"), so it is placed after the spending.
+  - Being Sherry's husband is a state that holds now, so it overlaps the document creation time.
+- **Modality:** the author asserts all three events plainly. Under the guidelines, "will" counts as full-affirmative, not as a weaker strength.
+- **Coreference:**
+  - "He" is the same person as "Pope" in sentence 5.
+  - "There" is the same place as the military base at Ramstein in sentence 5.
+- **Possible gaps against the gold:**
+  - I didn't link the medical center to the base (for example as part of it).
+  - I didn't treat "the next several days" as a time expression with its own place in the time ordering.
+  - I didn't order the stay relative to the flight in sentence 5; I placed it against the document creation time instead.
+(d / document
+    :temporal ((document-creation-time :before s7a)
+               (s7a :overlap s7r))
+    :modal ((root :modal author)
+            (author :full-affirmative s7r)
+            (author :full-affirmative s7a))
+    :coref ((s6p :same-entity s7p)
+            (s4c :same-entity s7c)))
+
+I didn't check these links against gold data or the full guidelines; two of them are judgment calls:
+
+- **Time:** The arrest (`s7a`) is a completed past event, so it is placed before the document-creation time. Pope's remission (`s7r`) was the state he was in "when he was arrested", so it overlaps the arrest. I placed the arrest against the document-creation time, not the conviction in sentence 2 (`s2c2`). It must have come before that conviction, but the gold may order it from that event instead.
+- **Certainty:** The author states both the remission and the arrest outright, so both are full-affirmative from the author.
+- **Same entity:** I linked each mention to its closest earlier mention:
+  - **Pope (`s7p`):** linked to "he" in sentence 6 (`s6p`).
+  - **Russia (`s7c`):** linked to Russia in sentence 4 (`s4c`). The prison in sentence 2 is also Russian, but sentence 4's mention is closer.
+  - **Cancer:** not linked. It might be one of the "health reasons" in sentence 4, but the text doesn't say so clearly.
+(d / document
+    :temporal ((document-creation-time :after s8e)
+               (s8e :overlap s8s)
+               (document-creation-time :before s8a)
+               (s7a :after s8a)
+               (s8a :contained s8r)
+               (s8a :after s8t))
+    :modal ((root :modal author)
+            (author :full-affirmative s8e)
+            (s8e :unspecified s8s)
+            (author :neutral-affirmative s8r)
+            (author :full-affirmative s8a)
+            (s8a :unspecified s8t))
+    :coref ((s7p :same-entity s8p)
+            (s7d :same-entity s8c)))
+
+I didn't use the tools for this sentence, so nothing here was checked against the guidelines or the gold data. The least certain choices are:
+- **Modal links:** the signs depend on the examining with `unspecified`. The trial depends on the waiting with `unspecified`, because the trial never happened. Gold may use other strengths or conceivers here.
+- **The cancer coming back:** I hung "may" directly on the author. Putting it under the signs (`s8s`) instead would also be reasonable.
+- **Temporal choices:**
+  - The examining is in the future, after the document was written.
+  - The waiting comes after the arrest in sentence 7.
+  - The cancer's return falls inside the waiting ("while").
+  - The trial comes after the waiting.
+  - The signs overlap the examining.
+- **Coreference:** "him" is linked to Pope (`s7p`). "The cancer" is linked to the bone cancer of sentence 7 (`s7d`). The doctors don't match anyone mentioned earlier.
+(d / document
+    :temporal ((document-creation-time :before s9s)
+               (s9s :overlap s9s3))
+    :modal ((root :modal author)
+            (author :full-affirmative s9s)
+            (author :full-affirmative s9p)
+            (s9p :full-affirmative s9s3))
+    :coref ((s8p :same-entity s9p2)))
+
+I worked from the abridged guidelines only and did not call any tools.
+
+- **Temporal:** The spokeswoman's saying (`s9s`) is a past event, so it comes before the time the document was written. The suffering (`s9s3`) is in the clause she reports, so it takes the saying as its reference time. I marked them as overlapping because "was suffering" describes his condition at the time she spoke.
+- **Modal:** The author asserts that the spokeswoman spoke. The spokeswoman (`s9p`) is the one who is sure that Pope was suffering. This follows the guidelines' rule for reported speech.
+- **Coreference:** "Pope" here (`s9p2`) is the same person as "him" in sentence 8 (`s8p`), his closest earlier mention.
+- **Left out:** I gave no temporal relation to `high-02` (`s9h2`) or to the spokeswoman's role node (`s9h`). If the gold version orders every state, it may add `(s9s3 :overlap s9h2)`, and I would lose that one relation.

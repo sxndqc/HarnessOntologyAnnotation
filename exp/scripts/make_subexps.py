@@ -484,7 +484,7 @@ PropBank for "zh", English PropBank for "en"): each roleset's id, its numbered r
 Use it when the meaning of a predicate decides a relation.
 """
 
-A1_REGISTRY = """# a1-sentence-propbank（直接调 API）：ablation：s2-propbank 的条件（缩略版 guideline + propbank_lookup）一句句跑。
+A1_REGISTRY = """# {sub}（直接调 API）：{desc}
 # 第一波 sentence：每句单独一次调用，只给这一句，写这一句的句子图。
 # 第二波 document：全部句子图都标好之后，每句再一次调用：给这一句和它前面最多五句（文档开头不足五句就从第一句给起）的
 # 原文和句子图，写这一句的文档级关系。两波的结果拼成整篇的回答，再和其他子实验一样打分。
@@ -533,7 +533,7 @@ skills:
   graph:
     path: graph
     guideline: guidelines/umr_guidelines_abridged.md
-    tools: [propbank_lookup]
+    tools: [{tools}]
     input:
       line: str
     emit:
@@ -542,7 +542,7 @@ skills:
   relations:
     path: relations
     guideline: guidelines/umr_guidelines_abridged.md
-    tools: [propbank_lookup]
+    tools: [{tools}]
     input:
       line: str
       graph: str
@@ -554,18 +554,60 @@ dispatcher: {{}}
 """
 
 
-def ablation_a1():
-    base = os.path.join(EXP, "api", "a1-sentence-propbank")
-    for name, head, chk, fmt, tools, inp in (
-            ("graph", A1_GRAPH_HEAD, A1_CHECK, A1_GRAPH_FORMAT, TOOLS["propbank_lookup"], A1_GRAPH_INPUT),
-            ("relations", A1_REL_HEAD, A1_REL_CHECK, A1_REL_FORMAT, A1_REL_TOOLS, A1_REL_INPUT)):
+def tools_section(names):
+    """One "## Tools" section with the description of each tool."""
+    return "\n## Tools\n" + "".join(TOOLS[t].split("## Tools\n", 1)[1] for t in names)
+
+
+ALL_TOOLS = ["search_guidelines", "propbank_lookup", "search_annotations"]
+ALL_CHECK = ("use the three tools (see Tools): search the full guidelines with `search_guidelines` whenever the "
+             "guidelines above do not settle a case, look up every predicate in PropBank with `propbank_lookup` before "
+             "you choose its sense and numbered roles, and look up how the gold data annotates a construction, a word "
+             "or a relation with `search_annotations`. Call them as often as you need: many calls are expected.")
+ALL_REL_CHECK = ("use the tools (see Tools): search the full guidelines with `search_guidelines` for the rules of "
+                 "temporal, modal and coreference relations, look up how the gold data annotates such relations with "
+                 "`search_annotations` (e.g. `:same-entity`, `:depends-on`, `:full-affirmative`), and look a "
+                 "predicate up with `propbank_lookup` whenever its meaning matters for a relation. Call them as often "
+                 "as you need.")
+ALL_REL_TOOLS = (tools_section(["search_guidelines", "search_annotations"]) + A1_REL_TOOLS.split("## Tools\n", 1)[1])
+
+
+def ablation_sentence(sub, desc, tools, graph_check, rel_check, graph_tools, rel_tools):
+    """api/<sub>/: the sentence-by-sentence pipeline (waves sentence and document) with the given tools."""
+    base = os.path.join(EXP, "api", sub)
+    for name, head, chk, fmt, tl, inp in (
+            ("graph", A1_GRAPH_HEAD, graph_check, A1_GRAPH_FORMAT, graph_tools, A1_GRAPH_INPUT),
+            ("relations", A1_REL_HEAD, rel_check, A1_REL_FORMAT, rel_tools, A1_REL_INPUT)):
         check = textwrap.fill("- Do not guess when you can check: " + chk, 106, subsequent_indent="  ",
                               break_on_hyphens=False)
         os.makedirs(os.path.join(base, name), exist_ok=True)
         with open(os.path.join(base, name, "skill.md"), "w", encoding="utf-8") as f:
-            f.write(head.replace("- {check}", check) + fmt + tools + inp)
+            f.write(head.replace("- {check}", check) + fmt + tl + inp)
     with open(os.path.join(base, "registry.yaml"), "w", encoding="utf-8") as f:
-        f.write(A1_REGISTRY.format())
+        f.write(A1_REGISTRY.format(sub=sub, desc=desc, tools=", ".join(tools)))
+
+
+def api_only():
+    """The API-only sub-experiments: s3-all (whole document, all three tools), a1-sentence-propbank and
+    a2-sentence-all (sentence by sentence, with PropBank or with all three tools)."""
+    d = os.path.join(EXP, "api", "s3-all", "annotate")
+    os.makedirs(d, exist_ok=True)
+    check = textwrap.fill("- Do not guess when you can check: " + ALL_CHECK, 106, subsequent_indent="  ",
+                          break_on_hyphens=False)
+    with open(os.path.join(d, "skill.md"), "w", encoding="utf-8") as f:
+        f.write(HEAD.replace("- Do not guess when you can check: {check}", check) + FORMAT + tools_section(ALL_TOOLS)
+                + INPUT)
+    with open(os.path.join(EXP, "api", "s3-all", "registry.yaml"), "w", encoding="utf-8") as f:
+        f.write(REGISTRY.format(sub="s3-all", method="直接调 API",
+                                desc="第三步：缩略版 guideline + 三个工具都能用（search_guidelines、propbank_lookup、search_annotations）",
+                                guideline="guidelines/umr_guidelines_abridged.md",
+                                extra="\n    tools: [%s]" % ", ".join(ALL_TOOLS)))
+    ablation_sentence("a1-sentence-propbank",
+                      "ablation：s2-propbank 的条件（缩略版 guideline + propbank_lookup）一句句跑。",
+                      ["propbank_lookup"], A1_CHECK, A1_REL_CHECK, TOOLS["propbank_lookup"], A1_REL_TOOLS)
+    ablation_sentence("a2-sentence-all",
+                      "ablation：s3-all 的条件（缩略版 guideline + 三个工具）一句句跑。",
+                      ALL_TOOLS, ALL_CHECK, ALL_REL_CHECK, tools_section(ALL_TOOLS), ALL_REL_TOOLS)
 
 
 def main():
@@ -596,8 +638,8 @@ def main():
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "TASK.md"), "w", encoding="utf-8") as f:
             f.write(harness_task(sub, tools))
-    ablation_a1()
-    print("wrote", ", ".join(SUBS), "and a1-sentence-propbank")
+    api_only()
+    print("wrote", ", ".join(SUBS), "and (API only) s3-all, a1-sentence-propbank, a2-sentence-all")
 
 
 if __name__ == "__main__":

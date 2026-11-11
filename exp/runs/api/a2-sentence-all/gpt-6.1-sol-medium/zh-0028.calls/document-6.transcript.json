@@ -1,0 +1,250 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1377,
+    "cache_read_input_tokens": 5910,
+    "output_tokens": 73,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 7287,
+     "input_tokens_details": {
+      "cache_write_tokens": 1374,
+      "cached_tokens": 5910
+     },
+     "output_tokens": 73,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 7360
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 5234,
+    "cache_read_input_tokens": 7284,
+    "output_tokens": 229,
+    "reasoning_tokens": 96,
+    "openai_usage": {
+     "input_tokens": 12518,
+     "input_tokens_details": {
+      "cache_write_tokens": 5231,
+      "cached_tokens": 7284
+     },
+     "output_tokens": 229,
+     "output_tokens_details": {
+      "reasoning_tokens": 96
+     },
+     "total_tokens": 12747
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 6 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\n5\t方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1b / 比例\n        :mod (s1p / 屏幕)\n        :value \"16:9\")\n    :op2 (s1k / 宽屏\n        :quant 21.5\n        :unit (s1y / 英寸))\n    :op3 (s1i / identity-91\n        :ARG1 (s1f / 分辨率\n            :possessor s1k\n            :mod (s1z / 最佳))\n        :ARG2 (s1m / product-of\n            :op1 1920\n            :op2 1080)\n        :aspect state))\n\n# ::snt 2\n# sentence level graph:\n(s2p / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :unit (s2z / 种)\n        :mod (s2a / and\n            :op1 (s2p2 / product\n                :name (s2n / name\n                    :op1 \"D-Sub\")\n                :name (s2n2 / name\n                    :op1 \"VGA\"))\n            :op2 (s2p3 / product\n                :name (s2n3 / name\n                    :op1 \"HDMI\"))))\n    :mod (s2h / 还)\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3s / 设备\n            :mod (s3d / 电脑))\n        :aspect state\n        :modal-strength neutral-affirmative)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户)\n        :ARG2 (s3c / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3s2 / 设备\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :name (s3n / name\n                            :op1 \"PS3\"))\n                    :op2 (s3p2 / product\n                        :name (s3n2 / name\n                            :op1 \"Xbox360\"))\n                    :op3 (s3l / 蓝光机)))\n            :aspect process)\n        :mod (s3h / 还)\n        :aspect state\n        :modal-strength neutral-affirmative))\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4z / 这)\n        :ARG2 (s4p / product\n            :name (s4n / name\n                :op1 \"三星\"\n                :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4w / 值得-01\n        :ARG0 (s4r / person\n            :refer-person 2nd\n            :refer-number singular)\n        :ARG1 (s4y / 拥有-01\n            :ARG0 s4r\n            :ARG1 s4p\n            :aspect state\n            :modal-strength unspecified)\n        :aspect state))\n\n# ::snt 5\n# sentence level graph:\n(s5x / 像-01\n    :ARG0 (s5a / and\n        :op1 (s5d / 设计\n            :topic (s5a2 / and\n                :op1 (s5j / 机身\n                    :mod (s5f / 方形))\n                :op2 (s5b / 底座\n                    :mod (s5f2 / 方形))))\n        :op2 (s5l / 立姿\n            :mod (s5b2 / 笔挺)))\n    :ARG1 (s5q / 气势\n        :mod (s5d2 / 打座-00\n            :ARG0 (s5d3 / 大师)\n            :aspect process))\n    :degree (s5y / 有点)\n    :aspect state)\n\nThis sentence:\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6h / have-91\n    :ARG1 (s6t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s6j / 接口\n        :quant 3\n        :ARG1-of (s6i / identity-91\n            :ARG2 (s6a / and\n                :op1 (s6d / 电源)\n                :op2 (s6h2 / HDMI)\n                :op3 (s6v / VGA))\n            :mod (s6f / 分别)\n            :aspect state))\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_rtNn9OrD2ImaIAEkyWASo9AW",
+     "name": "search_annotations",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "接口",
+       ":same-entity"
+      ],
+      "max_results": 3
+     }
+    },
+    {
+     "type": "tool_use",
+     "id": "call_MnlA65tjRySyCMGYyf8YFJUt",
+     "name": "search_guidelines",
+     "input": {
+      "keywords": [
+       "coreference",
+       "subset"
+      ],
+      "max_results": 2
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"language\":\"zh\",\"keywords\":[\"接口\",\":same-entity\"],\"max_results\":3}",
+       "call_id": "call_rtNn9OrD2ImaIAEkyWASo9AW",
+       "name": "search_annotations",
+       "type": "function_call",
+       "id": "fc_05b52c3abba61291006af40bac237087d1ad2d8f5a00f10534",
+       "status": "completed"
+      },
+      {
+       "arguments": "{\"keywords\":[\"coreference\",\"subset\"],\"max_results\":2}",
+       "call_id": "call_MnlA65tjRySyCMGYyf8YFJUt",
+       "name": "search_guidelines",
+       "type": "function_call",
+       "id": "fc_05b52c3abba61291006af40bac238087d187ebc64a306facdd",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_rtNn9OrD2ImaIAEkyWASo9AW",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0004\", \"sentence_number\": 55, \"sentence\": \"娱乐 报纸 《 影音 俱乐部 》 的 阿拉斯 代尔 给 这集 B 的 评分 ， 赞扬 琼斯 在 剧中 起到 的 作用 和 配角 们 的 演出 ， 但 同时 ， 他 对 戴 立克 为何 把 人们 变成 猪 奴隶 表示 不解 ， 并 认为 1930 年代 的 纽约 种族歧视 严重 ， 故 身为 黑人 的 罗所门 不太可能 成为 胡佛 村 的 领袖 。\", \"annotation\": \"# meta-info\\n# :: snt55\\nIndex: 1  2  3 4  5   6 7 8   9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47   48 49 50 51   52 53 54 55 56 57 58  59   60 61 62 63 64 65\\nWords: 娱乐 报纸 《 影音 俱乐部 》 的 阿拉斯 代尔 给  这集 B  的  评分 ，  赞扬 琼斯 在  剧中 起到 的  作用 和  配角 们  的  演出 ，  但  同时 ，  他  对  戴  立克 为何 把  人们 变成 猪  奴隶 表示 不解 ，  并  认为 1930 年代 的  纽约 种族歧视 严重 ，  故  身为 黑人 的  罗所门 不太可能 成为 胡佛 村  的  领袖 。\\n\\n# sentence level graph:\\n(s55a / and\\n    :op1 (s55x4 / 给-01\\n        :ARG0 (s55i2 / individual-person\\n            :name (s55n / name\\n                :op1 \\\"阿拉斯\\\"\\n                :op2 \\\"代尔\\\")\\n            :ARG0-of (s55h / have-org-role-91\\n                :ARG1 (s55n2 / newspaper\\n                    :name (s55n3 / name\\n                        :op1 \\\"影音\\\"\\n                        :op2 \\\"俱乐部\\\")\\n                    :ARG1 (s55i3 / identity-91\\n                        :ARG2 (s55x5 / 报纸\\n                            :mod (s55x6 / 娱乐))\\n                        :aspect state))))\\n        :ARG1 (s55x8 / 集\\n            :mod (s55x9 / 这))\\n        :ARG2 (s55s / score-on-scale-91\\n            :ARG1 (s55b / b))\\n        :aspect performance)\\n    :op2 (s55x / 赞扬-02\\n        :ARG0 s55i2\\n        :ARG1 (s55a2 / and\\n            :op1 (s55x7 / 作用-01\\n                :ARG0 (s55i5 / individual-person\\n                    :name (s55n8 / name\\n                        :op1 \\\"琼斯\\\"))\\n                :place (s55x10 / 剧中)\\n                :aspect performance)\\n            :op2 (s55x2 / 演出-01\\n                :ARG0 (s55x3 / 配角\\n                    :refer-number plural)\\n                :aspect habitual))\\n        :aspect performance)\\n    :op3 (s55b2 / but-91\\n        :ARG2 (s55x11 / 表示-02\\n            :ARG0 s55i2\\n            :ARG1 (s55x12 / 不解-01\\n                :ARG0 s55i2\\n                :ARG1 (s55u / umr-unknown\\n                    :reason-of (s55x13 / 变成-01\\n                        :ARG0 (s55e / ethnic-group\\n                            :name (s55n4 / name\\n                                :op1 \\\"戴\\\"\\n                                :op2 \\\"立克\\\"))\\n                        :ARG1 (s55x14 / 人\\n                            :refer-number plural)\\n                        :ARG2 (s55x15 / 奴隶\\n                            :mod (s55x16 / 猪))\\n                        :aspect performance))\\n                :aspect state)\\n            :aspect performance))\\n    :op4 (s55x17 / 认为-01\\n        :ARG0 s55i2\\n        :ARG1 (s55h2 / have-reason-91\\n            :ARG1 (s55x18 / 严重-01\\n                :ARG0 (s55x19 / 歧视\\n                    :mod (s55x20 / 种族))\\n                :place (s55c / city\\n                    :name (s55n5 / name\\n                        :op1 \\\"纽约\\\"))\\n                :temporal (s55d / date-entity\\n                    :era 1930)\\n                :aspect state)\\n            :ARG2 (s55x21 / 成为-01\\n                :ARG0 (s55i4 / individual-person\\n                    :name (s55n7 / name\\n                        :op1 \\\"罗所门\\\")\\n                    :ARG0-of (s55x23 / 身为-01\\n                        :ARG1 (s55x24 / 黑人)\\n                        :aspect state))\\n                :ARG1 (s55x22 / 领袖\\n                    :place (s55c2 / city-district\\n                        :name (s55n6 / name\\n                            :op1 \\\"胡佛\\\"\\n                            :op2 \\\"村\\\")))\\n                :aspect performance)\\n            :aspect state)\\n        :aspect state))\\n\\n# alignment:\\ns55a: 0-0\\ns55a2: 0-0\\ns55b: 12-12\\ns55b2: 12-12\\ns55c: 0-0\\ns55c2: 0-0\\ns55d: 0-0\\ns55e: 0-0\\ns55h: 0-0\\ns55h2: 0-0\\ns55i2: 0-0\\ns55i3: 0-0\\ns55i4: 0-0\\ns55i5: 0-0\\ns55n: 0-0\\ns55n2: 0-0\\ns55n3: 0-0\\ns55n4: 0-0\\ns55n5: 0-0\\ns55n6: 0-0\\ns55n7: 0-0\\ns55n8: 0-0\\ns55s: 0-0\\ns55u: 0-0\\ns55x: 16-16\\ns55x10: 19-19\\ns55x11: 42-42\\ns55x12: 43-43\\ns55x13: 39-39\\ns55x14: 38-38\\ns55x15: 41-41\\ns55x16: 40-40\\ns55x17: 46-46\\ns55x18: 52-52\\ns55x19: 51-51\\ns55x2: 27-27\\ns55x20: 51-51\\ns55x21: 60-60\\ns55x22: 64-64\\ns55x23: 55-55\\ns55x24: 56-56\\ns55x3: 24-24\\ns55x4: 10-10\\ns55x5: 2-2\\ns55x6: 1-1\\ns55x7: 22-22\\ns55x8: 11-11\\ns55x9: 11-11\\n\\n# document level annotation:\\n(s55s0 / sentence\\n    :temporal ((document-creation-time :before s55x4)\\n        (s55x4 :overlap s55x)\\n        (s55x :overlap s55x7)\\n        (s55x :overlap s55x2)\\n        (s55x :overlap s55x11)\\n        (s55x11 :overlap s55x12)\\n        (s55x12 :overlap s55x13)\\n        (s55x11 :overlap s55x17)\\n        (s55x17 :overlap s55x18)\\n        (s55x18 :overlap s55x21)\\n        (s55x21 :overlap s55x23))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s55i3)\\n        (author :full-affirmative s55x4)\\n        (author :full-affirmative s55x7)\\n        (author :full-affirmative s55x2)\\n        (author :full-affirmative s55x)\\n        (author :full-affirmative s55x13)\\n        (author :full-affirmative s55x12)\\n        (author :full-affirmative s55x11)\\n        (author :full-affirmative s55x18)\\n        (author :full-affirmative s55x23)\\n        (author :neutral-negative s55x21)\\n        (author :full-affirmative s55h2)\\n        (author :full-affirmative s55x17))\\n    :coref ((s54x18 :same-entity s55x8)\\n        (s34i3 :same-entity s55i5)\\n        (s54e :same-entity s55e)\\n        (s54x5 :same-entity s55x15)\\n        (s13i2 :same-entity s55i4)\\n        (s45c :same-entity s55c2)))\"}, {\"doc\": \"chinese_umr-0004\", \"sentence_number\": 5, \"sentence\": \"上集 提到 博士 和 琼斯 到 1930 年 的 纽约 以 见证 帝国大厦 的 落成 。\", \"annotation\": \"# meta-info\\n# :: snt5\\nIndex: 1  2  3  4 5  6 7    8 9 10 11 12 13   14 15 16\\nWords: 上集 提到 博士 和 琼斯 到 1930 年 的 纽约 以  见证 帝国大厦 的  落成 。\\n\\n# sentence level graph:\\n(s5x / 提到-01\\n    :ARG0 (s5x5 / 集\\n        :mod (s5x6 / 上))\\n    :ARG1 (s5x2 / 到-01\\n        :ARG0 (s5a / and\\n            :op1 (s5i3 / individual-person\\n                :name (s5n2 / name\\n                    :op1 \\\"琼斯\\\"))\\n            :op2 (s5x7 / 博士))\\n        :ARG1 (s5c / city\\n            :name (s5n3 / name\\n                :op1 \\\"纽约\\\")\\n            :temporal (s5d / date-entity\\n                :year 1930))\\n        :purpose (s5x3 / 见证-01\\n            :ARG0 s5a\\n            :ARG1 (s5x4 / 落成-01\\n                :ARG0 (s5b / building\\n                    :name (s5n4 / name\\n                        :op1 \\\"帝国大厦\\\"))\\n                :aspect performance)\\n            :aspect performance)\\n        :aspect performance)\\n    :aspect performance)\\n\\n# alignment:\\ns5a: 0-0\\ns5b: 0-0\\ns5c: 0-0\\ns5d: 0-0\\ns5i3: 0-0\\ns5n2: 0-0\\ns5n3: 0-0\\ns5n4: 0-0\\ns5x: 2-2\\ns5x2: 6-6\\ns5x3: 12-12\\ns5x4: 15-15\\ns5x5: 1-1\\ns5x6: 1-1\\ns5x7: 3-3\\n\\n# document level annotation:\\n(s5s0 / sentence\\n    :temporal ((s3x :overlap s5x2)\\n        (s5x2 :overlap s5x3)\\n        (document-creation-time :before s5x))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s5x3)\\n        (author :full-affirmative s5x2)\\n        (author :full-affirmative s5x))\\n    :coref ((s3s2 :same-entity s5x5)\\n        (s3s2 :same-entity s5x5)\\n        (s3x15 :same-entity s5x7)\\n        (s3i4 :same-entity s5i3)\\n        (s3b :same-entity s5b)))\"}, {\"doc\": \"chinese_umr-0004\", \"sentence_number\": 41, \"sentence\": \"这集 的 大部份 镜头 都 在 纽约 取景 ， 其中 包括 中央公园 、 帝国大厦 和 自由 神像 。\", \"annotation\": \"# meta-info\\n# :: snt41\\nIndex: 1  2 3   4  5 6 7  8  9 10 11 12   13 14   15 16 17 18\\nWords: 这集 的 大部份 镜头 都 在 纽约 取景 ， 其中 包括 中央公园 、  帝国大厦 和  自由 神像 。\\n\\n# sentence level graph:\\n(s41a / and\\n    :op1 (s41x / 取景-01\\n        :ARG1 (s41c / city\\n            :name (s41n / name\\n                :op1 \\\"纽约\\\"))\\n        :aspect habitual)\\n    :op2 (s41i2 / implicit-predicate\\n        :ARG1 (s41x2 / 镜头\\n            :quant (s41x3 / 大部份)\\n            :part-of (s41x4 / 集\\n                :mod (s41x5 / 这))\\n            :ARG0-of (s41x6 / 包括-01\\n                :ARG1 (s41a2 / and\\n                    :op1 (s41p / park\\n                        :name (s41n2 / name\\n                            :op1 \\\"中央公园\\\"))\\n                    :op2 (s41b / building\\n                        :name (s41n3 / name\\n                            :op1 \\\"帝国大厦\\\"))\\n                    :op3 (s41w / work-of-art\\n                        :name (s41n4 / name\\n                            :op1 \\\"自由\\\"\\n                            :op2 \\\"神像\\\")))\\n                :aspect state))))\\n\\n# alignment:\\ns41a: 0-0\\ns41a2: 0-0\\ns41b: 0-0\\ns41c: 0-0\\ns41i2: 0-0\\ns41n: 0-0\\ns41n2: 0-0\\ns41n3: 0-0\\ns41n4: 0-0\\ns41p: 0-0\\ns41w: 0-0\\ns41x: 8-8\\ns41x2: 4-4\\ns41x3: 3-3\\ns41x4: 1-1\\ns41x5: 1-1\\ns41x6: 11-11\\n\\n# document level annotation:\\n(s41s0 / sentence\\n    :temporal ((document-creation-time :before s41x)\\n        (s41x :overlap s41x6))\\n    :modal ((root :modal author)\\n        (author :full-affirmative s41x)\\n        (author :full-affirmative s41x6))\\n    :coref ((s38x5 :same-entity s41x4)\\n        (s6p :same-entity s41p)\\n        (s5b :same-entity s41b)\\n        (s30w :same-entity s41w)\\n        (s5c :same-entity s41c)))\"}], \"found\": 325}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_MnlA65tjRySyCMGYyf8YFJUt",
+     "content": "{\"sections\": [{\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 4. Document-Level Representation > Part 4-1. Coreference > Part 4-1-1. Entity coreference (2/2)\", \"text\": \"<span id=\\\"4-1-1 (2)\\\" label=\\\"4-1-1 (2)\\\">4-1-1 (2)</span>\\n```\\nHe is very possessive and controlling but he has no right to be as we are not together.\\n(c/ contrast-01\\n      :ARG1 (a/ and\\n            :op1 (p/ possessive-03\\n                  :ARG0 (p/ person\\n\\t\\t  \\t:ref-person 3rd\\n\\t\\t\\t:ref-number Singular)\\n                  :degree (v/ very)\\n\\t\\t  :aspect State\\n\\t\\t  :modstr FullAff)\\n            :op2 (h/ have-mod-91\\n                  :ARG1 p\\n\\t\\t  :ARG2 (c2/ controlling)\\n                  :degree (v/ very)\\n\\t\\t  :aspect State\\n\\t\\t  :modstr FullAff))\\n      :ARG2 (r/ right-05\\n            :ARG1 p\\n            :ARG2 a\\n            :ARG1-of (c3/ cause-01\\n                  :ARG0 (h2/ have-mod-91\\n\\t\\t  \\t:ARG1 (p2/ person\\n\\t\\t\\t\\t:ref-person 1st\\n\\t\\t\\t\\t:ref-number Plural)\\n\\t\\t\\t:ARG2 (t/ together)\\n\\t\\t\\t:aspect State\\n\\t\\t\\t:modstr FullNeg))\\n            :aspect State\\n\\t    :modstr FullNeg))\\n(s/ sentence\\n  :temporal ((DCT :overlap s1p)\\n  \\t     (s1p :overlap s1h)\\n\\t     (s1h :overlap s1r)\\n\\t     (s1r :overlap s1h2))\\n  :modal ((AUTH :FullAff s1p)\\n  \\t  (AUTH :FullAff s1h)\\n\\t  (AUTH :FullNeg s1r)\\n\\t  (AUTH :FullNeg s1h2))\\n  :coref (p :subset-of p2))\\n```\\n\\n[Back to Table of Contents](#toc)\"}, {\"heading\": \"Uniform Meaning Representation (UMR) 0.9 Specification > Part 4. Document-Level Representation > Part 4-1. Coreference > Part 4-1-2. Event coreference (3/3)\", \"text\": \"<span id=\\\"4-1-2 (3a)\\\" label=\\\"4-1-2 (3a)\\\">4-1-2 (3a)</span>\\n```\\n1 arrest took place in the Netherlands and another in Germany.\\n(a/ and\\n      :op1 (a2/ arrest-01\\n      \\t    :quant 1\\n            :location (c/ country\\n\\t    \\t  :wiki \\\"Netherlands\\\"\\n                  :name (n/ name\\n\\t\\t  \\t:op1 \\\"Netherlands\\\"))\\n\\t    :aspect Performance\\n\\t    :modstr FullAff)\\n      :op2 (a3/ arrest-01\\n            :location (c2/ country\\n\\t    \\t  :wiki \\\"Germany\\\"\\n                  :name (n2/ name\\n\\t\\t  \\t:op1 \\\"Germany\\\"))\\n            :mod (a4/ another)\\n\\t    :aspect Performance)\\n\\t    :modstr FullAff)\\n\\n(s/ sentence\\n\\t:temporal ((DCT :before a2)\\n\\t\\t   (DCT :before a3))\\n\\t:modal ((AUTH :FullAff a2)\\n\\t\\t(AUTH :FullAff a3)))\\n```\\n<span id=\\\"4-1-2 (3b)\\\" label=\\\"4-1-2 (3b)\\\">4-1-2 (3b)</span>\\n```\\nThe arrests were ordered by anti-terrorism judge fragnoli.\\n(o/ order-01\\n      :ARG0 (p/ person\\n      \\t    :wiki -\\n            :name (n/ name\\n\\t    \\t:op1 \\\"Fragnoli\\\")\\n            :ARG0-of (o2/ oppose-01\\n                  :ARG1 (t/ terrorism))\\n            :ARG1-of (h/ have-role-91\\n                  :ARG3 (j/ judge-01)))\\n      :ARG2 (a/ arrest-01\\n      \\t    :aspect Process\\n\\t    :quot o)\\n      :aspect Performance\\n      :modstr FullAff)\\n\\n (s2/ sentence\\n \\t:temporal (s2a :before s2o)\\n\\t:modal ((AUTH :FullAff s2o)\\n\\t\\t(AUTH :FullAff s2p)\\n\\t\\t(s2p :PrtAff s2a))\\n  \\t:coref ((s2a :subset-of s1a2)\\n\\t\\t(s2a :subset-of s1a3)))\\n```\\n\\n<!---\\n- Script / subevent?\\n\\nFor now UMR does not annotate cases where one event is a subevent of another event, or when an event is part of a \\\"script\\\". These will be annotated under temporal relations.\\n\\n```\\n Reports suggest that the group of nine were having a picnic on Friday when they were abducted in the Saada province of Yemen. A spokesman for the Yemeni Embassy said \\\"The foreigners ventured outside the city of Saada without the required police escorts due to the heightened security situation in the area.\\n```\\n --->\\n\\n[Back to Table of Contents](#toc)\"}], \"found\": 18}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s6h)\n               (s6h :overlap s6i))\n    :modal ((root :modal author)\n            (author :full-affirmative s6h)\n            (author :full-affirmative s6i))\n    :coref ((s4p :same-entity s6t)\n            (s2j :subset-of s6j)\n            (s2p3 :same-entity s6h2)\n            (s2p2 :same-entity s6v)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_05b52c3abba61291006af40bafefec87d1a6ac91bff555fd9f",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq9Auz5zO7-K5taNTeV5M9VriccUH-pJykSK9_fkgEfRVqGVihwfUXjcqJ3o9aWWVPRsfsz_V0EYOll7xOzSPclmhIowfMrcMM3yKBm4p4cM2YkXhOHLFaTGctsWYSYG1Yd_Nb_vGDr0Bg6-HAYL6LU-dFdL19SYR1FsKxh09XBzB4oK9sGskJiFlaArkD5_zGaOynnOPlCsK4r7vLH-G95hg1TyOUJqdwEkOsL7DJSgiO1HLrbMinXLJ3T4Cd4rWx1RO2iA3Es9tM4TLniHoA813U5fahIvPXCdBUPUwldD1E7VVJSlmIkU7K9HQ9Vusstc1EZ0Q7atsNVgcAqXqwY4fI2SnhigwSeAudJqiZg3vliJ_zAXntmOi08hzWZrkj7vGvgreu79W_Ny-pia4zAZrEHV71deqh046JdQ4TU35mTAtmtKwXC9QBNZEGWUpQfpXFsOL8kkOXzzDuROCYd2n8kg_v0kmJmebA65NfL8I9baVG8boXqk-rz5qHSsXqEe6CAOydRX3yADMG-CvynhxVa02X5NS_1TI7cyFn2PqFmYeE57uqG2leL7_zxjxwOtut06GMxmW16qHarauayEbX5306xS4sGyLuEV8npqwRhI_fVVp4D3hycM-lOtQVrzJ96OkSLkx2y5hs_3PGgdC3muvqKQMR0uWv8ONCLEn9nMGocFbn5j_7ZecJqot5GF4mOE90ddmvCxNKSvv8uLhDHkINdzP012JGLUCZUBp32vtrrXldPSWbR3wEdtInkC4Wu1wsegvT9FMZNjiCDy_5maqnJSpDC3CcsfxgAENuOfsjSq4GMbeLHJI7YVqt5C0M30_ITAYq3y8gHIxjeiH4q129uCgKEDW5mRpODBLRVYZKKqUsy1AZ7d7s-BuQ5i1iNatJ0sA0caBxFlcMvlWjoUijRXOJl-tzTEwWDJM726-Ld9dbxbvKf0NLkKZP8ZE48dE50r-K-1uc8ShzrUgdQ45hilF1AdMWFmSiCsfniWKQNh-QF73zDgfvcrm410-I6REHgVrjac4eQaEtI0raAKXXwZJaPdYoAJTUWH0pZfl6UFOOMsl2oukEhB6ze2qT-yvA9Ow0JtmyiOS0nMrJSNx7tU8W5y7fO7c4BYinHcicVxnd0vK7K16GaOE5plQiLqv_zifrIDsVKaP9RCsBlnTK3VGzYr0xCvT4Ism4WgU4Tm3nY6VKpolfFCNtlHT2wkMYPXq_3B7nn9-zBkFQI-jCCGTaVkiCQcivF8VCYVgvzGKSSaOPfZc1o7liQxRIHR0yL2rLXToZINMJPfh7c7qw3eqx7hHr-Pvu2xFyCXrLlQ8_kyPGZuY2hQGW1YTgAFi2Sy7jJKBdcI86JmFUUhrw9PLOH5YxU8YSsSXrVuTn_Hx9sLn-UQ4CO74Tgv38StesmdLKwm81hnaVV4HARec_hXzi2E6n-m4b7PtfZWuQ_y5Yfoz2sZseFSvP8yCrRj9I-h-0urq4w6nt1PKuaVELdoSEMA_QdIg8oKgwYmJUp0DfE79N_pWEIjOliZ_nkkXRpMTeklsNJjFX9_pzQdsc243jCtIGtw6ELBeopHxBluNX07CeSH1L5qynOzGJWdjT_ZUVG6DJ0NGK9cYboDgZp9dBfBmXQtB2PPAguvWh1F0dNR5VKwp2tNW8fyQAmCoMZCoYMJFqWlgrY7-GLVCHabeUYfuy9aTOKS5FpwgcI5LRVK9MR97qi6-K8PPGl1V8_zqZ8QdCLsls7Dbti-QedJ0kTYSi5Ev3-_hn72bLjXqvXZxqEO_eaUhV1nG6Yf1AmA5a6G-xbteaOxJct9onvniYptBaa8NOnTWR_gVbNts08HJGhzk6k81h4y0-Fh3Z38umSmAWr7rl127d6X0199NW2J8qMRPtbyRhOnMytXTKicVl_PLaFClFCXdeiP9lwjg3xrSIAfJwxQp_D29HzM5DtBz8ekHMPr22tSEtbPYAKu3Fz8m3MKyIIgfE6hgnyK0MfFHWhJzq-CR1vAXeJqA-jBJE5QdzEPH3rOnZYJ-M4Cr_NTBpT7uge2I3D7X8wdKLvp8d2AMWdu8NzBB-C_sXjWGePaK_Dk30rODokxKBt9ZT31Yh1c8Erkjer0ppIwRvKp4b2I67a8sgaXRi5SAhHRWuJwKetg0Y2yJmnaAYRme5kfMwZ6tyiXCo1oE5yd3K7_-a9cazbBhqFrTMICjV8AI9CUCNFDvE0EJXhgoYg5DlyopSMGDE9llQbYhTTw_h0oXiojXn1iyOBLgBB6jUSrvoB9VCDPJDuHXV2uL4XJCOSmpC8AbKLpj7B39iVtwLqCztPwKNL9KOVqyJ6AOJpiVSDXXlu9JBz8tW8-3bQHasPMTMLCAPPxIAS8LzYXdAbaly4fZ0VDrHnbTDjdt7aBpsLr5Q5pobDQzXbZ6PqLZmCPuM2FkNorkp9EmrJhOMzlzjwWbYbpObN2Z7IJubKBj6-wajRNc1vBRX_1nRT_R5loZX86faCoLxjWU_5TM55vNZNNqy6HmUmC8iFL9qKfQV3psaRChjKXJy5bIFGGYEjtkxWFg79vut2W25B4Id24YGDavak9Y0eLRb1WfPtRA_ujWpCzfHNiWu0eeIbiHwsDAlbZ1RNNuJkv0g69JsvacqvbE8dfez_g=="
+      },
+      {
+       "id": "msg_05b52c3abba61291006af40bb2ab5c87d18cf9fb28812444bb",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s6h)\n               (s6h :overlap s6i))\n    :modal ((root :modal author)\n            (author :full-affirmative s6h)\n            (author :full-affirmative s6i))\n    :coref ((s4p :same-entity s6t)\n            (s2j :subset-of s6j)\n            (s2p3 :same-entity s6h2)\n            (s2p2 :same-entity s6v)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

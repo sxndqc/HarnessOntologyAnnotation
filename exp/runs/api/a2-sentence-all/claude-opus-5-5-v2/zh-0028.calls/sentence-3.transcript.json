@@ -1,0 +1,216 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-3.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9176
+    },
+    "cache_creation_input_tokens": 9176,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 294,
+    "output_tokens_details": {
+     "thinking_tokens": 126
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3964
+    },
+    "cache_creation_input_tokens": 3964,
+    "cache_read_input_tokens": 9176,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 854,
+    "output_tokens_details": {
+     "thinking_tokens": 477
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 3 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSpAcKEAgTGAI4AUIIdGhpbmtpbmcSDJyfBLg2no4InDs8IBoMMWPT2fpL2Vyrv3MnIjDBjiIhPkSZo7yBDSxIqrpT67yTZ/tTdOo+rUoL9fiZ7fuoWonUqiMMwb2p9o/MhI0qwQaUGlk/HSGy266O4BmrGsCaOAmpK0wXSWKo8Kkm7dqsvtx+oCIy+2zNpnqfc7JDVmOMX7MOcGG1s5BdxHHYqsEwX3WMMW94hhbrIUkMj4+Fi+Nbvx44PTuSRghhajTZ+wmIyMDTvS6vVTkveGNVEEOql8baZ1QyuVEhJU0beCgGa0JaUaVqpHkUrIw63PbQXExx5RY1J3xSy3eFDq0A13NofgeeFLFhXSBOl0yluX0/Ll8gu2gJ9YkOD0CCUw3yTwJnt9MKm1ZXZbvu80GRkJ9I+VWf2Xu31rhhi7T8QCFDApVgpFQCc/jpkDkydIU53VzZWrNGzzbpE/7lqzRl3YI4893tWIbDK3/LG1RMQlIiMe1/y5v2Ip4JRFyO+OBElhVI4z5q2mUSBwuew7bxc/w41KRufpYmHRTe5gMg7QbwbFICBHjKnaVgjydoEZIK2lrwvM/ZSU62cWDvhGscfO6gUwuWNZvAOCh9o4y0NovBfODF2nJqU5hMpRXfgZWG47W6hai+w/iF91ui8i+aVsp4DF+kFDTdgeNuRa+MmUlICLU2gstWv+hlAttpy5zuUkbDg68kxgqq1SoiK/JTDChWfq3vPb6ofHKEYVNSOfPHlhocMMWA1Baf4A4vMo7gjmXoTy7no9HaqJtshmQfHVS/jyfu7VOq4eciO8IoKClz+oEG4JQDvBTDvm0CDZHMEf2b1/31Lyrkt/F9wc0kczXBh1WHXIFc+bRlCiQvtc156m31ZqsGunhgkBSKvUM6UnfDs7ureuUinGpdMrcFtPbMn9yjclUMnwfw+w7ktWxOizWv7xz5lCUf4m03fRv0Nh5NzFo5ANN1r8SDB/ZJfq02uAAGaGpeEDqwQdU1i7RSV5QENE39ydtDycpwNk9UFlVhJHNlqN7AArVEyTy4QPmRETsxLxj6rCtkjhyX+dVa85YfdtU38QvYFz9sMkgM2ozuB6dGTqAgAXrawdJZ8WEAW8Dvh39TSXZle8Ken0+XyVcnqtS9jLd5RY+sASVt0flAYGKl8QRgz7zkrvxiKsCpvx2GIKF2wwcIBvaR695ptMFyey8/DjK1PlFuK/CFxPX3jXT+1GnNW7VRNeK+2NB3ZBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01FZtxGYEEBxs3oKaZdpQC9h",
+     "input": {
+      "lemmas": [
+       "拨接",
+       "方便",
+       "连接"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_017Rjt3pjoAj7FYqBxsJe1NT",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "能够",
+       "之余"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01FZtxGYEEBxs3oKaZdpQC9h",
+     "content": "## 拨接\n\n### 拨接-01\n\n- ARG0: agent/cause\n- ARG1: entity connected\n\nExample 1: 这个 网站 只要 用 电话线 直接 拨接\n- ARG1: 这个 网站\n- ARGM-ADV: 只要\n- ARGM-MNR: 用 电话线\n- ARGM-ADV: 直接\n- rel: 拨接\n\n## 方便\n\n### 方便-01\n\n- ARG0: agent\n- ARG1: theme\n- ARG2: predicate\n\nExample 1: 芬兰 的 零售商们 为 *PRO* 方便 公众 *PRO* 购物 ， 在 因特网 上 联合 建立 了 *OP* *T*-1 统一 的 服务 网址 。\n- ARG0: *PRO*\n- rel: 方便\n\nExample 2: *pro* 极 大 地 方便 了 南商北贾\n- ARG0: *pro*\n- rel: 方便\n\n### 方便-02\n\n- ARG0: faciliator\n- ARG1: event\n\nExample 1: 为了 *PRO* 进一步 方便 企业 在 区 内 的 出口 加工\n- ARG0: *PRO*\n- ARGM-ADV: 进一步\n- rel: 方便\n\nExample 2: 价格 便宜 ， 增产 增收 效果 显著 ， 使用 方便 ， *pro* 没有 污染 ， *pro* 同时 可以 培肥 地力\n- ARG1: 使用\n- rel: 方便\n\n### 方便-03\n\n- ARG0: thing\n\nExample 1: 李鹏 总理 邀请 朱马古洛夫 总理 *PRO* 在 *OP* *T*-1 方便 的 时候 访 华 。\n- ARG0: *T*-1\n- rel: 方便\n\n### 方便-04\n\n- ARG0: entity described\n\nExample 1: 一 名 国中 二 年级 的 学生 因为 内急 他 跑到 当地 的 一 家 泡沫店 的 旁边 暗巷 去 方便\n- ARG0: 一 名 国中 二 年级 的 学生\n- ARGM-PRP: 因为 内急\n- ARG0: 他\n- rel: 方便\n\n## 连接\n\n### 连接-01\n\n- ARG0: connector\n- ARG1: entities connected\n\nExample 1: 九江 是 *OP* *T*-1 连接 长江 南北 的 要道\n- ARG0: *T*-1\n- ARG1: 长江 南北\n- rel: 连接\n\nExample 2: 社会 保障局 的 电脑 系统 连接 着 美国 财政部 和 联邦 储备 委员会 的 电子 支付 系统\n- ARG1: 社会 保障局 的 电脑 系统\n- ARG1: 美国 财政部 和 联邦 储备 委员会 的 电子 支付 系统\n- rel: 连接\n\nExample 3: 花旗 银行 今天 与 上海 银行卡 网络 签约 ， 作为 第一 家 外资 银行 正式 加入 上海 ＡＴＭ ／ ＰＯＳ 网络 ， 并 直接 与 上海 ＡＴＭ 自动 取款机 连接\n- ARG1: 花旗 银行\n- ARG1: 与 上海 ＡＴＭ 自动 取款机\n- ARGM-ADV: 直接\n- rel: 连接",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_017Rjt3pjoAj7FYqBxsJe1NT",
+     "content": "{\"gold\": [{\"doc\": \"chinese_umr-0025\", \"sentence_number\": 14, \"sentence\": \"既然 大人们 不 能够 理解 。 于是 我 又 把 巨蟒 肚子 里 的 情况 画 了 出来 ， 以便 让 大人们 能够 看懂 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt14\\nIndex:    1      2  3    4    5  6    7  8  9 10   11   12 13 14   15 16 17   18 19   20 21     22   23   24 25\\nWords: 既然   大人们    不  能够   理解   。  于是   我  又  把  巨蟒   肚子   里  的  情况   画  了  出来   ，  以便   让  大人们    能够   看懂   。\\n\\n# sentence level graph:\\n(s14x26 / causation\\n\\t:ARG1 (s14x4 / 能够-01\\n\\t\\t:ARG0 (s14x5 / 理解-01\\n\\t\\t\\t:ARG0 (s14x2 / 大人们))\\n\\t\\t:modal-strength neutral-negative\\n\\t\\t:polarity -)\\n\\t:ARG2 (s14x16 / 画-01\\n\\t\\t:ARG0 (s14x8 / individual-person\\n\\t\\t\\t:refer-person 1\\n\\t\\t\\t:refer-number singular\\n\\t\\t\\t:modal-strength (s14x55 / full-affirmative))\\n\\t\\t:aspect performance\\n\\t\\t:mod (s14x9 / 又)\\n\\t\\t:ARG1 (s14x15 / 情况\\n\\t\\t\\t:place (s14x12 / 肚子\\n\\t\\t\\t\\t:part-of (s14x11 / 巨蟒)))\\n\\t\\t:purpose (s14x21 / 让-02\\n\\t\\t\\t:ARG1 (s14x22 / 大人们)\\n\\t\\t\\t:ARG2 (s14x23 / 能够-01\\n\\t\\t\\t\\t:ARG0 (s14x24 / 看懂\\n\\t\\t\\t\\t\\t:ARG0 s14x22\\n\\t\\t\\t\\t\\t:modal-strength (s14x53 / full-affirmative))\\n\\t\\t\\t\\t:modal-strength neutral-affirmative)\\n\\t\\t\\t:modal-strength (s14x54 / partial-affirmative\\n\\t\\t\\t\\t:conceiver s14x8))\\n\\t\\t:modal-strength (s14x52 / full-affirmative)))\\n\\n# alignment:\\ns14x11: 11-11\\ns14x12: 12-12\\ns14x15: 15-15\\ns14x16: 16-16\\ns14x2: 2-2\\ns14x21: 21-21\\ns14x22: 2-2\\ns14x23: 4-4\\ns14x24: 24-24\\ns14x26: 0-0\\ns14x4: 4-4\\ns14x5: 5-5\\ns14x52: 0-0\\ns14x53: 0-0\\ns14x54: 0-0\\ns14x55: 0-0\\ns14x8: 0-0\\ns14x9: 9-9\\n\\n# document level annotation:\\n(s14s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1157, \"sentence\": \"这 是 一 位 贩卖 能够 止渴 的 精制 药丸 的 商人 。\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1157\\nIndex:  1  2  3  4    5    6    7  8    9   10 11   12 13\\nWords: 这  是  一  位  贩卖   能够   止渴   的  精制   药丸   的  商人   。\\n\\n# sentence level graph:\\n(s1157y1 / identity-91\\n\\t:ARG0 (s1157x1 / 这)\\n\\t:ARG1 (s1157x12 / 商人\\n\\t\\t:ARG0-of (s1157x5 / 贩卖-01\\n\\t\\t\\t:ARG1 (s1157x10 / 药丸\\n\\t\\t\\t\\t:mod (s1157x9 / 精制)\\n\\t\\t\\t\\t:ARG0-of (s1157x7 / 止渴-01\\n\\t\\t\\t\\t\\t:ARG0-of (s1157x6 / 能够-01\\n\\t\\t\\t\\t\\t\\t:modal-strength neutral-affirmative))))\\n\\t\\t:quant 1\\n\\t\\t:unit (s1157x4 / 位)))\\n\\n# alignment:\\ns1157x1: 1-1\\ns1157x10: 10-10\\ns1157x12: 12-12\\ns1157x4: 4-4\\ns1157x5: 5-5\\ns1157x6: 6-6\\ns1157x7: 7-7\\ns1157x9: 9-9\\ns1157y1: 0-0\\n\\n# document level annotation:\\n(s1157s0 / sentence)\"}, {\"doc\": \"chinese_umr-0025\", \"sentence_number\": 1131, \"sentence\": \"“ 我 要 对 我 的 玫瑰 负责 … ” 小 王子 又 重复 着 ， 这样 他 能够 记住 … …\", \"annotation\": \"# meta-info :: type = partial_conversion\\n# :: snt1131\\nIndex: 1  2  3  4  5  6    7    8 9 10 11   12 13   14 15 16   17 18   19   20 21 22\\nWords: “ 我  要  对  我  的  玫瑰   负责   … ”  小  王子   又  重复   着  ，  这样   他  能够   记住   …  …\\n\\n# sentence level graph:\\n(s1131x14 / 重复-01\\n\\t:ARG0 (s1131x12 / 王子\\n\\t\\t:mod (s1131x11 / 小))\\n\\t:mod (s1131x13 / 又)\\n\\t:aspect activity\\n\\t:ARG1 (s1131x3 / 要-03\\n\\t\\t:ARG0 (s1131x8 / 负责-01\\n\\t\\t\\t:ARG0 (s1131x2 / individual-person\\n\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t:refer-number singular)\\n\\t\\t\\t:ARG1 (s1131x7 / 玫瑰\\n\\t\\t\\t\\t:possessor-of (s1131x5 / individual-person\\n\\t\\t\\t\\t\\t:refer-person 1\\n\\t\\t\\t\\t\\t:refer-number singular))\\n\\t\\t\\t:modal-strength (s1131x39 / partial-affirmative)\\n\\t\\t\\t:quote s1131x14)))\\n\\n# alignment:\\ns1131x11: 11-11\\ns1131x12: 12-12\\ns1131x13: 13-13\\ns1131x14: 14-14\\ns1131x2: 0-0\\ns1131x3: 3-3\\ns1131x39: 0-0\\ns1131x5: 0-0\\ns1131x7: 7-7\\ns1131x8: 8-8\\n\\n# document level annotation:\\n(s1131s0 / sentence)\"}], \"found\": 10}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 3\n# sentence level graph:\n(s3f / 方便-01\n    :ARG0 (s3t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3u / 用户)\n    :ARG2 (s3l / 连接-01\n        :ARG0 s3u\n        :ARG1 (s3s / 设备\n            :example (s3a / and\n                :op1 (s3p / product\n                    :name (s3n / name :op1 \"PS3\"))\n                :op2 (s3p2 / product\n                    :name (s3n2 / name :op1 \"Xbox360\"))\n                :op3 (s3b / 蓝光机)\n                :op4 (s3e / et-cetera)))\n        :aspect state)\n    :temporal (s3b2 / 拨接-01\n        :ARG0 s3t\n        :ARG1 (s3s2 / 设备\n            :mod (s3d / 电脑))\n        :aspect state\n        :modal-strength neutral-affirmative)\n    :mod (s3h / 还)\n    :aspect state\n    :modal-strength neutral-affirmative)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

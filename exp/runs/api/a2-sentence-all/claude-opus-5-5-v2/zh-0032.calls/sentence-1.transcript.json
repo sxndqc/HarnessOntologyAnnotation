@@ -1,0 +1,274 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-1.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9181
+    },
+    "cache_creation_input_tokens": 9181,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 338,
+    "output_tokens_details": {
+     "thinking_tokens": 132
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2893
+    },
+    "cache_creation_input_tokens": 2893,
+    "cache_read_input_tokens": 9181,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 776,
+    "output_tokens_details": {
+     "thinking_tokens": 674
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 805
+    },
+    "cache_creation_input_tokens": 805,
+    "cache_read_input_tokens": 12074,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 791,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS1QcKEAgTGAI4AUIIdGhpbmtpbmcSDM/CK0VZ5bAgOaxJQBoMVsQYTuotfrnrxiROIjA4TqUKE/2ZwVXYWdffl1mFc+9y7VS/GabY4jn8KYUPZvGbmQA9LOwjrhInkLExj3Mq8gZVez06fh627afxnnIEgR9o/nYbo7ItI8ste6NeXmw6UXNtU8Y6lSicW7u/7vnVIbsboCDBVP3KefeRJNLhfYMV8h0FAJhH135bWFllzxRjEDyn+yCnWajWYnx8Q3pIH389MbA8aJxrIfb0oZZ2N3h9vafeEWtl7Dazs1vAVuQsDAV2LLSDQUVPedlNT9L6qoXyU+jAY8zRCl/ibUnKoMVt0vAMjf71OOmvQW8Y4yzkK7KvjoguYG3Mt/GArRxXX9HLCgCIB1YRsU7U9Pan2h8YQUBRPqdXjM/nbPIlX4lapRwbTFt98I/7tsSWjSI7Skfuz8+vFlocAJWiy+bHFAz3OhWYq7JH0j6SYkC7IpwuSzkpLaEumLiPmNID8WrQfuKNsGws34pcyGetDK1d1EO1ovGkPGxSPu2BLge1D5eH5LsgarFfldTO6ojyPrr8kqqyvOSvxL8ahOgVLFexYApt4WixmvfAegt01ohpbd7VOIOrohFPJ49qDOvdRyeSf0SmCL+FRI8quw94BM2xaJTxFhldu8siS1f+fJZ7wmTR/IdwixwFMVEH/56LKiX6RKqi8i3/G3BsPPViqysB6qHKWFHv7JAfv/NZ9iQeExad3cJGiKLg+shWxOwx8HoLgP3HEwsceRkZH4wUTzFHUnzFOr5uj2RbjdNLr0LDInsBLnuO45JeevWnaxr2vxTIH1nwvEiw5bzosOKuGmMDQ4VNLdy+k3a5wcfv2DV6jIjaXbVdWL1m00owjPfUVw76jM7W67SBiz7ghWZjRETTwu5EqZBiTNA2c7mFAlPko8jIemlFvMl6a6rXrobCmxw6fqmNoWoK4pbpiXb0SGfEhuqQPWoGFlagFo+LqfK2pAKZr1rFOXqfk+IWNhBrpJKjioSK3GwSnKzz+7Tr5sV0VCi/bLofMckVVXXFT3yYO6ryAdHQ+xnlbH77lN9tmpcT4NCXubpr9mYw7I0/QQhH1q+7NGpu5/g/7y0R/ySpzOd7G8xiaLyY6FcMkxsPKc76ixwsLkunHsW+D9So1dJyZPE1aac/iFz41gRKLuVtQPbwn4vpBh6UJd2a7U1zZTAP59KRWu6KH0m2WA2sYnPSXJtM7hAeNJWNozLM8O8qR28fAtAR+ufXrUaco6dAK24uEu6Eye2nENfWzSE6WX0Ow/q+00kYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01SWtvdgXWXdVaJHxhFiu12s",
+     "input": {
+      "lemmas": [
+       "达成",
+       "参与",
+       "恢复",
+       "进口",
+       "监测",
+       "排海",
+       "排"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01LDXje5p95bi2SAwq6YN8Qd",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "达成",
+       "共识"
+      ],
+      "max_results": 2
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01SWtvdgXWXdVaJHxhFiu12s",
+     "content": "## 达成\n\n### 达成-01\n\n- ARG0: parties\n- ARG1: agreement, consensus, etc.\n\nExample 1: 城市 北 出口 道路 建设 工程 已 与 香港 泰华 公司 达成 建设 协议\n- ARG0-CRD: 城市 北 出口 道路 建设 工程\n- ARG0-CRD: 与 香港 泰华 公司\n- ARG1: 建设 协议\n- ARGM-ADV: 已\n- rel: 达成\n\n## 参与\n\n### 参与-01\n\n- ARG0: participant\n- ARG1: activity\n\nExample 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。\n- ARG0: 日本 进出口 银行\n- rel: 参与\n\nExample 2: 法国 从来 没有 参与\n- ARG0: 法国\n- ARGM-ADV: 从来\n- rel: 参与\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 进口\n\n### 进口-01\n\n- ARG0: importer\n- ARG1: thing imported\n- ARG2: entity arg1 is imported from\n\nExample 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期\n- ARG0: 外商 投资 企业\n- ARG1: 设备 和 原材料\n- ARGM-ADV: 免税\n- rel: 进口\n\nExample 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备\n- ARG0: 中国\n- ARG1: 技术 和 成套 设备\n- ARG2: 从 三十多 个 国家 和 地区\n- ARGM-ADV: 与 此 同时\n- rel: 进口\n\nExample 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口\n- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物\n- rel: 进口\n\nExample 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品\n- ARG1: 初级 形状 塑料\n- ARG1-QTY: 一百一十万 吨\n- ARGM-ADV: 其中\n- rel: 进口\n\n## 监测\n\n### 监测-01\n\n- ARG0: monitor\n- ARG1: thing monitored\n\nExample 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中\n- ARG0: 联合国\n- ARG1: *T*-1\n- ARGM-TMP: 自 １９９３年 以来\n- rel: 监测\n\n## 排海\n\nNot in PropBank.\n\n## 排\n\n### 排-01\n\n- ARG0: entity described\n- ARG1: position ranked\n\nExample 1: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃 目前 分别 排 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARG0: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃\n- ARG1: 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARGM-ADV: 分别\n- ARGM-TMP: 目前\n- rel: 排\n\nExample 2: 广东 的 科技 综合 实力 排 在 上海 、 北京 之后 居 全 国 第三 位\n- ARG0: 广东 的 科技 综合 实力\n- ARG1: 在 上海 、 北京 之后\n- rel: 排\n\n### 排-02\n\n- ARG0: agent\n- ARG1: thing discharged\n\nExample 1: *pro* 每 年 向 太湖 减少 *PRO* 排 磷 一千六百多 吨\n- ARG0: *PRO*\n- ARG1: 磷\n- ARG1-QTY: 一千六百多 吨\n- rel: 排\n\n### 排-03\n\n- ARG0: agent\n- ARG1: entity arranged\n\n### 排-04\n\n- ARG0: agent\n- ARG1: entity excluded\n\n### 排-05\n\n- ARG0: agent\n- ARG1: entity that the agent performs according to\n\n### 排-06\n\n- ARG0: agent\n- ARG1: a line\n\nExample 1: 他 只 要 拿出 这个 卡片 跟 护照 ， 经过 *OP* *pro* 特别 安排 *T*-1 的 通关 ， 不 必 排 *OP* *T*-2 很 长 的 队\n- ARG0: 他\n- ARG1: 很 长 的 队\n- rel: 排",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01LDXje5p95bi2SAwq6YN8Qd",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01MJs83ZYuLSxou7D93J1dHK",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "核电站"
+      ],
+      "max_results": 2
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01MJs83ZYuLSxou7D93J1dHK",
+     "content": "{\"gold\": [], \"found\": 0}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "text": "# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1p2 / province\n                                :wiki \"Fukushima_Prefecture\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产\n                :source s1c2)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect performance))\n\nNotes:\n- I couldn't find any gold examples of 达成共识 or 核电站 to follow, so how I've laid those parts out is my own call.\n- 排海 isn't in Chinese PropBank, so I wrote it as 排海-00.\n- I joined the three clauses with one flat `and`. I didn't nest the \"并\" pair (参与 and 恢复) under a second `and`, and I didn't make them the content of the 共识.\n- 就…问题 attaches as `:topic` of 共识, not of 达成.\n- 福岛 is a named `province`, linked to the plant by `:place`.\n- Both future events take their aspect from \"将\": 参与 is `activity` and 恢复 is `performance`. 监测 and 进口 are nominal events, so their aspect is `process`. 逐步 is `:manner`.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

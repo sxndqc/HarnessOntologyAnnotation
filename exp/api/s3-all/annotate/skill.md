@@ -1,0 +1,105 @@
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+is under **Input** at the end, one sentence per line.
+
+**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+and document-level relation counts. Take the time this needs:
+
+- Read the guidelines below carefully before you start, and go back to them for every decision you are
+  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
+- Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+  example does.
+- Do not guess when you can check: use the three tools (see Tools): search the full guidelines with
+  `search_guidelines` whenever the guidelines above do not settle a case, look up every predicate in
+  PropBank with `propbank_lookup` before you choose its sense and numbered roles, and look up how the gold
+  data annotates a construction, a word or a relation with `search_annotations`. Call them as often as you
+  need: many calls are expected.
+- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+  the end check that the document-level relations cover every event and entity the guidelines ask for.
+
+## Guidelines
+
+{guideline}
+
+## Output format
+
+Write plain text only (no JSON, no commentary). For every sentence, in order:
+
+    # ::snt 1
+    # sentence level graph:
+    (s1t / taste-01
+        :ARG0 (s1p / person
+            :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+        :ARG1 (s1f / free-04
+            :ARG1 s1p
+            :aspect state)
+        :temporal (s1t2 / today)
+        :aspect performance)
+
+then, once, after the last sentence, every document-level relation of the whole document in one graph:
+
+    # document level relations:
+    (d / document
+        :temporal ((document-creation-time :depends-on s1t2)
+                   (s1t2 :contained s1t)
+                   (s1t :before s2c))
+        :modal ((root :modal author)
+                (author :full-affirmative s1t)
+                (author :full-affirmative s2c))
+        :coref ((s1p :same-entity s2p)))
+
+- `# ::snt N` uses the sentence number of the input line. Every sentence gets a graph, even a short one.
+- Variables of sentence N start with `s` + N and a letter (`s3p`, `s3x2`), all different. A node that
+  fills two roles in one sentence is written once and then named by its variable.
+- No word alignment: it is computed from the graph. So a concept that comes from a word of the sentence
+  is written as that word (in English its lemma: `taste-01` for "tasted"), and the `:op` strings of a
+  name are the words of the name as the sentence writes them.
+- Document level: `(parent :relation child)` triples, grouped under `:temporal`, `:modal`, `:coref`;
+  each end is a variable of a sentence graph or a constant (`author`, `root`, `document-creation-time`,
+  `past-reference`, `present-reference`, `future-reference`, `null-conceiver`).
+- Use the names of the UMR release data: `author` (not AUTH), `document-creation-time` (not DCT),
+  `full-affirmative`, `partial-affirmative`, `neutral-affirmative`, `neutral-negative`,
+  `partial-negative`, `full-negative`, `unspecified` (not FullAff, ...), `:modal-strength` (not
+  :modstr), `:refer-person` / `:refer-number` with lower-case values (`3rd`, `singular`), and lower-case
+  aspect values (`performance`, `state`, ...).
+- Write the whole document: do not stop early, do not summarise, do not skip sentences.
+
+## Tools
+
+`search_guidelines(keywords, max_results)` searches the **full** UMR guidelines (umr4nlp/umr-guidelines,
+the document the guidelines above abridge) and returns the matching passages with their headings, with
+their examples. The abridged guidelines leave out most details and examples, so use it a lot: look a rule
+up whenever you are not sure of a case (an abstract concept, a role, a named entity type, an aspect or modal
+value, a temporal or coreference decision), and look up each kind of construction the document has before
+you annotate it. Search with the terms the guidelines would use (`aspect`, `have-rel-role-92`, `:quant`,
+`modal strength`, `reentrancy`). Note that the full guidelines often write the older short names (AUTH,
+DCT, FullAff, :modstr); your answer uses the release names listed under Output format.
+
+`propbank_lookup(lemmas, language)` returns the PropBank rolesets of up to 20 lemmas per call (Chinese
+PropBank for "zh", English PropBank for "en"): each roleset's id, its numbered roles and its examples.
+Look up every predicate (verbs, and nouns and adjectives that take arguments) before you choose its sense
+and its numbered roles: compare the rolesets' meanings and examples with the sentence and take the one
+that fits. Give all lemmas of a sentence (and alternate forms) in one call; call again for the next
+sentences.
+
+`search_annotations(language, keywords, max_results)` returns gold UMR annotations of whole sentences of the
+training data (other documents) that contain the keywords: words of the text, concepts (`have-org-role-92`), roles
+(`:ARG1-of`), attribute values (`:aspect state`), document-level relations (`:same-entity`). These are
+annotated by the same experts as the gold you are compared with, so they show how this data annotates a
+case. Use it a lot: for each sentence, look up its words and constructions you are not sure of (a word's
+concept and sense, a light verb, a modal word, a named entity, a comparison, a quantity, a discourse
+relation, the aspect of a kind of event) before you annotate it, and follow what the gold does.
+
+## Input
+
+Language: {lang}
+Document: {doc_id} ({n} sentences)
+
+The document, one sentence per line: the sentence number, a tab, then its words separated by spaces.
+
+{sentences}

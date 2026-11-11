@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-2.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10483
+    },
+    "cache_creation_input_tokens": 10483,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1121,
+    "output_tokens_details": {
+     "thinking_tokens": 495
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 2 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\nTheir graphs:\n\nI checked the gold data for the \"first time\" and \"more than\" constructions. Below is the graph:\n\n- **Ordinal:** \"for the first time\" is shown with `:ord` and `ordinal-entity :value 1`.\n- **Range:** \"in more than eight months\" is a `more-than` time span (`temporal-quantity :quant 8`, unit `month`) attached by `:range` under the ordinal.\n- **Freedom:** this becomes `free-04`, and Edmund Pope is the one who is free, written as a re-entrancy (`s1p`) rather than a second node.\n- **Aspect:** \"tasted\" is a completed past event (`performance`). Being free is a `state`.\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmund_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\nThis sentence:\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\nIts graph:\n\nI annotated the sentence as \"Pope\" being identified with a definite description: an `identity-91` with Pope as `:ARG1` and the businessman as `:ARG2`. Two clauses about the businessman, joined by `and`, hang under him as inverse `:ARG1-of` roles.\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :wiki \"Edmund_Pope\"\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s2 / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n**Choices I made:**\n- **Senses:** I checked these against PropBank.\n  - `convict-01`: `:ARG1` is the person convicted, `:ARG2` is what he was convicted of.\n  - `charge-05`: a criminal charge, with the crime as `:ARG2`.\n  - `spy-01`: Pope is its `:ARG0`.\n  - `sentence-01`: `:ARG2` is the punishment (the Russian prison), `:ARG4` is how long it lasts (20 years).\n- **Aspect:**\n  - The conviction and the sentencing are completed past events, so they are `performance`.\n  - The charge is also `performance`, though nothing in the guidelines settles that.\n  - The spying is an event noun, so it is `process`.\n  - The identity is a `state`.\n- **Two judgment calls:**\n  - The root could also be `have-role-91`. I chose `identity-91` because \"the American businessman who…\" is a definite description rather than a category.\n  - The wiki title \"Edmund_Pope\" is my assumption from the document's subject; the sentence itself only says \"Pope\".\n  - I didn't find a gold example of this exact construction to compare against.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I added these relations for the five events of this sentence (being identified as the businessman, the conviction, the charge, the spying and the sentencing), the time expression \"last week\", and Pope. I didn't search the guidelines or the gold data before writing them, so the two uncertain points below are judgment calls.\n\n# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s2w)\n               (s2w :contained s2c2)\n               (s2w :contained s2s)\n               (s2c2 :before s2c3)\n               (document-creation-time :overlap s2i))\n    :modal ((root :modal author)\n            (author :full-affirmative s2i)\n            (author :full-affirmative s2c2)\n            (author :full-affirmative s2s)\n            (author :full-affirmative s2c3)\n            (s2c3 :unspecified s2s2))\n    :coref ((s1p :same-entity s2p)))\n\n- **Time:** \"last week\" depends on the document creation time, and both the conviction and the sentencing fall inside that week. The charge comes before the conviction. Pope being the businessman holds now, so it overlaps the document creation time.\n- **Modality:** The author states the identity, the conviction, the sentencing and the charge as facts.\n- **Coreference:** Pope here is the same person as Edmund Pope in sentence 1. The businessman is not linked to Pope separately, because the sentence already identifies the two.\n\n**Judgment calls:**\n- **The spying:** It is only what Pope was charged with. I put it under the charge as `unspecified`, as with complements of other predicates. The other option was for the author or the charge to assert it outright (`full-affirmative`).\n- **Left out on purpose:** The spying has no temporal parent of its own. There is also no link to sentence 1, such as the sentencing happening before Pope \"tasted freedom\", because neither ordering seemed clear enough to annotate.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

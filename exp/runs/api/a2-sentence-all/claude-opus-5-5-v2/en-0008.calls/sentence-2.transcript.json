@@ -1,0 +1,277 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-2.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9144
+    },
+    "cache_creation_input_tokens": 9144,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 264,
+    "output_tokens_details": {
+     "thinking_tokens": 66
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6434
+    },
+    "cache_creation_input_tokens": 6434,
+    "cache_read_input_tokens": 9144,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 494,
+    "output_tokens_details": {
+     "thinking_tokens": 387
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1246
+    },
+    "cache_creation_input_tokens": 1246,
+    "cache_read_input_tokens": 15578,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 940,
+    "output_tokens_details": {
+     "thinking_tokens": 10
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 2 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSmAYKEAgTGAI4AUIIdGhpbmtpbmcSDOfuaFXQvh/KeuOI/hoMpzgSz+sLTkq7DciAIjCNWGJZC1QVAKXK0rEvMFSHXYPUvJaFezlfEQ5PtxKLkKiDknRWOHizWv1g6ooUoRwqtQXl+CIbo+orl2B7M8cxW3Nqtg6j8qBX5EmdBAjUKMmX8cn2712wHDrvqX2IuA65U/nMGN/ZRc21PtfoOtinuizHG4oQOFZPHnG8ruDGRpx1eCnemU8q4/AG7xw7GavgNvreEGFFbkg4oVr0ck1v95QHQnTAyWBeAUxn91pUOEE6QEANi56uxwKXx2SfGCp51HzXNHC3Osld8cPsCpM8V8i/gAq200m2fo1+z0pvpVUjNZUZ86SDfFy7JsaysRmcM2prCvz5h6tUAmWXyQGQpkhSjQa/kthXwxaQ+YvbmOZ5SkLgvsG3LEWLQumT5Q2ARQvGYlyK+rKZs3J2cLHtLXPoUVEpP0EKpDuQY3TXRQp2HpEuwotvYUIGaaRQoBDTyrwY94k8XwoCnBLypWHeGwF9VRsGAuwjHF4Xnu1pWn+kNnK2pEND7PZ6j6Y9F/7LaB5eOSo/MWUdhkKEiB/b25UNeb8tfhR/Q0HMGLjpUuNb5VJJLRrPwGldwRuWKwXKwFEyBhQk+IYClpFjYoXhqzt4vOxTQdFNCMu7UOnoIEHvl9D6dHXGZyg0iHU4BkAJ0nV0/Aoa9QJuSNAdsNnxpZrdiJZWnoZ6Sh8AUhIwixKULNNLkIryN1s1O+TkO9l79eFJ+rWFSRDbnKajfmOUrlTW+0JgxcrQ0T5bH/WTsXLxsJqjhswjZfp9F8LuN9ZuDwViumxH/dmuGhxdVzfjBBiJ6MQbMIIHvNw5OsrasrhK0LJ5VksVzKVxGtQA8B3t0K0bikyOUHXT36x0EQ7HELW2VhbQ6l9HTwSMXCUYgBd3kiUpo1ndAb2+OE8R20DfH6Ql6OisUsZn2yQnLCBXp0oTNQwd9Mm/vPbuH3KDYMDESg77nflBq5NjxCY6GppcEWWL393tGKRaS2ggRBVbEZSoH5riRu4YAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01FCv5or4wRQTdBArHTHiVM5",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "convict-01",
+       "sentence-01"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01Luf8mkGf35SHmeM92QG956",
+     "input": {
+      "lemmas": [
+       "convict",
+       "sentence",
+       "spy",
+       "charge"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01FCv5or4wRQTdBArHTHiVM5",
+     "content": "{\"gold\": [{\"doc\": \"english_umr-0028\", \"sentence_number\": 8, \"sentence\": \"The local TV news is running nothing but outrage over the conviction.\", \"annotation\": \"# meta-info :: sent_id = DF-199-192821-670_2474.8 :: type = partial_conversion\\n# :: snt8\\nIndex: 1           2           3           4           5           6           7           8           9           10          11          12\\nWords: The         local       TV          news        is          running     nothing     but         outrage     over        the         conviction.\\n\\n# sentence level graph:\\n(s8r / run-09\\n     :ARG0 (s8n / news\\n                :ARG1-of (s8l / local-02)\\n                :mod (s8t2 / television))\\n     :ARG1 (s8o / outrage-01\\n                :ARG0 (s8c / convict-01)\\n                :mod (s8n2 / nothing-but)))\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0028\", \"sentence_number\": 3, \"sentence\": \"The judge would not let him be released until sentencing either.\", \"annotation\": \"# meta-info :: sent_id = DF-199-192821-670_2474.3 :: type = partial_conversion\\n# :: snt3\\nIndex: 1          2          3          4          5          6          7          8          9          10         11\\nWords: The        judge      would      not        let        him        be         released   until      sentencing either.\\n\\n# sentence level graph:\\n(s3l / let-01\\n     :ARG0 (s3p / person\\n                :ARG1-of (s3h2 / have-org-role-92\\n                               :ARG4 (s3j / judge-01)))\\n     :ARG1 (s3r / release-01\\n                :ARG1 (s3h / he))\\n     :mod (s3e / either)\\n     :temporal (s3u / until\\n                    :op1 (s3s / sentence-01\\n                              :ARG0 s3p\\n                              :ARG1 s3h))\\n     :polarity -)\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0196\", \"sentence_number\": 129, \"sentence\": \"Soon , a bearded imam sentenced Abather to decapitation for collaborating with the United States .\", \"annotation\": \"# meta-info :: sent_id = wb.eng_0015.129 :: type = partial_conversion\\n# :: snt129\\nIndex: 1             2             3             4             5             6             7             8             9             10            11            12            13            14            15            16\\nWords: Soon          ,             a             bearded       imam          sentenced     Abather       to            decapitation  for           collaborating with          the           United        States        .\\n\\n# sentence level graph:\\n(s129s / sentence-01\\n       :ARG0 (s129i / imam\\n                    :ARG1-of (s129b / beard-02))\\n       :ARG1 (s129p2 / person\\n                     :name (s129n / name\\n                                  :op1 \\\"Abather\\\")\\n                     :wiki -)\\n       :ARG2 (s129d / decapitate-01\\n                    :ARG1 s129p2)\\n       :ARG3 (s129c2 / collaborate-01\\n                     :ARG0 s129p2\\n                     :ARG1 (s129c3 / country\\n                                   :name (s129n2 / name\\n                                                 :op1 \\\"United\\\"\\n                                                 :op2 \\\"States\\\")\\n                                   :wiki \\\"United_States\\\"))\\n       :temporal (s129s2 / soon))\\n\\n# alignment:\\n\\n# document level annotation:\"}], \"found\": 3, \"left_out\": \"1 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01Luf8mkGf35SHmeM92QG956",
+     "content": "## convict\n\n### convict-01 (to find or prove guilty of an offense or crime, finding guilty of a crime)\n\n- ARG0: judge, jury, agent\n- ARG1: person convicted\n- ARG2: convicted of\n\nExample 1 (all arguments): Despite the strong evidence against Mrs. Yeargin , popular sentiment [*ICH*-1] was so strong [*ICH*-3]in her favor , Mrs. Ward says [0] [*T*-2] , that `` I 'm afraid [0] a jury would n't have convicted her .\n- ARG0: a jury\n- ARGM-MOD: would\n- ARGM-NEG: n't\n- ARG1: her\n- rel: convicted\n\nExample 2 (passive): He-1 was convicted [*-1] of [*-2]charging interest rates much higher than what the law permitted [*T*-3] , and attempting [*-4] to evade income taxes by [*-5] using a double accounting system .\n- ARG1: [*-1]\n- ARG2: of [*-2] charging interest rates much higher than what the law permitted [*T*-3], and attempting [*-4] to evade income taxes by [*-5] using a double accounting system\n- rel: convicted\n\nExample 3 (All args): Supreme Court upheld their conviction of him for graft.\n- ARG0: their\n- ARG1: of him\n- ARG2: for graft\n- rel: conviction\n\n## sentence\n\n### sentence-01 (assign criminal punishment)\n\n- ARG0: judge/jury\n- ARG1: criminal\n- ARG2: punishment\n- ARG3: crime\n- ARG4: duration of punishment\n\nExample 1 (all args): [Dallas District Judge Jack Hampton]-1 had sparked calls for a judicial inquiry with his remarks to the press last December, two weeks after *trace*-1 sentencing an 18-year-old defendant to 30 years in state prison for killing two homosexual men in a city park.\n- ARG0: *trace*\n- ARG1: an 18-year-old defendant\n- ARG2: to 30 years in state prison\n- ARG3: for killing two homosexual men in a city park\n- rel: sentencing\n\nExample 2 (passive, without crime): He-1 was sentenced *trace*-1 to 500 hours of community service and restitution to the museum of $45,000.\n- ARG1: *trace*\n- ARG2: to 500 hours of community service and restitution to the museum of $45,000\n- rel: sentenced\n\nExample 3 (Example with all but arg 0): his prison sentence for income-tax evasion\n- ARG1: his\n- ARG2: prison\n- ARG3: for income-tax evasion\n- rel: sentence\n\nExample 4 (Arg 0 as a court body): many people would receive federal death sentences\n- ARG0: federal\n- ARG2: death\n- rel: sentences\n\nExample 5 (Example with arg 1 and 4): His 18-year sentence\n- ARG1: His\n- ARG4: 18-year\n- rel: sentence\n\nExample 6 (Example with args 2 and 4): A prison sentence of less than three years\n- ARG2: prison\n- ARG4: of less than three years\n- rel: sentence\n\nExample 7 (Example with args 3 and 4): A 30-year sentence for the self-confessed 1992 killing of his wife in Clinton Maryland\n- ARG4: 30-year\n- ARG3: for the self-confessed 1992 killing of his wife in Clinton Maryland\n- rel: sentence\n\nExample 8 (Traditional punishment): A sentence of 100 lashes\n- ARG2: of 100 lashes\n- rel: sentence\n\nExample 9 (args 0, 1, 2): Their sentencing him to solitary confinement, what a joke.\n- ARG0: Their\n- ARG1: him\n- ARG2: to solitary confinement\n- rel: sentencing\n\n### sentence-02 (what your english teacher made you write correctly and completely)\n\n- ARG0: writer\n- ARG1: theme (topic/thing written)\n\nExample 1 (Example with both args): His next sentence about a radio interview,\n- ARG0: His\n- ARGM-TMP: next\n- ARG1: about a radio interview,\n- rel: sentence\n\nExample 2 (Example of the type of sentence to use this sense for): the first to use silences and sentence fragments and menacingstares, almost to the exclusion of what we previously understoodto be theatrical dialogue\n- rel: sentence\n\n## spy\n\n### spy-01 (to investigate intensively  or discover by close observation, clandestine observation)\n\n- ARG0: secret agent\n- ARG1: entity spied/seen\n\nExample 1 (transitive): Mr. Boren even spies a silver lining .\n- ARG0: Mr. Boren\n- ARGM-ADV: even\n- ARG1: a silver lining\n- rel: spies\n\nExample 2 (argM-LOC and arg1): Domestic spying on Americans is an e-hoarding epidemic\n- ARGM-LOC: domestic\n- ARG1: on Americans\n- rel: spying\n\nExample 3 (Just argM-LOC): A party that already was waning in respect due to corruption and its willingness to take some fundamental social justice concepts too far is now supported by a majority of the public , and the beloved party of small government and individual liberties is now a hulking rusty heap of corruption , scandal , incompetence , special interests , big government , and domestic spying .\n- ARGM-LOC: domestic\n- rel: spying\n\nExample 4 (both args): \"This report contradicts the president's claim that his spying on Americans was legal,\" said Sen. Frank Lautenberg (D-N.J.)\n- ARG0: his\n- ARG1: on Americans\n- rel: spying\n\n## charge\n\n### charge-01 (asking price)\n\n- ARG0: seller\n- ARG1: asking price\n- ARG2: buyer\n- ARG3: commodity\n\nExample 1 (charge-v: price and buyer): [Traditional stock managers]-1 like *trace*-1 to charge higher fees for smaller investors.\n- ARG0: *trace*-1\n- ARG1: higher fees\n- ARG2: for smaller investors\n- rel: charge\n\nExample 2 (charge-v: all args): The Penn Bookstore charged John $100 for a mechanical pencil.\n- ARG0: The Penn Bookstore\n- ARG2: John\n- ARG1: $100\n- ARG3: for a mechanical pencil\n- rel: charged\n\nExample 3 (charge-n: NP only, Args 0, 2 & 3): The charge on loans to depository institutions by the New YorkFederal Reserve Bank\n- ARG3: on loans\n- ARG2: to depository institutions\n- ARG0: by the New York Federal Reserve Bank\n- rel: charge\n\nExample 4 (charge-n: Args 0 & 2): They submitted their charges to customers at the end of each month.\n- ARG0: their\n- ARG2: to customers\n- rel: charges\n\nExample 5 (charge-n: Arg 3 only): Admission charges at movie theaters have been going up recently.\n- ARG3: Admission\n- rel: charges\n\nExample 6 (charge-n: Args 0, 1, 3): Their charge of ?14 (?13,95) for breakfast is extortionate.\n- ARG0: Their\n- ARG1: of ?14 (?13,95)\n- ARG3: for breakfast\n- rel: charge\n\n### charge-02 (walk quickly)\n\n- ARG0: entity in motion\n- ARG1: path\n- ARG2: deep agent (if different from arg0)\n\nExample 1 (charge-v: intransitive): John recklessly charged down the crowded street.\n- ARG0: John\n- ARGM-MNR: recklessly\n- ARG1: down the crowded street\n- rel: charged\n\nExample 2 (charge-v: with arg0): Rupert charged his horse across and into Ireton.\n- ARG2: Rupert\n- ARG0: his horse\n- ARG1: across and into Ireton\n- rel: charged\n\nExample 3 (charge-v: transitive, with argM-GOL): The soldiers charged the enemy (line).\n- ARG0: The soldiers\n- ARGM-GOL: the enemy (line)\n- rel: charged\n\nExample 4 (charge-n: Arg 0 only): The wrestler's charge carried him past his adversary.\n- ARG0: The wrestler's\n- rel: charge\n\nExample 5 (charge-n: All arguments): The offensive charge of the field gained their football team 22 yards in the last play.\n- ARG0: offensive\n- ARG1: of the field\n- rel: charge\n\n### charge-03 (supply, as with electricity)\n\n- ARG0: supplier\n- ARG1: battery, usually\n- ARG2: instrument (defaults to electricity)\n\nExample 1 (charge-v: literal batteries): John charged his Walkman batteries.\n- ARG0: John\n- ARG1: his Walkman batteries\n- rel: charged\n\nExample 2 (charge-v: metaphorical batteries): John charged his batteries with a quadruple shot of espresso.\n- ARG0: John\n- ARG1: his batteries\n- ARG2: with a quadruple shot of espresso\n- rel: charged\n\n### charge-04 (buy on credit)\n\n- ARG0: buyer\n- ARG1: thing charged (amount, item)\n- ARG2: credit\n\nExample 1 (charge-v: all args): During the third quarter, the company charged about $46 million against earnings in reducing goodwill.\n- ARGM-TMP: During the third quarter\n- ARG0: the company\n- ARG1: about $ 46 million\n- ARG2: against earnings\n- ARGM-ADV: in reducing goodwill\n- rel: charged\n\nExample 2 (charge-n: All arguments): Mary's charge of the dress on her old credit card would not go through.\n- ARG0: Mary's\n- ARG1: of the dress\n- ARG2: on her old credit card\n- rel: charge\n\nExample 3 (charge-n: Args 1 & 2): The charge of $900 dollars of merchandise to his father's credit card got John into big trouble.\n- ARG1: of $900 dollars of merchandise\n- ARG2: to his father's credit card\n- rel: charge\n\n### charge-05 (assign a role (including criminal charges), assign an allegation or criminal charge against someone)\n\n- ARG0: assigner\n- ARG1: assigned\n- ARG2: role or crime\n\nExample 1 (charge-v: usually as crime): Royal Business Group Inc. said [it]-1 filed suit in federal court here *trace*-1 charging Realist Inc. and its directors with violating federal securities laws ``by engaging in a scheme to prevent'' Royal from acquiring Realist.\n- ARG0: *trace*-1\n- ARG1: Realist Inc. and its directors\n- ARG2: with violating federal securities laws ``by engaging in a scheme to prevent'' Royal from acquiring Realist\n- rel: charging\n\nExample 2 (charge-v: passivized crime): [Mr. Antar]-2 was charged *trace*-2 last month in a civil suit filed in federal court in Newark by the Securities and Exchange Commission.\n- ARG1: *trace*-2\n- ARGM-TMP: last month\n- ARGM-LOC: in a civil suit filed in federal court in Newark by the Securities and Exchange Commission\n- rel: charged\n\nExample 3 (charge-v: not a crime): Instead, [an appropriate institution]*-4 should be charged [*-4]with the job of preventing chaos in the market: the Federal Reserve.\n- ARGM-MOD: should\n- ARG1: [*-4]\n- ARG2: with the job of preventing chaos in the market\n- rel: charged\n\nExample 4 (charge-n: Fragment, Args 0 & 2): its largely successful defense of antitrust charges by the UnitedStates Football League\n- ARG2: antitrust\n- ARG0: by the United States Football League\n- rel: charges\n\nExample 5 (charge-n: Charged with a crime): Prosecuters around Taiwan dealt with more than 2,000 cases concerning black - gold offenses, and brought charges against 30 elected officials and representatives.\n- ARG1: against 30 elected officials and representatives\n- rel: charges\n\nExample 6 (charge-n: Arg 2 only): The newspaper published charges that the attorney had tried to bribe members of the jury.\n- ARG2: that the attorney had tried to bribe members of the jury.\n- rel: charges\n\nExample 7 (charge-n: Args 0 and 2): House Speaker Nancy Pelosi said Friday she won't talk any more about her charge that the CIA lied in 2002 about using waterboarding.\n- ARG0: her\n- ARG2: that the CIA lied in 2002 about using waterboarding.\n- rel: charge\n\n### charge-06 (allege (an utterance or complement clause))\n\n- ARG0: speaker\n- ARG1: utterance\n\nExample 1 (charge-v: transitive): Pharmacia, based in Upsala, Sweden, had charged in a lawsuit against MedChem that MedChem's AMVISC product line infringes on the Pharmacia patent.\n- ARG0: Pharmacia, based in Upsala, Sweden,\n- ARGM-LOC: in a lawsuit against MedChem\n- ARG1: that MedChem's AMVISC product line infringes on the Pharmacia patent\n- rel: charged\n\n### charge-08 (to be in charge of something, have a responsibility or role)\n\n- ARG0: Person assigning responsibility (rare)\n- ARG1: Person that the responsibility is assigned to\n- ARG2: responsibility itself, role\n\nExample 1 (charge-n: Args 0 & 1): The judge's charge to the jury was to ignore the preceding statement of the witness.\n- ARG0: The judge's\n- ARG1: to the jury\n- rel: charge\n\nExample 2 (charge-n: Args 1 & 2): The spy fulfilled his charge of smuggling fissile materials into the country.\n- ARG1: his\n- ARG2: of smuggling fissile materials into the country\n- rel: charge\n\nExample 3 (charge-n: Arg 2 only (very common)): Malcolm S. Todt was named vice president and senior officer in charge of equipment leasing to municipalities , a new effort of this bond insurer .\n- ARG2: of equipment leasing to municipalities, a new effort of this bond insurer.\n- rel: charge",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01R4k4dKaAcuuH4okMEkQLQY",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "identity-91",
+       "businessman"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01R4k4dKaAcuuH4okMEkQLQY",
+     "content": "{\"gold\": [{\"doc\": \"english_umr-0208\", \"sentence_number\": 672, \"sentence\": \"The businessman raised his head .\", \"annotation\": \"# meta-info :: sent_id = lpp_1943.672 :: type = partial_conversion\\n# :: snt672\\nIndex: 1           2           3           4           5           6\\nWords: The         businessman raised      his         head        .\\n\\n# sentence level graph:\\n(s672r / raise-01\\n       :ARG0 (s672b / businessman\\n                    :part (s672h / head))\\n       :ARG1 s672h)\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0208\", \"sentence_number\": 649, \"sentence\": \"The fourth planet belonged to a businessman .\", \"annotation\": \"# meta-info :: sent_id = lpp_1943.649 :: type = partial_conversion\\n# :: snt649\\nIndex: 1           2           3           4           5           6           7           8\\nWords: The         fourth      planet      belonged    to          a           businessman .\\n\\n# sentence level graph:\\n(s649b / belong-01\\n       :ARG0 (s649p / planet\\n                    :ord (s649o / ordinal-entity\\n                                :value 4))\\n       :ARG1 (s649b3 / businessman))\\n\\n# alignment:\\n\\n# document level annotation:\"}, {\"doc\": \"english_umr-0208\", \"sentence_number\": 742, \"sentence\": \"\\\" That is enough , \\\" said the businessman .\", \"annotation\": \"# meta-info :: sent_id = lpp_1943.742 :: type = partial_conversion\\n# :: snt742\\nIndex: 1           2           3           4           5           6           7           8           9           10\\nWords: \\\"           That        is          enough      ,           \\\"           said        the         businessman .\\n\\n# sentence level graph:\\n(s742s / say-01\\n       :ARG0 (s742b2 / businessman)\\n       :ARG1 (s742e / enough\\n                    :domain (s742t / that)\\n                    :quote s742s))\\n\\n# alignment:\\n\\n# document level annotation:\"}], \"found\": 48, \"left_out\": \"2 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS4wUKEAgTGAI4AUIIdGhpbmtpbmcSDLf8K36t+iQNhkYxCRoMRbV+iDGpf6GiqavdIjAIG6VqEVekjgnK/xg/FOHOyrMzY5DOSo9XjInQH7d5iiRfoWsPy3+Ws+BdD+TMMIsqgAUk9h8TzcVnGfd3FFa9f/7wCcoI7MSUrKbfa4QSdtc0I7iiZ3xKKHBcoBUhTIMGw/6YSB+5d66swmTK0A0xh6ScYCeSGF04wGUOwHJ9C3YjvxoTI9HuTskkLNjExT/uwEZBnXtdsvzLNMawVFDWUCFuf8+F8xzy9ZJQHGtLSLDcqbrqVealgqrftVKhIm/ULGZucv9qqWkIRV/QuOnMDpBJo9oCB7jYFncnrLCvWqlPQ42PLhNeZ/WWRlEd7zYOQbAmXi5radjXSOe7YxqxcruXdQFAmWFNPtD6r7QiDV3AGpKBDgBMNMu2Q0vN7lAY/wNPfYd9sMXvIBnV2yjTiDcVBgrkWhaj/o9mgavoZu6snVydtmQYmAimOyV0X7AWvVeV5WcvNSkRQV3cMiw/lSYCna6yA50pn9pNjLw9uqlVvPVzETNHDwE496fLNGfJ6gyO02Y1Mx0Z/NtnP1DP3uJESrvjsHaB63g2Iz8+zDn63hr+GAvYHRAzacCkSVbr57oQ4sDTxDX60YctaOZZLpQj+yqZ4VcbcnlpsBsO4YEUBGBca/g8irOm1R4exSqZBPLkJngs+7HFRWCGcDb41YKVu3I4pFW+h4X/+H1nQAK/3iJuIZBxrLpIF0kl0k7Bc8fJibtGclIZCW0XaCOY/PcM2l/l2MC2fYhApeClEMK6BczO+Dcec2ens6J1W3wfTUc1FuYv5r/9jwfRmGxsvsyQI1Wez1ky69RlR4CtvYiVqg3OPS4bEQ/kwK1ZkRLUEzGieSsCmuETGPQT85XSJxfU++rJYIIsMa6jMr1AkBHlVwmcYCEwlAjdc3jEHuEIFHgbNCH2NttFmYJepeFr9OFAGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I annotated the sentence as \"Pope\" being identified with a definite description: an `identity-91` with Pope as `:ARG1` and the businessman as `:ARG2`. Two clauses about the businessman, joined by `and`, hang under him as inverse `:ARG1-of` roles.\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :wiki \"Edmund_Pope\"\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s2 / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n**Choices I made:**\n- **Senses:** I checked these against PropBank.\n  - `convict-01`: `:ARG1` is the person convicted, `:ARG2` is what he was convicted of.\n  - `charge-05`: a criminal charge, with the crime as `:ARG2`.\n  - `spy-01`: Pope is its `:ARG0`.\n  - `sentence-01`: `:ARG2` is the punishment (the Russian prison), `:ARG4` is how long it lasts (20 years).\n- **Aspect:**\n  - The conviction and the sentencing are completed past events, so they are `performance`.\n  - The charge is also `performance`, though nothing in the guidelines settles that.\n  - The spying is an event noun, so it is `process`.\n  - The identity is a `state`.\n- **Two judgment calls:**\n  - The root could also be `have-role-91`. I chose `identity-91` because \"the American businessman who…\" is a definite description rather than a category.\n  - The wiki title \"Edmund_Pope\" is my assumption from the document's subject; the sentence itself only says \"Pope\".\n  - I didn't find a gold example of this exact construction to compare against.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

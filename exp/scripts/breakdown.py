@@ -14,8 +14,9 @@ import os
 EXP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS = os.path.join(EXP, "runs")
 SUBS = ["s1-abridged", "s1-full", "s2-search", "s2-propbank", "s2-gold"]
-API_SUBS = SUBS + ["a1-sentence-propbank"]
-SHORT = {"a1-sentence-propbank": "+PropBank by sentence", "s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
+API_SUBS = SUBS + ["s3-all", "a1-sentence-propbank", "a2-sentence-all"]
+SHORT = {"s3-all": "+all three tools", "a1-sentence-propbank": "+PropBank by sentence",
+         "a2-sentence-all": "+all three by sentence", "s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
          "s2-gold": "+gold"}
 ANCAST = ["Modal", "Temporal", "Coref", "Comprehensive"]
 NAMES = {

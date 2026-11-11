@@ -1,0 +1,209 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-9.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 153
+    },
+    "cache_creation_input_tokens": 153,
+    "cache_read_input_tokens": 8982,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 160,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3358
+    },
+    "cache_creation_input_tokens": 3358,
+    "cache_read_input_tokens": 9135,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 893,
+    "output_tokens_details": {
+     "thinking_tokens": 240
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 9 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n9\tA spokeswoman said that Pope was suffering from malnutrition and high blood pressure .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_014RgpSRbVvhqhKy95gHm2Ar",
+     "input": {
+      "lemmas": [
+       "suffer",
+       "say"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_018iYud5TVUMrHdXw4NoTx5X",
+     "input": {
+      "language": "en",
+      "keywords": [
+       "spokeswoman"
+      ]
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_014RgpSRbVvhqhKy95gHm2Ar",
+     "content": "## suffer\n\n### suffer-01 (suffer, endure/undergo something painful)\n\n- ARG0: entity suffering\n- ARG1: malady\n\nExample 1 (intransitive): The company's return on equity could suffer if it made a higher bid.\n- ARG0: The company's return on equity\n- ARGM-MOD: could\n- ARGM-ADV: if it made a higher bid\n- rel: suffer\n\nExample 2 (with PP-malady): John suffers from delusions of grandeur.\n- ARG0: John\n- ARG1: from delusions of grandeur\n- rel: suffers\n\nExample 3 (with S-malady): Thou shalt not suffer a fool to live.\n- ARG0: Thou\n- ARGM-MOD: shalt\n- ARGM-NEG: not\n- ARG1: a fool to live\n- rel: suffer\n\n## say\n\n### say-01 (say)\n\n- ARG0: Sayer\n- ARG1: Utterance\n- ARG2: Hearer\n- ARG3: Attributive\n\nExample 1 (Transitive): A Lorillard spokeswoman said \"This is an old story.\"\n- ARG0: A Lorillard spokeswoman\n- ARG1: \"This is an old story\"\n- rel: said\n\nExample 2 (Fronted): [Kent cigarettes were sold]-1, the company said *trace*-1\n- ARG0: the company\n- ARG1: *trace*-1\n- rel: said\n\nExample 3 (Inverted): [What matters is what advertisers will pay]-1, said *trace*-1 Newsweek's chairman\n- ARG1: *trace*-1\n- ARG0: Newsweek's chairman\n- rel: said\n\nExample 4 (Split): S-[\"What you have to understand,\" said John [*?*], \"is that Philly literally stinks.\"]\n- ARGM-DSP: [*?*] (tag the leaf node of the *?* itself, and '*' link to the S node containing the ENTIRE utterance\n- ARG1: [*?*] (tag the parent node)\n- ARG0: John\n- rel: said\n\nExample 5 (with listener): John said to Mary: \"you're an idiot.\"\n- ARG0: John\n- ARG2: to Mary\n- ARG1: \"you're an idiot\"\n- rel: said\n\nExample 6 (Weird, attributive usage:): \"Well that's odd,\" said John of the disappearance of his nose.\n- ARG1: \"Well that's odd\"\n- ARG0: John\n- ARG3: of the disappearance of his nose\n- rel: said\n\nExample 7 (split utterance): John-1 is said *trace*-1 to be an idiot.\n- ARG1: *trace*-1 to be an idiot\n- rel: said\n\n### say-02 (discourse function)\n\n- (no roles)\n\nExample 1 (TAKES NO ARGS): Do you think 0 this war is going *-1 to end up...much less popular say a year from now...?\n- rel: say",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_018iYud5TVUMrHdXw4NoTx5X",
+     "content": "{\"gold\": [{\"doc\": \"english_umr-0578\", \"sentence_number\": 11, \"sentence\": \"The Lorillard spokeswoman said asbestos was used in `` very modest amounts '' in making paper for the filters in the early 1950s and replaced with a different type of filter in 1956 .\", \"annotation\": \"# meta-info :: sent_id = nw.wsj_0003.11\\n# :: snt11\\nIndex: 1           2           3           4           5           6           7           8           9           10          11          12          13          14          15          16          17          18          19          20          21          22          23          24          25          26          27          28          29          30          31          32          33          34\\nWords: The         Lorillard   spokeswoman said        asbestos    was         used        in          ``          very        modest      amounts     ''          in          making      paper       for         the         filters     in          the         early       1950s       and         replaced    with        a           different   type        of          filter      in          1956        .\\n\\n# sentence level graph:\\n(s11s / say-01\\n    :ARG0 (s11p4 / person\\n        :ARG1-of (s11h / have-org-role-92\\n            :ARG2 (s11c / company :wiki \\\"Lorillard_Tobacco_Company\\\"\\n                :name (s11n / name :op1 \\\"Lorillard\\\"))\\n            :ARG3 (s11s2 / spokeswoman)))\\n    :ARG1 (s11c2 / consecutive\\n        :op1 (s11u / use-01\\n            :ARG1 (s11a / asbestos\\n                :quant (s11a2 / amount\\n                    :mod (s11m / modest\\n                        :degree intensifier)))\\n            :ARG2 (s11m2 / make-01\\n                :ARG1 (s11p / paper)\\n                :temporal (s11e2 / early-01\\n                    :ARG2 (s11d3 / date-entity :decade 1950))\\n                :purpose (s11h2 / have-part-91\\n                    :ARG1 (s11t / thing\\n                        :refer-number plural\\n                        :instrument-of (s11f / filter-02))\\n                    :ARG2 s11p)\\n                :aspect activity)\\n            :aspect habitual)\\n        :op2 (s11r / replace-01\\n            :ARG1 s11a\\n            :ARG2 (s11t2 / thing\\n                :instrument-of (s11f2 / filter-02)\\n                :mod (s11t3 / type\\n                    :ARG1-of (s11d2 / differ-02\\n                        :ARG2 s11a)))\\n            :temporal (s11d / date-entity :year 1956)\\n            :aspect performance)\\n        :quote s11s)\\n    :aspect performance)\\n\\n# alignment:\\ns11s: 4-4\\ns11p4: 3-3\\ns11h: 0-0\\ns11c: 2-2\\ns11n: 2-2\\ns11s2: 3-3\\ns11c2: 24-24\\ns11u: 7-7\\ns11a: 5-5\\ns11a2: 12-12\\ns11m: 11-11\\ns11m2: 15-15\\ns11p: 16-16\\ns11e2: 22-22\\ns11d3: 23-23\\ns11h2: 0-0\\ns11t: 19-19\\ns11f: 19-19\\ns11r: 25-25\\ns11t2: 31-31\\ns11f2: 31-31\\ns11t3: 29-29\\ns11d2: 28-28\\ns11d: 33-33\\n\\n# document level annotation:\\n(s11s0 / sentence\\n    :coref ((s11p4 :same-entity s5p)\\n            (s11a :same-entity s6a3)\\n            (s1m :subset-of s11m2))\\n    :temporal ((document-creation-time :before s11s)\\n            (root :depends-on s11d3)\\n            (root :depends-on s11d)\\n            (s11e2 :contains s11d3)\\n            (s11u :contains s11e2)\\n            (s11r :before s3s2)\\n            (s11m2 :contains s11e2))\\n    :modal ((root :modal author)\\n            (author :full-affirmative s11s)\\n            (author :full-affirmative s11p4)\\n            (s11p4 :full-affirmative s11u)\\n            (s11p4 :full-affirmative s11r)\\n            (s11p4 :full-affirmative s11m2)\\n            (s11p :partial-affirmative purpose)\\n            (purpose :full-affirmative s11h2)))\"}, {\"doc\": \"english_umr-0578\", \"sentence_number\": 5, \"sentence\": \"A Lorillard spokewoman said , `` This is an old story .\", \"annotation\": \"# meta-info :: sent_id = nw.wsj_0003.5\\n# :: snt5\\nIndex: 1          2          3          4          5          6          7          8          9          10         11         12\\nWords: A          Lorillard  spokewoman said       ,          ``         This       is         an         old        story      .\\n\\n# sentence level graph:\\n(s5s / say-01\\n    :ARG0 (s5p / person\\n        :ARG1-of (s5h / have-org-role-92\\n            :ARG2 (s5c / company :wiki \\\"Lorillard_Tobacco_Company\\\"\\n                :name (s5n / name :op1 \\\"Lorillard\\\"))\\n            :ARG3 (s5s2 / spokeswoman)))\\n    :ARG1 (s5o / old-01\\n        :ARG1 (s5s3 / story\\n            :mod (s5t / this))\\n        :aspect state\\n        :quote s5s)\\n    :aspect performance)\\n\\n# alignment:\\ns5s: 4-4\\ns5p: 3-3\\ns5h: 3-3\\ns5c: 2-2\\ns5n: 2-2\\ns5s2: 3-3\\ns5o: 10-10\\ns5s3: 11-11\\ns5t: 7-7\\n\\n# document level annotation:\\n(s5s0 / sentence\\n    :coref ((s3c :same-entity s5c)\\n            (s4p :same-entity s5s3))\\n    :temporal ((document-creation-time :before s5s)\\n            (s5s :contains s5o))\\n    :modal ((root :modal author)\\n            (author :full-affirmative s5s)\\n            (author :full-affirmative s5p)\\n            (s5p :full-affirmative s5o)))\"}], \"found\": 2, \"left_out\": \"1 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS7wkKEAgTGAI4AUIIdGhpbmtpbmcSDFBCxf6a2+v4jD633xoMz6GMW+tcbPTunZaVIjDllfvYFBNIV1oomYVEKgO+V6EPzmhia+nlqMrNT0IyDUtrTwQ30QhHRxCGdR01L10qjAkjNI7vnv+mF8K53V635LgyzubLz00+2pBtNfh/AL3HjEcTWLC2d5C0rMGh389Sqg8ihl1tBz6pZRI8OPLONin2OFJ0RtCV4Z49tYZYzsdYcMsohIwRJAItuth++r4BTbQFQXo2b5VfDHKnMpz+nDH6egp7KZery1TN6rQ1Ntmr05pbUKHwxjA6k7VLmnEW002TH+tNzhYW+zsOptXABV0W6MNLz1dpJPz9jolM+U+CFR8Q7UIzfPixfIbRMGrxt800dJxLTtFEQ6PWzk0VtVFpnb29STwEPPJNBsD9+uPertuo+uT5uvGZLsZFZU7/7ey4z+oc97volXe5xX5H9XAffv5qZeSQ6STkrKzR8VgLuQHKdQIPz1k30lYvD1JTpNVVFz9c3RPp+wz1zVULtfCtFT/BMlLGzhO4bUyRCuSbFXKxMCE0i58RrRyohzrT0ns7wvE+Rr16NK0aQsCQ4RwatksSrINXv/64Gt2CYRjp2O++K6JzKvIS1h0rx5q0c5z+9hHuGZqY7bi2BjkXqQpjVqISw17HfFwnBZ+jaQBEktQb5Jy1akUGi0WGJOUs0OoTAW52qLH3PfdoK8IcmFsLiy8eaALXj31L6pFMob8TaXDVk/V/itwIb//VDCJoS9mAyicPnqJ5IYPGapnOJcz22Wc4Bygcli81T6FdeoQbvJqMx4U8+637BLHMx3OScTvR2MTaiWi9mu15tsHW0id83RutOW7MPISpQkyNjSFOGIPcrWAakQ0vDQZruP2d6gTnvCtGDbDETQ6QOKK+ZT+Qff+xzKBWMTCGsdy1iIMsMi6oCPFYKF9m4iLkZms/mdGvTKWy/6gVDh0cgGVVUj+R8uUCdniaSGe2Mq3VQhwW2ayXCOo2HYWQp1Y3WsNNMTqyJKw8C0Kp5JmiplGbWTLi3el3/Mk9aViTQBiU7mLdd7NqeUigJJ9zUxM8DsoQUPh3D8ZaoIO2/SCJNgrg7Eo1xbMQ/UWdjD+JjEvvhN2m73FnexBDWfGUDw3hipMR/N1oUQA/WLM9vZfMVaEAQR8dVmO3zCMasOfkPciqx0AVq1Vhi0iuz/YCCfFYgcmouAwXRRH/siC60HWZI3gZtrPy55t3FM0jf8AlGmDQVklv5w646MGJSnFUOsIwcX4vISXmPyxfZ4P+Y1njBBcrbam4hYWYH8LOTUj0KIc00ohB4g12eC94oyXjUDjdsnUUf03MHnvbTi+p4ZADbKSvwFSKqvjo3CGS7rHwpfiNx5GIwZJR84kxCi5NZZXrMOhUZsxmGNhSVsnZUlpqj2zs7EMN3FeSLevEeRlN4iIriY7Y8JF3iNpzrT4pQDUgognQDBDfRbmAQtLyzf1WjL8TCEKmE4PL1AhJymVku8MD1lfd3dblpf/qw0E+pyy7aDfe4pO/H6aVwTUbBzK9waUDtDNicoBvMBEbOIXcvuyZwF456xzUyus/lCGiqFlOeDbFC8F5Hp7de2PON3C9bV5vmRjBcAcrwyJ55rIfwcb/90a2WsKGkz0V+SX0wIzVC5GgsRrQPTNQ2vzY1WxJjRYYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG1-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :ARG1-of (s9h2 / high-02\n                    :aspect state)))\n        :aspect state)\n    :aspect performance)\n\nMy notes on the choices:\n- **Spokeswoman:** I followed two gold examples, which show \"spokeswoman\" as a `person` with `have-org-role-92`. This sentence names no organization, so the role has no `:ARG2`.\n- **Pope:** I treated \"Pope\" as the person's name. Earlier sentences probably give the full name (likely Edmund Pope), but only \"Pope\" appears here, so the name has one `:op`.\n- **Senses:** PropBank confirms `say-01` (the spokeswoman is `:ARG0`, what she said is `:ARG1`) and `suffer-01` (Pope is `:ARG0`, the illnesses are `:ARG1`).\n- **\"High blood pressure\":** this is `pressure`, with `blood` as `:mod` and `high-02` as `:ARG1-of`. I didn't look up `high-02` in PropBank, so that sense is unchecked.\n- **Aspect of \"was suffering\":** this was a close call. I chose `state` because suffering from an illness is a condition, not a process. Since the verb is in the progressive, the gold annotation may use `activity` instead.\n- **No `:quote`:** this is indirect speech, not a quotation, so I left it out.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}
