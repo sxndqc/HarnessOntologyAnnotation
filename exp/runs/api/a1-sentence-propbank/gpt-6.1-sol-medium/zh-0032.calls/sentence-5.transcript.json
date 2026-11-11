@@ -1,0 +1,175 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-5.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 5203,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 42,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5203,
+     "input_tokens_details": {
+      "cache_write_tokens": 5200,
+      "cached_tokens": 0
+     },
+     "output_tokens": 42,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5245
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1925,
+    "cache_read_input_tokens": 5200,
+    "output_tokens": 744,
+    "reasoning_tokens": 443,
+    "openai_usage": {
+     "input_tokens": 7125,
+     "input_tokens_details": {
+      "cache_write_tokens": 1922,
+      "cached_tokens": 5200
+     },
+     "output_tokens": 744,
+     "output_tokens_details": {
+      "reasoning_tokens": 443
+     },
+     "total_tokens": 7869
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 5 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n5\t使用 后 的 核废水 经 12 年 已 储存 30万吨 ，于 去年 开始 分批 排放 ，预计需时 40 年\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_6jH8PVKrCI1iPLAI3cRZMtE2",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "使用",
+       "经",
+       "储存",
+       "开始",
+       "排放",
+       "预计",
+       "需时",
+       "需"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"使用\",\"经\",\"储存\",\"开始\",\"排放\",\"预计\",\"需时\",\"需\"],\"language\":\"zh\"}",
+       "call_id": "call_6jH8PVKrCI1iPLAI3cRZMtE2",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0db627a9042c5213006af3fcf564d487d195ad447a9c1abf4c",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_6jH8PVKrCI1iPLAI3cRZMtE2",
+     "content": "## 使用\n\n### 使用-01\n\n- ARG0: agent\n- ARG1: entity used\n- ARG2: entity used for\n\nExample 1: 电厂 使用 这 种 乳化油 已经 取得 了 *OP* *T*-1 令 人 *PRO* 满意 的 结果\n- ARG0: 电厂\n- ARG1: 这 种 乳化油\n- rel: 使用\n\nExample 2: 传统 的 发电 ， 一般 都 使用 煤 、 水 、 油 等\n- ARG2: 传统 的 发电\n- ARG1: 煤 、 水 、 油 等\n- ARGM-ADV: 都\n- ARGM-ADV: 一般\n- rel: 使用\n\nExample 3: *PRO* 将 *OP* *T*-1 可 盈利 百万 元 以上 的 一 整 套 “ 王码 软件 精品 ” ， 免 收 技术 费用 ， 全部 以 *OP* *T*-2 不 加密 的 软盘 方式 对 国内 “ 开放 ” ， 从而 使 国内 任何 微机 用户 *PRO* 都 可以 拷贝 使用\n- ARG0: *PRO*\n- ARGM-ADV: 都\n- rel: 使用\n\nExample 4: 它 会 对 用户 文件 进行 加密 ， 从而 使 这些 文件 *PRO* 变 得 无法 使用\n- ARG1: *PRO*\n- ARGM-ADV: 无法\n- rel: 使用\n\nExample 5: 此 车 相对 固定 给 崔广华 使用\n- ARG0: 给 崔广华\n- ARG1: 此 车\n- ARGM-ADV: 固定\n- ARGM-ADV: 相对\n- rel: 使用\n\n## 经\n\n### 经-01\n\n- ARG0: entity described\n- ARG1: thing arg0 goes through\n\nExample 1: *OP* *T*-2 经 挑选 的 申请人 须 参加 初 次 面试\n- ARG0: *T*-2\n- ARG1: 挑选\n- rel: 经\n\nExample 2: 这些 法例 大部分 未 经 条例 草案 委员会 审议\n- ARG0: 这些 法例\n- ARG1: 条例 草案 委员会 审议\n- ARGM-ADV: 未\n- ARGM-ADV: 大部分\n- rel: 经\n\n## 储存\n\n### 储存-01\n\n- ARG0: agent\n- ARG1: storage\n- ARG2: thing stored\n\nExample 1: 芯片 中 可 储存 行李 的 目的地 、 飞行 航线 等 详细 信息\n- ARG1: 芯片 中\n- ARG2: 行李 的 目的地 、 飞行 航线 等 详细 信息\n- rel: 储存\n\n## 开始\n\n### 开始-01\n\n- ARG0: entity described\n- ARG1: thing started\n\nExample 1: 目前 ， 王翔 又 开始 了 九龙街 的 建设 。\n- ARG0: 王翔\n- ARG1: 九龙街 的 建设\n- ARGM-ADV: 又\n- ARGM-TMP: 目前\n- rel: 开始\n\nExample 2: 德国 统一 后 ， 原 驻德 苏军 *PRO* 从 １９９１年 开始 分批 撤离 。\n- ARG1: *PRO*\n- ARGM-TMP: 从 １９９１年\n- rel: 开始\n\nExample 3: 活动 将 于 元旦 上午 十时三十分 开始\n- ARG1: 活动\n- ARGM-TMP: 于 元旦 上午 十时三十分\n- ARGM-ADV: 将\n- rel: 开始\n\n### 开始-02\n\n- ARG0: entity started\n\nExample 1: 二零零五年 的 夏天 ， 一 个 *OP* *T*-1 被 人们 期待 *T*-2 已 久 的 画面 开始 在 香港 的 各 大 媒体 频繁 出现\n- ARGM-TMP: 二零零五年 的 夏天\n- ARG0: 一 个 被 人们 期待 已 久 的 画面\n- ARG0-PRD: 在 香港 的 各 大 媒体 频繁 出现\n- rel: 开始\n\n## 排放\n\n### 排放-01\n\n- ARG0: agent\n- ARG1: thing discharged\n\nExample 1: *pro* 在 *OP* *T*-2 日 排放 废水 一百 吨 以上 的 一千零三十五 家 重点 污染 企业 中 已 有 八百七十八 家 完成 了 治理\n- ARG0: *T*-2\n- ARG1: 废水\n- ARG1-QTY: 一百 吨 以上\n- ARGM-ADV: 日\n- rel: 排放\n\nExample 2: 对 *OP* *T*-1 超 标 排放 企业 实行 强制 关闭\n- ARG0: *T*-1\n- rel: 排放\n\n## 预计\n\n### 预计-01\n\n- ARG0: agent\n- ARG1: forecast arg0 makes\n\nExample 1: 中国 钢铁 工业 “ 九五 ” （ 一九九六 至 二０００年 ） 期间 ， 预计 总 投资 在 三千亿 元 左右\n- ARG1: 中国 钢铁 工业\n- ARG1-PRD: “ 九五 ” （ 一九九六 至 二０００年 ） 期间 总 投资 在 三千亿 元 左右\n- rel: 预计\n\nExample 2: 经济 专家 预计 ， 今年 中 韩 两 国 贸易额 将 增至 二百五十亿 美元\n- ARG0: 经济 专家\n- ARG1: 今年 中 韩 两 国 贸易额 将 增至 二百五十亿 美元\n- rel: 预计\n\nExample 3: 据 建设部 预计 ， *OP* 今年 国有 商业 银行 投放 *T*-1 在 此 方面 的 贷款 有 望 达到 三百六十亿 元\n- ARG0: 建设部\n- rel: 预计\n\nExample 4: 总 投资 预计 在 三亿 美元 左右\n- ARG1: 总 投资\n- ARG1-PRD: 在 三亿 美元 左右\n- rel: 预计\n\nExample 5: 在 资本 市场 、 保险业 、 连锁 商业 、 批发 销售 、 集装箱 运输 、 房地产 、 信息 服务 等 经济 增长点 的 带动 下 ， 第三 产业 增加值 预计 *PRO* 年均 增长 百分之十一 至 十二\n- ARG1: 第三 产业 增加值\n- ARG1-PRD: 年均 增长 百分之十一 至 十二\n- ARGM-LOC: 在 资本 市场 、 保险业 、 连锁 商业 、 批发 销售 、 集装箱 运输 、 房地产 、 信息 服务 等 经济 增长点 的 带动 下\n- rel: 预计\n\n## 需时\n\nNot in PropBank.\n\n## 需\n\n### 需-01\n\n- ARG0: agent\n- ARG1: theme\n\nExample 1: 首 期 先 建 两 台 ， 约 需 投资 四十亿 美元 。\n- ARG0-: 首 期\n- ARGM-ADV: 约\n- rel: 需\n\nExample 2: 美国 以 *PRO* 最终 控制 中亚 大部分 能源 为 目标 ， 瞄准 中亚 国家 急 需 外援 而 俄 无法 满足 它们 的 需要 这 一 缺口\n- ARG0-: 中亚 国家\n- ARGM-ADV: 急\n- rel: 需\n\n### 需-02\n\n- ARG0: party in need\n- ARG1: theme\n- ARG2: predicate\n\nExample 1: 但 整 个 峡谷 长度 、 平均 深度 和 最大 深度 仍 需 测绘 部门 *PRO* 进一步 核实 才 能 公布\n- ARG0-: 整 个 峡谷 长度 、 平均 深度 和 最大 深度\n- ARGM-ADV: 仍\n- rel: 需\n\n### 需-03\n\n- (no roles)",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 5\n# sentence level graph:\n(s5a / and\n    :op1 (s5c / 储存-01\n        :ARG2 (s5w / 核废水\n            :ARG1-of (s5u / 使用-01\n                :aspect performance)\n            :quant 300000\n            :unit (s5t / 吨))\n        :duration (s5t2 / temporal-quantity\n            :quant 12\n            :unit (s5y / 年))\n        :temporal (s5a2 / after\n            :op1 s5u)\n        :aspect performance)\n    :op2 (s5b / 开始-01\n        :ARG1 (s5d / 排放-01\n            :ARG1 s5w\n            :manner (s5m / 分批)\n            :aspect activity)\n        :temporal (s5l / 去年)\n        :aspect performance)\n    :op3 (s5e / 预计-01\n        :ARG1 (s5x / 需时-00\n            :ARG0 s5d\n            :ARG1 (s5t3 / temporal-quantity\n                :quant 40\n                :unit (s5y2 / 年))\n            :aspect state\n            :modal-strength partial-affirmative)\n        :aspect state))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0db627a9042c5213006af3fcf7f5ac87d1b3ddfdede468388d",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0LoXF-EU0AJaY3uv2fLbKBxedg69vCtvnoaHLR7AiIpFJYwReCMFOfx06JhezaMD4inpd_dK8vW6ws9OeNTFhCVgWE3s40avL7xqeMhoSnNvM4fMDO0iFtNY02p3JwLwGQDg6SrclHtZEXzfmpmxdv0-uUvw6aS9l5EDb9MFArqE6cskS-CpuAv6zo1GyDAEJFnkCI1XkpeOKtd_kn4N5eLQv7MKrdo2gzEhsn3PbkQcihZd12BJmVMTtRoXvRTqffh3Sh6ychl8UpB3DQbacPrOWNbnFaqJuLOATtPsEb-4uI7QHI3RR_mRvGSj3Rv1uME4Kdrm0ZnRO3PJsvddPeJ-AuP8CQN0aspIRSz52Lp0CKSqodfufxrVklYedqbAPjM52pvh3XEpMKLhygaOSm8FC-G_KfKlsYoEDimgZDiiLKXvqLrftOFqS2Nm5zax9DFmSy98NVNyARvILB-4C4mFLtyiFjJT5GHC1rGwj6qBOvgMLXKez2H9raQikeKa0sPhcIn7Fk6kNEhDQVKavWBY1nQ4Ey3mP5K4AxmC9wb6vMtaK0dIQWrFPY7mtCoEBIJlGbeTGXFwy0BT_ugqW2DuZBXKDmwNzhgSGeL1eWZHqFTTfcgvf_lM2yF8yj66J3UODz6wXrpo1KJ1JJW9Clx_eZuVboWLqALnZ5RflQ3WZpilzt2cOhi0nSzXohsvmdSbASDh9L-Gp3VkL0UZL_bb5k1EnyVLvYIGoAj82ZpJayhOr3IRsXGocVTq7DS0jBDJ_yS1ZZJLmBPtW8JvSQLddZh-ooMx6Wzho2-T2k_ttJc2F6FOdQ79hE2ZJVbSETWklv6QKJJPlcRd6jSSdNenUUMdGl5ZPF8ohTxtCidoQqNqz69lae_tc6kd8OzJdxLAyG_3yktLX2yDWMF4W_8l_GgivCAh03AyU4QWRdiwKmzvCY1Zt35ElxhgzRsAWO7W3_5RVQOSWfJ8h65vyXDJOq69FLj-nW3hCdHuKWTCKnC6YuCitu0HCyy3Wq8Y5cNVKDh2Ew1FjvQ0La5MrmbvpC-FlhYUlFdYYVdGyDJKjJV5HXMD8hZi2TEDUvpToTubpK9uiHjRqtvRe7u8KsbN_tvB2ulDT7lfyR64M-JA46Qnnn6LbyE64R1aV8NorFuhzfxJGt1D4AL-rptsIP5kRLlKQ8OS8pxJErLzDrvdG4QaYbOTR7HAbcpDuSBwNNtVVk1cCwoGH9D7RgupYIDa_bTPZpo5fuLVUPdafsj5jwItfxNo4LIT7qyIUiSQCVQDazSmMbxW-xVFqJ4IdOdRchIpVJhkGvX1hDDHk0QaXYMhW4qOswViCfKSLIJNAZLCWScb5hIqs0IJ8wazSdxzqvmaYnBIR4TIu08GoF_iwe-E67DihgVnKxTG7cB06sELFOIaOf2m85mrprEXxNWkG8JB2jkDlRoiZ46ymBQwuOF482FiKWGSnRkNOMgbcSkQqjLsY2K7fKXE4_HX3ZsZLOhXrpfDdH8odbX9TKqINK6SVcCaW5-zBQNxy8CB2NJOuo_uluQmZ78vwoy1KroMTJoe0RNPtj26Ogrb14c_Aj3ZhswAnKVtru9VfRn-88_k5DkqhaNBBP6sqAjSrg9DIQZM0ZV-O7h3l6gimTPB8vubj4lI1ZHZ9hElxs1_j8GvEMi38yjVyeJa6pSs_DnBwyZQzzxoU1aB0G1k54RlGMibhAwDZY7ZJOVwh-yiJCam4oHQb-e8IjMFGyMdnZxNLRLyvkI8tpYoiYFF7U34DQgtu9NpbGBUPOc0T7dJHLP7YJf7KHv9NBA639rtbNQaCjZ5YbrmOE-q1NX02xV7LcFHXispvSE8m_oueHkO_ODy55JNM-mmpbX7dWipFNcRht-efZVpd4fIwKG7KDHjeJKPJqPBUuIcnWo-innMDP6wUsiJVFVT-vb0pLejL3UNDP44ogvL_bvoi7Yvpkh8T7dBvL-4XO1_5B-SKdf3s-iJtLK4eqHTJCTTfJuEccE17BU_jXQMpiDQLVXPyttzXxMRIbst2Vscw997y9gERz088zhm4MZONm2u4jzuUhjP8QZi3jIydrEjQmngPPWLxVg8V7g5qUCi859-raUcYmD8nyRw0e-NDMzkZLhPXBiI7UaoJuzR3DWhsreYTRkc7MPlPhvPT8lEs8xGrJPkt6mofYep7Flh7bqiaoxpy4yzmJAifzSFU91xVhxbn0A7jOa9ZDjxMPZ39ukvQ6y9-hwCUP8ogqaVYh-MIMbWbET8UfvfFX-5zbcgmpSicx346AeD6Es5zkX0_wMAlO4lAsDXGiwUbXVcfTYCa_4zcW6fPW3OqWnPM3VNPkP1u_JskMt9oVrz41FBT4q8CM4OSTjDSWZiN4inTVJnSM7coyA8kG4X_RQUuGUXwghAwjYsnG-plwAO9LB6zEqX5yse2x6Ml9EHMLd772VCWqhkXW2wJcEUDC_fWtZYn94MNDc0fcJHNJJjTHRrfYzXqAlr2OpfAaWXKo4pLd-YtB7uxi4cVu0QvrK30X5J-Oz2DwWoEI0E7fSb01ksgJrUs7SiU5aft8KNn_sa-k2a1vltJ7pxtaOh7byPhf01gkVe-9kdYQNTdWsW1f_pqvu9WuHHor23q4mngSaQ3tXAYEAmYTqoirEv9QN36d9XdOx6qFFWPINBRs8O98ZCw3RmRWvCI7CNGF_IzIGquqWhaDlwCYjCXAaw1F3QXY7dxXcq8wmkVV9oaJIylQ5Xwrx3ZgctgAekfAQ7AGJhns5croNLRPl74Znk6JlWvNwlNJVHk0E4gUInc9b9B0annoAF4cKg5uDLmMpJv7k_OzqB8yPnvQKaRXH7KgmtWlDwDTIUNj8-rPPHK7pF_0-gY-bIp-DTuUP3PXi7mLcJ4aQX22u6DNl7wNGt-W56Y_JXCcOpDyXLQ-K0rJ5W9xzgWhIbGe009iBcjyrcmujuPtQv1uF6KdJNe4dP_6Ts8KS6Ts6M4nUKzjGAvIa2PbLb2v0Ghq6vcUfJuucWFhOBqFTOSj3lMHCnyFzEOQ_11FrtSz4cJXGHue9dxAK_kZSLaJ2oGKhgmNzaLQEn8PR0k2zCw2DORG1dypudFSr_nbWWMghUD-cbffU0EpXXtOgDk1boZMcLFAtSkWQth94GZHAldr_9ozhtEPRoIZuGTGMYauD5wi-4ioIwRv-M_4K2pm0HG4TZuypTlCiCpTQwW5swaxBEYb-IMrizLhwDyQopNNyYGVN-fneLq-QqD8r_7OjbKVA-t2bLSG-PGL_el_quRwZ19Q5j7_wuwZ-bHgB8bpgGjTT8gqpUq7PWi_Of0UigxcudSAjzIm1LunI_REZSZSF30gY-4vCcdQJ7cDIa_i8a05c09OHZ0fYTzktYJJ60weCX7R16ObERY6N5f8lI2jYrUnelTp_iEj4SctGe3N0z5-WgGmq54UOYE0ZeHGhItIXJhPjoQIpouI4Vpj7e7KNdHJ7N7uQbXypszW3DkHrZWadZ2y7jp4i-w2e7w3Ai3RAw3ik1V4eaU_-8OzNbJj7HqE5Ul08dBP6-BM16oJLcxptaRiYGYI1kYv4P3CwSf1V38NWIbNA7csTrvRLOaVlsdPaAZUtagOgTIXrsvS4etAswau5GPQmlnQBK_gU5PcwAjlV0e0JGSZg7tYCIfMQV8qPA9SsEB5RzqJpD0xoBq_xXYOS4Z119ekLrSML7MkTAQwoXy-vsDFXxNyWGSgCpKJqBLclkDd7wJ-f2-ZCjMBg-t8vbRbgiiYf0Rypc8TxxDaRWN6dkIGflC43ymmakmaVulf7luTNpai0An0BDLyt7cXAuo2lCDycQoEFsSmiBA9jw0_PsWQwYyp0fuEwynkfO-kVK5dqXRtvYoc_QCocq6U9RwsLUZssDgwcHwCl38i1G_16TrczPo-ZLUrup8rCmAiwQnl5c_25ICEAi4MIuu51DqX3xe78vovcrteYfxvlAKgIYe0FGfR3Zl85xKXeCe246VmAJUT11DBMLZe6ziz9DmlfShqhTcPBzLpoJu9Bz2d3LblG-gZb4vWBXv4ohqIA0PPJc4Z4sKUpEb10VcwPDcs1IKbF6bcH7mpcAIBbPlP_MCiL79szb-teixtxjhLwNHzm4kOukubqC-VJdStG6utmcnkKB_3OTJvwsilJ1NIS5xiB6l6vHUInGyF59LJmQ8V6n9gExoRiq6ereIjCxgQLuHNwn-nHtxcmiyrX0tAyZDt9rB5TdH7E5Dhd3S_BcvU_7urKkHqJN3xzE5YEzuMrv1kqhWwu2HcVRcDEkXsrplgBPvuEHPQll6vRj0EypiUS9PuWgC7VV44opK6QCW4aXx3P7qhfs2QVCUOhc0HE0u53PKvOpmhHLpR0aZ0CAEjI4NZNl76jCpRHLdU6fYkRWCEF0vaLmRdZCGefxEni8ikBqU0vnlk-n5E5_VBckngcgt8OnsImNhbZJ3ibQfwNDGwF4RkC0KB00_RIU7udgTJ8FpMEKZixYOtNu_Ve6PIlFED4M0OPwSYxuIsLYugWk1E24WIeuQiT9iX5qpFH7vmJ2dTYbqaqNuMrM4j61Jtm6F4M76dt3TrMrgVZywrx9the-xWz196lnGkoE2Y6nl4ZuIytVB5xW0uAVMViyUYgTY67S1yrH5e6A6UxQsHMmFhWH4QlgUzx-ltWBVili_3oFD8AghaBfQNBcB2KY4OQVHBd3yLrxzcSt1xtH3Alu_z9yXFkiugnzpwRsA35pu9VsAB40yktM1jrQUuujBuKulGVsU1ngu_bn7g1UhGqGz5OWa0w22SPh1-A05QOqX2qmkhcBNR8rgorG7_Z8xatvp6-HIYEmno72HN_NnUP-yYZASwTMUfJQ41FxrBHX8wUPmr-tTthEd9KQOgafwKBaAjPjH84AlKKah0KpFdkky2jOZMwJjN_YjXkYlo6Wy7rTQJNegcK457LPGhZjluvoFtDvkmKjQZleBlaNJDrau8VuVsWJVfhE8sK3j2djlhC_G9yBhDQX-PnP1f7DQ3y98pExKnaCsCD5TBJBPOWClPU3lFEBmDhEFVcIZFTrK5wTMjrfPo_VljgTKzj9i4XWCBk-xzpWfEZl60DXcXax4-g2_o2eGaGbI2HXMLOtQImtdKnJKpDYTDF0uUUfXGFMzssFW-UcLmn1wq9-YebuP6O32wg0MYMT_HO_355qZrOKw1uuE0Plwa4uONkiPYGSz6IDl4QP3cr_weQjfXVDbtM2Erk4026eDGJNOFCZgBXblTWDojbsKnlJ82SbBxgUPtO941aFiERTNOxqvkfFeUPEj1VL-orhs73O4ifnZ7FyvBsJLLoLxawRZRTXPVQZ--EvSwMHKltPHEPeEIpyWyKhLifH_HzclAmzJE2d3ma9R8fiPdGlNgn8JMcFgGMZkwQZ1IxEQsCkmg9cAsMtCH19IW2IJxH5APaf-FuyJFPnev57zDmkX0Qxg4eUr55MT1KORcVudIcrSgri86pG6OD4aIkHxRli2loBwdk1952uv0_G3d6yeEIRKYkCkX1uHc7G875S1-2tU5ft_j2YgQa_e8Iy8ypL3l6O9KRSumpwd-8b1yMhxQNdnAdH3Cv4-qfvFA7U6p4rs8wrO17nf4Q2LCucqNGlXe6Vo0lyft0v3ZutXt8BPFlLFAeS8agb-tjPjANYQ0D25RQnfygoh1tzbF3hkA5YSm9zC_w7ZXZCcp8QfCmBsDEM3cl0EtlhtfrccWLyI1iryFJ4PkQREJYNoHny30keW6AYXZOHy-ZCBje7YKt1hZA4imS-0Mk-sJgXCk8q39Isa9h3cIP6zB_JQ6hw8gh_m4uqu7aEL3aCyAjL9M_E2_gbbkI6yDaar4F93uHLT2tyC9yJ_GZ5EE80zNkPSOncMVmv4HCzf5xDeGMM2zvqAn05IVv3FdqKJfDpLCH49Jwx2nn4hIEkY5HNonbnbwXT_DYco2TIzFWsCp-FHzr_0BBr32m7rSDu8EH8qsspO55QyzWv9eHTvmDWIitUfxMaJQ4Z7nklqpPFf7fbPqxZeT-wn858btAMlVnDesJPnJRrSUYOlZq0WCOjJ_Y71P5z2PcC9e2BF9sFw-esTDdL-qFFr9jSMRGBKoCc1IjPhb-1jEzo6sfAtpV7nt8e4zgymNFmZNfegfW3oPnA5jMkyCnqAUi1DJt2R-XMLvtgxeaGJlYwodslfmNf5sOBh_gSEj5PiNiRbi_LNXzWUqm0YhOcePI2Ad6rM020od6LoWrCy321Bu-O4f4rMg_FTvwQLvaTMIhxIo_0vrkHU5IsBTtOSXDM7SMsNJPqCVQ2_5AQvGWsX7ZO2QIGsi8EzPkRS-QO8nQCoENnMZZLseAhFmkW0B5v0CMVyjc7PRaNdAryD65wzZgd0QdtQgYGZbxjS-6_RMblj_nrnTt9IO7466uaexCesnWtBYbyY1YwkvUVoSFpF_QsXm-w_38WP6N8HogFBRqVzkTqPFF-EgCgBsFkucFAqvz-VePZ9cZhBthsThZve2qNWAoqQmqrBc0gm4L7vej5N6fn3hLcZ_tO8KB3PUoROpRSYFo3ywXx4b1rl8fgXSN5LN9a_NHlyOI533Zgoi6bcGJs2o9So2ShwQorKz90RozATO7uvFTl241v1PqcpqXYfuXLJ-QD0PR16vmIr5fD7wVwZmRUYxCMKPlZhvUlXaUeVSwthprn9JqHyboiuQo3qklsZVhhuMHk1lawZn-rckre4W-5-TawwYwhRkRwDpqt1A2CrrmjI6k8F0N6qYitTPTk8zyRRJtpjA-2zbnVOXH4a5NwmHP8n7XsUH9Dd34P20u0yKXPgpJY3gPQS02ZIbIVfxUFEoH6TlIEieolodbTTOQtd6i4q2zE_ddwIwNK1Yv3rw1C3ULhQgv4wOSP1hW67DU36cytKsfntEIMOMlBtyegCpXYjI9wTzoHWTo0O7-fNOLA7Np9Uzml896lfX7ETBtIgMlyRfIlyP3T3PE4xydO7n5ALrwYiVVp0A2X0cxLk9ESgOVK0-BpQqEZ4buqTqLjoUuo4Bl-7jnx1N8mckYJ3U_tVHuTWdNY_tA0I1oeylmUgl3Z6CD1UIfiKY3q6ASMqIYMh1cIQXjEUxX45a74cyZc5kDA9XEREoL3NG7nRC1lNTsU5XEEdCgzu-dl2xNBM8_snitvHIjtMjh-M6uqmc57lrAYbpzYpJzctD_beZv7FQ-WTylr0DEZxiARQ4j9DD6wwVGvWsq4g-mDC-ILmtyh5jaUVSSFJfgMiSnamsvMtVMAR1lvCg3RoDP-CU6ff1Xn6KhGd6A8OAB0cz1TryprlJaI_EVqnCRl4xcZpqEi0c1tg="
+      },
+      {
+       "id": "msg_0db627a9042c5213006af3fd08682087d1860adb4b7b07a26e",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 5\n# sentence level graph:\n(s5a / and\n    :op1 (s5c / 储存-01\n        :ARG2 (s5w / 核废水\n            :ARG1-of (s5u / 使用-01\n                :aspect performance)\n            :quant 300000\n            :unit (s5t / 吨))\n        :duration (s5t2 / temporal-quantity\n            :quant 12\n            :unit (s5y / 年))\n        :temporal (s5a2 / after\n            :op1 s5u)\n        :aspect performance)\n    :op2 (s5b / 开始-01\n        :ARG1 (s5d / 排放-01\n            :ARG1 s5w\n            :manner (s5m / 分批)\n            :aspect activity)\n        :temporal (s5l / 去年)\n        :aspect performance)\n    :op3 (s5e / 预计-01\n        :ARG1 (s5x / 需时-00\n            :ARG0 s5d\n            :ARG1 (s5t3 / temporal-quantity\n                :quant 40\n                :unit (s5y2 / 年))\n            :aspect state\n            :modal-strength partial-affirmative)\n        :aspect state))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

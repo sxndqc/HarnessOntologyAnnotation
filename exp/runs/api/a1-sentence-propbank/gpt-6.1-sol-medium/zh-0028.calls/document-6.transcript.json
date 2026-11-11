@@ -1,0 +1,104 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1465,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 279,
+    "reasoning_tokens": 148,
+    "openai_usage": {
+     "input_tokens": 6539,
+     "input_tokens_details": {
+      "cache_write_tokens": 1462,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 279,
+     "output_tokens_details": {
+      "reasoning_tokens": 148
+     },
+     "total_tokens": 6818
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 6 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\n5\t方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1f / 分辨率\n        :mod (s1z / 最佳)\n        :possessor (s1k / 宽屏\n            :refer-person 3rd\n            :refer-number singular\n            :quant 21.5\n            :unit (s1y / 英寸)\n            :mod (s1b / 比例\n                :mod (s1p / 屏幕)\n                :quant (s1q / quotient-of\n                    :op1 16\n                    :op2 9))))\n    :ARG2 (s1m / product-of\n        :op1 1920\n        :op2 1080)\n    :aspect state)\n\n# ::snt 2\n# sentence level graph:\n(s2p / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2d / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :ARG1-of (s2i / identity-91\n                    :ARG2 (s2v / product\n                        :name (s2n2 / name :op1 \"VGA\"))\n                    :aspect state))\n            :op2 (s2h / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h2 / 还)\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3d / 设备\n            :mod (s3c / 电脑))\n        :aspect activity\n        :modal-strength neutral-affirmative)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户\n            :refer-number plural)\n        :ARG2 (s3l / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3d2 / 设备\n                :refer-number plural\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :name (s3n / name\n                            :op1 \"PS3\"))\n                    :op2 (s3x / product\n                        :name (s3n2 / name\n                            :op1 \"Xbox360\"))\n                    :op3 (s3b2 / 蓝光机)\n                    :mod (s3e / 等等)))\n            :aspect process\n            :modal-strength unspecified)\n        :mod (s3h / 还)\n        :aspect activity\n        :modal-strength neutral-affirmative))\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4t / thing\n            :mod (s4z / 这))\n        :ARG2 (s4p / product\n            :name (s4n / name\n                :op1 \"三星\"\n                :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4w / 值得-01\n        :ARG0 s4p\n        :ARG1 (s4y / 拥有-01\n            :ARG0 (s4p2 / person\n                :refer-person 2nd\n                :refer-number singular)\n            :ARG1 s4p\n            :aspect state\n            :modal-strength unspecified)\n        :aspect state))\n\n# ::snt 5\n# sentence level graph:\n(s5x / 像-01\n    :ARG0 (s5a / and\n        :op1 (s5s / 设计-01\n            :ARG1 (s5a2 / and\n                :op1 (s5j / 机身\n                    :mod (s5f / 方形))\n                :op2 (s5d / 底座\n                    :mod (s5f2 / 方形)))\n            :aspect process)\n        :op2 (s5l / 立姿\n            :mod (s5b / 笔挺)))\n    :ARG1 (s5q / 气势\n        :mod (s5d2 / 打座-00\n            :ARG0 (s5d3 / 大师)\n            :aspect process))\n    :degree (s5y / 有点)\n    :aspect state)\n\nThis sentence:\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6y / 有-01\n    :ARG0 (s6t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6j / 接口\n        :quant 3\n        :refer-number plural\n        :ARG1-of (s6i / identity-91\n            :ARG2 (s6a / and\n                :op1 (s6d / 电源)\n                :op2 (s6h / HDMI)\n                :op3 (s6v / VGA))\n            :manner (s6f / 分别)\n            :aspect state))\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s6y)\n               (document-creation-time :overlap s6i))\n    :modal ((root :modal author)\n            (author :full-affirmative s6y)\n            (author :full-affirmative s6i))\n    :coref ((s4p :same-entity s6t)\n            (s2j :subset-of s6j)\n            (s2h :same-entity s6h)\n            (s2v :same-entity s6v)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0316f4b6915ad534006af3fd1857c887d19cdada2b4f61ee2c",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0eodZsFUT4i6WHy8mm1SO273-0VaMLk7V01RTEz4jrL0gZhoJFcDqw6q4cUuaA1xbnOPf18ocXYQLP-3a-uPcDpOXdsglxAJmXLSwdC5AArDBpV3DXDy_1hmI0Uo0s_viOg4x7CLdZybgnn2VlSI0s2xucWjH6q_OQo0aTH7ro43phhUH2eU_QduN6Zfb-W49w7CVEjP7H3VAhkDy1gcwqbDOmajuFHKwGSkXH4Q7BnC7YHAAgy6XGN9mWnyZDHwabcwfHlb6vrvlHKcD1n6nrFNy0fh1FSwQotWi1Y8HFpb2buTY4z1KyQziIkIAGrG5AogNQl0L9bJ62oMZghLDpNSVikT65rbYY7X-56Qz95kznPadRAWu7Hx4sNwQ3vzyHhmMGMvsOXjBW8-zbXvlQSdOPIvUMCAP5gB5O9Nq5rakKZ1AUjrABBxaZGFwGKmhWH1EaohPmUARrjdgcryJm10Lq57mWKdYUNiAImRGdZIDa0FhpmQ0s3rH5oN78q2UhbC8zmJzPVnM2vxoV1qei5OBpcbMeZ1EHsawNaQ9iE6O2vUTr9BUDzKoYjg_hcu4oz9FxU9t9aYHM85ay8-yphnGFFhq_HEoFuyUfO7Ij_-3t0Fmr6DY37h05sKyF1lmQ9rpASz3kgXDBYUDjKUQ7KQB6bLvSCCiTiuph-A9juwyUoXOkjP0D4SqedvfPEn3JQ2i5sSPYIZ3b5quJWXyn1kh1HdgJGJOBkAQj1yDcSpjyWPkiIfX0bLGpPRDdcjVBSdqh42TXI7Wu19T63H0GOJPNHOGwpKLy1qvK2C2K-VmBEACo3xS1f-frNHIrKAR4LQ14Ic1Z2zUB3H1mkDqT_np9wLbuQOZwH6oUvb-TcNiTP_zKu4TA121qZ0JW1O-YlCqJfw62rKlpO-iGyCY2g5X5hCDe5483qp1eQvj2vVNkVjyEGWOKKHOvlStG6oQE4KrvxQC6FkUiWi0xjXhCPxjzOwyCea8izBtGgfaw5chz0a0FOtdPz0qnZQMKGU5MMex1F8AxGp3Jwf1xPAsejxX_6VbMEYypt7QYp8kbkadoBIdU4V67cIquGmd66dHtPpgDzdsNspp4hrQePsRvalKl4t7FKuFIeqwauM1QzAMEDp3gvSUmdY_1hvek8B_y_M8OMpc18sjbzXD16L_sslbEogWERBl8nTobtkwWQjRPNC1yZhL5plt8BivkbxVayrWLQGRdXCAphxqZihBYUUBw7NwHZn6-OFUTnCqDOVrvF_y3dWjIHEPGWVyxds-23-NczfVhLZVVeqTh9jN9qXlDTs0TeszMtpQc63B0sPhA4ZWMirqUSsSBQdBgQxxBEPAAw2OxcSoUPMwzC0jUeYWi28DID9apCEcpKzb_edqJqEovyi7_2wCBUrTnIUhvowi75bQ-f_rDlEPwrIy1WO25igfvHOxmEsj7uUJyo9eHnXa9NWm7w6dAMfm58cnACPEtFC0Z_Mf3GEBaEEC5-43dveyYmYKWDpFseOidzNSvNUVQpaF9PD5xOHmj6XNp6fLsPJdBBoF0o7MnbfVwBR-lparScB_Txss0XCj5xGPBsKKsVDE_J8ViFwvFdyymPCRe7-eqdKkiZ99RzU3KEaHdl33V5r4uQAMSdB6U2B5gqHgvmOW0o4Z8GOwQYueA-x5fdLLxTGrXvOBfdgzCYFvZY9X8R91qLpZxoEUkhH3tIb6rvCfhx5oAIQHHpVXGNdsv2cZNC7n5KD7zcQl8Fa_7niajgnPN1pypWZDe9w6lenfOAD4GOlZetCL-Zzp-xVkIwNGNvBGtbjYVjCjfyp5kcnCbFBijIvWMPDNein6-SdyGoZq8J520hBXQjdoo0Ea3aJoVP9-lT3baZ97oOhdWtOyICjUhmq4cgDz5Cjncyk1b74PaCtgLl8C9SEje-06k87CcWXNTvnBcEL2jqZQhkPjOjbgOZoqCeRli1hSBqynNbgZ5gzTLK0ydlmUU9eWIVzsZqFRLtDeis0tgdWeMnYj_W3WPLhjShriAmcdS6_vKBNYycolsu1djDIvW2yxeUVX2wUkmx5h7BqfvN2djeYXe7R-NMVwJxV2vskYQEcpLcBcJb9KVIydNkhU5NlFwl2Ulq71d3eGDjMAU75a_t97ECcFssstekh--yoOpdj3N2WZDALtjiQOva58rcg-qT50fdv7b2om6TTShZ2IQn_xnCDilyxTTOhJ6V_Ss90xSGuZHCtxzWxihnXZSXcl26uzY-gvC878T1dwOzUkhNc92gnRNMoD3T7E4o4vyy84QzrRKK0jh3hodLFLDIeFIdPkO6BEo_9pBHbS8CQd_QPqdlygrj3V714mC6k_6MMSaI4cEdZg6P3Pbzuirc6xE_uJ4h6ari9F4XBd7GpoFCq6SVqEOJleVE4yYSvwThTX3xSKKBNSsp3IU3rveyo4BrWf3y4AsoFJ8cy620a_rNpbDB2iqCnAcGWTdvQHS0HWdNsK9bQe4udFTGYc-66PdKtB7PckOe4AndxDcHQcoBiM6NsDdLMbyqSdBN5FkgqG9EY1NPlYigTZftEC66kwz641FdLjUVJ67sc_GvWgjbqRZkVjupouREGC5qEK2r9aYQBhZ2seBSO-Svkoc_m_1EmCpOtPtPLtcU0ETHemKvXIPppB8AB6NrUTczJcNf5KOIX1uQ2eC1uvIvkmxpHk3xMIImYPBFTbDBMjZ0zc3vYZ3aobZo2Qv0_0tUv-IqfsDG_uG17NV2zXeREdNEag8svNBqlrZZOdCusUbct5WFGBAE3VmsImLi-fnzmMvWLc3_YDyRC2xETXKmwad4omxYHAK5m7z-h1CZt0ByakaFnwTf9NQJ0KXfyOqKSDs7n8B_3lxwj83Agslkrro_cVFeoD2DeYFmtaCYkzuR5u1NKo4_NNEfkeNHic7BDUAXlCCYDqzlzSQcCnKwM-CSGAgIFRkXY-gSqTVd6G8n-EuG5O1K_bgGJ-50BbSyQTSqDHFEixY9c0rAj5CSmLeKxMy6I9_r-D-vv0qGGMSiLDSu5TO2AieoTFM5KBQSecnNcjHgKzV8weH_58ObFRCejLw1uOqOHz3VEYmEPG8zCvpHdmUcR1tbv0CFS8w6_BMptjut06VQeJjLJWDqUtPqdLZYynlpPKbsrfpWzdxmBO93SYY874ax1hNLiJNNqs18B3m0xIRzbhzxsgh5tYxo5_-yg72UFAatnwZ2CHU6rrFP8_X6ybRdsiDXWJad8GQ6DhjAK_xI7ohQi14GB7K9essIX2QU7LRQ2NWc0Kpy_BzvwJ6TCK4-z5cYum-IlpPqr89NWlKjdVu4eXI9VBh"
+      },
+      {
+       "id": "msg_0316f4b6915ad534006af3fd1d16fc87d1b3d9f191b3b37cd3",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s6y)\n               (document-creation-time :overlap s6i))\n    :modal ((root :modal author)\n            (author :full-affirmative s6y)\n            (author :full-affirmative s6i))\n    :coref ((s4p :same-entity s6t)\n            (s2j :subset-of s6j)\n            (s2h :same-entity s6h)\n            (s2v :same-entity s6v)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

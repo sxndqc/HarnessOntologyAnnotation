@@ -1,0 +1,173 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-9.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 60,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 39,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5181,
+     "input_tokens_details": {
+      "cache_write_tokens": 57,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 39,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5220
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1396,
+    "cache_read_input_tokens": 5178,
+    "output_tokens": 296,
+    "reasoning_tokens": 118,
+    "openai_usage": {
+     "input_tokens": 6574,
+     "input_tokens_details": {
+      "cache_write_tokens": 1393,
+      "cached_tokens": 5178
+     },
+     "output_tokens": 296,
+     "output_tokens_details": {
+      "reasoning_tokens": 118
+     },
+     "total_tokens": 6870
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 9 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n9\tA spokeswoman said that Pope was suffering from malnutrition and high blood pressure .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_enZWOFLj3nWt6oUSlYw6pp6w",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "say",
+       "suffer",
+       "malnutrition",
+       "high",
+       "pressure",
+       "spokeswoman"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"say\",\"suffer\",\"malnutrition\",\"high\",\"pressure\",\"spokeswoman\"],\"language\":\"en\"}",
+       "call_id": "call_enZWOFLj3nWt6oUSlYw6pp6w",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_07d5402f193d8c95006af3fcfe3d2487d1bb36e5b31360cdc1",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_enZWOFLj3nWt6oUSlYw6pp6w",
+     "content": "## say\n\n### say-01 (say)\n\n- ARG0: Sayer\n- ARG1: Utterance\n- ARG2: Hearer\n- ARG3: Attributive\n\nExample 1 (Transitive): A Lorillard spokeswoman said \"This is an old story.\"\n- ARG0: A Lorillard spokeswoman\n- ARG1: \"This is an old story\"\n- rel: said\n\nExample 2 (Fronted): [Kent cigarettes were sold]-1, the company said *trace*-1\n- ARG0: the company\n- ARG1: *trace*-1\n- rel: said\n\nExample 3 (Inverted): [What matters is what advertisers will pay]-1, said *trace*-1 Newsweek's chairman\n- ARG1: *trace*-1\n- ARG0: Newsweek's chairman\n- rel: said\n\nExample 4 (Split): S-[\"What you have to understand,\" said John [*?*], \"is that Philly literally stinks.\"]\n- ARGM-DSP: [*?*] (tag the leaf node of the *?* itself, and '*' link to the S node containing the ENTIRE utterance\n- ARG1: [*?*] (tag the parent node)\n- ARG0: John\n- rel: said\n\nExample 5 (with listener): John said to Mary: \"you're an idiot.\"\n- ARG0: John\n- ARG2: to Mary\n- ARG1: \"you're an idiot\"\n- rel: said\n\nExample 6 (Weird, attributive usage:): \"Well that's odd,\" said John of the disappearance of his nose.\n- ARG1: \"Well that's odd\"\n- ARG0: John\n- ARG3: of the disappearance of his nose\n- rel: said\n\nExample 7 (split utterance): John-1 is said *trace*-1 to be an idiot.\n- ARG1: *trace*-1 to be an idiot\n- rel: said\n\n### say-02 (discourse function)\n\n- (no roles)\n\nExample 1 (TAKES NO ARGS): Do you think 0 this war is going *-1 to end up...much less popular say a year from now...?\n- rel: say\n\n## suffer\n\n### suffer-01 (suffer, endure/undergo something painful)\n\n- ARG0: entity suffering\n- ARG1: malady\n\nExample 1 (intransitive): The company's return on equity could suffer if it made a higher bid.\n- ARG0: The company's return on equity\n- ARGM-MOD: could\n- ARGM-ADV: if it made a higher bid\n- rel: suffer\n\nExample 2 (with PP-malady): John suffers from delusions of grandeur.\n- ARG0: John\n- ARG1: from delusions of grandeur\n- rel: suffers\n\nExample 3 (with S-malady): Thou shalt not suffer a fool to live.\n- ARG0: Thou\n- ARGM-MOD: shalt\n- ARGM-NEG: not\n- ARG1: a fool to live\n- rel: suffer\n\n## malnutrition\n\nNot in PropBank.\n\n## high\n\n### high-02 (in the upper ranges (altitude, pitch, etc))\n\n- ARG1: entity in the upper ranges\n- ARG2: the upper ranges of what (domain)\n\nExample 1 (arg1): This manifests into the devastation we often see in neighborhoods , where-1 the poverty rate is high [*-1].\n- ARG1: the poverty rate\n- ARGM-LOC: [*-1]\n- rel: high\n\nExample 2 (wide range of arg2s): Orchid Beach penthouse is high in altitude, price and glamour\n- ARG1: Orchid Beach penthouse\n- ARG2: in altitude, price and glamour\n- rel: high\n\nExample 3 (argMs, lexicalized comparative alias): The reason specific ethnic groups are targeted for trying to reduce crime is because , for whatever reason , crime overall is often higher statistically in these groups .\n- ARGM-CAU: for whatever reason\n- ARG1: crime overall\n- ARGM-TMP: often\n- ARGM-ADV: statistically\n- ARGM-LOC: in these groups\n- rel: higher\n\n### high-03 (elated, in good spirits)\n\n- ARG0: cause of elation\n- ARG1: elated entity\n\nExample 1 (That's a little harsh, but both args.): Still *PRO* Feeling high from that Toy Story 3 trailer? Well, get ready to be disapointed.\n- ARGM-TMP: Still\n- ARG1: *PRO*\n- ARG0: from that Toy Story 3 trailer\n- rel: high\n\n### high-04 (stoned, intoxicated)\n\n- ARG0: intoxicant\n- ARG1: stoner\n\nExample 1 (both args): Man runs into Ross Campground Church, announces he's high on \"bath salts\"\n- ARG1: he's\n- ARG0: on \"bath salts\"\n- rel: high\n\n## pressure\n\n### pressure-01 (apply pressure, pressure someone to do something)\n\n- ARG0: presser\n- ARG1: pressed (on)\n- ARG2: goal, pressed-for\n\nExample 1 (with goal): Big Board stock specialists, began to have them pressure the exchange to ban program trading.\n- ARG0: them\n- ARG1: the exchange\n- ARG2: to ban program trading\n- rel: pressure\n\nExample 2 (without goal): Generally in the quarter, overproduction of gasoline and higher crude oil prices pressured profitability.\n- ARGM-DIS: Generally\n- ARGM-TMP: in the quarter\n- ARG0: overproduction of gasoline and higher crude oil prices\n- ARG1: profitability\n- rel: pressured\n\n### pressure-02 (move, cause motion by pressure)\n\n- ARG0: mover\n- ARG1: moved\n- ARGM: ahead, usually\n\nExample 1 (somewhat odd usage): [The Nikkei index]-1 was pressured *trace*-1 down by profit-taking triggered by sharp advances made through this week and fell 151.20 points to 35527.29.\n- ARG1: *trace*\n- ARGM-DIR: down\n- ARG0: by profit-taking triggered by sharp advances made through this week\n- rel: pressured\n\n## spokeswoman\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG1-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)\n            :aspect state))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :mod (s9h2 / high)))\n        :aspect activity)\n    :aspect performance)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_07d5402f193d8c95006af3fd010dec87d1a7e09eac29c43944",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0G-4oT-WFxnSej-6QLD3QQqLrDWNMjVRbSvefLIdNgBvP7Ipnww01BHgOGr6jeavE9whItP3O_6sdgG32AgXm3N1D4CDgC9TAlCr1ppuBTV-HVcMNWuMMknCrYjwKGdcKnIBAW_YY4SMgQTZl-BDCf1MGKHk9eiyaW5kUcmAwH6rmKKgXcuEn9uVMFQqqUI6EfZNh4enw2WMcmhYu_dtKcZB4jc0K_VobCP-XUTEfkUp9zAfizMFz2cqkMCoQ_HDrsV-MKaTgpGauG2pNMIbxGeMGXy1BYH_MmCBqSFKHq9ZT4LXwG1go6pjxyI3ylIEAPje1qRPdi8PcV3JbSBAWo-9anV0dwyOld2y3B2ZzC1hPUemH8RSLScj1ME8rJAToXnJ14g0QCWJWFN49e9X3WiiDqNJk3Ljy-cCzIwv2ktzf2XY6kXQn9195SjQ1-7cB-vWzIWVzo52Ff5mnXG4AYzOh_TbSQM_BkS4t9dcLPyTuovxnpa6P4ATrtQsvkavLbWqtMVIU0S3BnBDCC3dTnTceyNAC3GFQ_YBB7p59kOjqmA68v5FU5IjJ1qtZ4WSOB3QjrzinquhztV-qx8ij6NwhN9Nua2nRd2j57MMkGbwaCYdvUXICCt7HF3KTKdHksdfhr-Vv1xy5uO2UkYhLz1X7JvKHZfwEhD0nSiw4hZjlmViGo744LfD7qR3W9U769BSbELmw-Xf6d0NH5WtTgF9kLCPUmrxuE7Gd1eeek8SV6gyPoYV0AtmNDMpkmfPPc7nt8XL16FMaiOehPvUjXgiUaGZ4tG3hsb3fV3YPc5gfwfpXjHW2-s5hG1aX8BjX6S_P7ikJ-s6govnETH2IOOqxdIG-baoGfzRWgQcXOz0nZtkaSQcQMZbDk738O3QCC-OjsKkS9YKiFuL0pIbvaCBJM9cM35MapDkIasnt41hgT9GF4BIUXMJnLlZrZ8uKLEQwGXCxTC2SupEhl521z4E0hIeKizwBZu90NfLZLxQmpwXMI7D8T8x9Za6p9od4guvvCyk8uMCUBaDkedsbXD8lHEAf4iGLeS7XCzABLbkZkNh46Ub5ZTMDY6Sbc7e8M8vYHiwspvwdJJBNnLo3w7cIcHGct5Rw3D6twBQ16oVfv_cRh5CiBEsAbq3UiDYlx6--nOqATBhfEMk_-J0gvOZkEFKpVgfnVu4KJ_PX3_u4GnRB56tAvblTmje17Cb7N3lG12vZq9I_djMV8kCQWndhO6ody9Kt-xWwoKukW0F4mxoyp1rhL6jKsK0jlI3JDIjtO_1S2vZbtGMbnrXgEGoxaSGWA_B2sWatWHC0Rzf_yS1XimXa4iTNHtLOOXAfWvL2TbmEjxrPVBcMvS314m93zPr6rD6JInXafxqEUe6fAD4Pg15GYVHE-fKpZythqLqsB3RQARrPQGuo9kAh-VRFDxUCI7ykCWX8eoMoB-Zps7sJ8E_15NzsNVk8kyTavzZnKVZbjV4oQvHL9IPqBCLn1JLqTqL5oD0AntXHBHVyqL2sXzalAGbVFU4QcG1SFVrNr0H77fXK-SmUocbfgQ5x1RsCLuOuPt6dAxEdM3ztsfTm3GaGtSi6-9_vYhA2xxenvsSS_rHz4W-ar2-ZxMOOo8VC2egVZIhA72M6I03JH1LhAjg62bbJbJ1POeev2H34OPgOiQ-7TPDLPODEd6CccMJsMKXSS2UMok4wYWEzwtvpYDdueCIagWpYKtc4rSTiP-2eD2BlSxMnQfbH6TfFWyf74E9uxZ4_p8Vwc81U9TI9Jr2aPIiJl10em96VTItUbY6mO6mkyhvXl1PjtL3gqy0F8a1k5m07X0Q2AlBv7NawjcLPYEYFoXrLjXJvhNYbBDAIYWudlemArVfTu7zzJBnmaymQANJYiHxjm1Q5C1O2R5sApb2zgXTp3Fp-rgQg-ptWyMrqmm9s78TV4XHIOVWA0kRLf1wxYs8u4OwkLzEC_ipzncmSpM8RT-FCMdY950KJsn4EU_6VCm6o8e-8NlqVSdYeRk1m8NXyglxwPai23MgO5-0R7o174KdrB-oqIDEwBRWf0H1kUf3djT1_LZKBTkP4DVXWIDB-S4QhMbAFpG6sY03dfQE3X7I3hjYvL_mdyFOS_-CJv8d3a_MM3_TtKa9TkVzgEdtVTyK2R0OUJnhpTeN8it-XpXYFwBfAFQOZdXZD1rnyoynbD5JE28hM7yp2uqrvebD-KSKhYwa8XjeN340P6ADoecO8X57-2HA2nYfOF2mpPUopT6ZDLtJxdIblfChhapgYPz_AkF7V_PGbDJSm4Mzv0cX98BCGa0a_P1lqjxoI_JjtR_abeRQE_YjHxfS0fz81E-p_WkNz_YoBT8pNSDmvAJz0MPdabaJGTOwznU0BeIglFAPzsc9OBTnnFO_hs0vWeSZEQcsC2sDxzt2V4SfadE61r_QB-a8JBnlmE_hxL0zaeGpyINsTsWQPx79NowgxcflEjKIMRHxihePe3Vs2pLOEaYORZ_LdedJalKnDj32hzWPg_GeKu_CNloSEP7VyiS1muE_9h1pKPBGtm16_DyUMzhljfoLPgldl4UywU1i2p3631KtDBa6iGE96FONoRkKZuPrklkgf4XOfz5LF9DTiC1eFlrkm82LZ-EdLY_ayv96xS-_FnWR1sxobqZxPZbmul57Rz3ydIdNKGOhYqybJjnajia59sq-tVh8fsE18FyKXlDHVvrr95ofxglxw1vy6_Ko-vpvjDYTxbOzn7YdXkEiyWWyp2UtNd_Snt2S4fdCi-NIOvmopVrSh0rCNVOP-kC5HLig3l44NnUpVhQD_kMi4ERTJuEw4GTIOQ3OgCn2AArSjfVQ0cqX9MSZCP7G16weq-uAVLhT68xP6Dn6YP4aysB4aWeVn-TIpMjNoj8_Oft6Fpr398vk8JF3-IMObhxGcMa4gDwKs9L1i8DD0a8N9Bj-X5k5aiX1x10b0ccrOPD4l3LkvKwwOyKvV_7MityJjG0O_beKA6mtiMN5CwIHa9elGmr_ni2IwHLiXtF5MuZ5dzhrVam5yW8kgRu9ILqyWg22gjD1bqUxmLbhFhgjtntbs0H8rpI0GkT6R97DKuYl2juqAGhhtaoN73CD2WZrItc3SFqm_xPQsX8BJeFYluqq39iiFFPE5re7j6cFZowKDRARdA1qM7mwzxMQe9r9HbqnOQjY35RQ5EWfKa"
+      },
+      {
+       "id": "msg_07d5402f193d8c95006af3fd04a2c487d1a42d72a71511c3be",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG1-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)\n            :aspect state))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :mod (s9h2 / high)))\n        :aspect activity)\n    :aspect performance)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

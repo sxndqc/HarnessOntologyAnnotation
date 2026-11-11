@@ -1,0 +1,183 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1608,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 42,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 6682,
+     "input_tokens_details": {
+      "cache_write_tokens": 1605,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 42,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 6724
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1697,
+    "cache_read_input_tokens": 6679,
+    "output_tokens": 1790,
+    "reasoning_tokens": 1034,
+    "openai_usage": {
+     "input_tokens": 8376,
+     "input_tokens_details": {
+      "cache_write_tokens": 1694,
+      "cached_tokens": 6679
+     },
+     "output_tokens": 1790,
+     "output_tokens_details": {
+      "reasoning_tokens": 1034
+     },
+     "total_tokens": 10166
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 2 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识)\n        :topic (s1w / 问题\n            :topic (s1p / 排海-00\n                :ARG1 (s1f / 废水\n                    :possessor (s1f2 / facility\n                        :name (s1n3 / name :op1 \"福岛\" :op2 \"核电站\")))\n                :aspect process))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h / 恢复-01\n        :ARG0 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect activity))\n\nThis sentence:\n\n2\t中国 官媒 报道 ， 中国 和 日本 主管 部门 持续 多轮 磋商 福岛 “ 核 污染 水 ” 排海 问题 后 ， 日本 欢迎 在 国际 原子能 机构 框架 下 设立 确保 中国 等 利益 相关 国家 有效 参与 ， 并 确保 独立 采样 和 实验室 分析 的 长期 国际 监测 安排 ， 中国 将 在 实施 监测 措施 后 ， 基于 科学 证据 逐步 恢复 符合 标准 的 日本 水产 进口\n\nIts graph:\n\n# ::snt 2\n# sentence level graph:\n(s2b / 报道-01\n    :ARG0 (s2g / 官媒\n        :mod (s2c / country\n            :name (s2n / name :op1 \"中国\")))\n    :ARG1 (s2a / and\n        :op1 (s2h / 欢迎-01\n            :ARG0 (s2j / country\n                :name (s2n2 / name :op1 \"日本\"))\n            :ARG1 (s2s / 设立-01\n                :ARG1 (s2a2 / 安排-01\n                    :ARG1 (s2m / 监测-01\n                        :mod (s2i / 国际)\n                        :duration (s2l / 长期)\n                        :aspect process)\n                    :ARG0-of (s2q / 确保-01\n                        :ARG1 (s2p / 参与-01\n                            :ARG0 (s2g2 / 国家\n                                :refer-number plural\n                                :example s2c\n                                :ARG0-of (s2x / 相关-01\n                                    :topic (s2l2 / 利益)\n                                    :aspect state))\n                            :ARG1 s2m\n                            :manner (s2y / 有效)\n                            :aspect process\n                            :modal-strength unspecified)\n                        :aspect process\n                        :modal-strength unspecified)\n                    :ARG0-of (s2q2 / 确保-01\n                        :ARG1 (s2a3 / and\n                            :op1 (s2c2 / 采样-01\n                                :manner (s2d / 独立)\n                                :aspect process\n                                :modal-strength unspecified)\n                            :op2 (s2f / 分析-01\n                                :place (s2s2 / 实验室)\n                                :aspect process\n                                :modal-strength unspecified))\n                        :aspect process\n                        :modal-strength unspecified)\n                    :aspect process)\n                :place (s2k / 框架\n                    :possessor (s2o / organization\n                        :name (s2n3 / name\n                            :op1 \"国际\"\n                            :op2 \"原子能\"\n                            :op3 \"机构\")))\n                :aspect process\n                :modal-strength unspecified)\n            :aspect state)\n        :op2 (s2h2 / 恢复-02\n            :ARG0 s2c\n            :ARG1 (s2j2 / 进口-01\n                :ARG0 s2c\n                :ARG1 (s2s3 / 水产\n                    :source s2j\n                    :ARG0-of (s2f2 / 符合-01\n                        :ARG1 (s2b2 / 标准)\n                        :aspect state))\n                :ARG2 s2j\n                :aspect process\n                :modal-strength unspecified)\n            :manner (s2z / 逐步)\n            :ARG0-of (s2b3 / 基于-01\n                :ARG1 (s2z2 / 证据\n                    :mod (s2k2 / 科学))\n                :aspect state)\n            :temporal (s2a4 / after\n                :op1 (s2s4 / 实施-01\n                    :ARG1 (s2c3 / 措施\n                        :mod (s2m2 / 监测-01\n                            :aspect process))\n                    :aspect performance))\n            :aspect process)\n        :temporal (s2a5 / after\n            :op1 (s2c4 / 磋商-01\n                :ARG0 (s2b4 / 部门\n                    :possessor (s2a6 / and\n                        :op1 s2c\n                        :op2 s2j)\n                    :ARG0-of (s2z3 / 主管-01\n                        :aspect state))\n                :ARG1 (s2w / 问题\n                    :topic (s2p2 / 排海-00\n                        :ARG1 (s2s5 / 水\n                            :source (s2f3 / city\n                                :name (s2n4 / name :op1 \"福岛\"))\n                            :ARG1-of (s2w2 / 污染-01\n                                :ARG0 (s2h3 / 核)\n                                :aspect state))\n                        :aspect process))\n                :ARG0-of (s2c5 / 持续-01\n                    :aspect state)\n                :quant (s2d2 / 多)\n                :unit (s2l3 / 轮)\n                :aspect performance)))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_6A60vbowggHtBgiURBVkOv2P",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "欢迎",
+       "确保",
+       "恢复",
+       "基于",
+       "主管",
+       "持续",
+       "相关",
+       "符合",
+       "安排"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"欢迎\",\"确保\",\"恢复\",\"基于\",\"主管\",\"持续\",\"相关\",\"符合\",\"安排\"],\"language\":\"zh\"}",
+       "call_id": "call_6A60vbowggHtBgiURBVkOv2P",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0c561794cbe48230006af3fd222c1887d1b43e8458f0cb9e65",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_6A60vbowggHtBgiURBVkOv2P",
+     "content": "## 欢迎\n\n### 欢迎-01\n\n- ARG0: entity extending welcome\n- ARG1: entity receiving welcome\n- ARG2: predicate\n\nExample 1: 德 外长 欢迎 北约 对 塞族 的 最后 通牒\n- ARG0: 德 外长\n- rel: 欢迎\n\nExample 2: 他 代表 中国 政府 欢迎 与会者 *PRO* 今年 ９月 赴 中国 香港 出席 国际 货币 基金 组织 临委会 下 一 次 会议 和 １９９７年 年会 。\n- ARG0: 他\n- rel: 欢迎\n\n## 确保\n\n### 确保-01\n\n- ARG0: agent/cause\n- ARG1: thing guaranteed\n\nExample 1: 四 、 人民 银行 要 认真 做好 对 金融 机构 的 监管 工作 ， 确保 金融 体系 的 稳定\n- ARG0: 人民 银行\n- ARG1: 金融 体系 的 稳定\n- rel: 确保\n\nExample 2: 深圳市 政府 已 与 “ 深圳 高速 ” 签订 了 “ 专营 协议 ” ， 确保 它 在 公路 建设 方面 有 优先 发展权\n- ARG0: 深圳市 政府\n- ARG1: 它 在 公路 建设 方面 有 优先 发展权\n- rel: 确保\n\nExample 3: 临立会 的 成员 会 谅解 并 合作 确保 草案 *PRO* 得以 迅速 通过\n- ARG0: 临立会 的 成员\n- ARG1: 草案\n- ARG1-PRD: *PRO* 得以 迅速 通过\n- rel: 确保\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 基于\n\n### 基于-01\n\n- ARG0: theme\n- ARG1: based on\n\nExample 1: *PRO* 基于 以上 认识\n- ARG0: *PRO*\n- ARG1: 以上 认识\n- rel: 基于\n\n## 主管\n\n### 主管-01\n\n- ARG0: people described\n- ARG1: thing arg0 is in charge of\n\nExample 1: 这 位 *OP* *T*-1 主管 灾 后 重建 工作 的 官员\n- ARG0: *T*-1\n- ARG1: 灾 后 重建 工作\n- rel: 主管\n\n## 持续\n\n### 持续-01\n\n- ARG0: thing described\n- ARG1: duration\n\nExample 1: 二十一 颗 彗核 撞击 时间 持续 五 天 半 。\n- ARG0: 二十一 颗 彗核 撞击 时间\n- ARG1: 五 天 半\n- rel: 持续\n\nExample 2: 两 岸 关系 持续 *PRO* 低迷\n- ARG0: 两 岸 关系\n- ARG0-PRD: *PRO* 低迷\n- rel: 持续\n\n### 持续-02\n\n- ARG0: thing described\n- ARG1: end point\n\nExample 1: 中国 经济 发展 的 传奇 将 持续 到 *OP* *T*-2 新 的 世纪\n- ARG0: 中国 经济 发展 的 传奇\n- ARG1: *OP* *T*-2 新 的 世纪\n- ARGM-ADV: 将\n- rel: 持续\n\n## 相关\n\n### 相关-01\n\n- ARG0: entities which are relevant\n\nExample 1: *OP* *T*-2 与 澳门 政权 交接 密切 相关 的 “ 三 大 问题 ” 的 解决\n- ARG0: *T*-2\n- ARG0-CRD: 与 澳门 政权 交接\n- ARGM-ADV: 密切\n- rel: 相关\n\n## 符合\n\n### 符合-01\n\n- ARG0: theme\n- ARG1: consistent with\n\nExample 1: 中 美 保持 友好 既 符合 两 国 人民 利益 ， 也 有利于 亚太 地区 乃至 世界 的 和平 与 稳定\n- ARG0: 中 美 保持 友好\n- ARG1: 两 国 人民 利益\n- rel: 符合\n\n## 安排\n\n### 安排-01\n\n- ARG0: arranger\n- ARG1: thing arranged\n- ARG2: for whom the arrangement is made\n\nExample 1: 此外 ， 中国 在 航天 技术 和 激光 技术 领域 安排 了 四百多 个 课题 的 研究\n- ARG0: 中国\n- ARGM-LOC: 在 航天 技术 和 激光 技术 领域\n- rel: 安排\n\nExample 2: 在 该 名 ＂ 老细 ＂ 安排 下 ， 两 人 在 二月 底 到 港 。\n- ARG0: 该 名 ＂ 老细 ＂\n- rel: 安排\n\n### 安排-02\n\n- ARG0: arranger\n- ARG1: party arranged\n- ARG2: predicate\n\nExample 1: 海协 安排 专家 *PRO* 介绍 案件 的 具体 情况 ， 并 回答 问题\n- ARG0: 海协\n- rel: 安排",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s2b)\n               (s2b :overlap s2h)\n               (s2h :after s2s)\n               (s2s :overlap s2a2)\n               (s2a2 :after s2m)\n               (s2a2 :overlap s2q)\n               (s2q :after s2p)\n               (s2b :overlap s2x)\n               (s2a2 :overlap s2q2)\n               (s2q2 :after s2c2)\n               (s2q2 :after s2f)\n               (s2s4 :after s2h2)\n               (s2h2 :overlap s2j2)\n               (s2j2 :overlap s2f2)\n               (s2h2 :overlap s2b3)\n               (s2b :after s2s4)\n               (s2s4 :overlap s2m2)\n               (s2h :before s2c4)\n               (s2c4 :overlap s2z3)\n               (document-creation-time :overlap s2p2)\n               (s2p2 :overlap s2w2)\n               (s2c4 :overlap s2c5))\n    :modal ((root :modal author)\n            (author :full-affirmative s2g)\n            (s2g :full-affirmative s2b)\n            (s2g :full-affirmative s2h)\n            (s2h :unspecified s2s)\n            (s2s :unspecified s2a2)\n            (s2a2 :unspecified s2m)\n            (s2a2 :unspecified s2q)\n            (s2q :unspecified s2p)\n            (s2g :full-affirmative s2x)\n            (s2a2 :unspecified s2q2)\n            (s2q2 :unspecified s2c2)\n            (s2q2 :unspecified s2f)\n            (s2g :full-affirmative s2h2)\n            (s2h2 :unspecified s2j2)\n            (s2g :full-affirmative s2f2)\n            (s2g :full-affirmative s2b3)\n            (s2g :full-affirmative s2s4)\n            (s2g :full-affirmative s2m2)\n            (s2g :full-affirmative s2c4)\n            (s2g :full-affirmative s2z3)\n            (s2g :full-affirmative s2p2)\n            (s2g :full-affirmative s2w2)\n            (s2g :full-affirmative s2c5))\n    :coref ((s1c :same-entity s2c)\n            (s1c2 :same-entity s2j)\n            (s1w :same-entity s2w)\n            (s1f :same-entity s2s5)\n            (s1s :same-entity s2s3)\n            (s1p :same-event s2p2)\n            (s1j :same-event s2m)\n            (s1h :same-event s2h2)\n            (s1j2 :same-event s2j2)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0c561794cbe48230006af3fd246ed487d1a26fdc853f207a98",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_1JZjWGPj3wyWHH5PMYu06ehT0pq-a3r2fzXUxEx_4Q8cxWQ1CMF4sY3tI_bC9XwXMkfhu3EciP7bGCECEv7SliCGH4XDRgnGeANIkmesb0N7-G4N6Wf_RBWeEXcD8-L0xxgDVbQ2t_y9v00Q6SheWllaglQS7DCXSlEbxz9cKtmgeUr7-4zSuiFGpDGfuTsmiT3hruWGV_laxHFzR15xMwIHel2CY_6r--fXPUI82U7R94omWu7R-AIYtbA6zbAeVvRcrkhIWJ4iBCob48kVb7G33w8LTISbcguAxLR6UwJrhCoVxEZ0_l7jYpEObwHvnz3Pp0UeBbv-Jw4auvBPxe5G8MuYu_Jn36ZjJkgHR-8M0ldTSWG-ci4NnLta6XrQv_pKaKYuTlQO6SVwpqNIdFiqwfZ8XbbdXcC5-FE82IYfxdEYO_IjWfjROXXIorbhP4v_iscE-UHrrk_i6Pt2IRPwij2fXHJpgqrZMYjANIblE1nhQ5p0nGU-kkjWS10qgqtLzEg8VtulnqLLLJf_U_pq2vis_EVSC-TCqABUFmyV2p-BsnB9Iue6hIWh8_ahkfumAQ3Y9h_BNnPSaP2k075PGHjmqED4OepZr9sEmzjzgkkYK4wHFWQ2xhazn_WUUFr95_A_I1T55mQwWmUIjJ1JHt_OQJfC2pYAh7D_cEp1ULoYY7SVNdgYSFC7JxQJ1sUpsQ0C720GGqkl4eWM7s0kXS8l4v41HKMmbjz3GN--pQoL0BgekeVym2cWAt6hvQXM8kSGUUEoou1xoLftJnAx9mNmTJAiqJlHK3FcnInIt2Or07KXQVK4xRIkQzwquHpoYnBnJo2PGGTCgAgvZJJMgsHnMjTPg7Cx9om2ky3yCEs_TOYdTwmMVOeWnxf0aXOyZWAcLT-EO3x4AX2nmpVyIxASIBUpCE9_07abY3QI9G8DfMBsookMl1Myam6zrvriAVpgUrTBvHXV2cfLQj9m23GSfSDcyLoNQRxYH8dB2oSrpl62GvrmMOSrFh7FEH6EVpOLwPAXfSX2x-0-wTV0rDbzD-Kz-lhlTcv58-8qtF60NN7gBcx-wGabQfZPacxlq8yfE9fead23eKhketn-zO3rHQ2Wo-zhiiNgUr9eiOYDfvEp_mQL1QYtezWcn885b9Gi7_TaEVY8_MgVgMkavOyW2-ZJ4RPXq6RUta55o4vRF24p1zJb21JGTEH4K6x-meb2Gn-xuf-_UcB8J_2HbkMCSX5MNMik5yfqRCf49lhaiF2mH18zAov-sGXlJhTnXm2fywkNOP5FMv4US-zVUFfcCUZl5MbRJb56SFudfou1_csCeIAAlI-PxXVv_i81xK2pOF0QQubZyOPnB7yGY1pbCUIEngboUJ9TonfrTNYPNEUQ6LblSPdY7exvFstula3Df5uDqO5IWgw-dZl6zsKXPS2PREMT9VVML-P_TTA694DMuyAczmtg2VZd6IePUSGcxbmZs7VNgcoLLfNdbYZ3fLVVz3NV0bdWAEOpMx5-7oebe61_xOK7bwTPhrvGAgICZyVZpm5UgX_sfCmL35S8hHWgmgtwmkpCB8ZkKHoqtyOENmGVTMoWryqawSTw0VvML5760pWUR3wTl29vEE_qpAzBnBvyeUGiSgfTDDgT-E87yiKGntLIyM0R8Mr_lGVwlC3cZKaD5Tsq82BUG3HA4c9HbdEoZyplIySg3prBsNg2wUf7tytjn0IoZq908El05GVNrBfX9F1LvnP8N6gmblECzVhxcyDcVRY-yz0Q0ZXxJqZyP5dmnUBDVfYgavmhzQ2tZpoBxGXSgSx8uIOA0fKPfzdPXOEzCBakQz2-gnNxnRYKGRbQSorUSiH-C_IJGZZR8tj4ie2cjQaB2V6eRCeOu5aa52eYo2RS93Wtbp--GqQuslSbMb0HT_WgNFr4KeW169D5DaY43zJJli6MnrRKh1U26R02I54_yHuvilHJ7uolKKwqT5jfPnWif7Wt3i7DeYxlAsztvZ6bZVC05RKgJvzRTFYBiY5T533WrRAYNLLQjbhD4jRYBdadejp92QwUTRkjg3Thn2bJTzRLPMRSGLuDW72CN3jG4QreeZ5iXx_wJUCAbxXuhPay4liAHXv9JVeFoycjWC1-NXZL4cCUqW8vJDFKUJI3AVl2jXT-_o1YIKZlGmrCEF3jr6KLZPj0pSLL7Gvaq-mouLyf2B4fMG8Fdu-q5qZXCBTbIcy0iFBQRHTC06JnHJQWBBWB-F-xbwLse_LC8g5DD3lHigi3VLc6fGGh17XfRNFjoDeSOwLWwJPi3HJ8asrlTT3c7-JfPqt8Fj6uIrmMkKWzMz0LWAvkMTH-2M7IQxARY6hJl3yDXK8t9dsCMAX07RN7oA3PrPftFgZs1hX1jIQUVA0csuPfOyeYKKRzSnWcaGFwS8LEZJd370LfOUB3TQTzk6AWoEblxc00njE1eMgKrIRk1mXIQWVcKtKI2925wZABObqUYgBOtkpmulrWmIgeCRGYX_liH1Sy4-0V5DGe-hR-XowhS-TLhfFgjByenXzAnhHq0WkJrOg-6h8nWqc6VvoqsJElH3rClnwKengCtlSY-Q2VTS5AWeUHRvRdiScjH6XAvLyCDrFFKpDNh7FRfcGkuJbpnGAXrY1P1fB-p_OHY83Yoqqvc2qbWTxtLeiJOncuUwC_6dT3Sw8Sds7lShf1W8d01hbUpZPtFncJDlFkYgdcq1m_l7cAMjvKoje8cu8WQ4VVOE1bYAXWNsM1AEpy9pQFYfDYqeoXxvO0H_ZJscC4y5s1AIPRkLPo6fv7hnRoL0znD6erAt443DwJl1Mua0eWKZKWCVD0kz9z2WNc5G17hnqBlmvKf7WcnEzkcFRr9VxXLZt7zQ-LiV_PZycwCEsyjKuuZKQ7HVY9ju8laISbFGFy57Ivzc3FioEVc9iuHCdf53i_TeVvu8iToD--7X482D1MPdomExZxdSowHZLymyi7xAoFQPABrQvAxJPdSa8ruVFVHKhb_UeD42XMLGu1GifpOxn1lgJPk4BD6zXRRiLIOUv0Ld6lQqYOcHOtmEZExDJI4JQYukSni_QqLXtt4BUsfqNQy9DPYK9VQ1wBAYt7wA7MYr1JlxNca0t__X79tkf3CKUH4YZf_2-M5PhKDeZXpHOdRrmMMUr5kSUzQ-4eBBtMJXXQgB9J8FQJx65e7FbjQl-ZqjsigJmgUlC2KP-Z6Mdop42i8cDwo_koaguFw5aIPq-LetEsp7dWeuyKKJXDpgJEVu4SDdcxK8B2w27UeUeJ4tuhVSR0rzz8KlV7NXD8_jwAk2YwtCSlOTUZ_zZG7NXI-0imqydXY1V4-w_6U_tjggcIty2Lfb4SV9PRTNZRchL7_ceFrOeBBE3NBgdKNexGofse-GMrcmN3541rOPYXZ8Ohz_yxhT25q8kncxfSXoEOI0-QoJcI7vmaj0i6xUO0HzkoHlQvfYThau9Emr6P_odc7ACPgNvRvyalJznLSgKU8XnkI53zWBrfcq7uEyLqy4m3aO6LF8z6ns44PriuymEYUoYfykVg3V29VD2moSTf-FB4e7yrzTkt7CSVkaBJG76LYD-QEhx9OlEcRw_DraH9X0sfih4ZsEffZElnoVJSi1noPVSTP7QSK66GBKsO7q4dtfwYHQqL_BRn9Xmnspgr2zu46Z9IqLJjueVy_lixJQM213xwio6wRAPMAfRGv2nF22lCjF-Wnv0Bq52kiZoKNGFueQZPluHgNY2GLlOG1tuj3waWO0LPULXYVepuhZ7a0uX722pZtgXIX114Nb6GoBCKllRRD2hBrGUYLqBxRIXTUUn1o3QAf5-gZdvedtD8GcR9_7gBF1jDWeTm3NohDhdD4DNR3GirKlgs5-dtSS9HFv_2VnxWkXO8OxqKWQy-eZhkf7uXvP-Mw_xrDg_yBd7LigAcOugmBPGLgaFld0H6JhXla5QiIERDJIhajbwsYsWkNi6z_RcNjomZ2CLqPja5FKc3OmnlBdRyXTmw-kDKZCdhpAdKgCDg28CQCmvDGBOSSs17EKcp8yZz4hvynZkfnFAanLPY536EaPNXSikf069HNavA43YDVw4nvvLp_5XyuEl__DHdXI89JAV99e4E3q-8IkiLY-dST70_fNWyvr8vNieqWfhSLxOp_xAKnVRz_1wJZllmActsOwp17hFo2ispxFg2M0qa6wZsTtKEXC84glOGpAwPVxTJNWd1iCWyq-_T5xz2D8iiwdpXsplQmjetsY7kZu7YdW-xbt3v-dldc00WmOjXGrCOco4iK1V57TJ3P8sGBADsRuVVsG2uZ-z8sHlccrO9m1spnJ5KnHrS2YFORlizsIrs9h3JN8TVqLDumRlTkJYGfqe9FkZVVUwjlcHXtYJzsRSUr9T2hq8YUPhLHxpLEL7qL_c416MKdmi7w2B71xuSMvTi4cIImaEaK7yCLZAfIvjvUo_tKUp4Hxs1CoMMqEmEVuK_gW9xnNFvyPrpVMMZ5WlRt-lck2Y0UBht8zzqhxW1GO3tWoCS7kzQdZFMV7glAthvB9M9ZGlcsbrKk0RvPw9ssc9UXl-InWYsojM3sbgFPzl2JPpzh5b4I2lCRZRQn__AblpxbJNGjJLjdAdtE7UpBbjbOEnsPp1s5tkaALfX-hnL-KN5p_IgBZQymGjvD3qKiMWWwAZh_jg9v72g_qyY9SBUOqNWjS7o1DDYiGYAbk9aKu8b7E8PrBvBDdJFc1Ic-dQHMVQ6zGwG-2a4zClviurJ9qimUDTPqw8UYn1ueZon90owt7pvmcnXu8LNC4IuXC5WSkF-5jE3lKEv5kjvUqZ0giwZVnHLdMLEW9iyuSGC4Gc1aLVAa_ZoS0p5tuHDPmYg57mkqllLJGxD7_D7KO6b4GSA8of3B94UC08yKtEmnlfKIpqSm89-dcNWfxhVIBclQL5NJk9_bBT07g0UTyiiIae9WQW8xLTfcNB-b1aKgAO-VjV70HKHHgKKpMK530KwLqrpb5a_cLgiJjSRpivih8l5FO4pLPIrWrTlF63BK7vSNoJdZz1RuTR_MQSDLkusSkz-DvHblFPwPMGxOELs-5T5cjRQj6mAQf8QAvvdrwYqpZBIx5FqdynHnX6SH3WofNT7KXGapo2qQWKU8lA-MpIbDmdYIhq6mCu46P5dlR-8bOxKWiuD33CL_nedRC6wllQmiYxZwkXzhtZOjZ0FR3ikVVuRW4b_mBEXUEDyTPsw7cBxujQuGOof32tU_J6a-uzgdlArxC30oPWt3WLbhHcbZokBHtgZqlgNKkZfb9Xq0chMSR2qgWhICWuOZ_ttQ4gLXr228K3KMkHUU59XGBC3_JZOOW7kJxSKBnmdd_wqpA4KGXWd89QEY5rqO7HmpEBYLFgxv-A7EF9VhSjoVFFqtXXyky-fzdeyaurU-gc4TRJ6e2dh2YLd5UhNyB1njkNDQzq_Ysxi1N_GvUmuJOA5e8e5zrbC8_1QmV0qXenkRSy_Y2261VNbS7E14ed1r7EeQBx4nSDITlrl57bW2Z7R1T6Xm4ZPmszmy_tU6AbF24DWIFGZ1ZI3RH_HoTSA_HrxdBEO6mMhl068rlJKiVCUqNl_zHla9B8oeg6dGoU1Y7rt45LyLfQdP_XN5RrmtsLukqMhuYGLQTUxDvMKP8KBD5fqHREixzluE4hxddSfWupmX9g41UUOiMLBIVL3z3FqwTh0U0bqAL5b2x59WZBRI7Yk3cLJItq1KJ4YJ_JOtCA6clNppWRvrDxWk0E2_Y_a4XPYuO-Mh33bg7AQzydbSUx94QBZNdGlWxSLE0xCm4aewdyLSgfJnltIM2hkHnTX3CVAIbMOA7Pn07hj9FBzq04Ju-ZEEmPj1V1ObNoiGpy2TTF-RbOR0qYgtm1CmBAJaCSBd-7phbOejwOF9dLeFSobTOvvdAUZpXB97bjFfwznkTH02vmYg-KTIuIsLZLF-DkPC7owWE7gOSQWFQ0eO0Ryrb7WjEMJ2SCbYpU3kqKQ_q0YfpE-fU6_LCfW9JSGB77SpdsSE58tG3D03yTJ1bnEJ9FFEJ08yQGpon1XzgjbqVV7Ckt_BR8TA2kKL3QrnsW_c_pdZxjmr0_vbEY9LP_4UOFXaHf5I660WZFLvgR9bXWHSSJKFAXgMl7FzTzw64hncsFFHMxdC2Jn3xTvLrwIQFM-iLOhT0iiweegCanS1OeSmkJ1Xp0Hd_eJmdYXzpArSQLPir4_-R6a9H6BgHz8UR89b_KS7JQY0PZMQi6b1P1HXjXMi9P1-0ozIzQEqWQKIVrK7x2vEDsYEnxkaQPonY1RMopAa6HHNrwHsByYSbHlXAqwVlh7TJzBRKP2sZ1VXV1lFs97KDoIg3qjHqAH2zqqoCwffX12zzD2szBI9Acyzc_JqkWPlTN12KlVESRTEgjMPvRCE2-TKIhEL-dPRW4F1YBAMklscL96XC28tgv_gnxdQJu-YyNge5xyhqUJseehFna74G6GXbBd2sFaN9lkagvb34RZ-Lb5YLZwQMnwIRXl6ScWJiHWG1Vje1cvrw0HWN161E_RTCuqpqxDpVXzPU-TZCDXObgKb8ozZvfbgio-KkowQdHAy-Py83t_akC7IoVlwj8ymXGZLQbrQuM8a9MijlcoDMMVzLyeNUQDgOZ5mA5HQMzIBVxHM0zZ58SWNWy2y3qh7U5aL7RWZYDXbjBuWf1TZ_07Z9zKzWXva4DnPPsdQX_glAngv6_WW_LXJFi1GIPJAu4uhKk_WoFnO_wLlFy1FZKJpFwj2_iYm3j_xjbjw8cgATI7-SAEKObG_IxHAffdQE-OjslglyOjYZjgEN9EHCKWd-VEC_bGl9jBerY744rTEipnFL6kQYZ-J3YDk1_lKuRy_QQtoG9f60c6rH2aaSYosrAGImsRnWf_FTz55VjuqWw8_7ubbTmFBlQVOqIar5Obq_U0Iq0d74-ZP5lz829i8Flqm72CFpqWWD-7JSZO1DWa32rjLDlgS-k862RhlX42rQMtD3cXsf2e_OJaK0t3PUnocMHIZui3y-jZNBWrPnNxc3RuQBtohasDbOfuiVYPLyCEsQ9W7o2zFiXsPnN0fYU9CSn3zBWDme3TXM628pYqSAO41Dnz6RDz-e-a_BnOTbmLsFO8VXXSseMPtJl31Pl7TVTZ_XiER0vLumJ9F0VJvIFwEHbpfe4-kNlr5OQyMlpCgQ1cZGLTo29XDGvJxKSy0FsG_vMjRzETasFaq3BtvJP897e1AWBR__kjuDhhv7lt9UnzM6cLyDHIlwYUeY8sHKL_GX5_P2GgEbHxWoBUry73ANoAVN3yuQN2hm5wbHB-mTECU="
+      },
+      {
+       "id": "rs_0c561794cbe48230006af3fd34476087d1a415f98b8c84bcd1",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_1JxrhOsihfB4p5UAwCwNzBYTrCWUHpTZZWMM8F27uLhGky2hdAFXZXz6Fy68w7fzXVrpTh-pZ8J4JVGr1KggSKG8wrlka-dF-OyHmHQa4WKkkF0UgJ0kBPTpTWplgyadEujIrY3RECM7-0Z5VGpUb4B4MvrwiJvpMOojeLRgDoLlFbwQ3RzBXbc415rok143FlNPrk-7m8uUUQvZxvpJnNUbhSW3aZl5_tBFopb67clyXO1y_lFDyTXAOlLaFqqu5wOwLwY4WfaOOFURp2aLmJFhGLYP_X7mAxxhZ9rf8l94_fZOty5HujogQit7SLs72_9dqUCzGSh0VeYi6SfpyV7NAyi9ONfqi60M0Hysgb963NARrd0v3Ty4l1tynYpzD9zWEnacPEEZR4Qdjr1ktTXWed_PI6JJSKS_78wDA-lW4P3gd6UV6tyuWrW6ovYZQf-Pl_105JSWzWB7zCqPbaCq0wCGhDGrsl18wB4p-ulKDv-r-ZDtHZBsZz9OLYdglC-DBePUK_4vYIaI7eS7j9A4f5knB-itRiof4UE9I1iYcvhpyz04LaR7EnYzpVMFwlKjQyPx-EuHWUsQtywkqx9KY7joJSCJ2dLI2HLkjvibvhXHhDMrvDnhxC3jH8O3VWIhl3YbpBeJxLDaufRumGU_r2DvandUP21oVKPxp5YEB3SQ8-zIdHnld75ai14psWt1l2V9OXk535Te52xGslBmg2UpjhGM2hlo8GEo8bcGjvnAw4szXysCkk_gsEgS6kkOhrzYZCQmJ3wk-HoMqrbRVtVrIrr3BrX0j-xHQ066k0FdcaiCEDe2gvrraYs8Kf7UwscYNOAQYtTcWKRkH7xSIeZjbtv8zQ5FXlH2r9dvdioKxMLZnc6iaYOFFta4WlV20P0cGNXxn0gBRhIQKD9CA8419HMUgiwJvoishi2imC4V_vv948jFwg22L-i5qY9xv6c70r8-RXQT9_Eq38yfI5MuV1MiXaUAGpWrTuErn3fR9CRnX5MUOVbHjGfgcmz0BC4667w7myazwRBcHf_XdReFw_MOgD3mN7HuGnrZCtIdk8hbq6fRPGpKjvwgdgSTqNJWlZvqr5Plceb64Co-PX3B86SbXAUWa2t6QZz7T0FOxiS5NpoDVEBZEqBcxK8FC-asFwq7jUXckhgplmvo_1XY-n_k-kWQP7PktiUWxJF2TBd0dEN1lybhZDJiqXoEV3qYvESb4Mu2wKT6RbG4LFOW6pxea5VriKUO3Wbbr8yRNkbloQo6NvFWaXV6BaC8AZZYFbLVNbgIbUiG0nqNgZHkONlNn0y5f5rz4BP8ydSoeCr4nGaoaduY0ITYfYjIaOqRK4neCqCPjGKrVIU8kIONT5j6EDDVEBG2SEXKgvSMmjhd9LTIjeN6wUV_7kstIYv1OWbh8vey8J0S_XEv6dXJi4hK765B4qED2j50QcF2J7FW69lYy1cR_oi3LHsKSXDJWj4r0r3XqTqkaD-L34IKfcpX3iCTMQCCgTIbs9IBNYIypQgQwuCTMM1m7hTni80ZndA4zRE_94iR4Bg8G3F_AIgmAwOh24vNYxQv-BPT9fIt6wDp5AwBrQ62v-lK10qf7-LcZraxoBpIgzlvJhQHa4YQ5O9Y3OUWM59MUQW-QnGjCrjmZCMoO0lSy3LWUzrznqLJLQqhgnBegCy9x2RufsJynQLR-QUM5_O8XoxvRn-DF-4tZA395Vr15JmYXBxfdFTOAZ80nnMF0bDj-fr7jMAnuTGNQSI47dF3fK6Oo1fIwtfnrsJg6FL_jaKmForEVLrsMnR9CwGfaL-eUVnRITkvSwLldJ_xpyWyb5NMLcxjJdd-ZE1y3u6BavxUFjIwveGHPhmOEwdtJPJQHBzkBBWPTA4SRfVptIFceci6Oy7Hr24Mdqz5dKTdaWXVDLIQVpZkI6KwZDg4lBWKde7b6thdDW885v-mGm4k0vAZpNbGNsdZdBesCKzWtd413iYrTvx37ANJjuY8q_24USm-miDALXNkc4V_1v_Xubzckw0kJKr04uU50LaGHrOxmU6zqkAL74zKUgTNGELmL4KJ15mkb7RwV8xz1FGrrThXdmUBUlLdTBTVg6mxgS0sZh78CbnFCeUeROlcWfxp63aCgNjOZjUFCIkb-EOK9Qmw_6Ztf8RtNeOu18hc8xGifB7tv5m5WiFmFscm-7YJX-j6-7oeI4i6EiByddyf8sDaW_JHB7j_APd5pvDvm6FLK7xxKugHjjCxKPg562tu5Nl1M4lvMmsWM-oaS5YAWhgK3izQuw_ehS510gbcSJPBIBaDDoFKIgM8dJw-9y2qydF7UlMWKZD_SCwmxRgKXA5UXYgYAsaUtyltiUVSw2jfHlM9TSlr8RE7fCBjd4sxy3CJ1bwdOiy3jir7NzVFfqsgOzlOahkFwQOgr74IaXM-Fa8WyBnEjzJlyAptyFDwtC9di-8pRkIZhWHb8p2yvEfAuX316aQe8Uqih5Heb5YAUFR5JUyQyP2buH79jXKkAtleLS-giUXn96fzyTiGu2gA_mwRXDi-yoqsaa2POpMtOw3PcSn-hWiIwggBr0YlbmvxDsrpiGN4DBN0VxaOV2JN26-OfqIfgdou8JBciOJDEgsZqYFpDPCB12PeJDlKzAQMw2hOjBqHGVW0rTv0lhRX5IZKut0WHWIr4DThu1OigeYVCJ78bOR5LSfZ9BKonPjvwBQt4ExkXQoWOVxee7D4YOH4Qe0mRIdRANqyTVoUswNTRppJDe03A4qDIGym-euRZp2iiHbczAfmMk27D0qBonGIudbkkNjgTUTgH5HxTPmc6ofP4XIE01Qy66vd8MFrjqQW7-9A8X9e1UTzWo6P6Qu9lb9vhsIyvMADApGpfw6JDPEhdT-a0SrLhxMqeFWAu7o34ECxCfLAUdF6wlZC7Wwuq7RwUE--J02FgezFXwVuJyuWERv6V147urTHW7PsGMdZnIKYeVBupwm5-NbfEdxNlE4T_h-1OvdyPh-O4S7vvQIZpjNQhQlGeCmGtjEcEtED-2kUTc0s-XQ8TSqKFQuOLt3pTvq5q1KSN6m9w_nRmYbRVIfMjpA4ITsZVxOolTYCUmOyIESOGpWUEMWf8yS5HzO4G81tVYyp7Zi7UeqEdD19hSTgwPm8xWFNF70qFt-C1VkHTOMuEzyDvMCca7eCXL8yWkzl9rNQqdCDlmM2BauX0BMZBjUXeBTsJx1jNXmCaeOgrYq8UUJHVIAqYqQNjTPLTSHZGUlIzqbmQudsfEGwVS-HBP5d7y0Wari5xC3ASuVZL6_vglgdPAwdg1cFcBoPo0bm6NqUZBK9p-28d4padAJ4Add9YVkGwoP8Fe5IMxiwfnZv4-U-kNexxjuFaiwZSMzNx7pcKLRUhNgQumB2L464ExT8mIAztP5xrGWsgTHH0ExfBzvpECay_J_tkIhBcQVJO2SeATePwe21TI3oXvFPNYxoNdErsIaD-UIq9fxEUCHYr8uo39HxhIFZRZ6C51-C-0E6LLMyfvE2G03sGxxQ7pJfkPomFMSYL99UBLFcpMJKfzs2yPeFxcKx4tmD31uTUB2hC3t9L_aTYT_SGkSB8OpC3BjXs30anO0pMfAo5bVgk0sL3NZj4fEbLOmgIVyVgoN696LnRmNQOX_TFHL-CCoi5SW5zi-_h0TgohcTybcYkUXC4oq53w38ERIGnvVzTpK9VnseezsyANowlwzWmJaw_q4OsTpPeKSaZI1rflpiTPDcXdQ0dCF6xcmJDbBxfwDZzLZR5Z5UrVhKOyeAEPWiRArpY4wqqmXuih4gOp9nwLQt9zFC0_njTUCa4auRecVRtOy4ODBflTbybQq2x6lG-eRRlDC3b6TLZOwx_DTV2KLrwa31ptPETyxu9jaBPGgtJflSz71z-h4E5um5upRyKVwf_XsurAkb5myEKypC-82qzfFm2z4lpyqkRKuPWO1BWvKmnyQ4Xl1lx5dKiXQj2tIqnrhM3GWKQ9dZNVq9Eu6FOGTG43e4MOV8rZgHVIRdZNCcSm_-M24cZ7L8e56cAZwBFkyGsRhi8djIi49bwAz2xGjWg9svdpRB6T5kSvC5uL80BVRzQ5rvZZEyeScX5knRDnYYE2pOkY8spSCb6Wqd939Bc861FNCJJpoCaN-s5K1ULdmtOomLjWA5l779C0WMJANGCVW4ACQpA37aJrtqPY41iFQLuRt-LmOHaR9kERFmbI8fTur5uJ5gyJayboVfuhM_fWyCh57_VY9qPhss-DMbN7MupoB1FxTlOQO2G3PBCL1khsvDe3u7iLq65X8oej215_UMakocEoOkZ1yqtoiXUl_EpzpJwtIqshVHQKeGjPuGxOo3dg3kkb34IKJ-PmdrM2jyt4j2hW6de0TdapXjy2e1UF09f7TFtBo17ebZFQjysHudSVoz9V9R9IOIqyjDMJ90iYM04J00dauM26mPTB9pEyz7QZufKBOC1dW3-zF7nCmlYpcKH9rU6qlHC8syS49dQbbWPZbqM9jhrCmxEueuXiBzpJ8ag6nc4ceD_I5FXjmOWt9MFAFl6Ru7tpR7QQorlb3s0FZrEOOb_0cVPTXWLisYT7j8gu8sqb0m4Y7vL-M8cUXFP9oIiU9ddSOGTCoBuWtOD3Ie5iyBYFnw2p-VQbIDwE8eAv7DYWvHhKSkNfeXfVGy3gMP6hTpRPs41dfzYmH9KlUrpjlz4LFreXGc1NxlTNbTzrEgJ9Ft9Y0Y6mVUzgcxJf8vu1TLWFkPjHv0qqL9oLmJZYSM1hzKVwD2LJJyrmdXbsy4kNvLIF9sPY4yH5Fzp-75Wyy6tnNLYYgzhqgSPpNK0BigXie46ErQGmRczYyFYGDFBmcPU1yRgsu6KnIsQVONwYgW-Jr36tO46F61LajzHc9GprVhUND6fTeoZYR4bewdGjVlwr8qZn6R6GLsfjyi2L1m8H8KUrjtK7158mJ0Logey1fjWfm9qkKasGmVCOTZ4jRPAFKrnfOG-_IYNe3ESUehrNNAZjqT5eTAnTJn9EhrPlUJsv6v8tUGAiwsO6eCT8zt8IZJo-oQpRiwrDxeGIeh__XAI6TwZKtlxlCiBtOXJVbsUJYm3RB_iteA_rVl5_NabeskanGarOTn4mywU1eiQxM9Xmg_ApfEbdlan13pRUSnLcjJsnDo0U_OmltkShzOahHEfMgxz5yJP7CScS53eMaUrMK7UKNVlUM_zUVEMxunezNfEcB-CZII2UnR_yZyhYYyX-Lo9R4nCI8EdrL-k_16a8gOWKMn1U7TAnwKdPX9FVvKzR8HkNcE3wzFHeh__CbOoz1KU-7H-Flcckc37io7wFu57FDtOAFwyZUjD06_h_IqHCVDJjLc_6vh-EVrv7DsLhvdnFc8n__Sg2zYB68LGiqErshx1iyNEjqL7f0NJoImbOyUrmd1pCOq6qkPU7DcJLDsPuFqB5ocvi8S-LrgQ0rnWugOtVqpy61zX1f0vkc9hHyrmvQj73x6dd-uzf9CPquS26lRB5kyc3CS4yHXMK3PuxVrUNfmeqqVxYM2bZJ_pjNQ52R-YketQ_hCSl8Ue8ly5Lz-VP3NvG6Pgnj9TbZ_JWaDwHbZ9Y25XjyD2qOtgMaG8UiZv8o0ROOTeNgXZqG-57dSf2xuxhhuNcYFHGI003eT3iLSj8HSPBa4Ct5fN2j5tzSzdkTdG3LhsPbZwIra1xMvJyaB-btH4QHy-cd24zgV56iaZ4w1lWAc8WOp0mk1u2w_umgKP7DQ-lOOBXx1LXJzhfjbau59Kx1z8ruT-WMemYsscTUgp2wtSJnCk13Iw8ckaShmgc4Y9DgnRjzNSM3tni30rC5OLJVWDN3nR44Tp_-_AlpP4-X2-FbGyCESJoRjen9fBLzQcqh8_JaC6fraciLsGOM-kmrgs3Fg7B2B8GpfM1YNSWXcuk9B4VNFbr8vL3R-iJ_W4Hd-vvJv-AOaZfd16iTDwZG6Cpxce2sXhpYsYxs-R86y_ylLcUSYujhg5-jzFdQzZXmJdaUhbG4BO1iGUmQneK_b2_CpsQ77dhTMcmGxNsSAwZNxCqZSPNK_vW613G8gIIzHvcCcrsLmS35vNuA-uHy-mU0xJ4LbDcqj61WOSyvnLJjrAeZsc6L6WtPr8xsFvRc7uxEoMsYSqRlWVPrVowUBciq4wtmpth-uYstUT9N3Ras0ufuJwB-7EXlGHlmpFik5UbfFde7RYqh3A1V5OKq-ouUte5sh1QACEkpLltAnb3ckOBbNJX91Y7LmowlqiBtJxMox9Foj3whbSPW3YWywb4fdUSWOroSbb2JvfjjRhYtojhNxT3D6IYybgFSmf7g-FE7qyPe6yWSSIEIRR76flNDyQe_aBVC_qdbTN3iB6Pe9EcJCoRCut4It75svELK7zGr4DXebVZQqzfpyRdKXVQ_AMeRByQw0DLaxULTnz9uyz__xH8jDGbzTyib-PMK43niPXX07koy-W5ocVWIMoLtEtMGzr_TYtOytXaDwubJCa3mvRCLtlSTvN_vDwd8mazzpWQ6blqBMuw80DLHN9QJMB90t9LxfRrgMjz7_umzVLw3iTZvRIxyTcDobOYWgS-0F4yWTN_k-97gWjoST7T9RUpUqRpTj2e5mzHU_mZPioT7OAF_Boo6OSVWmYLFDA9VIyldILTnmzAdDjSc1rIOTEregezjzypJcFGoK95_2Dh_clkXflwRzKLGM6SRoRe_MiBT7pGrVRzeMNBaM6ZqfF_ylxqu71c_2VSpVuv3ID6OLChl_vtt3MgUjG3UZx5qbGrS2sA9aHTS6G2rdFTDOrDHI8pCeOnx2hB4RNfNbeDXuh2ohAhkpPFNl-Qp69kYL95SaM_t7veGblDjD8fweTg5estPvRg5IlhQNKnfSgGqvTPDJT_1y8XIoMhwT08PYnrEP_Dwq0_sJLs4Tz-jrgtM9P3KUJ0TvOdPj-pXJyVx3yc0xbNL9uiU2mpwyVhwTC4snhlcq6HZwmNXMDIv4QDEszZ22cw0VVMpbPuPbDJ8Z7qk7PB_HfFRGBIY_lMS8YH1rNHTb8QyWDKuFpXdlxmwjNl3LTGUxml6_-eG9cd_wE0m6lz7cmvsSNR38kRQJ2DNi7G_LywcADWZFl49pu8DMnxTw4BmvlSiQ5FHpU6F0k98eKVQsAWcN1hrvWDfRD6sY0aGJbH6gfwvBRrRGLixDBAqDIQWTJSbOn7rXsDzQVgKOwNiEdfNEINKIxWYACxaqbgy-wQmZ3SIrDeuiJ4wfgntk8Eszxkue3QsYBVg61-v502P0SZxyMI06jTIFHWbgqXUAaqPh2gfMSnA07-WsYGNV9se7OlkXKoX4PDLgF0GG87cJ50qdYhyfJqRXYJDMgu5uHKh8Eg407RoYSvc1VuvfEhwsfONA0CI25NsmqJGLP5HybwZ7CTIACknn1PiD7BfrIkPnjlgcbudGFukG3sYRI6LQRZ0JPos2tXtNf18uVgqPcmfFd8QAf9ggktslIxuHOhH8QhuVuKkRsywnpGohValYr_JQGEmAzhXA8SXQ_5pFEHeKG4LjdFn6JGs_Ovea62D_QKjoYpT8WfR_-l-jJP8RSGV08PHpr26Vszj1W8RfSuQDA9f3ywIvBn43yJqfhJhsdceP-X4HXt-x1aZOpN1EI7xSgFLomSjXBU2nm1qQUMADxFYYKK6LeJzvfAncJvf53e8N61DHmPriH61kZvrlHAC-2iIpWKyFEydpmjXzHDDpF0uWwBmIfQ2NdRHa_dR-YuFinxXLDt67KZhx3GcQ3vIOkgDCxaoHk1zfQR_Gx0"
+      },
+      {
+       "id": "msg_0c561794cbe48230006af3fd43dab887d1952136acbfbed60e",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s2b)\n               (s2b :overlap s2h)\n               (s2h :after s2s)\n               (s2s :overlap s2a2)\n               (s2a2 :after s2m)\n               (s2a2 :overlap s2q)\n               (s2q :after s2p)\n               (s2b :overlap s2x)\n               (s2a2 :overlap s2q2)\n               (s2q2 :after s2c2)\n               (s2q2 :after s2f)\n               (s2s4 :after s2h2)\n               (s2h2 :overlap s2j2)\n               (s2j2 :overlap s2f2)\n               (s2h2 :overlap s2b3)\n               (s2b :after s2s4)\n               (s2s4 :overlap s2m2)\n               (s2h :before s2c4)\n               (s2c4 :overlap s2z3)\n               (document-creation-time :overlap s2p2)\n               (s2p2 :overlap s2w2)\n               (s2c4 :overlap s2c5))\n    :modal ((root :modal author)\n            (author :full-affirmative s2g)\n            (s2g :full-affirmative s2b)\n            (s2g :full-affirmative s2h)\n            (s2h :unspecified s2s)\n            (s2s :unspecified s2a2)\n            (s2a2 :unspecified s2m)\n            (s2a2 :unspecified s2q)\n            (s2q :unspecified s2p)\n            (s2g :full-affirmative s2x)\n            (s2a2 :unspecified s2q2)\n            (s2q2 :unspecified s2c2)\n            (s2q2 :unspecified s2f)\n            (s2g :full-affirmative s2h2)\n            (s2h2 :unspecified s2j2)\n            (s2g :full-affirmative s2f2)\n            (s2g :full-affirmative s2b3)\n            (s2g :full-affirmative s2s4)\n            (s2g :full-affirmative s2m2)\n            (s2g :full-affirmative s2c4)\n            (s2g :full-affirmative s2z3)\n            (s2g :full-affirmative s2p2)\n            (s2g :full-affirmative s2w2)\n            (s2g :full-affirmative s2c5))\n    :coref ((s1c :same-entity s2c)\n            (s1c2 :same-entity s2j)\n            (s1w :same-entity s2w)\n            (s1f :same-entity s2s5)\n            (s1s :same-entity s2s3)\n            (s1p :same-event s2p2)\n            (s1j :same-event s2m)\n            (s1h :same-event s2h2)\n            (s1j2 :same-event s2j2)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

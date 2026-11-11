@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-4.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1056,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 27,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 6130,
+     "input_tokens_details": {
+      "cache_write_tokens": 1053,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 27,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 6157
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 529,
+    "cache_read_input_tokens": 6127,
+    "output_tokens": 356,
+    "reasoning_tokens": 226,
+    "openai_usage": {
+     "input_tokens": 6656,
+     "input_tokens_details": {
+      "cache_write_tokens": 526,
+      "cached_tokens": 6127
+     },
+     "output_tokens": 356,
+     "output_tokens_details": {
+      "reasoning_tokens": 226
+     },
+     "total_tokens": 7012
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 4 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1f / 分辨率\n        :mod (s1z / 最佳)\n        :possessor (s1k / 宽屏\n            :refer-person 3rd\n            :refer-number singular\n            :quant 21.5\n            :unit (s1y / 英寸)\n            :mod (s1b / 比例\n                :mod (s1p / 屏幕)\n                :quant (s1q / quotient-of\n                    :op1 16\n                    :op2 9))))\n    :ARG2 (s1m / product-of\n        :op1 1920\n        :op2 1080)\n    :aspect state)\n\n# ::snt 2\n# sentence level graph:\n(s2p / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2d / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :ARG1-of (s2i / identity-91\n                    :ARG2 (s2v / product\n                        :name (s2n2 / name :op1 \"VGA\"))\n                    :aspect state))\n            :op2 (s2h / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h2 / 还)\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3d / 设备\n            :mod (s3c / 电脑))\n        :aspect activity\n        :modal-strength neutral-affirmative)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户\n            :refer-number plural)\n        :ARG2 (s3l / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3d2 / 设备\n                :refer-number plural\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :name (s3n / name\n                            :op1 \"PS3\"))\n                    :op2 (s3x / product\n                        :name (s3n2 / name\n                            :op1 \"Xbox360\"))\n                    :op3 (s3b2 / 蓝光机)\n                    :mod (s3e / 等等)))\n            :aspect process\n            :modal-strength unspecified)\n        :mod (s3h / 还)\n        :aspect activity\n        :modal-strength neutral-affirmative))\n\nThis sentence:\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\nIts graph:\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4t / thing\n            :mod (s4z / 这))\n        :ARG2 (s4p / product\n            :name (s4n / name\n                :op1 \"三星\"\n                :op2 \"B560\"))\n        :mod (s4j / 就)\n        :aspect state)\n    :op2 (s4w / 值得-01\n        :ARG0 s4p\n        :ARG1 (s4y / 拥有-01\n            :ARG0 (s4p2 / person\n                :refer-person 2nd\n                :refer-number singular)\n            :ARG1 s4p\n            :aspect state\n            :modal-strength unspecified)\n        :aspect state))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_JARc32pOQrqvG80WPDzUyiuR",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "值得",
+       "拥有"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"值得\",\"拥有\"],\"language\":\"zh\"}",
+       "call_id": "call_JARc32pOQrqvG80WPDzUyiuR",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_03cdc1b22a6a10c8006af3fd18360487d185af0b138a00bde5",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_JARc32pOQrqvG80WPDzUyiuR",
+     "content": "## 值得\n\n### 值得-01\n\n- ARG0: causer, what makes it worthwhile\n- ARG1: theme, what is worthwhile\n\nExample 1: 这 个 认识 来 之 不 易 ， 值得 万 分 珍惜\n- ARG0: 这 个 认识\n- rel: 值得\n\nExample 2: 一九九七年 七月 一日 这 一 天 ， 将 作为 *OP* *T*-3 值得 人们 永远 纪念 的 日子 载入 史册 。\n- ARG1: 人们 永远 纪念\n- rel: 值得\n\nExample 3: *pro* 花费 *OP* *T*-1 这么 大 的 代价 ， 聘请 这些 咨询 专家 值得 吗\n- ARG1: *pro* 花费 *OP* (*T*-1)->(代价) 这么 大 的 代价 ， 聘请 这些 咨询 专家\n- rel: 值得\n\n## 拥有\n\n### 拥有-01\n\n- ARG0: entity described\n- ARG1: entity arg0 owns\n\nExample 1: 目前 厦门港 已 拥有 *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARG0: 厦门港\n- ARG1: *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARGM-ADV: 已\n- ARG0-TMP: 目前\n- rel: 拥有\n\nExample 2: 全 世界 共 拥有 电脑 四亿 台\n- ARG0: 全 世界\n- ARG1: 电脑\n- ARG1-QTY: 四亿 台\n- ARGM-ADV: 共\n- rel: 拥有\n\nExample 3: *OP* *T*-4 以 苏哈托 个人 名义 拥有 的 地产 有 １１．６ 公顷\n- ARG1: *T*-4\n- ARGM-MNR: 以 苏哈托 个人 名义\n- rel: 拥有",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s4i)\n               (document-creation-time :overlap s4w)\n               (s4w :overlap s4y))\n    :modal ((root :modal author)\n            (author :full-affirmative s4i)\n            (author :full-affirmative s4w)\n            (s4w :unspecified s4y))\n    :coref ((s3t :same-entity s4t)\n            (s3t :same-entity s4p)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_03cdc1b22a6a10c8006af3fd1a18a087d19863e42c46e9def3",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0j3mjkltdbNzPk9WWSnEN3X-tpxrufrVr700RodP2deM5mV4szWjs7emgeFSEeXmR9B4rNvjs4Iw0L1-qUGBOHC6RzTLL30hQlbzbZxd4c3aNWMONhHYuVEPqKnhkxNHXw2u6zSe1xjIhtqFVzdKLbO_NBXIv4JPKFwCTSUmGZWa0BTIbz2qcosu9TX4i5t9zVzayp0xmU90-RUy30KyW0OIyt7bUqJ_-_vQ0Z2RGC-Mxd8fHLtfRQL60ox99Fcbuj7H4L5BCUsM5V0ZjuJEkL2YWCbZcU_lpJRilmH5ZQhBM19mGphx4dDhoMxkphU2j9jcTpMPyy_RfSAQsWOewV3FUBb2uXy1a4QiH3kJFYWXiTewpDj-FaD4b0KyU2n9G3zPjadDPKzULWwqsWnOIwTXItxunlaR-IBBMZw3vp3o4aK1tQ0jlNf7aax8xFGg1jTxJKXU5JGsuVNHcCo2nYCrXW4onV8Z_9aLumJaNT_nnvlizky0wi7khWtmiz_XMnvKt-SgmbiLi_Eb90Am-qth-YR__8LKMRWtgeFOf_SWpqrkqceuXF8WgZHAtdWMHxiTorcj4ZmipKhOptXLXyCmXLlHLS4D6WOpCld-OzSDs1QgHsMVCyjIPgTBWVC3TsvCxsH-UsC_xXMN4EGxfCkzitccwAOODx2dquuFHFP9d0KeweZwXOpB08QmWam0EmkcT5qo6cfhjnQX__dp-4U7xvc3Aick5lOoUzOuqVli4adqw-ABqsRHVbi3XQct8H-yi91-HPe_7xX9G06YTNRS5Dl3gR_umbvxZFJgQEYD1rHoBh4-nqDgEMfdEkknIFqHum_FCfnyNZMB8PsuyfHhsiQCM0wtqjMFqBJsAb-V7RUX7SobvtUNtxpr8Wys9TofUOc_3Lj0_FqI3Si6iK5nJ1W8xjZjXVx73v6EtTNs0heWL_Z3kATuSdNNFIL9cqz1nH5jP9K45t2afMYK8uSIlQbpktbjExZVkt7vrK8rNsC91fPWfYKuyHc2JD8jsxYWncNeVb7I7PFTmMOOcLhiiICuXQq0l3e6KoDWDXTrX2YJFz4bbnGtP_Z-hvqabFGBKFDDNIwCehob9ujYWM5O3MLhkr2VCGdEwHyl6RxOKy3rzmewTcvOAUsGPe2-aE_8lO0lkD_pmBzrQ-YuXHNlN2wPdMGjxVXIDYa79TFnBs3xBTUlaNJfpriQHojAgDB1B5kn6c5M-ZyPjgMjKDYF-vvYDqI9uCQ4MhjG2Mj3XyY9wXx6LlO1bxpMJZUIg4j8RGbA7fi7R-8qrB6_qKvUlqyFkkHCW1A1hqgSCig_iGCfX9NLTu7MFml1RTJ3I_fsVx_yoQVezgxX0PGGHuUniJW_W1XBVEAInnIdlRNTqqZ0OgOrDJj623qnOmPr57Q6Oj9RUQezGeyJEa_NUEorlAcShvSNVcNVygmfRZwgXq4S4OvhI7PLjTg2JlO1ZdWBWoYfTcxEPzLBRpkOzwDgI8jHd_oLPW-t9vCvlV2EQTizIpVZhmny9ec_0zHiwrRlspWuxpuag5nU_IJK1be0uN-9tgI0Nrjigt_Fo1qc2OW5zcXAsdZ1CUHikDXCBX1uZcrwKdLCd9AYArgqvaRlIydVqHFE8t-YRPQlE4jlCe9iumlaF1Ho1Do2Eo9ahG8IprALIsIY6SBFuU5YwwgLAByKWKMeGzFCmrFPtIOg5xX8Dp-mXiSLKHJGXNWk_MHPhAqzjhbwVCcNvtke8YESrEFZfw2D3jLtlmm0KF7LwSDn-C9kI8ap0GiDxebjDjT5q8_K-413SB2HXEk3zznKmus_vj74GtVE3hFjSRQLqTzRQ8dks2JGIK3_k6oAV5AVlwSZW4uveKI_eBY0H5-r67ZdQ1hu9pcw9LVryfhC6NPsBIHGfGaoJtepAEAf9h24DII1_MpI84ifTHFG4uIjo_vE3t6eWaxn56mhhFWpVaLFluS6g0oxKQ5wR6MtW1UOwyimHjRHQ9GLchXmABlEl3BrrPeY-Q1o859LSwKw7ibDr5au-PGXL8fZ9TEvLT3IJBB484fPL7kwgk6IoEp1uQUlM5d5_S-nXriNtfmYdzjO59n4uyMMucukR2ArLEUmJsus8DlCa5pzwYZdCRdif3Q8POFXjg6bBkCBCiYZE6_yKXprpYyc0edPk3tmis3UEa1Ueijgg0MNu-78X0QNK-_0f_f4ljAQgGMKWuiBe_oMrJJTPOATNSG15FakDShLZ4TMJhHZQjcOfW1R6Q5TbJdqKtiNcQsI_cwQ0e21BoUDjzHhsapVddvNknOnfyajq5XB3eiAvOY3l6hu6i9fRJpOKD6U0IhpLroxQBtcr0jfWdkEB2xgmANnaTQaO9ol4zLWMjG-KtEIoafOQ7qcUKhi65OW8P5QaIPUjvSasIwmfw3jAHe9_0tERBT32ozJgjhBgpelIzAkk1IOrjtfY63FDfzOEjrLT0Fw9QusczT8mQQjeH9LTqmNtL1pwk5EIi5P-6VrScG0cutQ22hZGi9cDD_egFeVClCERCvFN3-u5AP-pj3wmrfJYtEuK6lFSzVajeRDzHEykNE_3auMjVdIwIyWl0vah8mtOizPwtkWG6_ozubzHaqiYVnIOlkZ0KvxxkQq2VhYxybxBte78dxDs-0LTrxtjxe-2Y9Mx8KxuD7pycf_kNZvbzw3CJkop0t-4LlqhHnMsuNVSwl-v5EQZKnN9vBvTflGl5kLU7NNO3nBn5wsfSldG30vAIBbtUub2IM9oL1Zm9Vt_UQVfDmBobSMnTSxnqdWvPjCU_dSidYjRoVuJnw8FS7MUPu509EjQ10y9KFrIbmnJk_C_SRAPFb0ZzsgPs7i2GOvaINhCsKuuC1Fa4pQYaS4VA4Xndxf4dnjtRzqE9gXPfEwwYFhvBW8rP0sYXiHebvy_JiON05Vk4uzUcPpTeoT3ltNlU5ymPFr6VNSQrkQ5zs9nIQ76tkBccYw98nJGstpO-RdDyVRNQECm4Uy_hoMgGIbtDtcD9jrmrYiSBOgffTV2U80yNscGBOgYtdEwfoDKch_73R-o370ybJFqc8cFBSzKLZc3rP3AxlEWzuvI3tUAJ69cAE2XdB_HSdFVgG9CpGLpvRcMJgio0Y3qpKK7I5lhsaynbseBbKVSzze2vAYigXKOKzxpfyzgUHECs08GI7WDp6_yNGFjKxoIien_mG246Xu2ISxzRETfsPqJ37-fwvk7qs26PfoMUnIIBxV335YHHnCa0jGOcy49UpwHUkLLhTHfUDBiTz7829ZSHZP5XeHiBCcqBjsa2vOG8ZMa2H7iIxUyNt6aYICyKbKPfklwSr4Zvr5lidWyg3VKNdPJO7inJbwkrqtHAHfaPiYC_30q_s43F3pswWJqRMwEpTYmLGhyGu_hFaWiGsvg0wH0Mku3TPPfST2jb58Ax973X05DfIHXHLwN693CwxkR57EVd-gNKMQDECH4ZUC6DDD6zrs5JlV-_CJE3omGb50pbyIxpJohnoc8mlESihPdpcnaMZdoayELUM0qdZXeJyOISQ65LVRoLB4X_47m9f3xxClv0z7wxLC_1RRGUYHOKibXQB-AVZ0tHsDuv6Nhir7wwzJmgWf-clQdKObg0CVHOLJsvcNophn__adTxomLkUHaofUbuG0IyBpN4jLhxbv-h4wMe0GNfULO8KtS-ZTrNZOsvnpKXhCrm41C6ABiTAjw5h3n7udXWNwd4fD3OUbXnllZlnWv3jBghJxYERf9sHCeiFCZGut81PUpHXbPyF60aASEmbenGbGfdC4dFNCwArLS8tK1ANuk3S1L7fzk7yMsI_sOD-J_GDYHHn5Sy8jNvxUgbSUg9xnrdw0JY9E68Avqj6DxS16gTAWOOk_37bh_l8HhL-NcVHbI_NNc1VaE98_sh6Q9T7e4jveSQcu-STRsw__gI6ihBqXgabVOqW0Fob3KY6R17q7bIrle5fqD7Hd5LW0_7EPVYGatgWUgmIsuCIba6oRb333aLeIgT7n7YzUI_n_2iuE6tdKoqTfQUfBJjDMqCjvWtbxQ0ZXeHxaSvabFFUYcX7QImhTfl-pXlQ9_RerEwgxwCo7PtpkvqAR4kkyNz5zFvUo3V-mcHJZR3COqplmPmZSclXUqFUbM8PAKPpsiSBZUf6yl_srfxOE-Ie6jfVEGlW-APaV60DcdeTdkw-NFte3En57YSWPK4hB4G8NjDMQbJlTIJld-mlxRck6lo8FPSr60Zv8sO9rLdgPySh2Cc04WvVVF3BNA37cZDoKYSDVr4UN3QkAeLn8yMD69I7_Yb9jxvtQM6A-9djbhNpyCVnVwtv5gqTCNJ6epiA43anX0prydbYGaAI1hDvtRrFNAVudj1VG05BBtbxqvdTsP3IO3Jg46cbIMw3mbyDuHK41yZd6qTWbY5UsAW7xZ8lj73lBIp_le17J4qzIdqH85zcm7Qw70="
+      },
+      {
+       "id": "msg_03cdc1b22a6a10c8006af3fd21bbc887d1bbf5cc7fa2f5d783",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s4i)\n               (document-creation-time :overlap s4w)\n               (s4w :overlap s4y))\n    :modal ((root :modal author)\n            (author :full-affirmative s4i)\n            (author :full-affirmative s4w)\n            (s4w :unspecified s4y))\n    :coref ((s3t :same-entity s4t)\n            (s3t :same-entity s4p)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

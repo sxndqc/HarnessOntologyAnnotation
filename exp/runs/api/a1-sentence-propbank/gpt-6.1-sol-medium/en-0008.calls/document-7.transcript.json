@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-7.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 6411,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 92,
+    "reasoning_tokens": 61,
+    "openai_usage": {
+     "input_tokens": 6411,
+     "input_tokens_details": {
+      "cache_write_tokens": 6408,
+      "cached_tokens": 0
+     },
+     "output_tokens": 92,
+     "output_tokens_details": {
+      "reasoning_tokens": 61
+     },
+     "total_tokens": 6503
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 818,
+    "cache_read_input_tokens": 6408,
+    "output_tokens": 127,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 7226,
+     "input_tokens_details": {
+      "cache_write_tokens": 815,
+      "cached_tokens": 6408
+     },
+     "output_tokens": 127,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 7353
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 7 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nTheir graphs:\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2p2 / person\n        :mod (s2c / country\n            :name (s2n2 / name :op1 \"American\"))\n        :ARG1-of (s2h / have-role-91\n            :ARG3 (s2b / businessman)\n            :aspect state)\n        :ARG1-of (s2c2 / convict-01\n            :ARG2 (s2c3 / charge-05\n                :ARG1 s2p2\n                :ARG2 (s2s / spy-01\n                    :ARG0 s2p2\n                    :modal-strength unspecified\n                    :aspect process)\n                :refer-number plural\n                :aspect process)\n            :temporal (s2w / week\n                :mod (s2l / last))\n            :aspect performance)\n        :ARG1-of (s2s2 / sentence-01\n            :ARG2 (s2p3 / prison\n                :mod (s2c4 / country\n                    :name (s2n3 / name :op1 \"Russian\")))\n            :ARG4 (s2t / temporal-quantity\n                :quant 20\n                :unit (s2y / year))\n            :temporal s2w\n            :aspect performance))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02\n                :aspect state))\n        :aspect process\n        :modal-strength unspecified)\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name\n                    :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect activity)\n\nThis sentence:\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n\nIts graph:\n\n# ::snt 7\n# sentence level graph:\n(s7h / have-mod-91\n    :ARG1 (s7p / person\n        :name (s7n / name :op1 \"Pope\"))\n    :ARG2 (s7r / remission-02\n        :ARG1 (s7f / form\n            :mod (s7r2 / rare)\n            :mod (s7c / cancer\n                :mod (s7b / bone)))\n        :aspect state)\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c2 / country\n            :name (s7n2 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_3HK9Ww7QbPcmUIvas21PUPtU",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "remission",
+       "arrest"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_079ddd79c103a9da006af3fd09b3d487d1b7a0f465fc1b2bc1",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0MOvU_HQc4V2oAizpYbpNtuo6eDochR6K7vy_XfzGkE4qcqGHbu0rea4fP9wCiebD8OU5Yk9FRRZGwTbTy1o1AU126a6aawpiQYCJ8trK98BT91IiHKiRUEZkrZgLPFDnCXH2TYkemm8sQfNuOwrHSQl0-pH52n2uyjmQoykjNTyKUexMuE7KU8Ky0lE-CQLh_TFNu7w8KNPaxmBJ5Ajwe2TH7YE1-tce-3aUzCO-hJZEy_zN0cUOTS72-_fdbwpXSAG-5YJ9hj7Ei5adXkm3kWJlAF1_ZX9xlv29Sk59AZLELe6fX-D5vsfk6eMChSFSzO9e3BfvhTrCR8VF1-9Sajh-bbYA0A_qqVrb43RVUNkVDXaU8XUj3lRJkTbasK9X8_3LJsZwwI0LylKYXxNZ19_cOzHW1AEQsNQD-Ik8f-EAufVBcmSDNtqhQgc4TNgTtrcJAGjMM4CWh2p-ur_M2MB3Sra5rw_7nqfheS6AqTQeHhjpVnwTTilwz9p9h-7ns0G1laUofHV5DStYCu46o9zzWlof0-VMw-csVQuvpCmCAScM63x17hLGlPuefxX8Zutbdzg804thwzzU47vpv4Ta0uRSeHct7LmhWCaHPb0b2ty4gjHm3FlHBUDYMjYqlJQnc4347W_QnOO7Hyc7FYIGTWNQDjwq4O7_fQcwYqb4u2zxwbxT6EtLxYASY4Uoel287VbGFbGgFsn2TyyJvaNbG-9g3a946tjEQwCL_xmLBcfWpHUwjRe0KeA_pS3cW32-rIrVusQEFMMsUnCPomkLKfnwpaMz5aolX4Rkf5TcB9CBGpvfXce0OezUmhTj9zyPANynSCwGtuk3Z3rUFc9euNpJnwJs_ZlDoIDNdHFCHGxjCXLspKmMcIYrwstBDGwVRFjwm3mwX78qVnxb2p8lWa60tH9HLadEJsQBKUvPq9sjx3SuNbEmZFlPHf8mlCCP9OtTNTAm-gwUjS0nlcIgpj2XgSgCwsddU1amRJMQd8vjoiDY360oiSWPXdB-WoOBid_kxJqcoICcNzGdwUqLMkdjv8_wQXjjhcLiI-5Ofxak7r8HpCtDhSufopWEuHNVscE7PT9yA6N58i-Gwl83wFBJFdplpt40Z5f9l9G_P7D3VXxQXxSoxzIMOnjx8tZNUcH1s6a6aaHK_C_e1PAP4vTpdw34ZbrkVn3Lkqp5z62T3eKTPCyG88AfA86QG6kZnsXKCkTXR2BhGnaJJa97byGL53_3sRICMtSE6iQC-MZ9pdtyC029A5cHkbRVg8RH22-yDPOEB3Plmg80bp_tTFhqrEPtYNnzeO9HMPsdkTTT7m_vko0IuQsaO42FoKW8Ww5schkf9xtA0_IY8MK1SBjsfMNVsn4cNgZuxzSe4xBqRshbAW8zaOFt7iJn5waWbt0zMcDBy73WK2hNe9UeSP0fWgH-R2KNGdB7k4LlR2yw2rWOpOczJ6tCqN4g-s6us5lPoRrYD7EPmW-AVdB_D0T_K6v0uFyeom8q5c7jLNKOnH0Vm7N0a818PgTXgKqi4Itq6ZFtsDc0L40pD7Sswngfo6HQ7ueNMjWDeroXUAOLQ9cq2qTUzfmZJVG-9mcLGCZJ1CEakPB8FrnP3Vviy9Cr8je-dELwjfVkggcpfB4mXUzOg5LKK8k9nv2YzMTIqsmt6a5QyiWZGFRcr-TR7C-3QVpBDUXqXFafLjJ9rAHBuK-WvbN6yhCOZ_TGbYwRmPVHAuh29dkESCtzYMZs5RIWIPOva7G3AMNz2Hw6uisVGt3f5ATl4OTVkQA8o8vRZD8TvmMtk2nXNLJUB33XzR3b1SnP-aufh-8_iqWA0Y_c5zhymYHWltT1MYX0pu7PvY7pxIlH8C-gei_vZxrIkdfvCtskXdKMDbq0ztBOV7i8rrtxWd0xdKgbUoDVtl5aMfWivmSSxsHltGzLNApls27GeEchflekb69D2MojWXhKfnV62HzLFyh3JJalV32FvLPQX356ukigku0AyFUvQ5s0VDEbG-AUaXFD4dup9Z96GnihEo_5nQu-DGLjLxPqiRRkqcqff7jyj4bQr433g8dYpligbW6CbAhksWBictAz3Q5uh2V4EnzCcSjEGwiGwpvOfSL18nRiC7JJcB5A8cLHBM9q_LxSlKn1SsjXA7yCD5lg0HLtg0VuXzRJ3k8TyvWHI5JqnvfzZZvpb159WD4GpC1zRHhciRY5CLkyDHhfkmwoffPPCzKBK0kPSEe-yWk93TnC6-THt6cioBIh6dBuP-w_D6V_BzTWjfCOrdo7vLAQUgSweSzwmO7to_Cpe5iSqmV0Rg1SF6ggdgtxtQhdziY-mp3KFfh-7ifI="
+      },
+      {
+       "arguments": "{\"lemmas\":[\"remission\",\"arrest\"],\"language\":\"en\"}",
+       "call_id": "call_3HK9Ww7QbPcmUIvas21PUPtU",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_079ddd79c103a9da006af3fd0be65887d1867fef478d870ce5",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_3HK9Ww7QbPcmUIvas21PUPtU",
+     "content": "## remission\n\n### remission-02 (abate in intensity)\n\n- ARG0: cause of remission\n- ARG1: thing abating\n\nExample 1 (remission-n: cancer): remission of breast cancer\n- ARG1: of breast cancer\n- rel: remission\n\nExample 2 (remission-n: non-cancer and with the elusive arg 0!): effects of catecholamine depletion on antidepressant-induced remission of depression\n- ARG0: antidepressant-induced\n- ARG1: of depression\n- rel: remission\n\n## arrest\n\n### arrest-01 (like a criminal)\n\n- ARG0: police\n- ARG1: criminal\n- ARG2: crime\n\nExample 1 (difficult syntax for crime): Since Mexican President Carlos Salinas de Gortari took office last December, special agents have arrested more than 6,000 federal employees on charges ranging from extortion to tax evasion.\n- ARGM-TMP: Since Mexican President Carlos Salinas de Gortari took office last December\n- ARG0: special agents\n- ARG1: more than 6,000 federal employees\n- ARG2: on charges ranging from extortion to tax evasion\n- rel: arrested\n\nExample 2 (NP only, all arguments): the arrest of opposition activists on the grounds of terrorism\n- ARG1: of opposition activists\n- ARG2: on the grounds of terrorism\n- rel: arrest\n\nExample 3 (NP only, Args 0 & 1): the arrest by West German authorities of five young West Germans, accused of stealing information from computers in the U.S. andEurope and selling it to the Soviet KGB\n- ARG0: by West German authorities\n- ARG1: of five young West Germans , accused of stealing information from computers in the U.S. and Europe and selling it to the Soviet KGB\n- rel: arrest\n\nExample 4 (All arguments): Information passed to Crimestoppers resulted in a milestone figure of the 100,000th arrest, following the arrest of a man by Durham Police for burglary.\n- ARG1: of a man\n- ARG0: by Durham Police\n- ARG2: for burglary\n- rel: arrest\n\n### arrest-02 (stop)\n\n- ARG0: causer of stopping\n- ARG1: thing stopping\n\nExample 1 (arrested development): China might stave off a crisis if it acts as forcefully as [it]*-1 did [*-1]to arrest the 1985 decline, when Beijing slammed the brakes on foreign-exchange spending and devalued the currency.\n- ARG0: [*-1]\n- ARG1: the 1985 decline\n- ARGM-TMP: when Beijink slammed the brakes on foreign-exchange spending and devalued the currency\n- rel: arrest\n\nExample 2 (Arg 1 as \"of\" PP): The medication is very effective in the arrest of the disease's progress.\n- ARG1: of the disease's progress\n- rel: arrest\n\nExample 3 (Arg 1 pre-relation): The patient was experiencing cardiac arrest.\n- ARG1: cardiac\n- rel: arrest\n\nExample 4 (All arguments): Thus, the arrest of egg maturation by allatectomy might be due to the failure of the corpora allata to stimulate the mnc.\n- ARG1: of egg maturation\n- ARG0: by allectomy\n- rel: arrest",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s7a)\n               (s7a :overlap s7h)\n               (s7h :overlap s7r))\n    :modal ((root :modal author)\n            (author :full-affirmative s7h)\n            (author :full-affirmative s7r)\n            (author :full-affirmative s7a))\n    :coref ((s6p :same-entity s7p)\n            (s4c :same-entity s7c2)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "msg_079ddd79c103a9da006af3fd0d7dd487d182682ce0952e142d",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s7a)\n               (s7a :overlap s7h)\n               (s7h :overlap s7r))\n    :modal ((root :modal author)\n            (author :full-affirmative s7h)\n            (author :full-affirmative s7r)\n            (author :full-affirmative s7a))\n    :coref ((s6p :same-entity s7p)\n            (s4c :same-entity s7c2)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

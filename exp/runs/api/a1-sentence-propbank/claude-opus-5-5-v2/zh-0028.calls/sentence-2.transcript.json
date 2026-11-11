@@ -1,0 +1,134 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7710
+    },
+    "cache_creation_input_tokens": 7710,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 80,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 368
+    },
+    "cache_creation_input_tokens": 368,
+    "cache_read_input_tokens": 7710,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 1242,
+    "output_tokens_details": {
+     "thinking_tokens": 581
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 2 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_014Uk5nuky4RGqLSsdPweewK",
+     "input": {
+      "lemmas": [
+       "配备"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_014Uk5nuky4RGqLSsdPweewK",
+     "content": "## 配备\n\n### 配备-01\n\n- ARG0: agent\n- ARG1: entity equipped/allocated\n- ARG2: location\n\nExample 1: 而且 ， *pro* 这 颗 卫星 上 配备 了 *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG0: *pro*\n- ARG1: *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG2: 这 颗 卫星 上\n- ARGM-ADV: 而且\n- rel: 配备\n\nExample 2: 政府 各 机关 也 配备 了 双语 译员\n- ARG1: 双语 译员\n- ARG2: 政府 各 机关\n- ARGM-ADV: 也\n- rel: 配备",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 2\n# sentence level graph:\n(s2a / and\n    :op2 (s2p / 配备-01\n        :ARG2 (s2t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s2j / 接口\n            :quant 2\n            :mod (s2a2 / and\n                :op1 (s2x / product\n                    :wiki -\n                    :name (s2n / name :op1 \"D-Sub\" :op2 \"VGA\"))\n                :op2 (s2x2 / product\n                    :wiki \"HDMI\"\n                    :name (s2n2 / name :op1 \"HDMI\"))))\n        :mod (s2h / 还)\n        :aspect state))\n\nI treated 配备 as `配备-01`, sense \"equip\". 它 (\"it\") fills `:ARG2`, the thing that gets equipped, and the interfaces fill `:ARG1`. PropBank's own example for this word is set up the same way: the satellite (这颗卫星上) is `ARG2` and the equipment is `ARG1`.\n\nA few choices could easily differ from the gold annotation:\n- **而且 (\"moreover\"):** I made it an `and` with only `:op2`, so the sentence links back to the previous one. Gold might instead put a `:mod` on `配备-01`.\n- **The two interfaces:** I wrote one `接口` node with `:quant 2` (the classifier 种 is dropped). The two named products hang under it through `:mod` and `and`. That `:mod` link is my own choice. Gold might use two separate `接口` nodes joined by `and`.\n- **D-Sub (VGA):** I made it a single name with two words, `\"D-Sub\"` and `\"VGA\"`, and gave it no wiki title (`-`). VGA could also be read as a second name for the same port, written in brackets.\n- **Aspect:** I gave `state`, because \"it comes equipped with\" describes a property of the device even though 了 is there. `performance` is the other possible reading.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

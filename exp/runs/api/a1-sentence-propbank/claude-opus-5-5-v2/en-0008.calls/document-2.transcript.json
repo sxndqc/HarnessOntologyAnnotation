@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8367
+    },
+    "cache_creation_input_tokens": 8367,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1185,
+    "output_tokens_details": {
+     "thinking_tokens": 528
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 2 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\nTheir graphs:\n\nI treated \"for the first time in more than eight months\" as an ordinal: first (value 1) within a range of \"more than eight months\".\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmond_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\nThis sentence:\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\nIts graph:\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s2 / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s2w)\n               (document-creation-time :overlap s2i)\n               (s2w :contained s2c2)\n               (s2w :contained s2s2)\n               (s2c2 :before s2c3)\n               (s2c3 :before s2s))\n    :modal ((root :modal author)\n            (author :full-affirmative s2i)\n            (author :full-affirmative s2c2)\n            (author :full-affirmative s2s2)\n            (author :full-affirmative s2c3)\n            (s2c3 :full-affirmative s2s))\n    :coref ((s1p :same-entity s2p)))\n\nI did not call the PropBank tool, so the role readings below come from my own knowledge.\n\n- **Time:** \"last week\" is a relative time expression, so it depends on the document creation time. Both the conviction (`s2c2`) and the sentencing (`s2s2`) are placed inside that week. The \"is the businessman\" state (`s2i`) overlaps the document creation time.\n- **Order of events:** the charge (`s2c3`) comes before the conviction, and the spying (`s2s`) before the charge.\n- **Modal:** the author asserts the state, the conviction, the sentencing and the charge. The charge is the conceiver of the spying, since the spying is only what he was accused of. This is the least certain choice. I gave it `full-affirmative`, but `unspecified` is also defensible because the spying is only alleged.\n- **Coreference:** \"Pope\" here is the Edmund Pope of sentence 1 (`s1p`). I did not add a link between \"Pope\" (`s2p`) and \"businessman\" (`s2b`). They are the same person, but identity-91 already states that inside this sentence, and same-sentence coreference is not written as a `:coref` triple.\n- **Left out:** I did not link these events to \"tasted freedom\" (`s1t`) in sentence 1, because their order relative to it is not stated clearly.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

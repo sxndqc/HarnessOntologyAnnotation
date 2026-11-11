@@ -1,0 +1,135 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-4.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7691
+    },
+    "cache_creation_input_tokens": 7691,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 84,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 940
+    },
+    "cache_creation_input_tokens": 940,
+    "cache_read_input_tokens": 7691,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 676,
+    "output_tokens_details": {
+     "thinking_tokens": 79
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 4 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_01PpC2PBrmRKRgHpBWEkJ7o1",
+     "input": {
+      "lemmas": [
+       "pardon",
+       "reason"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01PpC2PBrmRKRgHpBWEkJ7o1",
+     "content": "## pardon\n\n### pardon-01 (legally relieve of guilt)\n\n- ARG0: pardoner\n- ARG1: guilty party\n- ARG2: for what\n\nExample 1 (transitive): Under the guise of ``healing the wounds of the nation,'' President Carter pardoned thousands of draft evaders, thus giving dignity to their allegations of the war's ``immorality.''\n- ARGM-LOC: Under the guise of ``healing the wounds of the nation\n- ARG0: President Carter\n- ARG1: thousands of draft evaders\n- ARGM-ADV: thus giving dignity to their allegations of the war's ``immorality\n- rel: pardoned\n\n### pardon-02 (give forgiveness, usually for a minor social misstep)\n\n- ARG0: person forgiving the faux pas\n- ARG1: guilty party, misstepper\n- ARG2: crime, sin or faux pas\n\nExample 1 (lacking social mores): \"Pardon me,\" John said after emitting a thunderclap-like belch at the dinner table.\n- ARG1: me\n- rel: pardon\n\nExample 2 (pardon my french sense): \" All of which, pardon me for saying this, could be put down to employee screwups.\"\n- ARG1: me\n- ARG2: for saying this\n- rel: pardon\n\nExample 3 (beg your pardon): \"Beg your pardon, Sir, but Cornwall is dead! \"\n- ARG0: your\n- rel: pardon\n\n## reason\n\n### reason-01 (think logically)\n\n- ARG0: thinker\n- ARG1: thought\n- ARG2: with whom?\n\nExample 1 (reason-v: fronted): [That is another small encouragement for the Federal Reserve tolower interest rates in coming weeks]-1, they reasoned *trace*-1.\n- ARG0: they\n- ARG1: *trace*-1\n- rel: reasoned\n\nExample 2 (reason-v): John reasoned with Mary about the reality of Santa Clause.\n- ARG0: John\n- ARG2: with Mary\n- ARG1: about the reality of Santa Clause\n- rel: reasoned\n\nExample 3 (reasoning-n: most args): My reasoning to go out and buy a new car was based mainly on fuel economy.\n- ARG0: My\n- ARG1: to go out and buy a new car\n- rel: reasoning\n\nExample 4 (reasoning-n: Arg-m only, probably most common): Discussed reasoning behind the EUS procedure\n- ARGM-ADJ: behind the EUS procedure\n- rel: reasoning",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSrwYKEAgTGAI4AUIIdGhpbmtpbmcSDM2/e0qmPnUNO1CA7hoMtzLlcCGhi7urxj0gIjDSgIazJZTkXKmfSuCH8v5pMf10peIVpyRCUp2m2YMzXwCEhd8lcDwbhyzYOpZHbyUqzAXXRUuDaF0/e1JzsNQxsP2IBurE84WlDAGps8QMR1uHgctNsCo9jSk7F5lofwUetoaXAzAhfdJJjEtbXqdFjP5o3BfzrBD5zSaL1mMkb15b3ds2BDiZTPkGuxSKaNF/plcCctCGu0nmgy2yMzdxHpvX+WDLLGhNTZBxhxVW1w6mPGZkBKq+3fPwSzuUVURqwEjr383uTfjvFd7kZ/+UjrPIyAY0S2xT+jDS2uOv5CG8o251ZZT7KyV2sJUQQxeRF2IFbacGFXymPah68Qek1+EvJT+UjUGGZaMGxIYaenR6D+eaGYC26/W9B757eeaOYgA7Wu2UWAVttnJyDVDicIUvB7jVBs24BRQARjYz722VyNryw2tj/8ypoL7yH7JYT0QrY6E3aAY4hLoiHiMAwthPQQycnYHcknL1Mx4TkdHV7rRb9Xt79qggodGL4qal3NDtF04dk8UJ1YeAFts6m323VATR+z7d2+iVKm5iOS4TiHIV/ZrtBlqFmyykqZzrl6bxWpR1qs5GfH2hxa7cIM4+2/So8uxLU41kY259Oq0XEZuHPYczd8om2zPKOAiO7nNf3chuLeJwlhr+X4l4eNLCgMxu2ZAJAptf1YNXqC9F7QpmIDdarlh4Z7roJ1c0A29UXLgCb0DpEaIuG9DVuTaOzlRUuK/KFkAx18St5axekCbHq36enrjAbvK1aaaAkaGraIhrmzIMEpQuHp/YjnR9fodsOdlzjNh8iBfKWD/R+pWCtKZz9Gt/c1TfJHuP6SPoBSMNhuoFl7DMcoOnjZD1siEzV6YouXlH2eEgrf6EWRAuI3PFkF7b4UWKxHRa2BLrqBkPr7uM0bAOi1JxqeDzan2G0dhf12bBFxDBZabkUtuJ2f/3rrUA12wmrV9gtuSzXoss6E8qANfCb8jIDyMedkqWPwouXD3cZ3Go4C1wC42AKjlV7xBJIjYvZxgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h2 / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h / health))\n    :aspect performance)\n\nMy choices, briefly:\n- **Predicate:** I used `pardon-01` (\"legally relieve of guilt\"). Putin is the pardoner (`:ARG0`) and \"him\" is the guilty party (`:ARG1`). The other sense, `pardon-02`, is for forgiving a small social slip, so it doesn't fit here.\n- **Putin's title:** \"Russian President\" is written as a role with `have-org-role-92`, with Russia as the organization (`:ARG2`) and `president` as the title (`:ARG3`). This follows the guidelines' \"president of Russia\" example.\n- **\"for health reasons\":** This is a cause, so I wrote `:cause (reason :mod health)`. This is a judgment call. AMR often writes it as just `:cause (health)`, and the expert annotation may do the same.\n- **Aspect:** `performance`, because the pardon is a finished event in the past.\n- **\"him\":** Written as a third-person singular `person`. Linking him to the person he refers to in an earlier sentence happens later, in the document-level step.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

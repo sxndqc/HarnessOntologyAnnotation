@@ -1,0 +1,171 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-3.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 51,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 32,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5172,
+     "input_tokens_details": {
+      "cache_write_tokens": 48,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 32,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5204
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1751,
+    "cache_read_input_tokens": 5169,
+    "output_tokens": 253,
+    "reasoning_tokens": 124,
+    "openai_usage": {
+     "input_tokens": 6920,
+     "input_tokens_details": {
+      "cache_write_tokens": 1748,
+      "cached_tokens": 5169
+     },
+     "output_tokens": 253,
+     "output_tokens_details": {
+      "reasoning_tokens": 124
+     },
+     "total_tokens": 7173
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 3 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n3\tHe denied any wrongdoing .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_Ln8wJBI5ifjPniWSiQF9tJ6e",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "deny",
+       "do",
+       "wrong",
+       "wrongdoing"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"deny\",\"do\",\"wrong\",\"wrongdoing\"],\"language\":\"en\"}",
+       "call_id": "call_Ln8wJBI5ifjPniWSiQF9tJ6e",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_06e6888bf77f0b63006af3fcf5649087d1abed7e623989a477",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_Ln8wJBI5ifjPniWSiQF9tJ6e",
+     "content": "## deny\n\n### deny-01 (turn down, reject)\n\n- ARG0: denier\n- ARG1: thing denied\n- ARG2: anti-benefactive: entity being denied arg1\n\nExample 1 (transitive, no benefactive): Earlier this year, the Fed denied an application by Continental Bank Corp. to purchase Grand Canyon State Bank in Scottsdale, Ariz., on grounds that Continental hadn't fully complied with the Community Reinvestment Act.\n- ARGM-TMP: Earlier this year\n- ARG0: the Fed\n- ARG1: an application by Continental Bank Corp. to purchase Grand Canyon State Bank in Scottsdale, Ariz.\n- ARGM-CAU: on grounds that Continental hadn't fully complied with the Community Reinvestment Act\n- rel: denied\n\nExample 2 (deny an S): In affidavits filed yesterday in the Los Angeles court, Mr. Ross, Warner Bros. Chairman Robert Daly and President Semel deny that such an oral agreement was ever made.\n- ARGM-LOC: in affidavits filed yesterday in the Los Angeles court\n- ARG0: Mr. Ross , Warner Bros. Chairman Robert Daly and President Semel\n- ARG1: that such an oral agreement was ever made\n- rel: deny\n\nExample 3 (with benefactive): Mary denied John a kiss.\n- ARG0: Mary\n- ARG2: John\n- ARG1: a kiss\n- rel: denied\n\n## do\n\n### do-01 (auxiliary)\n\n- (no roles)\n\nExample 1 (DO NOT TAG AUXILIARIES): What flights do you have from Milwaukee to Tampa?\n\nExample 2 (another auxiliary): The US is one of the few industrialized nations that doesn't have a high standard of regulation for asbestos.\n\n### do-02 (act)\n\n- ARG0: agent, doer\n- ARG1: thing done\n- ARG2: benefactive, done for or about\n- ARG3: instrumental\n- ARG4: comitative, companion while doing\n\nExample 1: In this department we are doing fine this fall.\n- ARGM-LOC: In this department\n- ARG0: we\n- ARGM-MNR: fine\n- ARGM-TMP: this fall\n- rel: doing\n\nExample 2: Seymour Cray can do it again.\n- ARG0: Seymour Cray\n- ARGM-MOD: can\n- ARG1: it\n- ARGM-TMP: again\n- rel: do\n\nExample 3 (with benefactive): Congress will do stupid things with the Tax Code.\n- ARG0: Congress\n- ARGM-MOD: will\n- ARG1: stupid things\n- ARG2: with the Tax Code\n- rel: do\n\nExample 4 (with instrument): Anyone buying the stock now must do so *trace* using some guesswork.\n- ARG0: Anyone buying the stock now\n- ARGM-MOD: must\n- ARG1: so\n- ARG3: *trace* using some guesswork\n- rel: do\n\nExample 5 (args 0 and 1): From him, we could expect nothing other than his doing the \"right thing,\" as we should expect from all our elected officials.\n- ARG0: his\n- ARG1: the \"right thing\"\n- rel: doing\n\n### do-04 (have some association with)\n\n- ARG0: doer, usually  *PRO*\n- ARG1: thing with which something has to do, \"with...\" phrase\n- ARG2: thing done, usually \"nothing\" \"something\" quantitative phrase\n\nExample 1 (supercritical): [Mary 's supercritical attitude toward Byron]-2 had nothing [0]-1 [*-2] to do [*T*-1] with his moral disre pute .\n- ARG0: [*-2]\n- ARG2: [*T*-1] (= [0])\n- ARGM-SLC: [0] -> nothing\n- ARG1: with his moral disrepute\n- rel: do\n\nExample 2 (something is better than nothing): These issues have something WHNP-1 *PRO* to do *T*-1 with traffic and transportation.\n- ARG0: *PRO*\n- ARG2: *T*-1 (= WHNP-1)\n- ARGM-SLC: WHNP-1 --> something\n- ARG1: with traffic and transportation\n- rel: do\n\n### do-LV (light verb)\n\n- (no roles)\n\n### do-06 (set phrase: done for, doomed)\n\n- ARG1: doomed entity\n\nExample 1 (concatenate 'for' with the rel): [You-1] are [*-1]done for!\n- ARG1: [*-1]\n- rel: [done], [for]\n\nExample 2 (arg1): . If not for Hong Kong , you would all be done for ' \" .\n- ARGM-ADV: if not for Hong Kong\n- ARG1: you\n- ARGM-MOD: would\n- ARGM-ADV: all\n- rel: [done][for]\n\n## wrong\n\n### wrong-01 (to treat dishonorably or  unjustly)\n\n- ARG0: treater, agent\n- ARG1: wronged entity\n\nExample 1 (passive): When Isabella ( Ellen Lauren ) confronts her brother Claudio ( Matt Loney ) in his cell , [*-1] explaining the price [0]she has been asked [*] [*T*-2] [*] to secure his freedom [*T*-3] ; when Isabella and the disguised Duke ( Philip Kerr ) conspire [*-4] to trick Angelo [*T*-5] ; and when Mariana ( Annalee Jefferies ) , [a woman]-6 wronged [*] -6 by Angelo , confronts him with his past misdeeds [*T*-7] , the performers bring the dramatic high points to life with intense energy and intelligence .\n- ARG1: [*]\n- ARG0: by Angelo\n- rel: wronged\n\n### wrong-02 (morally/legally bad, not as it should be)\n\n- ARG1: thing that is not as it should be, morally/legally bad\n- ARG2: attributive: wrong with regards to what/whom\n\nExample 1 (both args): What-1 [*-1] is wrong with Muslims speaking up for their rights ???\n- ARG1: [*-1]\n- ARG2: with Muslims speaking up for their rights\n- rel: wrong\n\nExample 2 (arg1): This is not because their race or culture is wrong or bad in any way , it 's simply a fact that certain groups have higher rates of crime .\n- ARG1: their race or culture\n- ARGM-MNR: in any way\n- rel: wrong\n\nExample 3 (concatenation of arg1): She had to come and tell Alfred that he was wrong to dribble ice cream on his clean, freshly pressed pants.\n- ARG1: [he][to dribble ice cream on his clean, freshly pressed pants]\n- rel: wrong\n\n### wrong-03 (unsuited to)\n\n- ARG1: unsuitable thing\n- ARG2: unsuited to\n\nExample 1 (both args): You meet someone who seems so great ... and then, something happens: You find out he is completely wrong for you.\n- ARG1: he\n- ARGM-EXT: completely\n- ARG2: for you\n- rel: wrong\n\n### wrong-04 (incorrect, inaccurate, mistaken)\n\n- ARG1: entity who is mistaken\n- ARG2: inaccurate proposition, thought, wrong about what\n\nExample 1 (both args): You were wrong about eating worms.\n- ARG1: You\n- ARG2: about eating worms\n- rel: wrong\n\nExample 2 (both args): I suspect you are wrong on the voting inclinations of the moderates , and especially the ones you call tea baggers .\n- ARG1: you\n- ARG2: on the voting inclinations of the moderates and especially the ones you call tea baggers\n- rel: wrong\n\n## wrongdoing\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02\n                :aspect state))\n        :aspect process\n        :modal-strength unspecified)\n    :aspect performance)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_06e6888bf77f0b63006af3fcf8137c87d1bf7c3a0a7e573114",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_z-bE6mdC7pXr0h8h2ndyynsswdTF-neKb0hh4d_JaJPsbnwRcmcY1sPKVcSe3MGugoHKx9f2GhArKeFT-mkH9UQQfL1migXuabfznwaeZcgc6P1GjmsZZ4n4zShDZTTeCV78QDRz0RbGvr4wNgXQMjBbtjRk7JpXE8VYzmpXFq1ySpwo6H_64oykZL1aAn_2VwTuSPaIj5oE48QYVswMBLjelEhYH7l8DpZGAAzVpIqwM3ErNIenTLexWMAsVNvfeb6s9iG0mcA5dNic4d-WWtpD7DtkDB_BkyMr59sVuqXJUnpxKWonkfgvPa9t-ai4aantjirKvJLPchyR9z_W1xCwtcjxV4u6b4A0SKoiErV8q0pcHtdteDE97BHP5pN1tmY676fxr9RFQpy3R5wDqB7HAqhn08xIRieodsG3lTAXojUpiTyF44PF2FLeU4MZwb9rK6c1RGnMrwRhKPWAIQVPPof5YVZe9Fq0I9RKU7PZ2a9RpdBt3zwdTwnGwHTLrO9xDfI60uDokJfzkwiORyIpGrfoJ65vEKSZjWfJAY7hoszA2YtKVq-O7kPXN8xBsLz4_x40MlSCOj5zLYVDMOqV9aJYmnWx3chW9shLc8Xde51j9J3V4GioamlOIMjcXDJcPZEKW9u2j4-RDuc_vZVBHvMVdWM7vtvKsU4LmBxDFmI6xe6Yq56j41xw-FCvR5Myjhp4o8y9Jpp7AIB5mdHojKtbOSTZAgyI2iO__eE23Ueatzr7iBpVE7cWDgxTY9I7_fc_WfrHb-f3GPT40vVp_6zDl1jbP9O7Ic6pEPiB9M7ydWLny1UcA__g9li0-FsDyzNzSLY8-xdAE-Z_iNS3n0KP8U98b9JwfLdRmwLT5LdvbiA3WkmMZWfDvaM0bJGlt-H_3Mu68VF40m-BpewHFMfUtUqZmn3E6mVkB7XcFldhRi1pAZTvODW6LXzD02c5MQatjsudLiRJZ6WcexVRXG-u4V_Fk1W8flTRZoliO_tXFodiGDmza4kWKR1Qo9WD3K0CB7QWpFEv78g-gWpMB1zbAQx-MtbhP1GG4wyCZ7Xzs_Gi_cGLIpQJ6J9lHhKNwHYUNeO0lW2tvLGpckSykBetvx4rCHRfM0tBT0ZcWc72BiwVyQEbl86Ok03vz6wDvoGEnVyUtQHGfKUSOAFgseCy4UJb4Z65R3Byq6FiG-VECEXkbmrULVjsEUyzqB2uCOZLMlLI8vI0Du3eHy0zHIrCthkBHTNvn-1U1EdyzvHUNr0VPlGhzeSbrdf3KWTESoaBqBUHGSLCZKb9Tr0Ej0FyxUFUOayjcdcfl7uiqxzT5lGY50q87O4YmUugCaGXJTbpJnXoDtV16CBy-8j23qDhE7H_08Gmve0EMePfzr44YaSkAmuOblMLaQb40OU11tx_ua6Mz1iiyeaCWWAzxyVch-LD7_4g-ZA4mPLCl4jo6AC22M-jWJYT2g-0-oA0sr2xLo3koL31gQ3FnQbd87D8qBXoWQ9lUyjVT_tHaRcDPmCB1JpdLOQ5ZFtiYD3Z4dc3dF1kqAp-7VPJcT36JY1S-cvfLT6pJcnTYCdVa4CUeGLSlvTYQWqVZkOoqe-eyeDzDnQug2roPKnDKDl2igSO_NGrUr3-2GkdC42ODMb_x3D-uUVPufR0ikpi1q9Af3aJUYTXxzwARrOXDlIWfKkVyuxRXGhKpGuRDdb0Pf_afr6lpcoIyeQ-FGF4rd7JSSYgs-P63RXXugmh7yrko6Q-4tdNZNh2vjUQGtFwbANdv2iWNXWs_5OnatOd4dMqoScRihAZ-N-FuDK4eOqHBJ8VhUge4q4TXgvd74QDm9QdmjRVpN2mtZwwbKegCLUPnJLTlSSdb61hCNYnNYCWc_vw4I_s-VUsJBXY83jvc9ifRJ3Y6l7NDbXuy12NU_TVGRbcGffYSyJImH37Fmtay9QCkrna93RYJ7SocuqRNTgTG3xUGomgx-EbzMf2kK-rMQeRazfRMymqe6JetrfGmjsXSpk4ag8PPNd_5MwNby9yFEG7hLWG5qKQfvp7n4TvgGhxP0zAMzG9PDZKBHtcoAGZktNWoyqLsOKiIvY3uEpZ0x9SenjhCoNJNnljfl1vPHCftb6T_z35MK2T0YxLv14WbGHzpWQOkBWMQyL-NxAdFQVEcrCRWEyttvrXKDsq-MYl3dTM_I68YKYpcYSMzUylFJp6hVwAKSLWY0FG9xeaBMANI0AEU7uPhHlMZskeTJMAHsIhyh92T_8AXDU9r7Rus0AkUc9lH1Zz6-M0XrzlcH-OgZR-u33iLAtU26Jloob3k-VoJuiY5oaCQIQq4CpkLyeNLYtCqeZtOTd9V68hW96phrv4sWrG9f5giNQBl5S_OWSYado5SzhVG9bpo4LmSsMR729cRC4N2MKVfhidYFkFU6pLU5EELW8_loYD3MWB914RWX4PpKLNDA0InxAcTO9qch1MnLHXH3eB-zd21gM1csWdjXXtyD9m5_vVGsUsekVqw0_2ugiEUGAZU-QvIk2AegaN3nV2LJbdiVMJhaShWgrxuRrjo2aO5vfap8tnuZhtemR2gy5M7FBhxIwrWCM87YjVFJoExtvkv11VyRKQh2fs3cBCECMH1c3srwTRTp0RO_KyWeenM-m1Qq_DSp0NtV4XMtFmcwzv1BS2hrFPCs7kfTnKfzNB3TiagWAVkHOGY7AE-IuyiJg1DYUVErY-cwPKQcWnlYeso4hkRIkCZfZuk71iRcAYI7_GM67qQc-6kR-ELZp-rGN4RwUHp-BdTec-HeMHStrqlDwaEHR5l8yLzuV78kKW1yFBwRBKonvhLmrpZYOJ7v5tBgIKb3l_kZp3jM6DsVsWmEzhoXXUO1b2vMwTpPhC0dvdEXMmI9QZFUdeHlY9z9gCSAy_0yYxxH6pz0eXZ6fdMs-Xmhro2bJXGEPsy9C98pqttCXa-VXzz9d6JYDDHZL_hHtqoH_av8M5GgK65TH_L9QaKUlP34S6KJafetkQ8QahxKGTtrvBCh8UsGpLmuIeI6BYh3tP867nlagf8eBotJvhgUjcBZBA75JJ_QL2uEkEifUxy7ZS8hgwpJYk-AgFjD6aOZPckQIXBaw7EIYcXoctND5Dy5OaZr0UWKnXYPpl8KBPpM1H_SyJ8mIjfIbh8JloFtIq7SWSgNr3aCn5fxmwR0sLy9thXzGhLBSP0aYfCbCsSCK8EUQwKODMjl2AxrPNyFcPRRQRZgr0VIeYSgvjDkuzlmb3EGHXtBsDCr0SzqwB8OIoenmBLtrLcgorkg4hPv5JGtca1pFlCtGpPxYA4UoAR25rDqdkUdYXO_fQc_3ae-QJly5R8aFToy-_fMjszRMOQMgJLR7Q1Sr39LLQXogz9tztwqUbtsBCH66lLhZKWtaJsLEtzHuxT5DZ3jNHd27ItLQPBny6QEd8qz3C2m-XpGP_dObDvMhY69"
+      },
+      {
+       "id": "msg_06e6888bf77f0b63006af3fcfcccd087d1af718986c3853262",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02\n                :aspect state))\n        :aspect process\n        :modal-strength unspecified)\n    :aspect performance)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

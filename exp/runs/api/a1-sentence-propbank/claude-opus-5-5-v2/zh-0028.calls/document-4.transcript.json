@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-4.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2641
+    },
+    "cache_creation_input_tokens": 2641,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1340,
+    "output_tokens_details": {
+     "thinking_tokens": 730
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 4 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n\nTheir graphs:\n\nI tagged this sentence as a list of three specifications joined by `and`.\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1b / 比例\n        :mod (s1p / 屏幕)\n        :mod (s1r / rate-entity-91\n            :ARG1 16\n            :ARG2 9))\n    :op2 (s1k / 宽屏\n        :quant 21.5\n        :unit (s1y / 英寸))\n    :op3 (s1i / identity-91\n        :ARG1 (s1f / 分辨率\n            :possessor (s1t / thing\n                :refer-person 3rd\n                :refer-number singular)\n            :mod (s1z / 最佳))\n        :ARG2 (s1x / product-of\n            :op1 1920\n            :op2 1080)\n        :aspect state))\n\nChoices worth checking:\n\n- **为:** PropBank has a lexical roleset for it (`为-01`, \"predicative\"). I treated 为 as a copula instead, so it became the abstract predicate `identity-91`, following the rule for 是. If the gold annotation uses `为-01`, the roles would be `:ARG0` 分辨率 and `:ARG1` 1920 × 1080.\n- **Numbers:** \"16 : 9\" is written as `rate-entity-91` (16 to 9), and \"1920 × 1080\" as `product-of`. Neither is covered by the guidelines, so both are my own approximations.\n- **它:** I made it a `thing` (3rd person, singular) that owns 分辨率. It most likely refers to the screen or monitor, which a later coreference step would link.\n- **Kept as one concept:** 宽屏, with 21.5 `英寸` as its quantity and unit, and 最佳 as a single modifier. I did not split 最佳 into 佳 with `:degree` 最.\n- **Not in PropBank:** 比例 and 分辨率, so both are plain entity nouns.\n\n# ::snt 2\n# sentence level graph:\n(s2a / and\n    :op2 (s2p / 配备-01\n        :ARG2 (s2t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s2j / 接口\n            :quant 2\n            :mod (s2a2 / and\n                :op1 (s2x / product\n                    :wiki -\n                    :name (s2n / name :op1 \"D-Sub\" :op2 \"VGA\"))\n                :op2 (s2x2 / product\n                    :wiki \"HDMI\"\n                    :name (s2n2 / name :op1 \"HDMI\"))))\n        :mod (s2h / 还)\n        :aspect state))\n\nI treated 配备 as `配备-01`, sense \"equip\". 它 (\"it\") fills `:ARG2`, the thing that gets equipped, and the interfaces fill `:ARG1`. PropBank's own example for this word is set up the same way: the satellite (这颗卫星上) is `ARG2` and the equipment is `ARG1`.\n\nA few choices could easily differ from the gold annotation:\n- **而且 (\"moreover\"):** I made it an `and` with only `:op2`, so the sentence links back to the previous one. Gold might instead put a `:mod` on `配备-01`.\n- **The two interfaces:** I wrote one `接口` node with `:quant 2` (the classifier 种 is dropped). The two named products hang under it through `:mod` and `and`. That `:mod` link is my own choice. Gold might use two separate `接口` nodes joined by `and`.\n- **D-Sub (VGA):** I made it a single name with two words, `\"D-Sub\"` and `\"VGA\"`, and gave it no wiki title (`-`). VGA could also be read as a second name for the same port, written in brackets.\n- **Aspect:** I gave `state`, because \"it comes equipped with\" describes a property of the device even though 了 is there. `performance` is the other possible reading.\n\n# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3s / 设备\n            :mod (s3d / 电脑))\n        :modal-strength neutral-affirmative\n        :aspect habitual)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户)\n        :ARG2 (s3l / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3s2 / 设备\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :wiki \"PlayStation_3\"\n                        :name (s3n / name :op1 \"PS3\"))\n                    :op2 (s3p2 / product\n                        :wiki \"Xbox_360\"\n                        :name (s3n2 / name :op1 \"Xbox360\"))\n                    :op3 (s3g / 蓝光机))\n                :mod (s3e / 等等))\n            :aspect habitual)\n        :mod (s3h / 还)\n        :modal-strength neutral-affirmative\n        :aspect habitual))\n\nThis sentence:\n\n4\t这 就 是 三星 B560 ， 你 值得 拥有 !\n\nIts graph:\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4i / identity-91\n        :ARG1 (s4t / thing\n            :mod (s4z / 这))\n        :ARG2 (s4p / product\n            :wiki -\n            :name (s4n / name :op1 \"三星\" :op2 \"B560\"))\n        :aspect state)\n    :op2 (s4z2 / 值得-01\n        :ARG0 s4p\n        :ARG1 (s4y / 拥有-01\n            :ARG0 (s4p2 / person\n                :refer-person 2nd\n                :refer-number singular)\n            :ARG1 s4p\n            :aspect state)\n        :aspect state))\n\nI treated the two clauses as `and`. The first, 这就是三星B560, is an identity: \"this\" is the Samsung B560. I left 就 out because it only adds emphasis. In the second, 你值得拥有, PropBank's 值得-01 has ARG0 as what makes something worthwhile, so the phone is its ARG0 and the owning (拥有-01) is its ARG1. \"You\" owns it (ARG0) and the phone, which the sentence doesn't repeat, is also what is owned (ARG1).\n\nA few calls are judgement rather than certain:\n- **Product name:** I made the phone a single `product` named \"三星\" \"B560\" and did not add Samsung as a separate company.\n- **Strength of 拥有:** Owning is only presented as worthwhile, not asserted. Its strength would be set under 值得 at the document level, so I didn't add a `:modal-strength` to it here.\n- **Joining the clauses:** The gold annotation might link them with something other than `and`, for example `multi-sentence`.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I couldn't check 值得 and 拥有 in PropBank, so the strength chosen for 拥有 rests only on the guidelines.\n\n# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s4i)\n               (document-creation-time :overlap s4z2)\n               (s4z2 :after s4y))\n    :modal ((root :modal author)\n            (author :full-affirmative s4i)\n            (author :full-affirmative s4z2)\n            (s4z2 :neutral-affirmative s4y))\n    :coref ((s3t :same-entity s4t)\n            (s3t :same-entity s4p)))\n\n- **Temporal:** The identity (s4i, \"this is the Samsung B560\") and 值得 (s4z2, \"is worth\") are present states, so both overlap the document-creation time. Owning (s4y) is the complement of 值得, so it takes 值得 as its parent. I placed it `:after` 值得 because the owning would come later. `:overlap` is the other reasonable reading.\n- **Modal:** The author asserts both states. Owning is only recommended, not asserted, so I put it under 值得 as `neutral-affirmative`. Two other readings are possible: `unspecified`, the guidelines' default for complements, or `partial-affirmative`, if \"worth owning\" is read like \"should\".\n- **Coreference:** Both 这 (\"this\", s4t) and the product node (s4p) refer to the device that 它 (\"it\", s3t) refers to in sentence 3. Because the two are equated in this sentence, I linked both to s3t. Gold may link only one of them. Earlier sentences already chain s3t back to sentences 1 and 2.\n- **你 (\"you\"):** I added no link to 用户 (\"users\", s3u) in sentence 3. A `:subset-of` relation is possible but uncertain.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,136 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-7.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7697
+    },
+    "cache_creation_input_tokens": 7697,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 88,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1903
+    },
+    "cache_creation_input_tokens": 1903,
+    "cache_read_input_tokens": 7697,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 721,
+    "output_tokens_details": {
+     "thinking_tokens": 501
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 7 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_01PndAkJPro9vMudo8cHaJcd",
+     "input": {
+      "lemmas": [
+       "remission",
+       "remit",
+       "arrest"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01PndAkJPro9vMudo8cHaJcd",
+     "content": "## remission\n\n### remission-02 (abate in intensity)\n\n- ARG0: cause of remission\n- ARG1: thing abating\n\nExample 1 (remission-n: cancer): remission of breast cancer\n- ARG1: of breast cancer\n- rel: remission\n\nExample 2 (remission-n: non-cancer and with the elusive arg 0!): effects of catecholamine depletion on antidepressant-induced remission of depression\n- ARG0: antidepressant-induced\n- ARG1: of depression\n- rel: remission\n\n## remit\n\n### remit-01 (make payment, give (perhaps for consideration))\n\n- ARG0: agent, payer\n- ARG1: theme, thing given/paid\n- ARG2: recipient, person receiving payment\n\nExample 1 (remit-v: all args): Recently , the \" Duan and Duan Law Firm \" remitted the claims, totaling 1.850million US dollars , to the three enterprises .\n- ARG0: the \" Duan& Duan Law Firm \"\n- ARG1: the claims , totaling 1.850 million US dollars\n- ARG2: to the three enterprises\n- rel: remitted\n\nExample 2 (remit-v: passive, with theme and recipient): During checks , it discovered that some corporations and individuals made useof foreign trading companies that [*T*-28] have import and export operation rights , [*] allowing them toperform \" import agent \" business , used false customs documents [*] to cheat on exchange , in order [*] toget foreign exchange capital through tax evasion and smuggling , while the foreign trading companies earnedagent commission fees without any cost ; there was also some international speculative capital which[*T*-29] infiltrated regular items [*] -30 to get remitted [*-30] into the country ; or entered the domestic stockmarket for speculating , or false custom documents were purchased [*-31] [*] to purchase exchange [*] to derive profit from the exchange differences within Chinese territory .\n- ARG1: [*-30]\n- ARG2: into the country\n- rel: remitted\n\nExample 3 (remit-n): The third question is, whether this is not a case in which we-1 are entitled *PRO*-1 to make a remit without the consent of parties.\n- ARG0: *PRO*-1\n- ARGM-LVB: make\n- ARGM-MNR: without the consent of parties\n- rel: remit\n\nExample 4 (remission-n): The earned credit will be posted to my transcript upon remission of payment of $50.00 per credit with a grade of “P” (Pass).\n- ARG1: of payment of $50.00 per credit with a grade of \"P\" (Pass)\n- rel: remission\n\n## arrest\n\n### arrest-01 (like a criminal)\n\n- ARG0: police\n- ARG1: criminal\n- ARG2: crime\n\nExample 1 (difficult syntax for crime): Since Mexican President Carlos Salinas de Gortari took office last December, special agents have arrested more than 6,000 federal employees on charges ranging from extortion to tax evasion.\n- ARGM-TMP: Since Mexican President Carlos Salinas de Gortari took office last December\n- ARG0: special agents\n- ARG1: more than 6,000 federal employees\n- ARG2: on charges ranging from extortion to tax evasion\n- rel: arrested\n\nExample 2 (NP only, all arguments): the arrest of opposition activists on the grounds of terrorism\n- ARG1: of opposition activists\n- ARG2: on the grounds of terrorism\n- rel: arrest\n\nExample 3 (NP only, Args 0 & 1): the arrest by West German authorities of five young West Germans, accused of stealing information from computers in the U.S. andEurope and selling it to the Soviet KGB\n- ARG0: by West German authorities\n- ARG1: of five young West Germans , accused of stealing information from computers in the U.S. and Europe and selling it to the Soviet KGB\n- rel: arrest\n\nExample 4 (All arguments): Information passed to Crimestoppers resulted in a milestone figure of the 100,000th arrest, following the arrest of a man by Durham Police for burglary.\n- ARG1: of a man\n- ARG0: by Durham Police\n- ARG2: for burglary\n- rel: arrest\n\n### arrest-02 (stop)\n\n- ARG0: causer of stopping\n- ARG1: thing stopping\n\nExample 1 (arrested development): China might stave off a crisis if it acts as forcefully as [it]*-1 did [*-1]to arrest the 1985 decline, when Beijing slammed the brakes on foreign-exchange spending and devalued the currency.\n- ARG0: [*-1]\n- ARG1: the 1985 decline\n- ARGM-TMP: when Beijink slammed the brakes on foreign-exchange spending and devalued the currency\n- rel: arrest\n\nExample 2 (Arg 1 as \"of\" PP): The medication is very effective in the arrest of the disease's progress.\n- ARG1: of the disease's progress\n- rel: arrest\n\nExample 3 (Arg 1 pre-relation): The patient was experiencing cardiac arrest.\n- ARG1: cardiac\n- rel: arrest\n\nExample 4 (All arguments): Thus, the arrest of egg maturation by allatectomy might be due to the failure of the corpora allata to stimulate the mnc.\n- ARG1: of egg maturation\n- ARG0: by allectomy\n- rel: arrest",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 7\n# sentence level graph:\n(s7r / remission-02\n    :ARG1 (s7f / form\n        :mod (s7r2 / rare)\n        :mod (s7c / cancer\n            :mod (s7b / bone))\n        :possessor (s7p / person\n            :wiki \"Edmond_Pope\"\n            :name (s7n / name :op1 \"Pope\")))\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c2 / country\n            :wiki \"Russia\"\n            :name (s7n2 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 248,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 27,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5322,
+     "input_tokens_details": {
+      "cache_write_tokens": 245,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 27,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5349
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 979,
+    "cache_read_input_tokens": 5319,
+    "output_tokens": 352,
+    "reasoning_tokens": 236,
+    "openai_usage": {
+     "input_tokens": 6298,
+     "input_tokens_details": {
+      "cache_write_tokens": 976,
+      "cached_tokens": 5319
+     },
+     "output_tokens": 352,
+     "output_tokens_details": {
+      "reasoning_tokens": 236
+     },
+     "total_tokens": 6650
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 1 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\nIts graph:\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :name (s1n / name\n            :op1 \"Edmund\"\n            :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :temporal (s1t3 / time\n        :ord (s1o / ordinal-entity\n            :value 1)\n        :temporal (s1t4 / temporal-quantity\n            :quant (s1m / more-than\n                :op1 8)\n            :unit (s1m2 / month)))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_la1oF0zdl8NLaVpgEWAuCpiR",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "taste",
+       "free"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"taste\",\"free\"],\"language\":\"en\"}",
+       "call_id": "call_la1oF0zdl8NLaVpgEWAuCpiR",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_06d589912967c97e006af3fd09eec887d187f16e49fddae03e",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_la1oF0zdl8NLaVpgEWAuCpiR",
+     "content": "## taste\n\n### taste-01 (use one's tastebuds, active perception of flavor)\n\n- ARG0: taster\n- ARG1: food\n\nExample 1 (nasty trace chains): ``Parties are rather a state of mind, '' [she]-3 said, [*-3]-4 pausing only [*-4] to taste [*RNR*-1] and pass judgment on [the Georgian shashlik]-1 (``a little well done, but very good'').\n- ARGM-DIS: only\n- ARG0: [*-4]\n- ARG1: [*RNR*-1]\n- rel: taste\n\nExample 2 (just arg1): Ms. Morgan is really insulting all the troops who 've been there to assume that by going for ten days and taking a few casual leisurely trips outside the Green Zone that she got a full taste of combat\n- ARGM-EXT: full\n- ARG1: of combat\n- rel: taste\n\nExample 3 (both args): Diminutive Vanderkitten Road Sprinter Starla Teddergreen pinned on the numbers for her first taste of mud racing\n- ARG0: her\n- ARGM-TMP: first\n- ARG1: of mud racing\n- rel: taste\n\nExample 4 (LVC): Oh man , that is creepy . Farmers mkt sounds good ! They 're doing a tomato tasting ! What time are you thinking ?\n- ARG0: they\n- ARGM-LVB: doing\n- ARG1: tomato\n- rel: tasting\n\n### taste-02 (possess a flavor)\n\n- ARG1: thing with flavor\n- ARG2: description of flavor\n\nExample 1 (beautiful metaphor): They still buy apples mainly for big, red good looks -- that's why so many taste like woodchucks' punching bags.\n- ARG1: so many\n- ARG2: like woodchucks ' punching bags\n- rel: taste\n\n## free\n\n### free-01 ((cause to be) available)\n\n- ARG0: entity providing freedom, agent\n- ARG1: entity made free\n- ARG2: freed from\n- ARG3: beneficiary/purpose\n\nExample 1 (prepositional Arg3): But [the Oct. 17 temblor]-1 put a halt to much nonessential building , and heavy rains last week slowed the rest , [*]-1 freeing construction workers for earthquake repairs .\n- ARG0: [*]\n- ARG1: construction workers\n- ARG3: for earthquake repairs\n- rel: freeing\n\nExample 2 (Arg3 as a VP): The New York Times Co. said [0] it reached a settlement with independent home delivery dealers in the metropolitan New York area that [*T*-1]will free the newspaper to expand home delivery circulation .\n- ARG0: [*T*-1]\n- ARGM-RCL: that -> a settlement\n- ARGM-MOD: will\n- ARG1: the newspaper\n- ARG3: to expand home delivery circulation\n- rel: free\n\nExample 3 (with Arg2): Despite fears [0] the mine may be partially nationalized [*-2]by the new Namibian government following next month 's elections freeing the country from South African control , De Beers engineers are working [*-1] to extend the mine 's productive life for another 25 years , from the current estimate of 10 .\n- ARG0: next month 's elections\n- ARG1: the country\n- ARG2: from South African control\n- rel: freeing\n\n### free-03 (costing nothing)\n\n- ARG1: thing that costs nothing\n- ARG2: \"of charge\" or similar\n\nExample 1 (both args): The popcorn is free of charge when you purchase a ticket\n- ARG1: The popcorn\n- ARG2: of charge\n- ARGM-TMP: when you purchase a ticket\n- rel: free\n\n### free-04 (unconstrained, unrestricted)\n\n- ARG1: free entity\n- ARG2: free from (former chains/burden)\n- ARG3: resulting freedom (to do what)\n\nExample 1 (args 1, 2): He is free from worry.\n- ARG1: He\n- ARG2: from worry\n- rel: free\n\nExample 2 (args 1, 3): She is free to read whatever she likes.\n- ARG1: She\n- ARG3: to read whatever she likes\n- rel: free",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s1t2)\n               (s1t2 :depends-on s1t4)\n               (s1t4 :contained s1t3)\n               (s1t2 :contained s1t)\n               (s1t :overlap s1f))\n    :modal ((root :modal author)\n            (author :full-affirmative s1t)\n            (author :full-affirmative s1f)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_06d589912967c97e006af3fd0b5a8887d1b0de142c07747ff0",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0UD_oNACF5dhDhNT6qYsYP3Vd_3zjsf8eGoQeEj5OlDKlDJhx9VA_hTpeKiSvKn8im_o5Eoab0fCt-Z-j7XqBlN9jK-wLcl4miZwp1yBpsLKWUaHVd7hrHF4eAJiOUfvdpwnS4Lac_wVNh4gjGqa3RscmMTR63yUUHEi49xKymxLSUsoWmDvykTbZmrhMZZgRr229B0RjBUrRO0WUn2-yCjJ1lIBRG8brv8Yc5D19RLJ8Bsefak-mPnM7Frmqt570ceYM7A8nhz9_nt7_UIq4kTd1VCsnOhiGio9S1f9V8qHOxjACR47-IDXi6OmXlWE-IbPB213fq_v9FpKaVAMaqKsuv-YJ7eiBQSlP1r2odJ3UYEkScD3RBj4vlSQm0kX9lHNBppdraGXbprwX4ObQW7_5E_JnHrUiJN7HAPTJjIpUWSWbmVNHmIZpO1K3nzLOL_-c7qsdKB32LMzvLd2gen2Cf-zPjK3M6DQZnFQCsI0R9TL47Rnwef-3FNldkwFkHmD6hzyXRWXaooH8UiZ6CKag_t12M_8laMu9WDBY0uRFVaSkIQmmV_QWoT13fXuNWtKZiO20Sj2vwGdkpbAyhlGEudxjd7D23G68wm_HrU2EtYJOi93wjwpH9cikvuZAuPOAuu5yr9K2_jP3j7vem-hFxXuxeOrb2bBjQD3BnWgbv_QLmkJ6DJrzmgZrWbNx8eS-z1-WoVbQYha3Q8eHAj9yjM8ILzipH6fVC-Qj-kmp0spOVwzRItU77RNRj9ECJiH49nST_PdJc7Dv8fs9CJ_Yz0YKo1VMC2rJJ6uayMynmmS51qoiisiSY87h8ZNDipdOb-Pu16G0j7lDgXbOG-eS2Ief7d77ZQ3c4af3Lap5CfETlVgpCs6zBlkL93TcWnj1dy0rdsYfQFUsI3K64zwtmiXYU72RjfULn8Btv6oA3otktpw1R7VtfcKjAhCo9XfId2ko12dRA575ZtamURFxgS_a_J2YqKoo-iHIam2T2Bwg4mC8mzS-aVXz2RGvpuN-nDp7ZoBy-2HQNJn-7xE1_UZ0e2_Usf8Y5zep2z8U2YemZ89u0pAENeJhVoX-jCrz4u9KGKVfUFkGVXOsVAxqMW5MynbHSVnjaw2ta9C9W4M0VLmCo1j0L46-RPoo1ZpRN9Xc9po8oe1sWIsgK2MRLHmPu9-tY3aIOy7m3HkzJIByE0bPWmotsGXbq9w2EpCbRmcM5grgkyxHqTBzgHIjMW3fne5iJep0zCbnSnwIKVhdHs0IyRL6cMDFR8-BfxE5XrsPtrsM2GfppxsfIaRJQDC76O8srtBilPL_nBma10GrF-YmVpPRzRboFrEbhGh2UjUSrFQabv3B1Z4NGam09BHkg6K1jRO0tGMXUQKado-i_6eR_R5PwDhygLjDFQktG-iXkOvwvQmcVMkv9sGsgG8YoVLV6S6TKHvdEPi-1FAzHAohZYgfkNlB6zGDE1pl71C09RyRQEnYI-OvdrMn768pwrfaOnnqfi90CN2oyK1tdbjhnfxz3XtC70_uc-qMYEFfOeeSR3aSVfDkgrnNtfjHxZSoOO0hcB3AysVpYl7ybpRby-tZbM1Q0EH6MxpHMU8bFv0ZwENHg-jWiL36kc9WkBh5KkLEZgAUJxgzLZ6qE4YRLvrJV5_ynze6FqNqSw8O60eD2LiTgcYagtlO2A9qw6HOGRGMZ3bA_RhtVlkU7ltoz3iT9qTbFJL113lFOeMhiGPmZlrsddy1MBPGkoKX7QX9eqViNR16IRc8p9Rd_xAGF44qzytNDsX_Q6rDAAIBn8oWPrxiwUaiBTqHcHJn_vDXWX_FOzyXq5T9txC6L4CfVeXhVHVjrfxjil7Mo6whD1L96JsS8Yeayu8fdVp8QdI5jCdFizZGY_AfT39cIKnAlXf4qyonplPs_Gr2cUxD-TFliERB3wlx8AcJ9X9uRi230gqPnkU2BiOhs5R7DitW2omcqdXFo6Pn0BhqC9LsQPrgmW_WgEefE5WIZoAv9vi4qOgnh0fBRLvo8MDvAB0jzqzhETaMqxXwVM42Hb_7EAPL80Rh-Qc-LAqc84TbFGFmEtVEAygNrnrONahUxsXPZPZCFeuydThHPQkKS7mGR9ukCHfO6vQTnumOOp1wb0S5ihincz1Jsgpm8zw6VQO51nkUrO_pwwrhgC0wuS5No2fJLeR3fe_dfDbG3c4LA3Sdhdmy0b-GcFRe6ocqfZ_qdZRYblClOw4VLb93H-qeokJ0ntQezlObHMb_hCuBtyADXQhEfeklIne1rca_rbNZaPko9arwj0seNkKKJLNLikVGM4-FEYzVq5EAEKts6Md8eqx30xt0Ed8jZ6XYzf9kMmvFCDH8NsBBcWIxjvVFtiEDxB_Zwe8jcELrWuI21m4w7-DSTs_JjD4CkAgAlGL8Oc_PCZ__CNSGkgcXsSjCYbn5ZY9W3fumJbmnAfTZQ4A8mn7H2cDIc8u71S1z5fw6aU-nLILl_AFBt1ePY8_3nk-ws_ZfkEOSVjTlqWkPcHEZH5PPXFJXqY-GrfMBFiEF_XJ8oIRtbexOHPaplmXFgVglkLXXZ0BvPXOh7gbSL4ztRGocofDDb_aLXWtuhh9XPTr9mFIOE6YNice93DSO5qF1-eyhLuH_N0fV8YNyltujlmBfMHpanw6i3PKSc31X1qDVXlhlwgRox79ktq_X508WdWO1TV2LbVh2kuaLnyAngrIflZidKGH7JyZM29Mvbu4ddHDnk_n4nfBoCa01OVG42-R4OVDK8mXoG24eBMb4gItGz6E9-RXON-6uo_ezPCCFnOn4BC7pILHUkR-8ozenMWjlh_2UiPdK-mTV3bV2z99VQB_HpZxq2_T7jjmWyj8Ok1wah2N5ErxAKkYRNHmM4sarzHyLuZ0nluSdupngNqs8jiRp41DbSY3DW1FRIg_Ocv6IMz0AHbvG_am1PvZsMmYXG2cOCcmeOyL7XFYJomRlahTPEkgLgx2D6gR_qZ7YC7mtVEU_ym-KGUMrgtoopbq63XxfR40_xKcKaTC1Z_p7ZGnloQlnUWiQIP2KMizeoWsh3kcHhCUH0CMm7C8xs6OonYHxWFYMxiQugIwwL-kNdmmcqUns_UGnx7P2I1b1BpUz-nQfagHMtKCBYggo5b3Oxm6BN8JzlAuHjZkkiIsg77rS0ozJim9m2M3s5XDz7pS3N5HmZ6Y-oiv94qr--9uUpug5haun9UxQFZRZJuHCR-joZlbk4DrRE-PzrNsNwz1UQlR96YfsLiD6ALEuJo4uUFpO-jcI-vtACqcQtpyq83McmpRW_rCIBUidx-x1725-FIptSYYDl5TEIvRyOD0apBLJ7yWJCYQ5HXSGSpASKyWieusavvXeW6h3V1jTOotWE4FI6XgmTwMLSAlJidxRzSIz8Y-ddbK32HA1bJSs-TZCipbNXw2P91vcsUYr-BKwMMumh9-wswQ4ED6yHMev8xTZZ7nD2rE11hkQzHiIbBAIjMmJe0ZRxUBaVvuZM69-KC3AhXy4RarkYHyD61IpKTGtu-KrU30D1sI9gzqWRWoaT39vaTMEQozz8bK93OOuSjIvkvSxy-4eFf19gI9SVe_wYwavERwyQn2vY9WpELm9Slmry66RwoY_N1ecDmFiqVR8wXNjTzpocILn-WnWPY7Bdivc5DwBK84EmY96MJ5uxyu8nYiYjeyjATE7KprKe9jUnuE6uIcDyk98l0oEwlWb31rflBEvgwFYhhW_6ssn8zEVl2U8zMeVsGHFPRnbaSo67RaeLZ8UroloGTCGEqZiTYXBOeRY00-zlaS0L-DJ1Gny5nZ5nWOcFn18Sm1aeO7teUEUiZNNUNSNun32cfOmhsFdQ1veOGXOVbNh9qHiUgiYAOInKEu6Gl3QbKUuZ8S_PNPjqQ11_D17w3bKkK6EBPJZ6Doob8aK7jfZ9alim8XPQ-eqls8hltwRpQJPHOE8RYgEe4NefZZPIrs2wFCxSljjMeCiQKbmVZjjP4Ae30lOP6w5YHPqIHFdcRpNoRrLDmHNFqHlJJ0rJIwHrSbL4onNWw_xTUVjkQcD2B660QE_q5NsSNAbYZltazOQxiBdnsN-WcbV7zTdvfTywcBv51oqBUNssrze7cXmw7xObJ5Mq4UyaXpjr8MPoyeHjVRG8-phEwV2PiP1j7g373_L3wOZlj-xZJtveFMjbR16HF-BKQmZtM8WPNyud3F_cGG6KNwSPH5OiPbt3ShlPRAVHWsct3Ph6DIhzHEMWldikru9aLpGz_VK05uXN3R8ZrY7E5GSthWvfSbSaT1n2F4XSkA_gBe_ErQgKnngPoOfnclPJ7PXFzjohLLUCT-ggJgaD"
+      },
+      {
+       "id": "msg_06d589912967c97e006af3fd12f8e487d19b35b01df38d6760",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s1t2)\n               (s1t2 :depends-on s1t4)\n               (s1t4 :contained s1t3)\n               (s1t2 :contained s1t)\n               (s1t :overlap s1f))\n    :modal ((root :modal author)\n            (author :full-affirmative s1t)\n            (author :full-affirmative s1f)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

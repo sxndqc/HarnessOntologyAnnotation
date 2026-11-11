@@ -327,6 +327,247 @@ def harness_task(sub, tools):
     return head + fmt + INPUT
 
 
+# ------------------------------------------------------------------ ablation a1-sentence-propbank (API only)
+# The s2-propbank condition (abridged guidelines + propbank_lookup), sentence by sentence: wave 1 annotates
+# each sentence alone (one call per sentence); wave 2, once every sentence has its graph, adds the
+# document-level relations of each sentence (one call per sentence), given the sentence and the five
+# before it (fewer at the start of the document) with their graphs.
+
+A1_CHECK = ("look up every predicate in PropBank with `propbank_lookup` (see Tools) before you choose its sense "
+            "and numbered roles. Call it as often as you need.")
+
+A1_GRAPH_HEAD = """# Skill: the sentence-level UMR graph of one sentence
+
+You annotate one sentence of a document in Uniform Meaning Representation (UMR): its sentence-level graph.
+(Its document-level relations are added later, in another step.) The sentence is under **Input** at the
+end.
+
+**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+with an expert gold annotation made by these guidelines, so every concept, sense, role and attribute
+value counts. Take the time this needs:
+
+- Read the guidelines below carefully before you start, and go back to them for every decision you are
+  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+  entities, aspect, modal strength, polarity.
+- Follow the examples: when the sentence has a construction an example shows, annotate it the way the
+  example does.
+- {check}
+- Before you answer, check the graph against the guidelines once more: every word that carries meaning
+  has its concept, every event its aspect, every role the right direction.
+
+## Guidelines
+
+{guideline}
+"""
+
+A1_GRAPH_FORMAT = """
+## Output format
+
+Write plain text only (no JSON, no commentary), exactly this, for the sentence number N of the input:
+
+    # ::snt 1
+    # sentence level graph:
+    (s1t / taste-01
+        :ARG0 (s1p / person
+            :name (s1n / name :op1 "Edmund" :op2 "Pope"))
+        :ARG1 (s1f / free-04
+            :ARG1 s1p
+            :aspect state)
+        :temporal (s1t2 / today)
+        :aspect performance)
+
+- `# ::snt N` uses the sentence number of the input.
+- Variables start with `s` + N and a letter (`s3p`, `s3x2`), all different. A node that fills two roles is
+  written once and then named by its variable.
+- No word alignment: it is computed from the graph. So a concept that comes from a word of the sentence
+  is written as that word (in English its lemma: `taste-01` for "tasted"), and the `:op` strings of a
+  name are the words of the name as the sentence writes them.
+- Use the names of the UMR release data: `:modal-strength` (not :modstr) with `full-affirmative`,
+  `partial-affirmative`, `neutral-affirmative`, `neutral-negative`, `partial-negative`, `full-negative`;
+  `:refer-person` / `:refer-number` with lower-case values (`3rd`, `singular`); lower-case aspect values
+  (`performance`, `state`, ...).
+"""
+
+A1_GRAPH_INPUT = """
+## Input
+
+Language: {lang}
+Document: {doc_id}, sentence {num} of {n}
+
+The sentence: its number, a tab, then its words separated by spaces.
+
+{line}
+"""
+
+A1_REL_HEAD = """# Skill: the document-level relations of one sentence
+
+You add the UMR document-level relations (temporal, modal, coreference) of one sentence of a document.
+Every sentence of the document already has its sentence-level graph. Under **Input** at the end you get
+this sentence and the sentences before it (at most five) with their graphs.
+
+**Make the annotation as correct as you can.** It is compared, relation by relation, with an expert gold
+annotation made by these guidelines, so every temporal, modal and coreference relation counts. Take the
+time this needs:
+
+- Read the guidelines below carefully before you start, and go back to them for every decision you are
+  not sure of: which events and entities get which relations, their reference times, conceivers and
+  modal strengths, and which nodes corefer.
+- Follow the examples: when the sentence has a case an example shows, annotate it the way the example
+  does.
+- {check}
+- Before you answer, check that the relations cover every event and entity of this sentence that the
+  guidelines ask for.
+
+## Guidelines
+
+{guideline}
+"""
+
+A1_REL_FORMAT = """
+## Output format
+
+Write plain text only (no JSON, no commentary): the document-level relations of this sentence (number N)
+in one graph, for example for sentence 2:
+
+    # document level relations:
+    (d / document
+        :temporal ((s1t :before s2t)
+                   (document-creation-time :overlap s2s))
+        :modal ((root :modal author)
+                (author :full-affirmative s2t)
+                (author :full-affirmative s2s))
+        :coref ((s1p :same-entity s2p)))
+
+- The relations of this sentence are those in which a node of sentence N takes part: with a constant
+  (`author`, `root`, `document-creation-time`, `past-reference`, `present-reference`,
+  `future-reference`, `null-conceiver`), with another node of sentence N, or with a node of one of the
+  previous sentences given (for example coreference with an earlier mention, or an event of this sentence
+  ordered after an event of the previous one). Do not repeat relations among the previous sentences only.
+- `(parent :relation child)` triples, grouped under `:temporal`, `:modal`, `:coref`; each end is a
+  variable of the graphs given, exactly as written there, or a constant.
+- Use the names of the UMR release data: `author` (not AUTH), `document-creation-time` (not DCT),
+  `full-affirmative`, ..., `unspecified` (not FullAff, ...).
+- If the sentence has no document-level relation, write the graph with empty groups: `(d / document)`.
+"""
+
+A1_REL_INPUT = """
+## Input
+
+Language: {lang}
+Document: {doc_id}, sentence {num} of {n}
+
+The previous sentences (at most five; number, tab, words):
+
+{prev_lines}
+
+Their graphs:
+
+{prev_graphs}
+
+This sentence:
+
+{line}
+
+Its graph:
+
+{graph}
+"""
+
+A1_REL_CHECK = ("the meaning of a predicate is in PropBank: look it up with `propbank_lookup` (see Tools) "
+                "whenever it matters for a relation (whether an event is a state, who its conceiver is).")
+
+A1_REL_TOOLS = """
+## Tools
+
+`propbank_lookup(lemmas, language)` returns the PropBank rolesets of up to 20 lemmas per call (Chinese
+PropBank for "zh", English PropBank for "en"): each roleset's id, its numbered roles and its examples.
+Use it when the meaning of a predicate decides a relation.
+"""
+
+A1_REGISTRY = """# a1-sentence-propbank（直接调 API）：ablation：s2-propbank 的条件（缩略版 guideline + propbank_lookup）一句句跑。
+# 第一波 sentence：每句单独一次调用，只给这一句，写这一句的句子图。
+# 第二波 document：全部句子图都标好之后，每句再一次调用：给这一句和它前面最多五句（文档开头不足五句就从第一句给起）的
+# 原文和句子图，写这一句的文档级关系。两波的结果拼成整篇的回答，再和其他子实验一样打分。
+# 语法是 SkillParseUMR skillsets/REGISTRY.md 的最小子集（for_each、window），见 exp/lib/registry.py。
+# 本文件由 exp/scripts/make_subexps.py 生成。
+
+waves:
+  - name: sentence
+    start: graph
+    parallel: 8
+    init_input:
+      for_each:
+        sentence: annotation.sents
+      context:
+        lang: annotation.lang
+        doc_id: annotation.name
+        n: annotation.sentences
+        num: sentence.index
+      input:
+        line: sentence.line
+  - name: document
+    start: relations
+    parallel: 8
+    init_input:
+      for_each:
+        sentence: annotation.sents
+        tree: worktree.sentence
+      context:
+        lang: annotation.lang
+        doc_id: annotation.name
+        n: annotation.sentences
+        num: sentence.index
+        prev_lines:
+          window: annotation.sents
+          range: [-5, 0]
+          pick: line
+        prev_graphs:
+          window: worktree.sentence
+          range: [-5, 0]
+          pick: graph
+      input:
+        line: sentence.line
+        graph: tree.graph
+
+skills:
+  graph:
+    path: graph
+    guideline: guidelines/umr_guidelines_abridged.md
+    tools: [propbank_lookup]
+    input:
+      line: str
+    emit:
+      graph: str                # 这一句的 # ::snt N / # sentence level graph:
+    store: [graph]
+  relations:
+    path: relations
+    guideline: guidelines/umr_guidelines_abridged.md
+    tools: [propbank_lookup]
+    input:
+      line: str
+      graph: str
+    emit:
+      relations: str            # 这一句的 # document level relations:
+    store: [relations]
+
+dispatcher: {{}}
+"""
+
+
+def ablation_a1():
+    base = os.path.join(EXP, "api", "a1-sentence-propbank")
+    for name, head, chk, fmt, tools, inp in (
+            ("graph", A1_GRAPH_HEAD, A1_CHECK, A1_GRAPH_FORMAT, TOOLS["propbank_lookup"], A1_GRAPH_INPUT),
+            ("relations", A1_REL_HEAD, A1_REL_CHECK, A1_REL_FORMAT, A1_REL_TOOLS, A1_REL_INPUT)):
+        check = textwrap.fill("- Do not guess when you can check: " + chk, 106, subsequent_indent="  ",
+                              break_on_hyphens=False)
+        os.makedirs(os.path.join(base, name), exist_ok=True)
+        with open(os.path.join(base, name, "skill.md"), "w", encoding="utf-8") as f:
+            f.write(head.replace("- {check}", check) + fmt + tools + inp)
+    with open(os.path.join(base, "registry.yaml"), "w", encoding="utf-8") as f:
+        f.write(A1_REGISTRY.format())
+
+
 def main():
     for method in ("api", "chat"):
         for sub, (guideline, tools, attach, desc) in SUBS.items():
@@ -355,7 +596,8 @@ def main():
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "TASK.md"), "w", encoding="utf-8") as f:
             f.write(harness_task(sub, tools))
-    print("wrote", ", ".join(SUBS))
+    ablation_a1()
+    print("wrote", ", ".join(SUBS), "and a1-sentence-propbank")
 
 
 if __name__ == "__main__":

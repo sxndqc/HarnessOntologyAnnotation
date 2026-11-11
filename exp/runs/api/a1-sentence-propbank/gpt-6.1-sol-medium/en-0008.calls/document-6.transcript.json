@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1342,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 123,
+    "reasoning_tokens": 93,
+    "openai_usage": {
+     "input_tokens": 6416,
+     "input_tokens_details": {
+      "cache_write_tokens": 1339,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 123,
+     "output_tokens_details": {
+      "reasoning_tokens": 93
+     },
+     "total_tokens": 6539
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 2147,
+    "cache_read_input_tokens": 6413,
+    "output_tokens": 141,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 8560,
+     "input_tokens_details": {
+      "cache_write_tokens": 2144,
+      "cached_tokens": 6413
+     },
+     "output_tokens": 141,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 8701
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 6 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :name (s1n / name\n            :op1 \"Edmund\"\n            :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :temporal (s1t3 / time\n        :ord (s1o / ordinal-entity\n            :value 1)\n        :temporal (s1t4 / temporal-quantity\n            :quant (s1m / more-than\n                :op1 8)\n            :unit (s1m2 / month)))\n    :aspect performance)\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2p2 / person\n        :mod (s2c / country\n            :name (s2n2 / name :op1 \"American\"))\n        :ARG1-of (s2h / have-role-91\n            :ARG3 (s2b / businessman)\n            :aspect state)\n        :ARG1-of (s2c2 / convict-01\n            :ARG2 (s2c3 / charge-05\n                :ARG1 s2p2\n                :ARG2 (s2s / spy-01\n                    :ARG0 s2p2\n                    :modal-strength unspecified\n                    :aspect process)\n                :refer-number plural\n                :aspect process)\n            :temporal (s2w / week\n                :mod (s2l / last))\n            :aspect performance)\n        :ARG1-of (s2s2 / sentence-01\n            :ARG2 (s2p3 / prison\n                :mod (s2c4 / country\n                    :name (s2n3 / name :op1 \"Russian\")))\n            :ARG4 (s2t / temporal-quantity\n                :quant 20\n                :unit (s2y / year))\n            :temporal s2w\n            :aspect performance))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02\n                :aspect state))\n        :aspect process\n        :modal-strength unspecified)\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\nThis sentence:\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name\n                    :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect activity)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_N1DaIZKR4H2IrsAYWKl2acI3",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "spend",
+       "return"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0f8258c21670370f006af3fd09b6d087d1ab062ae4ca6a47b5",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0MqLVYkOKKOvdRSnyc8HA6JiBHh5k8_xa7djvKj38-kwOx9MejPvraoUeZ0QvLvgR2co47p0hTkmOSmvvJyL9XFKWl4ZnWvrjCnNbwP8rNMems19XhiBw_v8sS4AgcSXJhjR_1SN1ibDk7s0Uk7hS9-LTje1YcJ2XnqUPqpaGif2ejF6uJTuZIotLddaFVdibBB4M30wwo-xB8Gk_J0J8QUKR3ZDYHJwjEUno2DEsaTNwrKOU7zC5bBEvSpvhivu_tAce8asQRcpAYMlcO51Tsf8aBKvUXyNVWAhjHMWVLTc3465xWk-BS3f7d_J9W-Nm0pHIhryzYiGGz3BMoBOKwbFyu8SNhJh-AKhk9wwHL7JShtEBqsz1xS4En0RKjnZ4aztUIulgbxLp2AWBfB534NCorQuDOy-YdknPv0aD1fswkjjrDDhhGFgLCwmePxuWGKTDbgKcpHfLcEP66YH5f1a6gVe6sMWQ1hr70JFGwevy_emdq6LPTBn86TbpKl_pdgXnFc3xlY2mxvALY12fMym9SY_ZnTj6_Q_NIwIPabCcAT-e7vQnkINgNJxuRaYk1xbAKcXmSFp0ehDzoCpz5iKpXIwrpPPdhdCEDEkV8ftN9rE2FoBKEw7kjXlS4Ew0DF6PFRXbkfyK77pL1Qqivwow_8XhVYN8R5zNId57Br-p_QlNH_gGLzwYXTc7ffQJPf4gveqOAgzFXGfWImUWCfWyxJ7Pce6XRiVEslXajXxdFK-505ZPh2H51D173i-09-Zzna2dpnph2xd8OU1cUi8SJc9FPnLKCiRX4C-R7Y2H3nF9H7NnCF-C0J3Xz0dqJ2eyPrmCqFol2vfYEb1WWiS1mjZoSL88qw7zMP1qkSiWtHZI5cjL8qbP6thV7vWwwRG5AWp6QabVRbRyPMZhzr4pAYyzqijmNjumvzIlwsN83lBZi0IOo0a03mgv81gy3oHbaEnQOBJ8CSij2boddb6076NsXw-GQ7iTlRsyeX_ytBKbEPGIw2ONOVgDniyIUMhXHTIGMTuOX1hoiZ-4DmcEOgwf6O7wWmAggnktDYPseVRSH8-cURbdutC3lwG5TsOqQB7dRgDMZjV1WO3K3Ve4fZOhayvrna-xjpADk8Rr-Y20iJ0w3cJF6AT5ME14NgtL7n1lFeWzxd95_5vbiTdwz-qA5vhvlWppRNZ8cQZAvNZ7sz4Ch9KoWL8Nen4mZPGC7y0S3umK9rInRvuNAK_FHevX6XeyYNiZoV7f254xFEzZK6AI4l5ZrTSnR1ayce2vvQ_CeTtP2V3GTmeiaBvGf9-O0jUSv79zieVSKfVG9ICvVwbXq_8CBI4yB4hOJ45xpyIAeSgsY_t7wWJymvs15EDOw2US2-KSxHujTk7DPV_gPz6vb45L6_Rl1DeZ-ho3hKRjJwaTMDcCpDzJOi2-PxgKkJeXMdhytCU7GLTMrS__o0TZKIHfTw9KbkhcM-I9tmxA54EyfEdL7GY8gFZFHGkDcTNBebe6rvpjnjx16s2Ps2Ghm2bVIyySvrlb-ObRtcT_qpWj5nIhChe5nMM7qGRSQ1bX42-y3ZH-zBleR3JxhXH5VJd6urIntQlU6XT3T2s83v8mTgLq9QpV_t519rA6S8OFCM4-DCIy299R-xI6miy-zAUa9Q1tfaqg3W2d0WbTWQQD5IIRKF-GLgMsS-gzQxzco9SWu7XqJd1xi6ztazccYLjNwR6RcazvhtONuidLQmrRZCkUqoTdzwMqlWNcZQRWNwRyhFd85_LNTeVjhGx3MyRzQNdzJWgVE78mXV7QDtJ1NbMGLN_d-6FQts90Bxs0t00-pswbVMitdQX6lmfFpLST9qlHb0TCPDYRaua-M9c5GYo_ZV2QDJosdr1nCTfEh2mlS3d5jjfmFU9uvP_3JJYgnY4tEidta-oXE54GmfDIvC3GaOCkckDyQFbibrDmw5mvVhruqe0rJA8lfMdxkBws0FzGPXJJBg4lXLsRakKT13XBIVe3-BWpKgH-qCIAeLrcd-1Z93H5fIwc_Ilk_mKB3gij9F0rIAIhgaTO9G9UN0ZWfOMhebjuhM1ZNOn4mVwZrK91SfBut-kzORqW8f5sBCTLXcYhdVMLM1nWTVqHhiKNOAa2m6wtRk1_ro24SU-_n4NZoLk-C_0larhL5s00OMrCav8fvs4WQQKphHCUe3o1awt9NEP8IvQACQoyZy-qxHJMEOJTLtjxrOQFL6nT4vnZodLvzNlMKX8n83qEOOOrG17fGNjdqmoMMQr2-jQ2MMZXcX8HxmPdLe94xB9HMH7aV7fytb9f0nFgXhw8jF1uNuihakYNr-M7F1xgopEdJyBJfK9zBVKEP8RegzL8c4_uubmFzaolh0EV38Rhj1f_0kDbAKmO5a9fd1lT6j8g-F_NvkCni_BsKIYSKum5SSosRRavODR1V2q3HPgXBzVvw5DrfUmGHfCqcEerrbgLwTsjxn271xiPFMNrcGyVFDH_f_N8783euyrOyedwXlaYYH5eNgSgci8CCMSjIV7jqxBGrOMUEc8C_aEmuY8re5i56_BoU9ijGSPerVXcDvtVBe30S5S8unYsoaGwM5R2SKeIKPxQIJiQVbH8X7CxQXSATiiK09McyWV0x9bu_oy1U1wW5grQ3taxPpsiWz3NxH2Lbq4cSWFe7Cbs74pi-CqULICve"
+      },
+      {
+       "arguments": "{\"lemmas\":[\"spend\",\"return\"],\"language\":\"en\"}",
+       "call_id": "call_N1DaIZKR4H2IrsAYWKl2acI3",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0f8258c21670370f006af3fd0c343c87d1918460ef069901e5",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_N1DaIZKR4H2IrsAYWKl2acI3",
+     "content": "## spend\n\n### spend-01 (use money, paying money/time)\n\n- ARG0: spender, buyer\n- ARG1: thing bought, commodity\n- ARG2: seller\n- ARG3: price paid, money\n- ARG4: benefactive\n\nExample 1 (demonstrating commodity and price): The NIH currently spends about $8 million annually on fetal-tissue research.\n- ARG0: The NIH\n- ARGM-TMP: currently\n- ARG3: about $8 million\n- ARGM-TMP: annually\n- ARG1: on fetal-tissue research.\n- rel: spends\n\nExample 2 (with TMP): They spent $325,000 in 1989.\n- ARG0: They\n- ARG3: $325,000\n- ARGM-TMP: in 1989\n- rel: spent\n\nExample 3 (arg0): Government spending is actually increasing .\n- ARG0: Government\n- rel: spending\n\nExample 4 (arg 0, 1 and 3): The question is whether his spending $7.7 million on food, drink, hotels and parties is excessive.\n- ARG0: his\n- ARG3: $7.7 million\n- ARG1: on food, drink, hotels and parties\n- rel: spending\n\n### spend-02 (bide time)\n\n- ARG0: bider, waiter\n- ARG1: unit of time\n- ARG2: activity\n\nExample 1 (spend time): He spends his days *trace-1* sketching passers-by or *trace-2* trying to.\n- ARG0: He\n- ARG1: his days\n- ARG2: *trace-1* sketching passers-by or *trace-2* trying to.\n- rel: spends\n\nExample 2 (simpler example): Mr. Bernstein has spent much of his time in recent years on human rights issues.\n- ARG0: Mr. Bernstein\n- ARG1: much of his time\n- ARGM-TMP: in recent years\n- ARG2: on human rights issues.\n- rel: spent\n\n### spend-04 (be used up)\n\n- ARG1: thing used up\n- ARG2: cause\n\nExample 1 (arg 1 only - most common): the spent fuel rod\n- ARG1: fuel rod\n- rel: spent\n\nExample 2 (with arg 2): Man! I am completely spent from that basketball game!\n- ARGM-DIS: Man!\n- ARG1: I\n- ARGM-EXT: completely\n- ARG2: from that basketball game\n- rel: spent\n\nExample 3 (adjectival): The shampoo and conditioner are completely spent.\n- ARG1: The shampoo and conditioner\n- ARGM-EXT: completely\n- rel: spent.\n\n## return\n\n### return-01 (come back)\n\n- ARG1: entity in motion\n- ARG2: (extent -- rare)\n- ARG3: start point\n- ARG4: end point\n- ARGM: medium\n\nExample 1 (typical): I-1 need *trace*-1 to return on Tuesday.\n- ARG1: *trace*\n- ARGM-TMP: on Tuesday\n- rel: return\n\nExample 2 (metaphorical): Parents are returning to the cloth diaper.\n- ARG1: Parents\n- ARG4: to the cloth diaper\n- rel: returning\n\nExample 3 (Example of end point as 'return to ...\"): they expect a return to full operations by Saturday\n- ARG4: to full operations\n- ARGM-TMP: by Saturday\n- rel: return\n\nExample 4 (Example with arg 1 and 4): their return to black townships across the country\n- ARG1: their\n- ARG4: to black townships across the country\n- rel: return\n\nExample 5 (Example with args 0 and 4): their return to Earth\n- ARG1: their\n- ARG4: to Earth\n- rel: return\n\nExample 6 (Example with arg 1): The possible return of the verification team\n- ARG1: of the verification team\n- rel: return\n\nExample 7 (revert to): a return to Soviet-era symbolism in Russia\n- ARG4: to Soviet-era symbolism in Russia\n- rel: return\n\n### return-02 (give back)\n\n- ARG0: giver\n- ARG1: thing given\n- ARG2: entity given to\n\nExample 1 (Japanese baseball): Fans politely return foul balls to stadium ushers.\n- ARG0: Fans\n- ARGM-MNR: politely\n- ARG1: foul balls\n- ARG2: to stadium ushers\n- rel: return\n\nExample 2 (seeking comment): Charles LaBella didn't return phone calls seeking comment.\n- ARG0: Charles LaBella\n- ARGM-NEG: n't\n- ARG1: phone calls seeking comment\n- rel: return\n\nExample 3 (Example with all args): his return toast to Mr. Nixon\n- ARG0: his\n- ARG1: toast\n- ARG2: to Mr. Nixon\n- rel: return\n\nExample 4 (Example with args 1 and 2): the return of cheaper shares to the lender\n- ARG1: of cheaper shares\n- ARG2: to the lender\n- rel: return\n\nExample 5 (Example with all args): Their return of our refugees to their homes\n- ARG0: Their\n- ARG1: of our refugees\n- ARG2: to their homes\n- rel: return\n\nExample 6 (Possibly confusing use): Jack's safe return\n- ARG1: Jack's\n- ARGM-MNR: safe\n- rel: return\n\nExample 7 (Args 1 and 2): The return of East Jerusalem to the Palestinians\n- ARG1: of East Jerusalem\n- ARG2: to the Palestinians\n- rel: return\n\n### return-03 (bring back)\n\n- ARG0: entity bring something back\n- ARG1: thing brought back\n- ARG2: attribute of arg1, state arg1 is brought back to\n\nExample 1 (transitive active): The company had returned the plant to routine inspection in August.\n- ARG0: The company\n- ARG1: the plant\n- ARG2: to routine inspection\n- ARGM-TMP: in August\n- rel: returned\n\nExample 2 (Example with arg 1): the best punt return , quarterback sack , etc\n- ARG1: punt\n- rel: return\n\nExample 3 (Example with arg 0 and arg 1): The mechine's ball return was broken.\n- ARG0: The mechine's\n- ARG1: ball\n- rel: return\n\n### return-04 (send back)\n\n- ARG0: sender\n- ARG1: thing sent\n- ARG2: sent-to\n\nExample 1 (all args): Mr. Koskotas is fighting extradition proceedings that [*T*-2] would return him to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete.\n- ARG0: [*T*-2]\n- ARGM-RCL: that -> extradition proceedings\n- ARGM-MOD: would\n- ARG1: him\n- ARG2: to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete\n- rel: return\n\n### return-05 (exchange, trade)\n\n- ARG0: agent, entity trading\n- ARG1: theme\n- ARG2: other exchanger\n- ARG3: secondary theme\n\nExample 1 (Args 1,3): North Korea agreed to dismantle its nuclear program in return for economic aid.\n- ARG1: for economic aid\n- ARG3: North Korea agreed to dismantle its nuclear program\n- rel: return\n\nExample 2 (Example with args 1): in return for removing all our tariff barriers\n- ARG1: for removing all our tariff barriers\n- rel: return\n\nExample 3 (Often in the form of 'in return for'): In return for services rendered\n- ARG1: for services rendered\n- rel: return\n\nExample 4 (It is rare to find this with more than arg 1): In return for your patience\n- ARG1: for your patience\n- rel: return\n\n### return-06 (give a dividend)\n\n- ARG0: thing providing a dividend\n- ARG1: dividend, earnings\n- ARG2: recipient\n\nExample 1 (Monitary example (usual use)): a 0.89 % return on assets for Security Pacific\n- ARG1: 0.89 %\n- ARG0: on assets\n- ARG2: for Security Pacific\n- rel: return\n\nExample 2 (the return percentage can be 'earnings'): KKR racked up annual returns of 60 % in the three years it owned Storer .\n- ARGM-TMP: annual\n- ARG1: of 60 %\n- rel: returns\n\nExample 3 (Non-monitary example): Returns from just under a third of the polling stations\n- ARG0: from just under a third of the polling stations\n- rel: Returns\n\nExample 4 (Arg 0 is often inanimate): A return of investments of 32%\n- ARG0: on investments\n- ARG1: of 32%\n- rel: return\n\nExample 5 (Animate arg 2): whose returns after tax have trailed tuition increases\n- ARG2: whose\n- ARGM-TMP: after tax\n- rel: returns",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s6t)\n               (s6t :contained s6s)\n               (s6s :after s6r)\n               (document-creation-time :overlap s6h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s6s)\n            (author :full-affirmative s6r)\n            (author :full-affirmative s6h2))\n    :coref ((s5p :same-entity s6p)\n            (s5b :same-entity s6t2)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "msg_0f8258c21670370f006af3fd0dd1c887d19ef772b8a0d18d84",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :depends-on s6t)\n               (s6t :contained s6s)\n               (s6s :after s6r)\n               (document-creation-time :overlap s6h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s6s)\n            (author :full-affirmative s6r)\n            (author :full-affirmative s6h2))\n    :coref ((s5p :same-entity s6p)\n            (s5b :same-entity s6t2)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

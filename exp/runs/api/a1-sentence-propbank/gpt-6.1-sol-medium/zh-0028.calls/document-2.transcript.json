@@ -1,0 +1,168 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 497,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 26,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5571,
+     "input_tokens_details": {
+      "cache_write_tokens": 494,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 26,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5597
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 240,
+    "cache_read_input_tokens": 5568,
+    "output_tokens": 140,
+    "reasoning_tokens": 48,
+    "openai_usage": {
+     "input_tokens": 5808,
+     "input_tokens_details": {
+      "cache_write_tokens": 237,
+      "cached_tokens": 5568
+     },
+     "output_tokens": 140,
+     "output_tokens_details": {
+      "reasoning_tokens": 48
+     },
+     "total_tokens": 5948
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 2 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1f / 分辨率\n        :mod (s1z / 最佳)\n        :possessor (s1k / 宽屏\n            :refer-person 3rd\n            :refer-number singular\n            :quant 21.5\n            :unit (s1y / 英寸)\n            :mod (s1b / 比例\n                :mod (s1p / 屏幕)\n                :quant (s1q / quotient-of\n                    :op1 16\n                    :op2 9))))\n    :ARG2 (s1m / product-of\n        :op1 1920\n        :op2 1080)\n    :aspect state)\n\nThis sentence:\n\n2\t而且 它 还 配备 了 D-Sub （ VGA ） ， HDMI 两 种 接口 ，\n\nIts graph:\n\n# ::snt 2\n# sentence level graph:\n(s2p / 配备-01\n    :ARG2 (s2t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s2j / 接口\n        :quant 2\n        :mod (s2a / and\n            :op1 (s2d / product\n                :name (s2n / name :op1 \"D-Sub\")\n                :ARG1-of (s2i / identity-91\n                    :ARG2 (s2v / product\n                        :name (s2n2 / name :op1 \"VGA\"))\n                    :aspect state))\n            :op2 (s2h / product\n                :name (s2n3 / name :op1 \"HDMI\"))))\n    :mod (s2e / 而且)\n    :mod (s2h2 / 还)\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_V4c0LpUUADsP2CVnZwsj8rKb",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "配备"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"配备\"],\"language\":\"zh\"}",
+       "call_id": "call_V4c0LpUUADsP2CVnZwsj8rKb",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_09094e542c9c91d1006af3fd18331087d1b1ac70c12cf4cf83",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_V4c0LpUUADsP2CVnZwsj8rKb",
+     "content": "## 配备\n\n### 配备-01\n\n- ARG0: agent\n- ARG1: entity equipped/allocated\n- ARG2: location\n\nExample 1: 而且 ， *pro* 这 颗 卫星 上 配备 了 *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG0: *pro*\n- ARG1: *OP* *pro* 应 有 *T*-1 的 电力 机器 和 传感器\n- ARG2: 这 颗 卫星 上\n- ARGM-ADV: 而且\n- rel: 配备\n\nExample 2: 政府 各 机关 也 配备 了 双语 译员\n- ARG1: 双语 译员\n- ARG2: 政府 各 机关\n- ARGM-ADV: 也\n- rel: 配备",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s2p)\n               (document-creation-time :overlap s2i))\n    :modal ((root :modal author)\n            (author :full-affirmative s2p)\n            (author :full-affirmative s2i))\n    :coref ((s1k :same-entity s2t)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_09094e542c9c91d1006af3fd19fdf887d1a89df54e60a7901d",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0cpDJ3pwqfd3_A22G3Spys4IQ6jRxSdoGPhGisa-zrVu0vRalglvdJAId6LtIA4FYcb9Jnu4clhP6joO3uKk10rF1iWBlpo5dbZ9BpO4x5hGCIFHqXHT5-U8JKvdjTF35i7oLQCKqNGL8OvEw3I5d7eenN8JRkAGmO4C7wnhoGBk3pDfgm2Z7RUjR-1ECeM8vjSWDJjxutd0QP9s6N7KjGb_m2ptlp3LQkVF0oKybtx8DB8ENteautZeXPwv5zgZMq-rdKze9eT6zf4Usl_XkFSa3TmlAq_xKVQZS3_gW8UCXrNIK2YEZUCqPnZevkIhzRolxeoWVOXN6tNQLDI1t-PmHM2Z33g5ylVRBsN6oEdRcDtsTVkcVsj5TKllV9knJwHupEcSBH7F4edqcC2u7YuNwPeq--YTlZpPpMxatJPHE-XEOZWwPTcWVFOiKDpP4XTqp-JF65lHZu9ugC1srMbTLWgGynurLNeLwvA-PG5bKmUsyaqcX_uXtTVJxmyXbieRFMa3Jdvt17SEBYh7W814GXXbNiTDK0ctDp2wgqC7FhV-Jeim_-rpf86cWklJ6lBJv-i-Ul2v4QJ_A6pPBthtgqSFPG2upiNlqLju7db5idyqg2Bjo_NHb82q-30rA391SEnMZPJFfuQ4IDYrbB33Aoda-7rVqp7eU1pog8j9PU_iOntPZhrXULy4YktkIBeZV1eIiU4vPvhRyQfIhydHGHb8ZIYHGNwNEyBMduy84_cBZYsYtHpbMasWJ5n2qSyoH0P4FJC7Wk9bwM2-yFCbTKG3vmnhv3mFDJk992duaoXgWbJ1WQmLJKAFCMJfGZfX8eoec7YLdFNjnt4NJW8nqCF3KNSL7TQLRw54g_dUTA_9En0vrdUgt1JFy_0TNgyasXLCdzFtfBBFDM9xmPz1YYzNH83jdKPqVgNtcWLmHb-pGmp6X9HSkI5ACxtUmUIisAUUixVEzVk5ZOzNiVIWqlp7wqXLNPuK9oGBRExj6XJJagNihXU29IIVEYPgb_IfiaVMkSR5430rVMaaGwAuvvW5TtUYUq3fpPoJYS0_nS05AimhFSaj2lYGVWSDHIsGwzP3ZMlMv1eBMH9ZUmsvRDcT7a93gV0J4pMXSRzmW86LxKzmPjsUj5LihwGVQZq-ETdzluyucRxGJvhE-LaIuMeOolDMUe4aVeXh8y3WxGFudFYxrqAI167AYMbnnsr2woFtvGeL9b1_S40_d6tYSu7KEs3ExnoCfjt6TQbX3Ed4x3g-QOa-wg5j3OeoToZ-aenxFT39n4aUlam2xOPIL-7R2AvYBUEIam54O--tAvpAgWG2JHBSWuLdLWoQ457RLD21ZCZSVA-c2vZ3BHCEyGQ19XY03pONxsLI5w7kVxEy0Szjih3fbYiGsZhCdHniszLTiizBvlqfDsqlNlvQ0Ic-C9foiaWPlkYtAOZWKPF6ny1whNmcoST1P9ebMt4keZmXUeBe-lpOSWo46N9_nWdjdysDBIdewpR56ICBkyMSXKZj5uCMzkkTkWZJY0w1dG4qX5XC5dA0bdsu-kJjhcbCbt6mgGyyFkH6eqhU4TbjZKDC6Y9B2ZK1glN0GUlFfbZ06nXfOYNBrnqK1R1bwFog6tEAapElh545iViXhRnuuMZ6zUFMbxMtk23FTedkW7oe6QbdI7lHhNEN1Na6tDEvYAxZeWqg1Vs7J6aAsD_FSjz-C3uVl9zfmu-Uq0rNLHEc6U9sWS_8q_7YzSM68wWtOn8cv6d8zS008DV33ETIMuA4fPngopC0rcZJg8yI1l1CyttWsWFC1zqjrpQeJpR36ioVwLgmCpf6jo-wEzT4wWAcahPwJ96fbkFwtthx9tab726gOv5M6ZvOVP_NFZ8Ef-OQw1hA5gweDlOzozh_FiGG2_iVBds-Z5iSmPDZR7qE5cZ5PC9DfZ1yaNpa-75C4--orZa_tg9rsjkW72bQPUnLn7Aj5zlu_G2K4pYf57cKG8fBPFm8hI5784xWFtjfVZln3wuULJYrhCLvAZxDoxtXmR9dups4nrqrB8ak-YfFvZRuyxYlzyRrtvHTi2pKgRkDaB_XYsInxCyr_13ukUSeCoMk953GpIX0WZr6_bi2w-N3XiNz5B4UkLad0UR8dBhxW2Z1OT8N1Mt0cm-xRzoxPJpvypoYbEIi5TbiYbZRnx3ZTShHfVKV3rPg=="
+      },
+      {
+       "id": "msg_09094e542c9c91d1006af3fd1b37f887d1b6d6a46f127dd997",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s2p)\n               (document-creation-time :overlap s2i))\n    :modal ((root :modal author)\n            (author :full-affirmative s2p)\n            (author :full-affirmative s2i))\n    :coref ((s1k :same-entity s2t)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

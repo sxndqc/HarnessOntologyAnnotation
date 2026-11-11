@@ -1,0 +1,134 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-5.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7693
+    },
+    "cache_creation_input_tokens": 7693,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 79,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1928
+    },
+    "cache_creation_input_tokens": 1928,
+    "cache_read_input_tokens": 7693,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 370,
+    "output_tokens_details": {
+     "thinking_tokens": 130
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 5 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_01SbCyqDDMnmfeB94d9Cr9dM",
+     "input": {
+      "lemmas": [
+       "fly"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01SbCyqDDMnmfeB94d9Cr9dM",
+     "content": "## fly\n\n### fly-01 (fly through the air, travel via air, fly in a flock)\n\n- ARG0: pilot, agentive entity capable of flight (like a bird)\n- ARG1: passenger, cargo\n- ARG2: aircraft flown, flight number, steed, non-agentive thing in motion\n- ARG3: type of flight plan, mission, cognate object (like 'a flight' or 'sorties')\n- ARG4: airline\n\nExample 1 (fly-v: unaccusative, traveller as subject): And some investors fault Mr. Spiegel's life style; he earns millions of dollars a year and flies around in Columbia's jet planes.\n- ARG1: he\n- ARGM-DIR: around\n- ARG2: in Columbia's jet planes\n- rel: flies\n\nExample 2 (fly-v: transitive, pilot as subject): As a ``good-will measure,'' [the pilots]-1 had been working four extra hours a month and had agreed *trace*-1 to fly UAL's two new Boeing 747-400 aircraft.\n- ARG0: *trace*-1\n- ARG2: UAL's two new Boeing 747-400 aircraft\n- rel: fly\n\nExample 3 (fly-v: with destination): He will fly to San Francisco on the afternoon of the 20th to participate in another round of speeches .\n- ARG1: He\n- ARGM-MOD: will\n- ARGM-GOL: to San Francisco\n- ARGM-TMP: on the afternoon of the 20th\n- ARGM-PRP: to participate in another round of talks\n- rel: fly\n\nExample 4 (fly-v: with recipient): John flew the paper airplane to Mary.\n- ARG0: John\n- ARG2: the paper airplane\n- ARGM-GOL: to Mary\n- rel: flew\n\nExample 5 (fly-v: with employing airline, arg4): [All of the first group of pilots who went abroad to receive training for new fighter aircraft]-1 have left the military *trace*-1 to fly for civilian airlines\n- ARG0: *trace*-1\n- ARG4: for civilian airlines\n- rel: to fly\n\nExample 6 (fly-v: with arg3): Since this war began, something like 23,000 coalition sorties have been flown.\n- ARGM-TMP: Since this war began\n- ARG3: something like 23,000 coalition sorties\n- rel: flown\n\nExample 7 (flight-n: Within LVC): Just last week , for example , Trans World Airlines and Pan Am Corp. 's Pan American World Airways went so far as to offer cash rebates or gift checks of $ 200 to $ 1,000 to certain frequent-flier members making trans-Atlantic flights in business class or first class .\n- ARG1: certain frequent-flier members\n- ARGM-LVB: making\n- ARGM-DIR: trans-Atlantic\n- ARGM-MNR: in business class or first class.\n- rel: flights\n\nExample 8 (flight-n: pilot as subject, source and destination): This month we celebrate and remember Amelia Earhart's flight from Hawaii to California.\n- ARG0: Amelia Earhart's\n- ARGM-DIR: from Hawaii\n- ARGM-GOL: to California\n- rel: flight\n\nExample 9 (flight-v: With DIR): The maximum count of birds flighting in at dusk was a remarkable 183.\n- ARG0: birds\n- ARGM-DIR: in\n- ARGM-TMP: at dusk\n- rel: flighting\n\nExample 10 (fly-v): I never fly Frontier anymore.\n- ARG1: I\n- ARGM-NEG: never\n- ARG4: Frontier\n- ARGM-TMP: anymore\n- rel: fly\n\nExample 11 (fly-v): He flew on flight 664 to Albuquerque.\n- ARG1: He\n- ARG2: on flight 664\n- ARGM-GOL: to Albuquerque\n- rel: flew\n\nExample 12 (For first/business/economy class, use :manner.): When I fly intercontental, I always fly first class.\n- ARG1: I\n- ARGM-TMP: always\n- ARGM-MNR: first class\n- rel: fly\n\n### fly-02 (fly in the face of: flout)\n\n- ARG0: flouter\n- ARG1: \"in the face of __\"\n\nExample 1 (ULA example): There I believe we would decidedly fly in the face of established case law .\n- ARG0: we\n- ARGM-MOD: would\n- ARGM-ADV: decidedly\n- ARG1: in the face of established case law\n- rel: fly\n\n### fly-03 (hit a fly ball, has strange past participle)\n\n- ARG0: hitter\n- ARG1: bases\n- ARG2: where player moves to after hitting fly ball\n\nExample 1 (Args 0 & 2): Kemp came closest to a home run in the fourth inning when he flied to very deep right field.\n- ARG0: he\n- ARG2: to very deep right field\n- rel: flied\n\n### fly-06 ((cause to) hold a spatial configuration in the air)\n\n- ARG0: causal agent\n- ARG1: thing suspended in the air\n\nExample 1 (fly-v): He flew a flag above his house\n- ARG0: He\n- ARG1: a flag\n- ARGM-LOC: above his house\n- rel: flew\n\n### fly-yy (insect (and other non-predicative senses))\n\n- (no roles)\n\nExample 1 (fruit fly): A large number of fruit flies hovered over the rotting bananas.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSvQcKEAgTGAI4AUIIdGhpbmtpbmcSDB73xV9YWMMGr/rtdxoMFCagKzBQ0qiWJgL9IjBHb8noSEqar51PK0HXc+8UQ6Bh57vpgVkBuRbXBK4tNLdes7Qg2TCoLSKUt3tOTGUq2gbax9/cbVyyErKrdUsoegzEwgrjwk+iFvMz3k9rI9927dpd7IsKkuhmVDdO1TmjjuzoV1Ev3wiAoZ7ma6+lEGz/d6eb/too2LQpgXP+YJaA8T57oAbimnUOcjqY8oDZ1h4Lyi+Essdw+BQez9F4Kwd9u3p6GUbd1NK9Gah2Ykyur19z4wetJQ8xMxGGPRaSjphc5uBWP9okl1IDL7A6+Cn6igxEKW+lrTVzcHpMf3HXPr/8K5RLmfJchVb50lp4lE1S4S8nOcQRIVmgI3DFMbuLd7RiDP6xlB2t2C3SHfGMnmnjIGTIZdMyuceLSwBdqMKSmgwpP9nnZgU5UYoaF6sNvqmsJ2JYRv28HQ5t7CsTpABICFyQMXpGJy3sLkRDFiBB/I7bnq2tm0BZH5zs1TGXx0seWwYdlsAV4r+HmpDFQR5e1DaSUcmmXqVd9nPIE1Ivg7pncOPhOhMud2xTn39/rNkbLsLDTQxWR4z7g4zRJcZufrCrMrxITL9NFRQX9DBHTW8EWuz0ukuFSMhmu3dSfCmizhrRqCvHgDEANeA9iq4sXAnn8TcI/TrxVRmGtUqbVmeCcDF0Ff8qYR/r2c8f/8M5LADzJLQpw0VhF0uGvc4kiLgMjI4N0lCObg6DKGPvW+dPK660GXpt266euquH79SUsJcf23iB7oCsL22cIGfBd4WN9eaUJdPNgYHm5ttNV9rD2QWhLsPMJhJDaXRmqvevs0UlVLv1nvO+jEHb0qcMppmA9SZhd9m0JWezr7gMW03pSyz9Nf574Poluiezr9rLkAFRBpoVMg0jNFIgL95syILB8R/q04qgR8BW44wpAjRVHhxlFMoTKi0Ai12anDrNvQ1siCjvHAwnveNAjIEMwLZvzt3d6a4Uatj9R2QCwtMvsJ2j2shBuLVFxYZ+OfJhK4BXAGVqhPqngGkXkK1yDG5MM5mgvmbF+1hxgJ6y5E6l3yvyeAolW8UvY3Fim/qzddd/93JbhciSJs52pneWuJTYWyOUB+HIL/7ukdsegztyYCNTrLI/CYootQ+Nuet1cOhvpMiz3R2HUwjuJzB0Lmv8aDYDY9b0nX0ZPoNTUok1dHJEYOXNZPfZ8SnmrOl2YxjSrlyVC7nDgjc5fSwnyrlZoj4bJr8YAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

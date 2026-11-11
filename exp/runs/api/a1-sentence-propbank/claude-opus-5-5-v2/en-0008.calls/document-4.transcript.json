@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-4.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9158
+    },
+    "cache_creation_input_tokens": 9158,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 884,
+    "output_tokens_details": {
+     "thinking_tokens": 431
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 4 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\nTheir graphs:\n\nI treated \"for the first time in more than eight months\" as an ordinal: first (value 1) within a range of \"more than eight months\".\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmond_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s2 / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n\nThis sentence:\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\nIts graph:\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h2 / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h / health))\n    :aspect performance)\n\nMy choices, briefly:\n- **Predicate:** I used `pardon-01` (\"legally relieve of guilt\"). Putin is the pardoner (`:ARG0`) and \"him\" is the guilty party (`:ARG1`). The other sense, `pardon-02`, is for forgiving a small social slip, so it doesn't fit here.\n- **Putin's title:** \"Russian President\" is written as a role with `have-org-role-92`, with Russia as the organization (`:ARG2`) and `president` as the title (`:ARG3`). This follows the guidelines' \"president of Russia\" example.\n- **\"for health reasons\":** This is a cause, so I wrote `:cause (reason :mod health)`. This is a judgment call. AMR often writes it as just `:cause (health)`, and the expert annotation may do the same.\n- **Aspect:** `performance`, because the pardon is a finished event in the past.\n- **\"him\":** Written as a third-person singular `person`. Linking him to the person he refers to in an earlier sentence happens later, in the document-level step.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s4p)\n               (document-creation-time :overlap s4h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s4p)\n            (author :full-affirmative s4h2))\n    :coref ((s3p :same-entity s4p4)\n            (s2c4 :same-entity s4c)))\n\nI didn't need to look anything up for this sentence. These are the choices that could go either way:\n\n- **Time of the pardon:** I placed the pardon before the document creation time. It could instead be ordered against an earlier event: after the sentencing (`s2s2`) and before Pope tasting freedom (`s1t`). Those orderings are likely, but the text doesn't state them, so I used the document creation time.\n- **Putin's presidency:** Putin being president is a state, so I set it to overlap the document creation time.\n- **Modal:** The author plainly asserts both the pardon and the presidency, so both are full-affirmative.\n- **Coreference:** \"him\" links to \"He\" in sentence 3 (`s3p`), its closest earlier mention. \"Russian\" in Putin's title links to the Russia of \"a Russian prison\" in sentence 2 (`s2c4`).\n- **No relations:** I gave no temporal or modal relation to the \"health reasons\" node, because it isn't an event.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

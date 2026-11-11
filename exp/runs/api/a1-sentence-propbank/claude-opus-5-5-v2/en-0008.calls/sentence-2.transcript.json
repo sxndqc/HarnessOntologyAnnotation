@@ -1,0 +1,138 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7707
+    },
+    "cache_creation_input_tokens": 7707,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 97,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5612
+    },
+    "cache_creation_input_tokens": 5612,
+    "cache_read_input_tokens": 7707,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 770,
+    "output_tokens_details": {
+     "thinking_tokens": 339
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 2 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_012EMQqzNhtyvPYajp3GZaUb",
+     "input": {
+      "lemmas": [
+       "convict",
+       "sentence",
+       "spy",
+       "charge",
+       "imprison"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_012EMQqzNhtyvPYajp3GZaUb",
+     "content": "## convict\n\n### convict-01 (to find or prove guilty of an offense or crime, finding guilty of a crime)\n\n- ARG0: judge, jury, agent\n- ARG1: person convicted\n- ARG2: convicted of\n\nExample 1 (all arguments): Despite the strong evidence against Mrs. Yeargin , popular sentiment [*ICH*-1] was so strong [*ICH*-3]in her favor , Mrs. Ward says [0] [*T*-2] , that `` I 'm afraid [0] a jury would n't have convicted her .\n- ARG0: a jury\n- ARGM-MOD: would\n- ARGM-NEG: n't\n- ARG1: her\n- rel: convicted\n\nExample 2 (passive): He-1 was convicted [*-1] of [*-2]charging interest rates much higher than what the law permitted [*T*-3] , and attempting [*-4] to evade income taxes by [*-5] using a double accounting system .\n- ARG1: [*-1]\n- ARG2: of [*-2] charging interest rates much higher than what the law permitted [*T*-3], and attempting [*-4] to evade income taxes by [*-5] using a double accounting system\n- rel: convicted\n\nExample 3 (All args): Supreme Court upheld their conviction of him for graft.\n- ARG0: their\n- ARG1: of him\n- ARG2: for graft\n- rel: conviction\n\n## sentence\n\n### sentence-01 (assign criminal punishment)\n\n- ARG0: judge/jury\n- ARG1: criminal\n- ARG2: punishment\n- ARG3: crime\n- ARG4: duration of punishment\n\nExample 1 (all args): [Dallas District Judge Jack Hampton]-1 had sparked calls for a judicial inquiry with his remarks to the press last December, two weeks after *trace*-1 sentencing an 18-year-old defendant to 30 years in state prison for killing two homosexual men in a city park.\n- ARG0: *trace*\n- ARG1: an 18-year-old defendant\n- ARG2: to 30 years in state prison\n- ARG3: for killing two homosexual men in a city park\n- rel: sentencing\n\nExample 2 (passive, without crime): He-1 was sentenced *trace*-1 to 500 hours of community service and restitution to the museum of $45,000.\n- ARG1: *trace*\n- ARG2: to 500 hours of community service and restitution to the museum of $45,000\n- rel: sentenced\n\nExample 3 (Example with all but arg 0): his prison sentence for income-tax evasion\n- ARG1: his\n- ARG2: prison\n- ARG3: for income-tax evasion\n- rel: sentence\n\nExample 4 (Arg 0 as a court body): many people would receive federal death sentences\n- ARG0: federal\n- ARG2: death\n- rel: sentences\n\nExample 5 (Example with arg 1 and 4): His 18-year sentence\n- ARG1: His\n- ARG4: 18-year\n- rel: sentence\n\nExample 6 (Example with args 2 and 4): A prison sentence of less than three years\n- ARG2: prison\n- ARG4: of less than three years\n- rel: sentence\n\nExample 7 (Example with args 3 and 4): A 30-year sentence for the self-confessed 1992 killing of his wife in Clinton Maryland\n- ARG4: 30-year\n- ARG3: for the self-confessed 1992 killing of his wife in Clinton Maryland\n- rel: sentence\n\nExample 8 (Traditional punishment): A sentence of 100 lashes\n- ARG2: of 100 lashes\n- rel: sentence\n\nExample 9 (args 0, 1, 2): Their sentencing him to solitary confinement, what a joke.\n- ARG0: Their\n- ARG1: him\n- ARG2: to solitary confinement\n- rel: sentencing\n\n### sentence-02 (what your english teacher made you write correctly and completely)\n\n- ARG0: writer\n- ARG1: theme (topic/thing written)\n\nExample 1 (Example with both args): His next sentence about a radio interview,\n- ARG0: His\n- ARGM-TMP: next\n- ARG1: about a radio interview,\n- rel: sentence\n\nExample 2 (Example of the type of sentence to use this sense for): the first to use silences and sentence fragments and menacingstares, almost to the exclusion of what we previously understoodto be theatrical dialogue\n- rel: sentence\n\n## spy\n\n### spy-01 (to investigate intensively  or discover by close observation, clandestine observation)\n\n- ARG0: secret agent\n- ARG1: entity spied/seen\n\nExample 1 (transitive): Mr. Boren even spies a silver lining .\n- ARG0: Mr. Boren\n- ARGM-ADV: even\n- ARG1: a silver lining\n- rel: spies\n\nExample 2 (argM-LOC and arg1): Domestic spying on Americans is an e-hoarding epidemic\n- ARGM-LOC: domestic\n- ARG1: on Americans\n- rel: spying\n\nExample 3 (Just argM-LOC): A party that already was waning in respect due to corruption and its willingness to take some fundamental social justice concepts too far is now supported by a majority of the public , and the beloved party of small government and individual liberties is now a hulking rusty heap of corruption , scandal , incompetence , special interests , big government , and domestic spying .\n- ARGM-LOC: domestic\n- rel: spying\n\nExample 4 (both args): \"This report contradicts the president's claim that his spying on Americans was legal,\" said Sen. Frank Lautenberg (D-N.J.)\n- ARG0: his\n- ARG1: on Americans\n- rel: spying\n\n## charge\n\n### charge-01 (asking price)\n\n- ARG0: seller\n- ARG1: asking price\n- ARG2: buyer\n- ARG3: commodity\n\nExample 1 (charge-v: price and buyer): [Traditional stock managers]-1 like *trace*-1 to charge higher fees for smaller investors.\n- ARG0: *trace*-1\n- ARG1: higher fees\n- ARG2: for smaller investors\n- rel: charge\n\nExample 2 (charge-v: all args): The Penn Bookstore charged John $100 for a mechanical pencil.\n- ARG0: The Penn Bookstore\n- ARG2: John\n- ARG1: $100\n- ARG3: for a mechanical pencil\n- rel: charged\n\nExample 3 (charge-n: NP only, Args 0, 2 & 3): The charge on loans to depository institutions by the New YorkFederal Reserve Bank\n- ARG3: on loans\n- ARG2: to depository institutions\n- ARG0: by the New York Federal Reserve Bank\n- rel: charge\n\nExample 4 (charge-n: Args 0 & 2): They submitted their charges to customers at the end of each month.\n- ARG0: their\n- ARG2: to customers\n- rel: charges\n\nExample 5 (charge-n: Arg 3 only): Admission charges at movie theaters have been going up recently.\n- ARG3: Admission\n- rel: charges\n\nExample 6 (charge-n: Args 0, 1, 3): Their charge of ?14 (?13,95) for breakfast is extortionate.\n- ARG0: Their\n- ARG1: of ?14 (?13,95)\n- ARG3: for breakfast\n- rel: charge\n\n### charge-02 (walk quickly)\n\n- ARG0: entity in motion\n- ARG1: path\n- ARG2: deep agent (if different from arg0)\n\nExample 1 (charge-v: intransitive): John recklessly charged down the crowded street.\n- ARG0: John\n- ARGM-MNR: recklessly\n- ARG1: down the crowded street\n- rel: charged\n\nExample 2 (charge-v: with arg0): Rupert charged his horse across and into Ireton.\n- ARG2: Rupert\n- ARG0: his horse\n- ARG1: across and into Ireton\n- rel: charged\n\nExample 3 (charge-v: transitive, with argM-GOL): The soldiers charged the enemy (line).\n- ARG0: The soldiers\n- ARGM-GOL: the enemy (line)\n- rel: charged\n\nExample 4 (charge-n: Arg 0 only): The wrestler's charge carried him past his adversary.\n- ARG0: The wrestler's\n- rel: charge\n\nExample 5 (charge-n: All arguments): The offensive charge of the field gained their football team 22 yards in the last play.\n- ARG0: offensive\n- ARG1: of the field\n- rel: charge\n\n### charge-03 (supply, as with electricity)\n\n- ARG0: supplier\n- ARG1: battery, usually\n- ARG2: instrument (defaults to electricity)\n\nExample 1 (charge-v: literal batteries): John charged his Walkman batteries.\n- ARG0: John\n- ARG1: his Walkman batteries\n- rel: charged\n\nExample 2 (charge-v: metaphorical batteries): John charged his batteries with a quadruple shot of espresso.\n- ARG0: John\n- ARG1: his batteries\n- ARG2: with a quadruple shot of espresso\n- rel: charged\n\n### charge-04 (buy on credit)\n\n- ARG0: buyer\n- ARG1: thing charged (amount, item)\n- ARG2: credit\n\nExample 1 (charge-v: all args): During the third quarter, the company charged about $46 million against earnings in reducing goodwill.\n- ARGM-TMP: During the third quarter\n- ARG0: the company\n- ARG1: about $ 46 million\n- ARG2: against earnings\n- ARGM-ADV: in reducing goodwill\n- rel: charged\n\nExample 2 (charge-n: All arguments): Mary's charge of the dress on her old credit card would not go through.\n- ARG0: Mary's\n- ARG1: of the dress\n- ARG2: on her old credit card\n- rel: charge\n\nExample 3 (charge-n: Args 1 & 2): The charge of $900 dollars of merchandise to his father's credit card got John into big trouble.\n- ARG1: of $900 dollars of merchandise\n- ARG2: to his father's credit card\n- rel: charge\n\n### charge-05 (assign a role (including criminal charges), assign an allegation or criminal charge against someone)\n\n- ARG0: assigner\n- ARG1: assigned\n- ARG2: role or crime\n\nExample 1 (charge-v: usually as crime): Royal Business Group Inc. said [it]-1 filed suit in federal court here *trace*-1 charging Realist Inc. and its directors with violating federal securities laws ``by engaging in a scheme to prevent'' Royal from acquiring Realist.\n- ARG0: *trace*-1\n- ARG1: Realist Inc. and its directors\n- ARG2: with violating federal securities laws ``by engaging in a scheme to prevent'' Royal from acquiring Realist\n- rel: charging\n\nExample 2 (charge-v: passivized crime): [Mr. Antar]-2 was charged *trace*-2 last month in a civil suit filed in federal court in Newark by the Securities and Exchange Commission.\n- ARG1: *trace*-2\n- ARGM-TMP: last month\n- ARGM-LOC: in a civil suit filed in federal court in Newark by the Securities and Exchange Commission\n- rel: charged\n\nExample 3 (charge-v: not a crime): Instead, [an appropriate institution]*-4 should be charged [*-4]with the job of preventing chaos in the market: the Federal Reserve.\n- ARGM-MOD: should\n- ARG1: [*-4]\n- ARG2: with the job of preventing chaos in the market\n- rel: charged\n\nExample 4 (charge-n: Fragment, Args 0 & 2): its largely successful defense of antitrust charges by the UnitedStates Football League\n- ARG2: antitrust\n- ARG0: by the United States Football League\n- rel: charges\n\nExample 5 (charge-n: Charged with a crime): Prosecuters around Taiwan dealt with more than 2,000 cases concerning black - gold offenses, and brought charges against 30 elected officials and representatives.\n- ARG1: against 30 elected officials and representatives\n- rel: charges\n\nExample 6 (charge-n: Arg 2 only): The newspaper published charges that the attorney had tried to bribe members of the jury.\n- ARG2: that the attorney had tried to bribe members of the jury.\n- rel: charges\n\nExample 7 (charge-n: Args 0 and 2): House Speaker Nancy Pelosi said Friday she won't talk any more about her charge that the CIA lied in 2002 about using waterboarding.\n- ARG0: her\n- ARG2: that the CIA lied in 2002 about using waterboarding.\n- rel: charge\n\n### charge-06 (allege (an utterance or complement clause))\n\n- ARG0: speaker\n- ARG1: utterance\n\nExample 1 (charge-v: transitive): Pharmacia, based in Upsala, Sweden, had charged in a lawsuit against MedChem that MedChem's AMVISC product line infringes on the Pharmacia patent.\n- ARG0: Pharmacia, based in Upsala, Sweden,\n- ARGM-LOC: in a lawsuit against MedChem\n- ARG1: that MedChem's AMVISC product line infringes on the Pharmacia patent\n- rel: charged\n\n### charge-08 (to be in charge of something, have a responsibility or role)\n\n- ARG0: Person assigning responsibility (rare)\n- ARG1: Person that the responsibility is assigned to\n- ARG2: responsibility itself, role\n\nExample 1 (charge-n: Args 0 & 1): The judge's charge to the jury was to ignore the preceding statement of the witness.\n- ARG0: The judge's\n- ARG1: to the jury\n- rel: charge\n\nExample 2 (charge-n: Args 1 & 2): The spy fulfilled his charge of smuggling fissile materials into the country.\n- ARG1: his\n- ARG2: of smuggling fissile materials into the country\n- rel: charge\n\nExample 3 (charge-n: Arg 2 only (very common)): Malcolm S. Todt was named vice president and senior officer in charge of equipment leasing to municipalities , a new effort of this bond insurer .\n- ARG2: of equipment leasing to municipalities, a new effort of this bond insurer.\n- rel: charge\n\n## imprison\n\n### imprison-01 (throw in jail)\n\n- ARG0: court, judge, jury\n- ARG1: criminal\n- ARG2: term\n- ARG3: cause, misdeed\n\nExample 1 (active transitive): And in a case filed in federal court in August, a lawyer is arguing that Missouri authorities are wrongfully imprisoning the fetus of a pregnant woman who is in jail for theft and forgery.\n- ARG0: Missouri authorities\n- ARGM-MNR: wrongfully\n- ARG1: the fetus of a pregnant woman who is in jail for theft and forgery\n- rel: imprisoning\n\nExample 2 (passive transitive): In the port of Berbera, for example, [hundreds of men of the rival Issak clan]-2 were rounded up in May 1988, imprisoned [*-2], and then taken out at night in groups of five to 50 men to be executed without any judicial process whatsoever.\n- ARGM-LOC: In the port of Berbera\n- ARGM-DIS: for example\n- ARG1: [*-2]\n- rel: imprisoned\n\nExample 3 (with term): If convicted, he-1 could be imprisoned [*-1] for up to 10 years and fined $250,000.\n- ARGM-ADV: If convicted\n- ARGM-MOD: could\n- ARG1: [*-1]\n- ARG2: for up to 10 years\n- rel: imprisoned\n\nExample 4 (with crime): [*-2]-3 Imprisoned [*-3]by the Nazis during World War II for his political beliefs, [Mr. Honecker]-2 typified the postwar generation of committed Communist leaders in Eastern Europe who took their cues from Moscow.\n- ARG0: by the Nazis\n- ARGM-TMP: during World War II\n- ARG3: for his political beliefs\n- ARG1: [*-3]\n- rel: Imprisoned",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSkwsKEAgTGAI4AUIIdGhpbmtpbmcSDERhZHl0Tbmxs4IvlBoMTR131CnQpVlkfT08IjDTqe4XuH0oh66CM6egUA+kJjCqDqW8GqgNg2J3fqAdEy17GUc3zQ/ZMuK6/DSshmsqsAqN09xKLDsMKOLzdlC5mzRzH+XsomMwAkQ4vqlgWKRtcHFk/N/0+1cLfU8+iG5ME2FGGhoVDH3vjHrw5O2xOiVpuoJzceE11Ud0lScKeyE2mE8iocDPq+a/ADxQxbNqiwFThiyCjTCyATwA8r3KMc5QSq9PeDvk4qJH4uz9/dx4i0abOd7os2HLgHPd9UOI/C4oIILReiyV1kX2fQ3dJWWOWGLThJK379tmP/72CkdyKu6MXHZoJL84gXyoXsfx7lolHOumHxXo/nVGWts0SvDJuFMxvCOkMcdc1kN759y1nx4NKEEi3nQu+bnWZSylCqB91lUTR/9lc3a7tBJHOMl6Z4mr/KG2MjD3+ydZNW4x6NgKlI3AUuupsljHI6FzQtc5VCt+MlvaFoQQbrgykhZ39e/bM0saipAAFhNN6hku9hkpz5Q/G2S3uvr2JY9qwp2+Q9YF6KCi0d8iQ5W0Dgc4Ey75vjdMfUN8FtB41cI0v3tQQ9SlXBnzlMLLb9NPTuZBb4B5Bf2rfGlWbeuLgR5ui30XMgKnjTCUIzoSLht4ujjiHDZSKxTBMHrviI89wm3P4nG8dwi+mMAqe792yQsGyqeGzeMJeVPrYfZOcLW23YUnTmAIXrAqeSv+oRkyh4glLT/PzwJ3UVquB1edAbCaU7xP2tniBO819F96gZTp080jXSX+imKheh0ywegv7/x2r9z7TdiIrl9Aq4c3vaUTV1ENFa/hyXfWxDtczloDUtettdRwykpiab4XpTDl3TLUbbePdOZeeca+d5xTxs9x/peRtVE2qXTFZYP5YaD/q+ivjjx8tDrbshFnURNXN+L0qOypK42i9Jffh7usI1dFkyBUDk3b/Mtr9bgui3mtRTm0McA7tcCHo2BDLuOVe+bJXg30kpvXklxAduGIS+JR1BcFgGU9v913JPBQu7WMIf7S63MAGzW3QvaECTW+x9SrmHWxmHC8SVmdSK1RHoOdy/s6tyUTLJ21qppXHBBis5m7oQFMWZf+jmrnESf2G1LgnMxtOgumzYZ2pAbTeOt+Ei5K0FdMGfatTsmpzbFhwLAcpq6+xyd7uX/QcENymZCfuAZI0ALSxMUhVlIzDxH0XIvADpnggQwjr7/IeJwRAFb4e9Z3+XATVyy0hzjQhPlGKSYtCVmrwEolm+MtKOTOls1XQ6WsXmpk6YNMI4lxa+o2mrP27EVFm7nNQTFXwrJ30ktWcTxownsu09ecyZq9CRriOTE98h6U8em6RNsBDmQhFczOuNKmrsNglDK0Z+cABwsOngXl/KMGS3c6WEFatiOJ3rBkePcHKLppcJAMWtfN7k7oxLZjI4g7K6ZPvTFveKk/llAwnZfTeI3gZlTS1veGvYCrPfDYU17DzHL+lMDJOJaXDocqC+0LPMvPv1Hy9Kzvxu9KV5pgEU2jZwmDovEqrAI0zKryc+ktfB6jeIOB1RDtVykhR0C1Yx3U36o9dARni4LBDTHLm8/J9dxhMyqvVDTCnghW7DjDp/eT8N9YLCbLy6wuADiFDLxwIQB2rEV4u/69s3vGGVw8TXW+5LIxrrl99ELyXvM3etR0FodX5KX3GFEe3rgdiyXUa8Bww6fJ9T9QFzTjgVqS9aamDpHMbT1ekfD4mMtxfA1xsx+1SDuStwG0IvtbLb9nhI7m858ahwwTudlBw7lH/kjVLEa5eufv3cMNThp5KdesrTU1zoSA6UKo+hz+8MRm583aj66oi9DiJ8Ef1GtaNkpcP6/ZIc3djnZcnBO0SFzLVRgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s2 / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

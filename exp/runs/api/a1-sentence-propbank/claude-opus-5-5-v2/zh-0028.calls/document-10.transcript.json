@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-10.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4579
+    },
+    "cache_creation_input_tokens": 4579,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1191,
+    "output_tokens_details": {
+     "thinking_tokens": 514
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 10 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n5\t方形 机身 和 方形 的 底座 设计 ， 笔挺 的 立姿 ， 有点 像 大师 打座 的 气势 。\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n\n7\t高清 的 HDMI 接口 成为 现在 市场 的 主流 ， 很 有 可能 HDMI 就 是 2012 的 一 个 趋势 ， 同时 还 保留 有 VGA 的 接口 ， 让 消费者 在 不同 需求 上 得到 满足 。\n\n8\t福韵 B560 系列 的 诠释 有 ： “ 福运 ” 、 “ 幸福 ” 、 和 拥有 贵族 的 “ 韵 ” 味 。\n\n9\t左右上角 的 两 条 龙 设计 的 毫 无 瑕疵 ， 机身 背后 写 有 一 个 大大 的 “ 福 ” 字 ， 并且 拥有 古代 龙纹 图案 ， 这些 都 有 浓郁 的 中国 元素 。\n\nTheir graphs:\n\n# ::snt 5\n# sentence level graph:\n(s5x / 像-01\n    :ARG0 (s5a / and\n        :op1 (s5s / 设计-01\n            :ARG1 (s5a2 / and\n                :op1 (s5j / 机身\n                    :mod (s5f / 方形))\n                :op2 (s5d / 底座\n                    :mod (s5f2 / 方形)))\n            :aspect process)\n        :op2 (s5l / 立姿\n            :mod (s5b / 笔挺)))\n    :ARG1 (s5q / 气势\n        :mod (s5d2 / 打座-00\n            :ARG0 (s5m / 大师)\n            :aspect process))\n    :degree (s5y / 有点)\n    :aspect state)\n\n# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6y / 有-01\n        :ARG0 (s6t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s6j / 接口\n            :quant 3)\n        :aspect state)\n    :op2 (s6w / 为-01\n        :ARG0 s6j\n        :ARG1 (s6a2 / and\n            :op1 (s6d / 电源)\n            :op2 (s6h / HDMI)\n            :op3 (s6v / VGA))\n        :manner (s6f / 分别)\n        :aspect state))\n\nI based this on two PropBank lookups:\n- **有 (has):** I chose `有-01` (owner and thing owned). \"它\" (it) is the owner and is a third-person singular `thing`. The three ports are `接口 :quant 3`. The classifier 个 is left out.\n- **为 (are, namely):** I chose `为-01` (a thing and what it is said to be). Its `:ARG0` points back to the same ports node, and its `:ARG1` is an `and` of the three items: 电源 (power), HDMI and VGA.\n\nSome choices were judgement calls and could differ from the expert annotation:\n- **Joining the clauses:** there is no conjunction, so I linked them with a top-level `and`. Another option would be to attach the second clause to the ports with `:ARG0-of`.\n- **分别 (respectively):** I attached it to `为-01` as `:manner`. It could also be a plain `:mod`.\n- **Aspect:** both events are `state`, since one is owning and the other says what the ports are.\n\n# ::snt 7\n# sentence level graph:\n(s7a / and\n    :op1 (s7c / 成为-01\n        :ARG0 (s7j / 接口\n            :mod (s7g / 高清)\n            :mod (s7p / product\n                :name (s7n / name :op1 \"HDMI\")))\n        :ARG1 (s7z / 主流\n            :mod (s7s / 市场\n                :temporal (s7x / 现在)))\n        :aspect state)\n    :op2 (s7i / identity-91\n        :ARG1 s7p\n        :ARG2 (s7q / 趋势\n            :temporal (s7d / date-entity :year 2012))\n        :aspect state\n        :modal-strength partial-affirmative)\n    :op3 (s7b / 保留-01\n        :ARG0 s7p\n        :ARG1 (s7j2 / 接口\n            :mod (s7p2 / product\n                :name (s7n2 / name :op1 \"VGA\")))\n        :mod (s7h / 还)\n        :temporal (s7t / 同时)\n        :purpose (s7r / 让-02\n            :ARG1 (s7k / 消费者)\n            :ARG2 (s7e / 得到-01\n                :ARG0 s7k\n                :ARG1 (s7m / 满足-01\n                    :ARG2 (s7x2 / 需求-01\n                        :ARG0 s7k\n                        :mod (s7y / 不同)\n                        :aspect state)\n                    :aspect process)\n                :aspect activity)\n            :aspect activity)\n        :aspect state))\n\n<br>\n\nI think 很有可能 (\"very likely\") counts as probable, not merely possible. So the `identity-91` (HDMI 就是 2012 的趋势) gets `:modal-strength partial-affirmative`.\n\nA few other calls you may want to check:\n- **Copula:** I treated 是 as a copula and wrote it as `identity-91`, as the guidelines say for \"X is Y\", not as PropBank `是-01`.\n- **Named entities:** HDMI and VGA are both written as `product` named entities. The type and the missing `:wiki` are my guesses.\n- **Subject of 保留:** the sentence doesn't say what keeps the VGA port. I made it HDMI (`:ARG0 s7p`), but this is the least certain choice in the graph.\n- **得到满足:** I wrote it as `得到-01` (\"obtain\") taking `满足-01` (\"satisfy\") as its `:ARG1`, with the consumers' needs as what is satisfied. PropBank's `满足-01` puts the thing satisfied in `:ARG2`, as in its example \"满足……需求\". I attached 在不同需求上 there, though the expert may have tied it to the consumers or to 得到.\n- **Purpose:** the 让 clause is a `:purpose` of 保留.\n- **Aspect:** 成为 and 保留有 are `state`, describing the current market. 让 and 得到 are `activity`.\n\n# ::snt 8\n# sentence level graph:\n(s8y / 有-07\n    :ARG0 (s8q / 诠释-01\n        :ARG1 (s8x / 系列\n            :mod (s8p / product\n                :wiki -\n                :name (s8n / name :op1 \"福韵\" :op2 \"B560\")))\n        :aspect process)\n    :ARG1 (s8a / and\n        :op1 (s8f / 福运)\n        :op2 (s8h / 幸福-01\n            :aspect state)\n        :op3 (s8o / 拥有-01\n            :ARG0 s8x\n            :ARG1 (s8w / 味\n                :mod (s8r / 韵)\n                :mod (s8g / 贵族))\n            :aspect state))\n    :aspect state)\n\nI treated \"福韵 B560\" as a product name and \"系列\" (series) as the head noun modified by that product. Other choices I made:\n\n- **有-07**: I chose this \"includes\" sense for 有, with ARG0 the content being described and ARG1 the items listed.\n- **诠释-01**: Here it is a noun meaning \"the interpretation\", so it is a process. Its ARG1 is the series.\n- **福运**: I wrote this as a plain entity concept, not an event.\n- **幸福-01**: I treated this as a state. It has no argument because PropBank's only role for it, ARG0 (the one who is happy), isn't stated in the sentence.\n- **拥有-01**: I made the series its owner. What is owned is 味 (flavor), with 韵 (charm) and 贵族 (noble) as modifiers.\n\nTwo points could reasonably go another way: whether 幸福 should be a plain noun rather than an event, and whether \"系列\" belongs inside the name.\n\n# ::snt 9\n# sentence level graph:\n(s9a / and\n    :op1 (s9s / 设计-01\n        :ARG1 (s9l / 龙\n            :quant 2\n            :place (s9j / 上角\n                :mod (s9z / 左右)))\n        :manner (s9w / 无-01\n            :ARG1 (s9x / 瑕疵)\n            :degree (s9h / 毫)\n            :aspect state)\n        :aspect performance)\n    :op2 (s9x2 / 写-01\n        :ARG1 (s9z2 / 字\n            :mod (s9f / 福)\n            :mod (s9d / 大大)\n            :quant 1)\n        :ARG2 (s9b / 背后\n            :part-of (s9j2 / 机身))\n        :aspect state)\n    :op3 (s9y / 拥有-01\n        :ARG0 s9j2\n        :ARG1 (s9t / 图案\n            :mod (s9l2 / 龙纹)\n            :mod (s9g / 古代))\n        :aspect state)\n    :op4 (s9y2 / 有-01\n        :ARG0 (s9t2 / thing\n            :mod (s9z3 / 这些)\n            :mod (s9d2 / 都)\n            :refer-number plural)\n        :ARG1 (s9e / 元素\n            :mod (s9c / country\n                :wiki \"China\"\n                :name (s9n / name :op1 \"中国\"))\n            :mod (s9n2 / 浓郁))\n        :aspect state))\n\nI annotated the sentence as an `and` of four clauses, all on the plane's design. There is no conjunction for this `and` in the sentence, so it is aligned to no word. I checked every predicate in PropBank: 设计, 无, 写, 有, 拥有 and 浓郁. 瑕疵 is not in PropBank, so it is a plain noun.\n\nThese choices could reasonably have gone another way:\n- **设计得毫无瑕疵**: I used `设计-01` with `:manner (无-01 :ARG1 瑕疵 :degree 毫)`. The other way to do it was to drop `无-01` and put `:polarity -` on 瑕疵.\n- **Aspect of 设计**: I chose `performance` (the design is finished). `state` is also possible, since the clause describes how the plane looks.\n- **拥有**: The subject is left out in the sentence. I took it to be the plane body (机身) and reused that node as `:ARG0`.\n- **这些**: I made it a separate `thing` node marked plural. The gold may instead point it back to the three earlier clauses.\n- **有**: I used `有-01` (possession). `有-06` (\"entity owned by / exists with respect to\") also fits.\n- **浓郁**: I treated it as a plain modifier (`:mod`) of 元素, not as the predicate `浓郁-01`, because here it describes the noun rather than being predicated.\n- **\"福\" 字**: 福 is a `:mod` of 字, with `:quant 1` for 一个.\n\nThis sentence:\n\n10\t金黄色 的 B560 系列 看 起来 更 符合 龙年 的 韵味 ， 背部 的 福 字 也 更加 现眼 . 。\n\nIts graph:\n\n# ::snt 10\n# sentence level graph:\n(s10a / and\n    :op1 (s10k / 看-05\n        :ARG0 (s10x / 系列\n            :name (s10n / name :op1 \"B560\")\n            :mod (s10j / 金黄色))\n        :ARG1 (s10f / 符合-01\n            :ARG0 s10x\n            :ARG1 (s10y / 韵味\n                :possessor (s10l / 龙年))\n            :degree (s10g / 更)\n            :aspect state)\n        :aspect state)\n    :op2 (s10m / 现眼-00\n        :ARG1 (s10z / 字\n            :mod (s10u / 福)\n            :place (s10b / 背部\n                :part-of s10x))\n        :mod (s10e / 也)\n        :degree (s10h / 更加)\n        :aspect state))\n\nI treated 现眼 as written as the predicate. It is not in Chinese PropBank, so I named it `现眼-00`. It is probably a typo for 显眼 (\"eye-catching\"), which is in PropBank as `显眼-01` and takes `:ARG0` for its theme. If the gold annotation fixes the typo, that node would be `显眼-01` with `:ARG0` instead.\n\nOther choices that could go either way:\n- **看起来:** I used `看-05` (\"look/appear\"), which in PropBank only has an `:ARG0`. I put 符合 under it as `:ARG1` anyway, so that \"fits the Year of the Dragon\" is shown as what the series appears to do.\n- **B560 系列:** I annotated it as the concept 系列 with the name \"B560\", not as a named-entity type like `product`.\n- **龙年:** I left it as a plain concept that possesses 韵味, not as a `date-entity`.\n- **背部:** I treated 背部 (\"the back\") as the place of the character and linked it as part of the B560 series.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSmQ4KEAgTGAI4AUIIdGhpbmtpbmcSDEXGZPcrAyYHW6On0RoMJYlb13hL6Wr7aqJQIjDY4DqUltK7vJOoYqFj53VbO5W7DMdJRMS9aIH54j+4+hDv4XDh+tJ3BvCYj1ssBb4qtg1/q+5AYvmX4+g4YdFLkiukX+XowfLb3HMmesEPL0QrkCqBfqKPblgiNPz7cNEuhXPA9d4Y/ErwSV0iLaDcW7vuzwx5sGp/hsW1jGx4JbxjklWkVg1rKkZnbqajI2lcP+8lxH9w2TeqXotHeRlpQwUWRH3FdvUErH0I+SfMiEKM3KWSh2oGsCUD/e5NzyqLog+WnHzy6pqNvgzFetnV9U1d36ZcO783qw5sln4j4+ozERazXgp752PwYqF/msIVDYNjlYkFEMiTZZmW4W4L+eeNdUhhb3SVcS1mS6Eo9LjU57QMkvXYoGw6huhs2UUUpCJkh9f0C1bv3jYkxZ6H6KB62k0g42pVi5WjmzQdt4rbqVL4uRZ/SXU0V1LzQNatEaoPziebAkjd7KtzCN9UKjRKUClZOCc+WfGmJBwfVEGMIpJqlnUUMM5D0xoRLCDQGfPyao2cHtXfHsTa/C7dlfxc0do4VvjHZcq1wv9EFe83eRS1J9bKy7LlvcbbgJquUtB1jZXM0p1C2kogQ9M1mBUSPNie8w0RfRjYA/JQIf2jYqFS2ngHP/iDqwCRLO4qFw3w9lGTNmzXts9A6Tcji7ObVGaeZMRvL6AJh9aDbruy146P0X+iSsTWgnUSeQKh3QNT70sZ5o+NPBuHLHBa+krecZXIHg46f8+RrCYm2+69Py+wUZStvLJHgJe61XRn/A7NQ/B5bPoHis0phuo5nbeNkY7eQ2pB+acgJHP2jo6wgJggjpzOWqu+0Bo7Paa9xIYWTK7Fo2hx6Blg9tAlexn/6jqBhM8cu2QkiBeSqesdhKYslkR1Wwv52PrGHJefUL8or4XTmypMU67DwzzO4k+p6j24ZgkIHJQD/EmunvHy+/ZgswCWl2fS7P/gewyJ3wGY9cP2DEoSDjHSe/fDqzxf3cVgt0PQiB2ctMCCJgY2PBNh7ccjaPdZtflGNAQr5Gr6R7zra5vYjCfHTzP6vIvcJ8uEbGjNTGEMohd2KJChAZbzDDHFcgzBq40kJIGl1602JnW0iVayrsAZ3xGLWy5jNepYn10XI71wDtiPHUfRWOzi0nVC9KBNvMqZYt9zvc4rKa+jgasv9169RVy7JIEiBqAMhWBeU34xisZBMe/vNfoaQpYk0VTMSroK/YLsioMbi9iaQKHGgOso+bTbtyOOEOQt75uSWFwh1C21umSv1JvplnjT7PaHZghUe/oE/AKi1sEoECXY649Y4nut13FZGISWV98iNlBSJVP9CNxrZMbPhuXn2qP+v+2JvzR53UifHyBvknV7x4QhfmRx23cyeLwD58sgmTGtfGaCxCjQNWi5Og9gWsIy1TJFRx3EQMFBJnqPtPYd1jYLIfZwUN5X8OF1PZIEAVd+o5gIK7qB2jVvwpdhQchm9ktZOFA0+MTLfhg/KG3fZrsxlY4a7CxncEFQnH3Ot6ALe4vLpsHOTvZd4gsbFDhyY2jOai9OrBmKwZaf3S37WoQBeqcvWVgLEZb/HRoujFFGJZnac4qszErSSV7btR3XynrZKq63fKZnFfHz/HKdq8IH/iISZ/xZcW29cUUZxMbgjL1U3XjcsUqiOd5huCOn8zLfNBkhSRdaDumsRxExhMC5cyl/zyE/cdXWLBwKmsbMx0opZPnfoNEdkv2RUQDhsv1ZG8GFEIEM9VJEw+1FMFUrpEeNhghPTYXq82zNGmrzdnEGt3vMLjZUnj8CTzOXoSQp4cWK0vzvUY0FWQ84xdAW2XeT6FUAZlhQ7lzBKw6p0k4VOiqlRtJg0zK+2WY/omSXLT3WZtXclwjRv9zxIaVOUUnQ2qRC0CQsGR86/hhfK7KM26Qlj/hSD4pq2VvCVCJW8R4Vf8Zd9zccMl36lJpxEmsHJgaI42WVGSp9HVnOCwI5jbsTDpgdqnZPmJjbMKgGt6MYGIIxmBNS4HSeYMXfgdHPlSuUVHYpbC/shIiJLXsrfJ3nfHiefggarjYyzfJifhuZVVAEJyI45Zaf0i1r1U1qD6xqWQ72SMvN+thuqeG7nGAA6BWNcpUtPNdxw65MD3Iuy8vQGk0qUG1ZQYuQjrEK9LATSgdUX6Q8UxaxAa/Unku0HbufmrHGPgy6SGJF+hR+AXN7QpDdmUsMVerlYvpNW8nCDmiiyIE/JgXqzjeKKQ9Jl4MRWuKAMhaVk5zsDotssR9uSKlN+cFlmMLhe45+MU7xcQJr9vZDYBBsMWLhdX1BOlecyhYCBmvzij+E/EG9htLtxsennVr75yJh5ypLkQQSWNe+ao/lNw7xRsMnRLCtFhp8kqVlZRgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s10k)\n               (s10k :overlap s10f)\n               (document-creation-time :overlap s10m))\n    :modal ((root :modal author)\n            (author :full-affirmative s10k)\n            (s10k :partial-affirmative s10f)\n            (author :full-affirmative s10m))\n    :coref ((s8x :same-entity s10x)\n            (s9z2 :same-entity s10z)\n            (s9b :same-entity s10b)))\n\nI didn't run any PropBank lookups for this sentence. These relations rest on the sentence graph as given and on the guidelines.\n\n- **Temporal:** 看起来 (s10k) and 现眼 (s10m) are present states, so each overlaps the document creation time. 符合 (s10f) is inside 看起来, so it takes s10k as its parent and overlaps it.\n- **Modal:** the author fully asserts s10k and s10m. 看起来 (\"looks like\") only makes it seem the series fits the Year of the Dragon, so I gave s10f `partial-affirmative` under s10k. This is the least certain call. The gold may treat it as `full-affirmative`, or hang s10f directly under the author with `partial-affirmative`.\n- **Coreference:**\n  - The B560 series (s10x) is the 福韵 B560 系列 of sentence 8 (s8x).\n  - The 福 character on the back (s10z) is the \"福\" 字 of sentence 9 (s9z2).\n  - 背部 (s10b) is the 背后 of sentence 9 (s9b).\n- **Links I left out:**\n  - **龙年 and 2012:** 龙年 (s10l, the Year of the Dragon) may be the same as 2012 in sentence 7 (s7d), since 2012 was a Year of the Dragon. The text never says so.\n  - **Series and machine body:** I didn't link the series to the machine body of sentence 9 (s9j2). The body is a part of the product, not the same entity.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,135 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7706
+    },
+    "cache_creation_input_tokens": 7706,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 82,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2659
+    },
+    "cache_creation_input_tokens": 2659,
+    "cache_read_input_tokens": 7706,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 683,
+    "output_tokens_details": {
+     "thinking_tokens": 133
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 6 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n6\t它 有 三 个 接口 ， 分别 为 电源 、 HDMI 、 VGA 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_01SEw9pFjMmVJ4uJWcpTPTS4",
+     "input": {
+      "lemmas": [
+       "有",
+       "为"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01SEw9pFjMmVJ4uJWcpTPTS4",
+     "content": "## 有\n\n### 有-01\n\n- ARG0: owner\n- ARG1: entity owned\n\nExample 1: 原 苏联 解体 后 ， 该 军队 集群 转归 俄罗斯 *PRO* 所 有\n- ARG0-: *PRO*\n- rel: 有\n\nExample 2: *OP* *T*-1 统一 的 德国 能够 在 联合国 发挥 *OP* *T*-2 更 大 的 作用 ， 在 联合国 作出 决定 时 有 *OP* *T*-3 更 大 的 发言权\n- rel: 有\n\n### 有-02\n\n- ARG0: entity described\n- ARG1: predicative (often quantity of arg0)\n\nExample 1: *OP* *T*-1 第五 个 出生 的 男婴 体重 最 轻 ， 只 有 四百九十五 克\n- ARG0-PSE: 体重\n- ARG0-PSR: *T*-1 第五 个 出生 的 男婴\n- ARGM-ADV: 只\n- rel: 有\n\n### 有-03\n\n- ARG0: location/domain described\n- ARG1: entity that exists with respect to arg0\n\nExample 1: 中国 现 有 保险 公司 二十六 家\n- ARG0-: 中国\n- ARGM-TMP: 现\n- rel: 有\n\nExample 2: 据 统计 ， 今年 全 省 高新区 的 技工贸 总 收入 、 *OP* *pro* 完成 *T*-3 的 工业 总 产值 均 比 去年 有 较大 幅度 增长\n- ARG0-: 全 省 高新区的技工贸总收入 、 完成的工业总产值\n- ARGM-ADV: 均\n- ARGM-TMP: 今年\n- rel: 有\n\nExample 3: 随着 内地 贸易 、 金融 、 零售 等 服务业 有 步骤 地 对 外 开放\n- ARG1-: 步骤\n- rel: 有\n\n### 有-04\n\n- ARG0: \n\nExample 1: *OP* *T*-1 实际上 有 领取 奖金 的 传销商\n- rel: 有\n\n### 有-05\n\n- ARG0: entity described\n- ARG1: state/event that exists with respect to arg0\n\nExample 1: *pro* 有 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- ARG0-: *pro*\n- ARG1-: 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- rel: 有\n\n### 有-06\n\n- ARG0: entity described\n- ARG1: entity owned by/exist with respect to arg0\n\nExample 1: *PRO* 虽然 开发 有 整车 产品 三 个 系列 二十三 个 品种 ， 改装车 产品 三 个 系列 十二 个 品种\n- ARG0-: *PRO*\n- ARG1-: 整车 产品\n- ARG1-QTY: 三 个 系列 二十三 个 品种\n- ARG1-: 改装车 产品\n- ARG1-QTY: 三 个 系列 十二 个 品种\n- rel: 有\n\n### 有-07\n\n- ARG0: entity described\n- ARG1: entities arg0 includes\n\nExample 1: 据悉 ， 这些 新 措施 的 主要 内容 有 *PRO* 以 *PRO* 发展 规模 经营 、 组建 企业 集团 为 重点 ， 推进 省属 外贸 公司 的 战略性 重组 ； 加大 *OP* 支柱 产业 产品 *T*-1 出口 的 力度 ； 办好 *OP* *T*-2 在 香港 举办 的 外商 投资 招商会 和 九八 中国 投资 贸易 洽谈会 等\n- ARG0-: 这些 新 措施 的 主要 内容\n- ARG1-: 以发展规模经营 、组建企业集团为重点 ， 推进省属外贸公司的战略性重组 ；加大支柱产业产品出口的力度 ；办好在香港举办的外商投资招商会和九八中国投资贸易洽谈会等\n- ARGM-ADV: 据悉\n- rel: 有\n\n### 有-08\n\n- ARG0: entity described\n- ARG1: activity\n\nExample 1: 个别 企业 及 公司 的 业务 在 某些 环节 如 不 获 任何 协助 ， *pro* 就 难 有 贡献\n- ARG0-: *pro*\n- ARG1-: 贡献\n- ARGM-DIS: 就\n- ARGM-ADV: 难\n- rel: 有\n\nExample 2: 帛琉 则 成为 美国 的 托管 地 ， 并 於 一九八○ 年代 开始 与 我 国 有 了 政治 上 的 接触\n- ARG0-CRD: 帛琉\n- rel: 有\n\n### 有-09\n\n- ARG0: entity described\n- ARG1: amount extra\n\nExample 1: 古稀 有 二\n- ARG0-: 古稀\n- ARG1-: 二\n- rel: 有\n\n## 为\n\n### 为-01\n\n- ARG0: entity being predicated\n- ARG1: predicative\n\nExample 1: 乡镇 企业 贷款 增幅 为 百分之六十一点八三\n- ARG0: 乡镇 企业 贷款 增幅\n- ARG1: 百分之六十一点八三\n- rel: 为\n\nExample 2: 图 为 １２日 李鹏 总理 在 马六甲州 参观\n- ARG0: 图\n- ARG1: １２日 李鹏 总理 在 马六甲州 参观\n- rel: 为\n\n### 为-02\n\n- ARG0: a role of arg0\n- ARG1: entity playing the role of arg1\n\nExample 1: *OP* *T*-2 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德 为 团长 的 澳大利亚 代表团\n- ARG1: 团长\n- ARG0: 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德\n- rel: 为\n\nExample 2: *pro* 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中 ， 以 日本 为 最 多\n- ARG0: *pro*\n- ARG1: 最 多\n- ARG2: 以 日本\n- ARGM-LOC: 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中\n- rel: 为\n\n### 为-03\n\n- ARG0: entity being predicated\n- ARG1: predicate\n\nExample 1: 巴格瓦特 是 *OP* *T*-1 １９９６年 ９月 被 任命 为 印度 海军 参谋长 的\n- ARG0: *T*-1\n- ARG1: 印度 海军 参谋长\n- ARGM-TMP: １９９６年 ９月\n- rel: 为\n\n### 为-04\n\n- ARG0: agent/doer\n- ARG1: thing done\n\nExample 1: *PRO* “ 有 所 为 ， 有 所 不 为 ” 的 原则\n- ARG0: *PRO*\n- rel: 为\n\n### 为-05\n\n- ARG0: agent/doer\n- ARG1: reason/purpose\n\nExample 1: 我们 学 电影 ， 嗯 ， 写 东西 是 为 什么\n- ARG0: 我们 学 电影 ， 写 东西\n- ARG1: 什么\n- rel: 为",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS8gYKEAgTGAI4AUIIdGhpbmtpbmcSDETWOpmFgOsAOFltVRoMB/8RqqxAcY/upSbyIjDhVek2yMnYU4Ahfyw8rwv6QySGtDxficnv8v1meUk7y3KSsxZACsdqceqaPDOSu6IqjwYUPgnYgg36Ysyy8qIs5FjtqBVFv8WnTBK/1ocn4CKMy2g19lA8wt/OQoz/fFVqsHVsvNz6GBVnf3S+towaGqz5o+LEeoRnE58M1ZaokxMBrdy1Sxenkqp5diIxjnSxuauZ3jgMIWj0l2Z6K3YcOPfYcunkl8UoyVingYU7Jo00npt+869ZNc80DQkarDKLjT3bxemKqIPV/D6dCmIeCCqHQvz5b0lemBAVGEr0eLERqLJzKBh2m9wLksgquzOmxqVRrFDP7etSGUnYbW3M4/pGSrNRzu3n4zTvflKPDtl9sa1swp2XyyfD8kyVOuQbr3jcl/rPS9vt5JBYNK5LqoDrbRngXbctujI6FOVBz6r0g4CXSU1O0gVcpjhZHQr+k7DIYt72/X5r49GRzUik+LXV+XUO7wQ/oxuiTDtMesEc/utu93ZSyhG5AEEpBxt4T3palmgGYl9hegQz11VnfGtLomo9/KLSM729IaAcBUI+xJ3Jpb9M1mvurQodbdb8chlYIs3tQ3lWLfjX/+KKNWxj3VcuIp0CKr5c/6dZ5AOCBTWEt9OSleSuqXKBRq1fuOouqq0yoPu6PQdxCRMA89bk22eJPX5Fs7v9bw4mLRxMbVmF8kiiVfyzACBbDBemcTsHqWvTHi9TYp/djfJ9gOP2nvXnoNZj3gdqagHLg5CysjcaKE2X2jIHeVSDo6h1UedUE3YuA6egIbn+vvkEFtRGf6uz0Vsp1ZE/VHRLEcWFaTujYnSgjGsf/+kQsX+YaFO8Fse2dbBZmkDnPTJqVjWV8A05HQ7HZrCHCun2e4FtNlp2fSVOE3Wrlch9dbt98sdpRPUdyGoz1pw7QQMVToC3YXVFExqa3Cxo3qdwv1xNbWq2X9XmsYDbznHYMNyO9ssJwPZsU1s2mB5Eu7ucgymsa0r9WTcLoUko1LsCbXHyMcgr1T5EjLwWcu5R7IP6EjhgWbdz/89zsRkC+ZqrkizG764b2K0AQ+PARRJ+y64ErDnjypHIgMAUeKsAAoar3LSoX5GpGEuJGyxyyaaJaXsYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6y / 有-01\n        :ARG0 (s6t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s6j / 接口\n            :quant 3)\n        :aspect state)\n    :op2 (s6w / 为-01\n        :ARG0 s6j\n        :ARG1 (s6a2 / and\n            :op1 (s6d / 电源)\n            :op2 (s6h / HDMI)\n            :op3 (s6v / VGA))\n        :manner (s6f / 分别)\n        :aspect state))\n\nI based this on two PropBank lookups:\n- **有 (has):** I chose `有-01` (owner and thing owned). \"它\" (it) is the owner and is a third-person singular `thing`. The three ports are `接口 :quant 3`. The classifier 个 is left out.\n- **为 (are, namely):** I chose `为-01` (a thing and what it is said to be). Its `:ARG0` points back to the same ports node, and its `:ARG1` is an `and` of the three items: 电源 (power), HDMI and VGA.\n\nSome choices were judgement calls and could differ from the expert annotation:\n- **Joining the clauses:** there is no conjunction, so I linked them with a top-level `and`. Another option would be to attach the second clause to the ports with `:ARG0-of`.\n- **分别 (respectively):** I attached it to `为-01` as `:manner`. It could also be a plain `:mod`.\n- **Aspect:** both events are `state`, since one is owning and the other says what the ports are.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

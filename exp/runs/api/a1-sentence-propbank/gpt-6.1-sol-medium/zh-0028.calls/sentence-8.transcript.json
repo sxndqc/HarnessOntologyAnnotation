@@ -1,0 +1,170 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-8.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 86,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 31,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5207,
+     "input_tokens_details": {
+      "cache_write_tokens": 83,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 31,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5238
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1581,
+    "cache_read_input_tokens": 5204,
+    "output_tokens": 455,
+    "reasoning_tokens": 252,
+    "openai_usage": {
+     "input_tokens": 6785,
+     "input_tokens_details": {
+      "cache_write_tokens": 1578,
+      "cached_tokens": 5204
+     },
+     "output_tokens": 455,
+     "output_tokens_details": {
+      "reasoning_tokens": 252
+     },
+     "total_tokens": 7240
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 8 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n8\t福韵 B560 系列 的 诠释 有 ： “ 福运 ” 、 “ 幸福 ” 、 和 拥有 贵族 的 “ 韵 ” 味 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_5QTPJnQeR8Tdd9jvnd7F0JS2",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "诠释",
+       "有",
+       "拥有"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"诠释\",\"有\",\"拥有\"],\"language\":\"zh\"}",
+       "call_id": "call_5QTPJnQeR8Tdd9jvnd7F0JS2",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0d9ed3b6cda62809006af3fcf4bc0c87d18a9ea563ec981381",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_5QTPJnQeR8Tdd9jvnd7F0JS2",
+     "content": "## 诠释\n\n### 诠释-01\n\n- ARG0: agent\n- ARG1: entity arg0 explains/interprets\n\nExample 1: 顺益 博物馆 定期 举办 特展 ， 期望 *PRO* 由 部落 的 观点 来 诠释 自己 的 文化\n- ARG0: *PRO*\n- ARG1: 自己 的 文化\n- ARGM-DIR: 由 部落 的 观点\n- rel: 诠释\n\n## 有\n\n### 有-01\n\n- ARG0: owner\n- ARG1: entity owned\n\nExample 1: 原 苏联 解体 后 ， 该 军队 集群 转归 俄罗斯 *PRO* 所 有\n- ARG0-: *PRO*\n- rel: 有\n\nExample 2: *OP* *T*-1 统一 的 德国 能够 在 联合国 发挥 *OP* *T*-2 更 大 的 作用 ， 在 联合国 作出 决定 时 有 *OP* *T*-3 更 大 的 发言权\n- rel: 有\n\n### 有-02\n\n- ARG0: entity described\n- ARG1: predicative (often quantity of arg0)\n\nExample 1: *OP* *T*-1 第五 个 出生 的 男婴 体重 最 轻 ， 只 有 四百九十五 克\n- ARG0-PSE: 体重\n- ARG0-PSR: *T*-1 第五 个 出生 的 男婴\n- ARGM-ADV: 只\n- rel: 有\n\n### 有-03\n\n- ARG0: location/domain described\n- ARG1: entity that exists with respect to arg0\n\nExample 1: 中国 现 有 保险 公司 二十六 家\n- ARG0-: 中国\n- ARGM-TMP: 现\n- rel: 有\n\nExample 2: 据 统计 ， 今年 全 省 高新区 的 技工贸 总 收入 、 *OP* *pro* 完成 *T*-3 的 工业 总 产值 均 比 去年 有 较大 幅度 增长\n- ARG0-: 全 省 高新区的技工贸总收入 、 完成的工业总产值\n- ARGM-ADV: 均\n- ARGM-TMP: 今年\n- rel: 有\n\nExample 3: 随着 内地 贸易 、 金融 、 零售 等 服务业 有 步骤 地 对 外 开放\n- ARG1-: 步骤\n- rel: 有\n\n### 有-04\n\n- ARG0: \n\nExample 1: *OP* *T*-1 实际上 有 领取 奖金 的 传销商\n- rel: 有\n\n### 有-05\n\n- ARG0: entity described\n- ARG1: state/event that exists with respect to arg0\n\nExample 1: *pro* 有 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- ARG0-: *pro*\n- ARG1-: 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- rel: 有\n\n### 有-06\n\n- ARG0: entity described\n- ARG1: entity owned by/exist with respect to arg0\n\nExample 1: *PRO* 虽然 开发 有 整车 产品 三 个 系列 二十三 个 品种 ， 改装车 产品 三 个 系列 十二 个 品种\n- ARG0-: *PRO*\n- ARG1-: 整车 产品\n- ARG1-QTY: 三 个 系列 二十三 个 品种\n- ARG1-: 改装车 产品\n- ARG1-QTY: 三 个 系列 十二 个 品种\n- rel: 有\n\n### 有-07\n\n- ARG0: entity described\n- ARG1: entities arg0 includes\n\nExample 1: 据悉 ， 这些 新 措施 的 主要 内容 有 *PRO* 以 *PRO* 发展 规模 经营 、 组建 企业 集团 为 重点 ， 推进 省属 外贸 公司 的 战略性 重组 ； 加大 *OP* 支柱 产业 产品 *T*-1 出口 的 力度 ； 办好 *OP* *T*-2 在 香港 举办 的 外商 投资 招商会 和 九八 中国 投资 贸易 洽谈会 等\n- ARG0-: 这些 新 措施 的 主要 内容\n- ARG1-: 以发展规模经营 、组建企业集团为重点 ， 推进省属外贸公司的战略性重组 ；加大支柱产业产品出口的力度 ；办好在香港举办的外商投资招商会和九八中国投资贸易洽谈会等\n- ARGM-ADV: 据悉\n- rel: 有\n\n### 有-08\n\n- ARG0: entity described\n- ARG1: activity\n\nExample 1: 个别 企业 及 公司 的 业务 在 某些 环节 如 不 获 任何 协助 ， *pro* 就 难 有 贡献\n- ARG0-: *pro*\n- ARG1-: 贡献\n- ARGM-DIS: 就\n- ARGM-ADV: 难\n- rel: 有\n\nExample 2: 帛琉 则 成为 美国 的 托管 地 ， 并 於 一九八○ 年代 开始 与 我 国 有 了 政治 上 的 接触\n- ARG0-CRD: 帛琉\n- rel: 有\n\n### 有-09\n\n- ARG0: entity described\n- ARG1: amount extra\n\nExample 1: 古稀 有 二\n- ARG0-: 古稀\n- ARG1-: 二\n- rel: 有\n\n## 拥有\n\n### 拥有-01\n\n- ARG0: entity described\n- ARG1: entity arg0 owns\n\nExample 1: 目前 厦门港 已 拥有 *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARG0: 厦门港\n- ARG1: *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARGM-ADV: 已\n- ARG0-TMP: 目前\n- rel: 拥有\n\nExample 2: 全 世界 共 拥有 电脑 四亿 台\n- ARG0: 全 世界\n- ARG1: 电脑\n- ARG1-QTY: 四亿 台\n- ARGM-ADV: 共\n- rel: 拥有\n\nExample 3: *OP* *T*-4 以 苏哈托 个人 名义 拥有 的 地产 有 １１．６ 公顷\n- ARG1: *T*-4\n- ARGM-MNR: 以 苏哈托 个人 名义\n- rel: 拥有",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 8\n# sentence level graph:\n(s8y / 有-07\n    :ARG0 (s8q / 诠释-01\n        :ARG1 (s8x / 系列\n            :mod (s8p / product\n                :name (s8n / name\n                    :op1 \"福韵\"\n                    :op2 \"B560\")))\n        :aspect process)\n    :ARG1 (s8a / and\n        :op1 (s8f / 福运)\n        :op2 (s8x2 / 幸福)\n        :op3 (s8y2 / 拥有-01\n            :ARG0 s8x\n            :ARG1 (s8w / 味\n                :mod (s8y3 / 韵)\n                :possessor (s8g / 贵族))\n            :aspect state))\n    :aspect state)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0d9ed3b6cda62809006af3fcf7854887d1ab5ed698c6234869",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0AT1ELZMrYFGAdnGWIzXcSnvOr93M9UsxA87oyzsaR0_IYWwvI11H-D6Aol8zfx3YJM0Af8r6V1F5ZN13OVH6-WWFa-ojyLaDP0ynToJl39EFK60xT1BM9Yi5UjOwEeAF7LL5pBs4SQmk8nQbLvpefnkuVC7k9EFAbGp_1dp2xF1i1-2V-NXT4DpDPtL8U_zbu9uCI9qynW8kaRz4uMA1KyMIQDPZZkfSIRhNAYNm6tYyUrfW3TOFn-nVbwM0mRfpbd-AbSTD3G_G3EA2tKxi2IaAuwVnE24GwSGI_JiVnWDxf_i3tGAJw-WPZTmG2jx8eiGB3-GH8BCC2reJyf_sWGD94S5npKGJ4FVDv2XcsbO80gQy4gu1FdOiT7C8vqgJ_j6cxz5VCi2NUMd-MpkOOtqbEPKCk4SExaH34bMFQdwNf9vsg6PvPDeQZMG_BtVU0l-M7JpTtDdJpHNxOe8MfvdijHM0HJyCwW82YbxezWXWuLQNjk9zsec3cx3U-qwR8TNYNtWMxUyEmmP6Ib8WWdXsy7thKqLfeepE5jrZIQXFDPwDa8qDh69rUNVBLo5M-6CxqqzV4jCGTnptmBBUfjUGE3BFQ5JgLfSDBkqsUdQhqcuOgc_Zt3tmZb7dDEG86m5kwCkQRmjx7mFbhX2Tj4lJgzS4T5QjWHP4Lm8cvIgqM9h7Yxk8LmB1o142PWy6EjhAnSrgQu3zor44KuSrbzNHQZW3uP2vQL7YnCQWLQbDC_0qRdoi2_iopOqIzmlnZfYCYK2P16HjAU6TeN_8M9TTRG8rr9Z-aIQ7uOhfh_IzDVVZf6EIZXJj1AsyCer6v5vJh5kShaItFUNiwodhYr6BtmfLIbiw6bmVf7_73kdnOQdBQNsry1-TSANv8RT1HSI7t2BP4OL4hyT4Udq4m0LRyWSuFD1bV3jvNbgxluUdZNxgc5BYtlSGTyYkt6h8NMGQSNUBlEuHb6STNNhe2WOr2VaW4yWLoEg9uLCF4I-noa46EyKjQF7zXaDZQc1r4Yh8GV2YQ3HVf36y4MtbdrV_KVUaaQosQKZtLZogyCqIk0z_djbJT5gqSZz3Ym7aSTru4Db53V1f-BMlNUF3MLmTKOtohOOcONNZtlQx13IBD69mdDv6r4DijaN-cT5Bd3ThuwJJzeU5vti2jFxJokthNcaBzo50c7NaFUPNN0OBow0yu8Y03a1bVpY_ZOJk_kCYHc148FnCgo5eicoNWdi2RU7ATOzXLOH-JFaKs8AwDCAhFG8hpu8DE-2h8K8BloXpbe6IQmKwOaZ2QHgHBrIr9nyksWg7bOjmgBmUgmQDNryzoKcV8FHJvWVhN6hMhf4t-MQQuh2iqsmb5nAfPlTNCYaY3gHRNjHIQcam1nGyXpdDwxmpoVnkzEK6b0KvzYMKPAeDtfd10-hIkaTZvXVPx9tEJL6U_MOdzH1mE8YuHa-L1kAnlirvMeOEQFfKZAW-4a8X6CB5IeJwC481Gz-82EJREj9hZWhYblVFfETrkP3vsncPuRW05kdwfpjBOTg8a8duejMtVjt38qZ7D7SV3LI1_ZtlQewU7jw960OrH47ShmPswDFKgmLHWKa5RaF5_n3z-qI59OFazONDt6Xx4123qoR5imB6FRYvq-42W14u6TxeaaE1_8awgOwq9rIki2HwlFyMNPCXAkcYS8b7P2knstSbCUe0ZOfzghyQnoD7Xxy7iq1BCWEXaXEW6OyFX-tVykDqh6b6TdR9q2sR05nHMT6Cpl4BtvJnaP3uVlvBMSlPWONdCfa5NNHCLVxP5zy7CgcOIhitRlt_NVgaXtur1MP5xkpxoLUyq3A0mvqZ082sDF8rxkukqoFamiLWUT_hO8p2QELFXM4t3ivEwBx7n75xgJVOuB3m7ocFMxNGp2TkY8T52ZrKoNQ5TKhCjMXroUF2Dhf3L7GEZXcAD5shStGgn2UBgd8aDBirYNniMJ-SZh6Te3lWRvwnu1dx_JXbKuJNhT16vPXTAFPuTbb1jxLMDUc8Hcr_9B62RvsLqCRZEKIO-SoylNWRdzEcc4PgdShEmWMivh65IxzlMau3WdVrk_5FK-ZxzJhbWIBHLVo7qOKYec3_qFtR1flVRahHzu6nbYaKunYBkDZOz2NisOi6dbZJUoOBNCr8UatEroES8RMO8hK6oG2_sm9q9I-WhE_xNFqkU6v-Zy6cUZjt9MZlVrIXe_w1hJEAvj6v76Is-_3Hnn9AVe2QN9cPka9hqrZ2Kpx0vMgfSethHTrCb71v-lBSYF7MaCy63ByvqIIPJWdrRULu4lrS3x0nvsZeR5w5lIN84zNeulA_Qx8vfFsrjuQqWKQ3zcBJsoFlyyeTFI3KULc_M7blekNSpBZDCIxK9_KmS03MphqNjcjCC925Mjv5vxP02mP7lCx3J5-Unjpq-RjNsAliGk2lqe6vGhMSSTDxKjUGJYBx450iXXaD8tihFnQYYmJsuInJq-0H9Tc-fEldGRqfDANmh7o0NqVRopdBa9gaZceHgIjOFNgYMPVvGXNIvpBDW2ZTpit2RrT_MGXepMTzdg6fNz5svoE5bMrlBddNbUJHWGV2uKO_TzqNKg_9l-R-VGtcugd09QTIyfS7mfc8sC7FV0grGw4n_sfduMFezyoNxPabwNstkxhmykNHCbfEgGlS1EYIJJqb2y33LdBQiqqxh0hAaV3d6HdtFXrXljdXL7cjnbBAysgS-BVdE_G79EmHDWiQqV0fVFZaXHuv5M1mO17PS23igU-nuJsgTxd0gl6hS6XLjKwgE5UTigccGGolJG1miCug6sqAWtnP0HvDDEV7wGJ2dLfQ7br9AEVTrDqXx2WqANLiLiV-aUcGqLxwtrFCULpGXMRpgRz1h10q3J3vBRJlGg8d_R9k8OqzN8T_4rAUR911IZ6qzNVB7Szfn3P1k_OUuRM48q9H5FUnER8vX5wDE5YWQk9ZybmFhxLd7EI6ScS16XeG-_1AKgbOPl9KmaqOR_2Lbc81aUda4qthtbDinjoHMiqja7nf_3FE1MP-6Ke5B9xTR1rh-kwAz723pwJn6WAluZlSld7O1QkPbfr84eTBsfOTvH-xNKxgmoxDKHW62XO9e0t0-0oKxplFQyL_BPf25cB0n4aXEkxItSE8JByiEXPstoL9ImWtN_n8jnmkAu1dX8tyHZJuVcpvgNYXCAK-q9z2MTADB45tN0svahr2af6oHhz4_EMezoc2apbpdBybkhNEYigFPlQKib-tlr8qd36rJrL_pmcQqCBie17XFzmOWt_7X7GZElC5YV-mR02P7EK0qqwLeGMiyBsv59YEkPeJK0iqckIbBRRDKMRBQa-ce62mPXcsY1F0p29tKQiQNC8d7kNW7Nsa9N1fm0jdGNCT9TbZAP_g207PusBNvoMMDqzgPlMbUCGLyaLGo3X3VgUcPgDPeotn8SVuqmT89DGs69gs982qzCqyJTnIbGRW-DIkRgZHpMkGz-k8Y02nCnsbj7M2x20eupLjpYUo_lqCtxBLprOH1fJH693E4nwtrp8OhDyF3GO4-R1wLaggjMvJ6sADC70ji3Y9z1epqvcWHWyOuyQUlTfnOKUrVWLnQmqXfKQ9yetva_oiACwLykmqAFVfUJCv2toK9uY_K0N5_896JYooyiHJFMZ7bIex3bijRV-Jpc3RpG7SR9Ezuyehe3TGdP2e2JyRO6pd7Sj6o4ZRX79KpdC9Hf_NCVp8CBdl8V9-5ZoJKZSCAWAQ-joEw2pN8kIA_YGMq8sFRhSMxVp6p3i9fX4kgvW2iaPbHGew4Q5ZI9SDFKAwze9Ans9W9oJPV8Lrsynpoyk2-FfeWueSqGswJnMkYDwU5kyGrB9yS9yfkQRRk8wW0UmNEpyIzonug1cVH2yva3zjSyuLi39yYDNUtUp8-uFSTMUBkCOSzmAj1v0ikFJIAXmOTK38dW9rz9rxiXCUYpADeQPXM6F7b9Nd_0R3L1pLzy2mmuvEbRLSHrcJJTdJLOXrROUuXI_WCwAB_7kVI12akBTlVWMav2dDfwXHomqg_qRKvDEd_aEOSP9l8YpeFX0u5Bd_PBtbYTRVrMH7GL-T5QfFN7_zAxYeLLb6CAhvynrE0NA7Yah_VTXa5voaOab3mBchfQFULwUStZ5k2zXprsc_VPhYxJD1IIxCI32VBxIx-2ehibcu4WSFUkpnfN3qkIk8znNPrE7fL4yLiYsdk7zPFtBM3jm-XLjXOQ_tOiXNzqMfPReIF28VNq1rnffEFQCgnaWu-mbwcisIZlogmKCvPnJbVZliRw-zdV4JHb5YK95A3l7Qr3aPecku226FDLwa6nAcjbHu397OiiYRnicOnSee4AGrX7cdIoI3xvhL8aeEEVCJ7afAn18BZzGyMANk7MChVXJdlleoCrFOoqCNPyMIhCgBwu2FLCVMJbMyhPmGf-gtAboqDpK7dqxM5hQzdpe8EcnhOerzTcZr5_Q6F9DPXDw0cmggkacp2nWMqixjxX_K9dj_qs2wJCaKjP0tYfa9bmwNy6WjSsF70rDu8fWFthgkJ-o2fwCAe6GZ5BBai1LilektdNBCIZ1DLlmePTAnczh-2shohbAHL6Wz0oYtS3kaCSDukqEHbeTz7sye0p8pQIJowQAb-ruxCtEIoyu1G7JG1e2c-BzxcPexuO28Y4M7R82eQKdBRSZhyQA=="
+      },
+      {
+       "id": "msg_0d9ed3b6cda62809006af3fcfe8e7887d1a2fc381f22162ca2",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 8\n# sentence level graph:\n(s8y / 有-07\n    :ARG0 (s8q / 诠释-01\n        :ARG1 (s8x / 系列\n            :mod (s8p / product\n                :name (s8n / name\n                    :op1 \"福韵\"\n                    :op2 \"B560\")))\n        :aspect process)\n    :ARG1 (s8a / and\n        :op1 (s8f / 福运)\n        :op2 (s8x2 / 幸福)\n        :op3 (s8y2 / 拥有-01\n            :ARG0 s8x\n            :ARG1 (s8w / 味\n                :mod (s8y3 / 韵)\n                :possessor (s8g / 贵族))\n            :aspect state))\n    :aspect state)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

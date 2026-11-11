@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-2.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2304
+    },
+    "cache_creation_input_tokens": 2304,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 2878,
+    "output_tokens_details": {
+     "thinking_tokens": 1489
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 2 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1c3 / city :wiki \"Fukushima\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c4 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect performance)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1i / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect habitual)\n        :manner (s1z / 逐步)\n        :aspect activity))\n\nThis sentence:\n\n2\t中国 官媒 报道 ， 中国 和 日本 主管 部门 持续 多轮 磋商 福岛 “ 核 污染 水 ” 排海 问题 后 ， 日本 欢迎 在 国际 原子能 机构 框架 下 设立 确保 中国 等 利益 相关 国家 有效 参与 ， 并 确保 独立 采样 和 实验室 分析 的 长期 国际 监测 安排 ， 中国 将 在 实施 监测 措施 后 ， 基于 科学 证据 逐步 恢复 符合 标准 的 日本 水产 进口\n\nIts graph:\n\n# ::snt 2\n# sentence level graph:\n(s2b / 报道-01\n    :ARG0 (s2m / 官媒\n        :mod (s2c / country :wiki \"China\"\n            :name (s2n / name :op1 \"中国\")))\n    :ARG1 (s2a / and\n        :op1 (s2h / 欢迎-01\n            :ARG0 (s2c2 / country :wiki \"Japan\"\n                :name (s2n2 / name :op1 \"日本\"))\n            :ARG1 (s2s / 设立-01\n                :ARG1 (s2p / 安排-01\n                    :ARG1 (s2j / 监测-01\n                        :aspect process)\n                    :mod (s2c3 / 长期)\n                    :mod (s2g / 国际)\n                    :ARG0-of (s2a2 / and\n                        :op1 (s2q / 确保-01\n                            :ARG1 (s2y / 参与-01\n                                :ARG0 (s2g2 / 国家\n                                    :refer-number plural\n                                    :example s2c\n                                    :ARG0-of (s2x / 相关-01\n                                        :mod (s2l / 利益)\n                                        :aspect state))\n                                :manner (s2e / 有效)\n                                :aspect process)\n                            :aspect process)\n                        :op2 (s2q2 / 确保-01\n                            :ARG1 (s2a3 / and\n                                :op1 (s2c4 / 采样-01\n                                    :mod (s2d / 独立)\n                                    :aspect process)\n                                :op2 (s2f / 分析-01\n                                    :mod (s2s2 / 实验室)\n                                    :aspect process))\n                            :aspect process))\n                    :aspect process)\n                :place (s2k / 框架\n                    :mod (s2o / organization :wiki \"International_Atomic_Energy_Agency\"\n                        :name (s2n3 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\")))\n                :aspect process)\n            :temporal (s2a4 / after\n                :op1 (s2c5 / 持续-01\n                    :ARG0 (s2c6 / 磋商-01\n                        :ARG0 (s2b2 / 部门\n                            :ARG0-of (s2z / 主管-01\n                                :aspect state)\n                            :mod (s2a5 / and\n                                :op1 s2c\n                                :op2 s2c2))\n                        :ARG1 (s2w / 问题\n                            :topic (s2p2 / 排海-00\n                                :ARG1 (s2s3 / 水\n                                    :ARG1-of (s2w2 / 污染-01\n                                        :ARG0 (s2h2 / 核)\n                                        :aspect state))\n                                :source (s2c7 / city :wiki \"Fukushima_(city)\"\n                                    :name (s2n4 / name :op1 \"福岛\"))\n                                :aspect process))\n                        :frequency (s2r / 轮\n                            :quant (s2d2 / 多))\n                        :aspect performance)\n                    :aspect performance))\n            :aspect performance)\n        :op2 (s2h3 / 恢复-02\n            :ARG0 s2c\n            :ARG1 (s2i / 进口-01\n                :ARG0 s2c\n                :ARG1 (s2s4 / 水产\n                    :ARG0-of (s2f2 / 符合-01\n                        :ARG1 (s2b3 / 标准)\n                        :aspect state))\n                :ARG2 s2c2\n                :aspect process)\n            :manner (s2z2 / 逐步)\n            :ARG0-of (s2j2 / 基于-01\n                :ARG1 (s2z3 / 证据\n                    :mod (s2k2 / 科学))\n                :aspect state)\n            :temporal (s2a6 / after\n                :op1 (s2s5 / 实施-01\n                    :ARG0 s2c\n                    :ARG1 (s2c8 / 措施\n                        :mod (s2j3 / 监测-01\n                            :aspect process))\n                    :aspect performance))\n            :aspect activity))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I annotated sentence 2 as the official media's report. The author vouches for the report and its source, and the media vouch for what the report says.\n\n**Time**\n- The report happened before the document was written.\n- Japan's welcome comes after the rounds of talks and before the report.\n- Setting up the monitoring arrangement comes after the welcome.\n- China's gradual resumption of imports is in the future (after the document date). It comes after China puts the monitoring measures in place.\n- Ongoing states, such as the countries having a stake and the imports meeting the standards, overlap the document date.\n\n**Certainty (modal)**\n- The author is fully certain of the report and of the official media as its source.\n- The media are fully certain of the welcome, the talks, the future resumption of imports and the future monitoring measures.\n- Things under \"welcome\" (设立, setting up) and \"ensure\" (确保) get \"unspecified\", as the guidelines say for complements of such verbs. The plan's own parts (the monitoring, effective participation, independent sampling, lab analysis) get \"unspecified\" too.\n- I treated \"welcome\" as a complement-taking verb. That is a judgement call: \"neutral-affirmative\" (a hope) would also be defensible.\n\n**Coreference with sentence 1**\n- China, Japan, Fukushima, the wastewater, the issue and the seafood are the same entities.\n- The discharge, the international monitoring, the resumption and the imports are the same events.\n- I linked the seafood with \"same-entity\", although in this sentence it is only seafood that meets the standards; \"subset-of\" could also be argued.\n\nI did not look up any predicates in PropBank this time; the choices above rest on the guidelines and the context.\n\n    # document level relations:\n    (d / document\n        :temporal ((document-creation-time :before s2b)\n                   (s2b :before s2h)\n                   (s2h :before s2c5)\n                   (s2c5 :overlap s2c6)\n                   (s2c6 :overlap s2p2)\n                   (s2h :after s2s)\n                   (s2s :overlap s2p)\n                   (s2p :overlap s2j)\n                   (document-creation-time :overlap s2z)\n                   (document-creation-time :overlap s2x)\n                   (document-creation-time :overlap s2w2)\n                   (document-creation-time :after s2h3)\n                   (s2h3 :before s2s5)\n                   (s2h3 :overlap s2i)\n                   (s2i :overlap s2f2)\n                   (s2h3 :overlap s2j2))\n        :modal ((root :modal author)\n                (author :full-affirmative s2b)\n                (author :full-affirmative s2m)\n                (s2m :full-affirmative s2h)\n                (s2m :full-affirmative s2c5)\n                (s2m :full-affirmative s2c6)\n                (s2m :full-affirmative s2z)\n                (s2m :full-affirmative s2p2)\n                (s2m :full-affirmative s2w2)\n                (s2h :unspecified s2s)\n                (s2s :unspecified s2p)\n                (s2p :unspecified s2j)\n                (s2p :unspecified s2q)\n                (s2p :unspecified s2q2)\n                (s2q :unspecified s2y)\n                (s2q2 :unspecified s2c4)\n                (s2q2 :unspecified s2f)\n                (s2m :full-affirmative s2x)\n                (s2m :full-affirmative s2h3)\n                (s2m :full-affirmative s2i)\n                (s2m :full-affirmative s2f2)\n                (s2m :full-affirmative s2j2)\n                (s2m :full-affirmative s2s5)\n                (s2s5 :unspecified s2j3))\n        :coref ((s1c :same-entity s2c)\n                (s1c2 :same-entity s2c2)\n                (s1w :same-entity s2w)\n                (s1p :same-event s2p2)\n                (s1f :same-entity s2s3)\n                (s1c3 :same-entity s2c7)\n                (s1j :same-event s2j)\n                (s1h2 :same-event s2h3)\n                (s1i :same-event s2i)\n                (s1s :same-entity s2s4)))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

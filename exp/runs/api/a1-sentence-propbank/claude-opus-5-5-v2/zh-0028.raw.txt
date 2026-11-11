@@ -1,0 +1,565 @@
+I tagged this sentence as a list of three specifications joined by `and`.
+
+# ::snt 1
+# sentence level graph:
+(s1a / and
+    :op1 (s1b / 比例
+        :mod (s1p / 屏幕)
+        :mod (s1r / rate-entity-91
+            :ARG1 16
+            :ARG2 9))
+    :op2 (s1k / 宽屏
+        :quant 21.5
+        :unit (s1y / 英寸))
+    :op3 (s1i / identity-91
+        :ARG1 (s1f / 分辨率
+            :possessor (s1t / thing
+                :refer-person 3rd
+                :refer-number singular)
+            :mod (s1z / 最佳))
+        :ARG2 (s1x / product-of
+            :op1 1920
+            :op2 1080)
+        :aspect state))
+
+Choices worth checking:
+
+- **为:** PropBank has a lexical roleset for it (`为-01`, "predicative"). I treated 为 as a copula instead, so it became the abstract predicate `identity-91`, following the rule for 是. If the gold annotation uses `为-01`, the roles would be `:ARG0` 分辨率 and `:ARG1` 1920 × 1080.
+- **Numbers:** "16 : 9" is written as `rate-entity-91` (16 to 9), and "1920 × 1080" as `product-of`. Neither is covered by the guidelines, so both are my own approximations.
+- **它:** I made it a `thing` (3rd person, singular) that owns 分辨率. It most likely refers to the screen or monitor, which a later coreference step would link.
+- **Kept as one concept:** 宽屏, with 21.5 `英寸` as its quantity and unit, and 最佳 as a single modifier. I did not split 最佳 into 佳 with `:degree` 最.
+- **Not in PropBank:** 比例 and 分辨率, so both are plain entity nouns.
+
+# ::snt 2
+# sentence level graph:
+(s2a / and
+    :op2 (s2p / 配备-01
+        :ARG2 (s2t / thing
+            :refer-person 3rd
+            :refer-number singular)
+        :ARG1 (s2j / 接口
+            :quant 2
+            :mod (s2a2 / and
+                :op1 (s2x / product
+                    :wiki -
+                    :name (s2n / name :op1 "D-Sub" :op2 "VGA"))
+                :op2 (s2x2 / product
+                    :wiki "HDMI"
+                    :name (s2n2 / name :op1 "HDMI"))))
+        :mod (s2h / 还)
+        :aspect state))
+
+I treated 配备 as `配备-01`, sense "equip". 它 ("it") fills `:ARG2`, the thing that gets equipped, and the interfaces fill `:ARG1`. PropBank's own example for this word is set up the same way: the satellite (这颗卫星上) is `ARG2` and the equipment is `ARG1`.
+
+A few choices could easily differ from the gold annotation:
+- **而且 ("moreover"):** I made it an `and` with only `:op2`, so the sentence links back to the previous one. Gold might instead put a `:mod` on `配备-01`.
+- **The two interfaces:** I wrote one `接口` node with `:quant 2` (the classifier 种 is dropped). The two named products hang under it through `:mod` and `and`. That `:mod` link is my own choice. Gold might use two separate `接口` nodes joined by `and`.
+- **D-Sub (VGA):** I made it a single name with two words, `"D-Sub"` and `"VGA"`, and gave it no wiki title (`-`). VGA could also be read as a second name for the same port, written in brackets.
+- **Aspect:** I gave `state`, because "it comes equipped with" describes a property of the device even though 了 is there. `performance` is the other possible reading.
+
+# ::snt 3
+# sentence level graph:
+(s3a / and
+    :op1 (s3b / 拨接-01
+        :ARG0 (s3t / thing
+            :refer-person 3rd
+            :refer-number singular)
+        :ARG1 (s3s / 设备
+            :mod (s3d / 电脑))
+        :modal-strength neutral-affirmative
+        :aspect habitual)
+    :op2 (s3f / 方便-01
+        :ARG0 s3t
+        :ARG1 (s3u / 用户)
+        :ARG2 (s3l / 连接-01
+            :ARG0 s3u
+            :ARG1 (s3s2 / 设备
+                :example (s3a2 / and
+                    :op1 (s3p / product
+                        :wiki "PlayStation_3"
+                        :name (s3n / name :op1 "PS3"))
+                    :op2 (s3p2 / product
+                        :wiki "Xbox_360"
+                        :name (s3n2 / name :op1 "Xbox360"))
+                    :op3 (s3g / 蓝光机))
+                :mod (s3e / 等等))
+            :aspect habitual)
+        :mod (s3h / 还)
+        :modal-strength neutral-affirmative
+        :aspect habitual))
+
+# ::snt 4
+# sentence level graph:
+(s4a / and
+    :op1 (s4i / identity-91
+        :ARG1 (s4t / thing
+            :mod (s4z / 这))
+        :ARG2 (s4p / product
+            :wiki -
+            :name (s4n / name :op1 "三星" :op2 "B560"))
+        :aspect state)
+    :op2 (s4z2 / 值得-01
+        :ARG0 s4p
+        :ARG1 (s4y / 拥有-01
+            :ARG0 (s4p2 / person
+                :refer-person 2nd
+                :refer-number singular)
+            :ARG1 s4p
+            :aspect state)
+        :aspect state))
+
+I treated the two clauses as `and`. The first, 这就是三星B560, is an identity: "this" is the Samsung B560. I left 就 out because it only adds emphasis. In the second, 你值得拥有, PropBank's 值得-01 has ARG0 as what makes something worthwhile, so the phone is its ARG0 and the owning (拥有-01) is its ARG1. "You" owns it (ARG0) and the phone, which the sentence doesn't repeat, is also what is owned (ARG1).
+
+A few calls are judgement rather than certain:
+- **Product name:** I made the phone a single `product` named "三星" "B560" and did not add Samsung as a separate company.
+- **Strength of 拥有:** Owning is only presented as worthwhile, not asserted. Its strength would be set under 值得 at the document level, so I didn't add a `:modal-strength` to it here.
+- **Joining the clauses:** The gold annotation might link them with something other than `and`, for example `multi-sentence`.
+
+# ::snt 5
+# sentence level graph:
+(s5x / 像-01
+    :ARG0 (s5a / and
+        :op1 (s5s / 设计-01
+            :ARG1 (s5a2 / and
+                :op1 (s5j / 机身
+                    :mod (s5f / 方形))
+                :op2 (s5d / 底座
+                    :mod (s5f2 / 方形)))
+            :aspect process)
+        :op2 (s5l / 立姿
+            :mod (s5b / 笔挺)))
+    :ARG1 (s5q / 气势
+        :mod (s5d2 / 打座-00
+            :ARG0 (s5m / 大师)
+            :aspect process))
+    :degree (s5y / 有点)
+    :aspect state)
+
+# ::snt 6
+# sentence level graph:
+(s6a / and
+    :op1 (s6y / 有-01
+        :ARG0 (s6t / thing
+            :refer-person 3rd
+            :refer-number singular)
+        :ARG1 (s6j / 接口
+            :quant 3)
+        :aspect state)
+    :op2 (s6w / 为-01
+        :ARG0 s6j
+        :ARG1 (s6a2 / and
+            :op1 (s6d / 电源)
+            :op2 (s6h / HDMI)
+            :op3 (s6v / VGA))
+        :manner (s6f / 分别)
+        :aspect state))
+
+I based this on two PropBank lookups:
+- **有 (has):** I chose `有-01` (owner and thing owned). "它" (it) is the owner and is a third-person singular `thing`. The three ports are `接口 :quant 3`. The classifier 个 is left out.
+- **为 (are, namely):** I chose `为-01` (a thing and what it is said to be). Its `:ARG0` points back to the same ports node, and its `:ARG1` is an `and` of the three items: 电源 (power), HDMI and VGA.
+
+Some choices were judgement calls and could differ from the expert annotation:
+- **Joining the clauses:** there is no conjunction, so I linked them with a top-level `and`. Another option would be to attach the second clause to the ports with `:ARG0-of`.
+- **分别 (respectively):** I attached it to `为-01` as `:manner`. It could also be a plain `:mod`.
+- **Aspect:** both events are `state`, since one is owning and the other says what the ports are.
+
+# ::snt 7
+# sentence level graph:
+(s7a / and
+    :op1 (s7c / 成为-01
+        :ARG0 (s7j / 接口
+            :mod (s7g / 高清)
+            :mod (s7p / product
+                :name (s7n / name :op1 "HDMI")))
+        :ARG1 (s7z / 主流
+            :mod (s7s / 市场
+                :temporal (s7x / 现在)))
+        :aspect state)
+    :op2 (s7i / identity-91
+        :ARG1 s7p
+        :ARG2 (s7q / 趋势
+            :temporal (s7d / date-entity :year 2012))
+        :aspect state
+        :modal-strength partial-affirmative)
+    :op3 (s7b / 保留-01
+        :ARG0 s7p
+        :ARG1 (s7j2 / 接口
+            :mod (s7p2 / product
+                :name (s7n2 / name :op1 "VGA")))
+        :mod (s7h / 还)
+        :temporal (s7t / 同时)
+        :purpose (s7r / 让-02
+            :ARG1 (s7k / 消费者)
+            :ARG2 (s7e / 得到-01
+                :ARG0 s7k
+                :ARG1 (s7m / 满足-01
+                    :ARG2 (s7x2 / 需求-01
+                        :ARG0 s7k
+                        :mod (s7y / 不同)
+                        :aspect state)
+                    :aspect process)
+                :aspect activity)
+            :aspect activity)
+        :aspect state))
+
+<br>
+
+I think 很有可能 ("very likely") counts as probable, not merely possible. So the `identity-91` (HDMI 就是 2012 的趋势) gets `:modal-strength partial-affirmative`.
+
+A few other calls you may want to check:
+- **Copula:** I treated 是 as a copula and wrote it as `identity-91`, as the guidelines say for "X is Y", not as PropBank `是-01`.
+- **Named entities:** HDMI and VGA are both written as `product` named entities. The type and the missing `:wiki` are my guesses.
+- **Subject of 保留:** the sentence doesn't say what keeps the VGA port. I made it HDMI (`:ARG0 s7p`), but this is the least certain choice in the graph.
+- **得到满足:** I wrote it as `得到-01` ("obtain") taking `满足-01` ("satisfy") as its `:ARG1`, with the consumers' needs as what is satisfied. PropBank's `满足-01` puts the thing satisfied in `:ARG2`, as in its example "满足……需求". I attached 在不同需求上 there, though the expert may have tied it to the consumers or to 得到.
+- **Purpose:** the 让 clause is a `:purpose` of 保留.
+- **Aspect:** 成为 and 保留有 are `state`, describing the current market. 让 and 得到 are `activity`.
+
+# ::snt 8
+# sentence level graph:
+(s8y / 有-07
+    :ARG0 (s8q / 诠释-01
+        :ARG1 (s8x / 系列
+            :mod (s8p / product
+                :wiki -
+                :name (s8n / name :op1 "福韵" :op2 "B560")))
+        :aspect process)
+    :ARG1 (s8a / and
+        :op1 (s8f / 福运)
+        :op2 (s8h / 幸福-01
+            :aspect state)
+        :op3 (s8o / 拥有-01
+            :ARG0 s8x
+            :ARG1 (s8w / 味
+                :mod (s8r / 韵)
+                :mod (s8g / 贵族))
+            :aspect state))
+    :aspect state)
+
+I treated "福韵 B560" as a product name and "系列" (series) as the head noun modified by that product. Other choices I made:
+
+- **有-07**: I chose this "includes" sense for 有, with ARG0 the content being described and ARG1 the items listed.
+- **诠释-01**: Here it is a noun meaning "the interpretation", so it is a process. Its ARG1 is the series.
+- **福运**: I wrote this as a plain entity concept, not an event.
+- **幸福-01**: I treated this as a state. It has no argument because PropBank's only role for it, ARG0 (the one who is happy), isn't stated in the sentence.
+- **拥有-01**: I made the series its owner. What is owned is 味 (flavor), with 韵 (charm) and 贵族 (noble) as modifiers.
+
+Two points could reasonably go another way: whether 幸福 should be a plain noun rather than an event, and whether "系列" belongs inside the name.
+
+# ::snt 9
+# sentence level graph:
+(s9a / and
+    :op1 (s9s / 设计-01
+        :ARG1 (s9l / 龙
+            :quant 2
+            :place (s9j / 上角
+                :mod (s9z / 左右)))
+        :manner (s9w / 无-01
+            :ARG1 (s9x / 瑕疵)
+            :degree (s9h / 毫)
+            :aspect state)
+        :aspect performance)
+    :op2 (s9x2 / 写-01
+        :ARG1 (s9z2 / 字
+            :mod (s9f / 福)
+            :mod (s9d / 大大)
+            :quant 1)
+        :ARG2 (s9b / 背后
+            :part-of (s9j2 / 机身))
+        :aspect state)
+    :op3 (s9y / 拥有-01
+        :ARG0 s9j2
+        :ARG1 (s9t / 图案
+            :mod (s9l2 / 龙纹)
+            :mod (s9g / 古代))
+        :aspect state)
+    :op4 (s9y2 / 有-01
+        :ARG0 (s9t2 / thing
+            :mod (s9z3 / 这些)
+            :mod (s9d2 / 都)
+            :refer-number plural)
+        :ARG1 (s9e / 元素
+            :mod (s9c / country
+                :wiki "China"
+                :name (s9n / name :op1 "中国"))
+            :mod (s9n2 / 浓郁))
+        :aspect state))
+
+I annotated the sentence as an `and` of four clauses, all on the plane's design. There is no conjunction for this `and` in the sentence, so it is aligned to no word. I checked every predicate in PropBank: 设计, 无, 写, 有, 拥有 and 浓郁. 瑕疵 is not in PropBank, so it is a plain noun.
+
+These choices could reasonably have gone another way:
+- **设计得毫无瑕疵**: I used `设计-01` with `:manner (无-01 :ARG1 瑕疵 :degree 毫)`. The other way to do it was to drop `无-01` and put `:polarity -` on 瑕疵.
+- **Aspect of 设计**: I chose `performance` (the design is finished). `state` is also possible, since the clause describes how the plane looks.
+- **拥有**: The subject is left out in the sentence. I took it to be the plane body (机身) and reused that node as `:ARG0`.
+- **这些**: I made it a separate `thing` node marked plural. The gold may instead point it back to the three earlier clauses.
+- **有**: I used `有-01` (possession). `有-06` ("entity owned by / exists with respect to") also fits.
+- **浓郁**: I treated it as a plain modifier (`:mod`) of 元素, not as the predicate `浓郁-01`, because here it describes the noun rather than being predicated.
+- **"福" 字**: 福 is a `:mod` of 字, with `:quant 1` for 一个.
+
+# ::snt 10
+# sentence level graph:
+(s10a / and
+    :op1 (s10k / 看-05
+        :ARG0 (s10x / 系列
+            :name (s10n / name :op1 "B560")
+            :mod (s10j / 金黄色))
+        :ARG1 (s10f / 符合-01
+            :ARG0 s10x
+            :ARG1 (s10y / 韵味
+                :possessor (s10l / 龙年))
+            :degree (s10g / 更)
+            :aspect state)
+        :aspect state)
+    :op2 (s10m / 现眼-00
+        :ARG1 (s10z / 字
+            :mod (s10u / 福)
+            :place (s10b / 背部
+                :part-of s10x))
+        :mod (s10e / 也)
+        :degree (s10h / 更加)
+        :aspect state))
+
+I treated 现眼 as written as the predicate. It is not in Chinese PropBank, so I named it `现眼-00`. It is probably a typo for 显眼 ("eye-catching"), which is in PropBank as `显眼-01` and takes `:ARG0` for its theme. If the gold annotation fixes the typo, that node would be `显眼-01` with `:ARG0` instead.
+
+Other choices that could go either way:
+- **看起来:** I used `看-05` ("look/appear"), which in PropBank only has an `:ARG0`. I put 符合 under it as `:ARG1` anyway, so that "fits the Year of the Dragon" is shown as what the series appears to do.
+- **B560 系列:** I annotated it as the concept 系列 with the name "B560", not as a named-entity type like `product`.
+- **龙年:** I left it as a plain concept that possesses 韵味, not as a `date-entity`.
+- **背部:** I treated 背部 ("the back") as the place of the character and linked it as part of the B560 series.
+
+# ::snt 11
+# sentence level graph:
+(s11d / 当做-01
+    :ARG0 (s11p / 中国人
+        :refer-number plural)
+    :ARG1 (s11l / 龙)
+    :ARG2 (s11j / 吉祥物)
+    :topic (s11x / 习俗
+        :possessor s11p)
+    :aspect habitual)
+
+I read 还不赶快把“福韵”带回家！ ("Why not hurry and bring '福韵' home!") as an urging, so it is marked `:mode imperative` with an implied second-person "you". The literal 不 is not marked as negation.
+
+- **带 (bring):** PropBank sense 带-02 ("bring": agent, thing brought, destination). "Home" (家) is its destination (`:ARG3`). I did not use the separate verb 回家-01 ("return home"), because here 回家 only says where the thing is brought.
+- **到来 (arrive):** 到来-01, with 龙年 (Year of the Dragon) as the thing arriving. The 在…之时 phrase ("at the time when…") becomes a `时` node that carries the time for the main event.
+- **快要 (about to):** It is not a separate node. It only shows that the arrival hasn't happened yet, so I left 到来 at `performance`. That aspect choice is uncertain.
+- **赶快 (hurry):** It is not in Chinese PropBank, so it is the plain word `赶快` as the manner of bringing.
+- **福韵:** I treated it as a product name; that entity type is my assumption.
+
+# ::snt 12
+# sentence level graph:
+(s12d / 带-02
+    :ARG0 (s12p / person
+        :refer-person 2nd)
+    :ARG1 (s12p2 / product
+        :name (s12n / name :op1 "福韵"))
+    :ARG3 (s12j / 家)
+    :manner (s12g / 赶快)
+    :temporal (s12s / 时
+        :mod (s12d2 / 到来-01
+            :ARG0 (s12l / 龙年)
+            :aspect performance))
+    :mode imperative
+    :aspect performance)
+
+# document level relations:
+(d / document
+    :temporal ((document-creation-time :overlap s1i))
+    :modal ((root :modal author)
+            (author :full-affirmative s1i)))
+
+The only event in this sentence is `s1i` (`identity-91`, the 为 clause). Because it describes a property that holds now, I placed it at `document-creation-time` with `:overlap`. The author states it plainly, so it is `full-affirmative` under `author`.
+
+- **No other events:** 比例, 宽屏, 分辨率 and the number structures are things, not events, so they have no temporal or modal relations. I counted `rate-entity-91` (16 : 9) as a number structure rather than an event.
+- **No coreference:** this is the first sentence, so there is no earlier mention to link to. 它 (`s1t`) probably refers to the screen in this same sentence. A link within one sentence would be a re-entrancy in the sentence graph, not a `:coref` triple, so I added none.
+(d / document
+        :temporal ((document-creation-time :overlap s2p))
+        :modal ((root :modal author)
+                (author :full-affirmative s2p))
+        :coref ((s1t :same-entity s2t)))
+
+Sentence 2 has one event, 配备-01 ("is equipped with", `s2p`), and one entity that refers back, 它 ("it", `s2t`).
+
+- **Temporal:** I set 配备 as overlapping the document creation time, because its aspect is `state`: it describes what the monitor has now, not a past act. If gold reads the 了 as marking a completed event (`performance`), the relation would be `:before` instead.
+- **Modal:** The author plainly states this, with no negation or hedging, so the author holds it at `full-affirmative`.
+- **Coreference:** 它 here is the same "it" as 它 in sentence 1 (`s1t`), the monitor whose resolution was given, so the two are the same entity.
+- **Left out:** The `and` from 而且 ("moreover") and the named interfaces are not events. They have no earlier mention, so they get no relations.
+I added document-level relations for the three events (拨接-01, 方便-01, 连接-01) and for 它.
+
+(d / document
+    :temporal ((document-creation-time :overlap s3b)
+               (document-creation-time :overlap s3f)
+               (s3f :overlap s3l))
+    :modal ((root :modal author)
+            (author :neutral-affirmative s3b)
+            (author :neutral-affirmative s3f)
+            (s3f :neutral-affirmative s3l))
+    :coref ((s2t :same-entity s3t)))
+
+- **Temporal:** The sentence describes what the device can generally do, with no time expression. So I placed 拨接 ("connect up") and 方便 ("make it easy") as overlapping the document creation time, like a present state. 连接 ("connect"), the user's action, overlaps the 方便 event it depends on.
+- **Modal:** 能够 ("can") marks ability, so the author's certainty for 拨接 and 方便 is `neutral-affirmative`. This matches the `:modal-strength` already in the sentence graph. 连接 depends on 方便, and I gave it `neutral-affirmative` because making something easy for users only allows it to happen. `unspecified` is the other plausible value there.
+- **Coreference:** The implicit "it" (`s3t`) is the same device as 它 in sentence 2 (`s2t`), so I linked it to that closest earlier mention. 电脑设备 ("computer devices") and the devices listed (PS3, Xbox360, Blu-ray player) don't appear earlier, so they get no link.
+I couldn't check 值得 and 拥有 in PropBank, so the strength chosen for 拥有 rests only on the guidelines.
+
+(d / document
+    :temporal ((document-creation-time :overlap s4i)
+               (document-creation-time :overlap s4z2)
+               (s4z2 :after s4y))
+    :modal ((root :modal author)
+            (author :full-affirmative s4i)
+            (author :full-affirmative s4z2)
+            (s4z2 :neutral-affirmative s4y))
+    :coref ((s3t :same-entity s4t)
+            (s3t :same-entity s4p)))
+
+- **Temporal:** The identity (s4i, "this is the Samsung B560") and 值得 (s4z2, "is worth") are present states, so both overlap the document-creation time. Owning (s4y) is the complement of 值得, so it takes 值得 as its parent. I placed it `:after` 值得 because the owning would come later. `:overlap` is the other reasonable reading.
+- **Modal:** The author asserts both states. Owning is only recommended, not asserted, so I put it under 值得 as `neutral-affirmative`. Two other readings are possible: `unspecified`, the guidelines' default for complements, or `partial-affirmative`, if "worth owning" is read like "should".
+- **Coreference:** Both 这 ("this", s4t) and the product node (s4p) refer to the device that 它 ("it", s3t) refers to in sentence 3. Because the two are equated in this sentence, I linked both to s3t. Gold may link only one of them. Earlier sentences already chain s3t back to sentences 1 and 2.
+- **你 ("you"):** I added no link to 用户 ("users", s3u) in sentence 3. A `:subset-of` relation is possible but uncertain.
+(d / document
+        :temporal ((document-creation-time :overlap s5x)
+                   (s5x :overlap s5s)
+                   (s5x :overlap s5d2))
+        :modal ((root :modal author)
+                (author :full-affirmative s5x)
+                (author :full-affirmative s5s)
+                (author :full-affirmative s5d2)))
+
+I annotated the three events of sentence 5: 像-01 ("resembles", s5x), 设计-01 ("design", s5s) and 打座-00 ("sitting in meditation", s5d2).
+
+- **Temporal:** 像 is a present state, so it overlaps the document creation time. I put the design and the master's meditation pose as overlapping 像, since they are the two sides of the comparison.
+- **Modal:** The author asserts all three events outright, so each is `full-affirmative` from the author. 有点 ("somewhat") only weakens how close the likeness is, not how certain it is, so it does not lower the strength.
+- **Coreference:** I added none. The body (机身, s5j) and the base (底座, s5d) are parts of the Samsung B560 from sentence 4 (s4p), so `(s5j :subset-of s4p)` and `(s5d :subset-of s4p)` are possible. I left them out because neither is a second mention of that product, and adding them is a guess about what the gold annotation does.
+
+I did not look up 像 or 设计 in PropBank. The relations above don't depend on their exact senses.
+(d / document
+    :temporal ((document-creation-time :overlap s6y)
+               (document-creation-time :overlap s6w))
+    :modal ((root :modal author)
+            (author :full-affirmative s6y)
+            (author :full-affirmative s6w))
+    :coref ((s4p :same-entity s6t)
+            (s2x2 :same-entity s6h)
+            (s2x :same-entity s6v)))
+
+I gave this sentence two events, 有-01 (s6y) and 为-01 (s6w). I did not run any PropBank lookups for this step.
+
+- **Temporal:** Both events are present states: the monitor has three ports, and they are power, HDMI and VGA. So each one overlaps the document creation time. I did not put s6w under s6y as its reference time. That ordering could also be defended.
+- **Modal:** The author states both events outright, so both are full-affirmative from the author.
+- **它 → the monitor:** I linked 它 to the Samsung B560 in sentence 4 (s4p), because that is its closest earlier mention. Sentence 5 talks about the body and stand, not the monitor as a whole.
+- **HDMI and VGA:** I linked these to the two ports named in sentence 2 (s2x2 HDMI, and s2x "D-Sub (VGA)"). These two links are the least certain. They depend on reading the same port names as the same entities.
+- **接口:** I did not link the three ports (s6j) to the two ports of sentence 2 (s2j). The counts differ, so they are not the same entity. A gold annotation might instead mark the two as a subset of the three (s2j :subset-of s6j).
+(d / document
+    :temporal ((present-reference :depends-on s7x)
+               (root :depends-on s7d)
+               (s7x :contained s7c)
+               (s7d :contained s7i)
+               (s7c :overlap s7b)
+               (s7b :after s7r)
+               (s7r :overlap s7e)
+               (s7e :overlap s7m)
+               (s7m :overlap s7x2))
+    :modal ((root :modal author)
+            (author :full-affirmative s7c)
+            (author :partial-affirmative s7i)
+            (author :full-affirmative s7b)
+            (author :full-affirmative s7r)
+            (author :full-affirmative s7e)
+            (author :full-affirmative s7m)
+            (author :full-affirmative s7x2))
+    :coref ((s6h :same-entity s7p)
+            (s6v :same-entity s7p2)))
+
+These relations come from the guidelines and the given graphs. I did not check any predicate in PropBank.
+
+- **Time expressions:** I treated 现在 ("now") as a vague time and made it depend on `present-reference`. The year 2012 is an absolute date, so it depends on `root`. 同时 ("at the same time") has no relation of its own. Instead I used it to set 保留 ("keep") as overlapping 成为 ("become").
+- **Modal strength:** 很有可能 ("very likely") makes the HDMI-as-2012-trend clause `partial-affirmative` from the author. Every other event is a plain `full-affirmative` assertion.
+- **Purpose clause:** following the guideline, 让 ("let") is `:after` 保留. The events inside it (得到, 满足, 需求) simply overlap their parent.
+
+Some calls could easily differ from the expert annotation:
+- **Coreference:** I linked HDMI and VGA only to their closest earlier mentions in sentence 6. I did not link 消费者 ("consumers") to 用户 ("users") in sentence 3, though they may be the same people. I also left out any `:subset-of` link between the 接口 ("port") nodes, because here they refer to ports in general, not just this monitor's.
+- **Purpose events:** I put the 让 clause and its events directly under `author`. The gold may hang them under the `purpose` constant or under 保留 instead.
+- **Event under 让:** I made 得到 ("obtain") overlap 让. If the gold reads 让 as causing it, it would be `:after` instead.
+(d / document
+    :temporal ((document-creation-time :overlap s8y)
+               (s8y :overlap s8q)
+               (s8y :overlap s8h)
+               (s8y :overlap s8o))
+    :modal ((root :modal author)
+            (author :full-affirmative s8y)
+            (author :full-affirmative s8q)
+            (author :full-affirmative s8h)
+            (author :full-affirmative s8o))
+    :coref ((s6t :same-entity s8p)))
+
+The relations cover all four events in sentence 8: 有-07, 诠释-01, 幸福-01 and 拥有-01. I did not call `propbank_lookup` for these decisions. Instead I used the aspect values already in the graph, where all four are states or a process.
+
+- **Temporal:** 有-07 is the main present state, so it overlaps the document creation time. The other three depend on it with `:overlap`. 诠释 is a nominal and the other two are listed contents.
+- **Modal:** the author plainly asserts the description, so every event is `full-affirmative` from the author. There is no hedge or negation. A reasonable alternative would be to put 幸福 and 拥有 under the interpretation (诠释) instead of directly under the author, since they are contents of it.
+- **Coreference:** this is the least certain part. I took "福韵 B560" to be the same Samsung B560 the document has been describing all along. I linked it to "它" in sentence 6 (`s6t`), which is the most recent earlier mention, rather than to `s4p`. "福韵" might instead name a separate series, or the gold annotation might link the series node `s8x` rather than the product node `s8p`. Either would change this triple.
+(d / document
+    :temporal ((document-creation-time :before s9s)
+               (document-creation-time :overlap s9w)
+               (document-creation-time :overlap s9x2)
+               (document-creation-time :overlap s9y)
+               (document-creation-time :overlap s9y2))
+    :modal ((root :modal author)
+            (author :full-affirmative s9s)
+            (author :full-affirmative s9w)
+            (author :full-affirmative s9x2)
+            (author :full-affirmative s9y)
+            (author :full-affirmative s9y2))
+    :coref ((s5j :same-entity s9j2)))
+
+I did not call PropBank for this sentence. All the choices below come from the sentence graph and the guidelines.
+
+- **Temporal:** 设计 (the design) is the only event with `performance` aspect. It is finished, so it goes before the document creation time. The other four events are states that hold now: 无 (flawless), 写 (the 福 character is written on it), 拥有 (has the dragon pattern) and 有 (has Chinese elements). Each of these overlaps the document creation time. I tied them all to that time and not to each other. The guidelines ask for event-to-event links only when they are clear.
+- **Modal:** the author states all five events directly, so each is `full-affirmative` from the author. 无 means "has no flaw", but that is how the event itself is worded. It is not a negated event, so it gets no negative strength.
+- **Coreference:** 机身 here (`s9j2`) is the same phone body as 机身 in sentence 5 (`s5j`), so I linked them.
+
+**Left out:**
+- I did not link 这些 ("these", `s9t2`) to the dragons, the character and the pattern. Those are all in this sentence, so the link would be inside the graph, not a `:coref` triple.
+- I did not link 拥有 to 拥有 in sentence 8. That one is the series owning a noble charm, so it is a different event.
+
+The expert gold may have added these links.
+(d / document
+    :temporal ((document-creation-time :overlap s10k)
+               (s10k :overlap s10f)
+               (document-creation-time :overlap s10m))
+    :modal ((root :modal author)
+            (author :full-affirmative s10k)
+            (s10k :partial-affirmative s10f)
+            (author :full-affirmative s10m))
+    :coref ((s8x :same-entity s10x)
+            (s9z2 :same-entity s10z)
+            (s9b :same-entity s10b)))
+
+I didn't run any PropBank lookups for this sentence. These relations rest on the sentence graph as given and on the guidelines.
+
+- **Temporal:** 看起来 (s10k) and 现眼 (s10m) are present states, so each overlaps the document creation time. 符合 (s10f) is inside 看起来, so it takes s10k as its parent and overlaps it.
+- **Modal:** the author fully asserts s10k and s10m. 看起来 ("looks like") only makes it seem the series fits the Year of the Dragon, so I gave s10f `partial-affirmative` under s10k. This is the least certain call. The gold may treat it as `full-affirmative`, or hang s10f directly under the author with `partial-affirmative`.
+- **Coreference:**
+  - The B560 series (s10x) is the 福韵 B560 系列 of sentence 8 (s8x).
+  - The 福 character on the back (s10z) is the "福" 字 of sentence 9 (s9z2).
+  - 背部 (s10b) is the 背后 of sentence 9 (s9b).
+- **Links I left out:**
+  - **龙年 and 2012:** 龙年 (s10l, the Year of the Dragon) may be the same as 2012 in sentence 7 (s7d), since 2012 was a Year of the Dragon. The text never says so.
+  - **Series and machine body:** I didn't link the series to the machine body of sentence 9 (s9j2). The body is a part of the product, not the same entity.
+(d / document
+    :temporal ((document-creation-time :overlap s11d))
+    :modal ((root :modal author)
+            (author :full-affirmative s11d)))
+
+The sentence ("By Chinese custom, the dragon is treated as a mascot") has one event, `s11d` (当做-01, "treat as"). I did not look anything up in PropBank because none of these choices depended on the predicate's meaning.
+
+- **Temporal:** the custom still holds and its aspect is `habitual`. With no time expression or earlier event as a clear reference point, it overlaps the document-creation time. `present-reference` would also be a reasonable parent.
+- **Modal:** the author states the custom as a plain fact, so it is `full-affirmative`.
+- **Coreference:** I added none. 龙 here means the dragon in general, not the two dragons drawn on the device in sentence 9 (`s9l`). 中国人 (Chinese people) is a different entity from 中国 (China, `s9c`). 习俗 (custom) has not been mentioned before.
+(d / document
+    :temporal ((document-creation-time :depends-on s12s)
+               (document-creation-time :after s12d2)
+               (s12d2 :before s12d))
+    :modal ((root :modal author)
+            (author :full-affirmative s12d2)
+            (author :neutral-affirmative s12d))
+    :coref ((s10x :same-entity s12p2)
+            (s10l :same-entity s12l)))

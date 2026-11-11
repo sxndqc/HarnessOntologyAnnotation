@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-9.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2640
+    },
+    "cache_creation_input_tokens": 2640,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 806,
+    "output_tokens_details": {
+     "thinking_tokens": 318
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 9 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n\n8\tDoctors will examine him for signs that the cancer may have come back while he [was] awaiting trial in a Russian jail.\n\nTheir graphs:\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h2 / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h / health))\n    :aspect performance)\n\nMy choices, briefly:\n- **Predicate:** I used `pardon-01` (\"legally relieve of guilt\"). Putin is the pardoner (`:ARG0`) and \"him\" is the guilty party (`:ARG1`). The other sense, `pardon-02`, is for forgiving a small social slip, so it doesn't fit here.\n- **Putin's title:** \"Russian President\" is written as a role with `have-org-role-92`, with Russia as the organization (`:ARG2`) and `president` as the title (`:ARG3`). This follows the guidelines' \"president of Russia\" example.\n- **\"for health reasons\":** This is a cause, so I wrote `:cause (reason :mod health)`. This is a judgment call. AMR often writes it as just `:cause (health)`, and the expert annotation may do the same.\n- **Aspect:** `performance`, because the pardon is a finished event in the past.\n- **\"him\":** Written as a third-person singular `person`. Linking him to the person he refers to in an earlier sentence happens later, in the document-level step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medicine)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect performance)\n\n# ::snt 7\n# sentence level graph:\n(s7r / remission-02\n    :ARG1 (s7f / form\n        :mod (s7r2 / rare)\n        :mod (s7c / cancer\n            :mod (s7b / bone))\n        :possessor (s7p / person\n            :wiki \"Edmond_Pope\"\n            :name (s7n / name :op1 \"Pope\")))\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c2 / country\n            :wiki \"Russia\"\n            :name (s7n2 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)\n\n# ::snt 8\n# sentence level graph:\n(s8e / examine-01\n    :ARG0 (s8d / doctor\n        :refer-number plural)\n    :ARG1 (s8p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s8s / signal-07\n        :ARG1 (s8c / come-01\n            :ARG1 (s8c2 / cancer)\n            :direction (s8b / back)\n            :temporal (s8a / await-01\n                :ARG1 s8p\n                :ARG2 (s8t / try-02\n                    :ARG1 s8p\n                    :aspect process)\n                :place (s8j / jail\n                    :mod (s8c3 / country :wiki \"Russia\"\n                        :name (s8n / name :op1 \"Russia\")))\n                :aspect activity)\n            :modal-strength neutral-affirmative\n            :aspect performance)\n        :refer-number plural\n        :aspect state)\n    :aspect performance)\n\nThis sentence:\n\n9\tA spokeswoman said that Pope was suffering from malnutrition and high blood pressure .\n\nIts graph:\n\n# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG0-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)\n            :aspect state))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :mod (s9h2 / high)))\n        :aspect state)\n    :aspect performance)\n\n<br>\n\n**Choices worth checking:**\n\n- **Spokeswoman:** \"Spokeswoman\" is not in PropBank, so I wrote her as a role noun: a `person` holding the role through `have-org-role-92` with `:ARG3 spokeswoman`, following the reification pattern in the guidelines. The guidelines' own example puts the role-holder in `:ARG1` of `have-org-role-92`, so `:ARG1-of` would have been the right link here. The graph uses `:ARG0-of`, which is probably wrong.\n- **\"Was suffering\":** I gave it `state`. The progressive could also support `activity`, so the expert annotation may differ here.\n- **High blood pressure:** I built it from parts (`pressure` with `:mod blood` and `:mod high`), not as one disease name like \"hypertension\". The PropBank senses of \"pressure\" (applying or causing pressure) don't fit this meaning.\n- **Pope:** He is a named `person` with only the name \"Pope\", as the sentence gives it. His link to the earlier mentions of Edmund Pope belongs to the document-level step.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS0AoKEAgTGAI4AUIIdGhpbmtpbmcSDKRumX9+Wk0meqKdNRoMJupjvpTF7Dy2cmZ4IjB0XR6+zuJrdgyuxihl/TKp0kEC+gwdeHCUH3lCrejN6L6cWJHR95iGopuyrHrVMgMq7QmHGaxHkeECS1BwyV54RMVEB1DzJ7Fb1k1TI5Rtzc2X7pG/Y9i1GgAA5CSoU2uiPIxrCo5dzFK6WdY0GYsietn+XE2PET4UOeCNINSLjOVip2a3Cwj/XaUHvyC5Uk7oczg2EjPgxHyY+4TKvSf6T+F2Vi71AGI+j09mMAHF63AkYKwRtGCI30mWD/lULcfOCBjYwzdLUdQD59ASeVOCUyAqTOkNJ7x8q4uEUnjRv7588entQS0lc365KyfFizbewq/b5wzFJkXOW1Mg3dPcKwTIK2zY4GUN7yfQVDz2Oervgm8M/ii21rXKOG/q7BOnBmoMBw7EljoLjogNop1qL08oNNJVphPYbfyHriSNVg6jXSx/uwMDlFGsOKRVwgfQYxPyJtNvb+2rbmKm4WabzEyxDCY/Lk2U/6AKQV/3VGdCtI4w6C7PyudCwgZvKYV3d02Yrsj1nWzGKHTrMnfcuQLArly9FGoOdpqcp5ynP19evTsEjMCYWakmPRC1JNAdJE8cBI6ehq1XOxrEvl9+KqYVBMXN5O2bgkNlNL9yD9GZHDr7PhkxEEAh9iV/rhxFkyhKzX4rn14+gywusMxLsXtgL0ZFM4JZt362+ztGXMmfJm49UsUUlnftOB8yrJh5nibDfOAyKsZqvWewaBpAzE1IZCF4H4Fda8bgm1a/ilU3QOi6Cf/0oR6YZ/P/ebe531CH/C+PAuqS7rjhruz+e5wmRk/OB51Rew3oDEHe2o/mF3SiX0EL8xVJ7OdU5HlaNJks0o5E7c4yn6HohMRrWcE/OuQBj3oQ/bonNWhrv+y7SwpL+vp6T2k3zQpuNyqscbqMklJf7T81HVhkDszRUy7uNECCuYp2TTcQnaui5lryX20304v+P7irXBs7IU0VSKI+Y876JVNvdbyiDfat3Asw4HnB+rl11ZXqgB4Gh1wRDePhXBeWy+75AubGPbySG2O7tB19jE7eJ5xvDs1tDFBJH1twvBCccZUHxk8A1LfQb0aa4qL6fZ2UvlgAwiuMx2eAEhUCIhfVX6+H0z2cBNXcLgpkQtCD79/nl9tkXicWvzMzZ3K7yr1DaROqr0BjDYxM3TM1oNZvpOGenwoppBSekxtlUEIeFz1Qpjtl5nRlAHXMMkii/6ro0WKywR8P2bXwyMQQdYy8tyFtC8bv2HBC3bl1IVjdH4dghdWl6b+/x3d4+ZYPIa+5IUHyFi/9l6tddQ1iUXsFCxX7vN/r1jUtUZJCaD+Z0Wgnbg3+11e0yxShu14jEUb7qsngo2kHU7vRdwhCAZDY64TcKnd5c1oomodHYSnc8+XWmE/jIHAsE+PbzJ8klAPiy54HWuGln5DrEAcbbJXe8WDoazy5X3AxCZmgsWjZ9xOZsRS7OwrBWhT2aWdRMmPFixG1x429tcyLPHHy/EcgeSKz175vRZfDeMvk2TaayRdd6kbLHNayqKyFUpfeJbRtK9TxkdkJ46LCQBF1C+tZT4GmmShic6c7zj7IyiddA6glNSbMbeNXicwFfnqNY3xiBOJaaF6k9G14uT9jrVn9LTQ6nO9jNpqZf9szu+0LVf5MVBr0oZYL/DHm76Rw8z+oclFv19usOKXgxfZt8hDmWZ+STuFpLn77OQ1AY9ujP0Ck2e7r7LOrJ74t+FZ+mOuTNKsND9nhWXGJFCivLng2jFnxe/HTGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s9s)\n               (s9s :overlap s9s3)\n               (document-creation-time :overlap s9h))\n    :modal ((root :modal author)\n            (author :full-affirmative s9s)\n            (author :full-affirmative s9h)\n            (author :full-affirmative s9p)\n            (s9p :full-affirmative s9s3))\n    :coref ((s8p :same-entity s9p2)))\n\nI didn't call `propbank_lookup`. These relations come from the guidelines and the context.\n\n- **Temporal:** \"Said\" happened in the past, so `say-01` is before the document creation time. \"Was suffering\" is a state in the clause she reports, so its parent is the saying event and the two overlap. The spokeswoman's role, `have-org-role-92`, is a state that I take to still hold now, so it overlaps the document creation time. I'm least sure of this one: the guidelines don't directly cover the time of a role predicate, and the expert annotation may leave it out.\n- **Modal:** The author asserts the saying, the role and the spokeswoman herself. The suffering is reported speech, so the spokeswoman is its conceiver, at full strength.\n- **Coreference:** I linked \"Pope\" (`s9p2`) to the closest earlier mention of him, \"him\" in sentence 8 (`s8p`). The spokeswoman, the illnesses and the events are new, so they get no coreference links.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

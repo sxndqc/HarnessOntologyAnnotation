@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 720
+    },
+    "cache_creation_input_tokens": 720,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 1085,
+    "output_tokens_details": {
+     "thinking_tokens": 450
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\nIts graph:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1c3 / city :wiki \"Fukushima\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c4 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect performance)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1i / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect habitual)\n        :manner (s1z / 逐步)\n        :aspect activity))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s1d)\n               (document-creation-time :overlap s1p)\n               (document-creation-time :after s1c4)\n               (s1c4 :overlap s1j)\n               (document-creation-time :after s1h2)\n               (s1h2 :overlap s1i))\n    :modal ((root :modal author)\n            (author :full-affirmative s1d)\n            (author :full-affirmative s1p)\n            (author :full-affirmative s1c4)\n            (author :full-affirmative s1j)\n            (author :full-affirmative s1h2)\n            (author :full-affirmative s1i)))\n\nThis is sentence 1 of 6, so there is no coreference group. All three mentions of 中国 and both of 日本 are already one node each in the graph. I did not look anything up in PropBank, because no relation here depended on a predicate's exact meaning.\n\n- **Time:**\n  - 达成 (reaching the consensus) is a completed past event, so it comes before the document-creation time.\n  - 排海 (the discharge) is shown as going on now, overlapping the document-creation time. Nothing in the sentence says this; I am assuming the discharge has already started and is still happening.\n  - 参与 (taking part) and 恢复 (resuming) are marked by 将 (\"will\"), so they come after the document-creation time.\n  - 监测 (the monitoring) overlaps the taking part, and 进口 (the imports) overlap the resuming.\n- **Modality:** the author states every event with full certainty. 将 counts as a plain \"will\", which the guidelines treat as full-affirmative.\n- **Judgement call on the monitoring and imports:** I attached 监测 and 进口 straight to the author. Another option is to make them depend on 参与 and 恢复. A gold annotation might also treat the future steps as part of the consensus and make that the conceiver, which would change the modal entries.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

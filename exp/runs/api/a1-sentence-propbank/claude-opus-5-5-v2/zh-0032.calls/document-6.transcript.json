@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4764
+    },
+    "cache_creation_input_tokens": 4764,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 887,
+    "output_tokens_details": {
+     "thinking_tokens": 342
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 6 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\n2\t中国 官媒 报道 ， 中国 和 日本 主管 部门 持续 多轮 磋商 福岛 “ 核 污染 水 ” 排海 问题 后 ， 日本 欢迎 在 国际 原子能 机构 框架 下 设立 确保 中国 等 利益 相关 国家 有效 参与 ， 并 确保 独立 采样 和 实验室 分析 的 长期 国际 监测 安排 ， 中国 将 在 实施 监测 措施 后 ， 基于 科学 证据 逐步 恢复 符合 标准 的 日本 水产 进口\n\n3\t日本 首相 岸田 文雄 表示 ， 国际 原子能 机构 将 扩展 对 “ 处理 水 ” 排海 的 监测 计划 ， 而 目前 他 不知道 中国 具体 何时 会 恢复 进口 日本 水产\n\n4\t福岛 第一 核电厂 受 2011 年 东日本 大地震 及 引发 的 海啸 损毁 ， 导致 冷却 系统 停止 运作 ， 东京 电力公司 注入 海水 直接 冷却\n\n5\t使用 后 的 核废水 经 12 年 已 储存 30万吨 ，于 去年 开始 分批 排放 ，预计需时 40 年\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1c3 / city :wiki \"Fukushima\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c4 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect performance)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1i / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect habitual)\n        :manner (s1z / 逐步)\n        :aspect activity))\n\n# ::snt 2\n# sentence level graph:\n(s2b / 报道-01\n    :ARG0 (s2m / 官媒\n        :mod (s2c / country :wiki \"China\"\n            :name (s2n / name :op1 \"中国\")))\n    :ARG1 (s2a / and\n        :op1 (s2h / 欢迎-01\n            :ARG0 (s2c2 / country :wiki \"Japan\"\n                :name (s2n2 / name :op1 \"日本\"))\n            :ARG1 (s2s / 设立-01\n                :ARG1 (s2p / 安排-01\n                    :ARG1 (s2j / 监测-01\n                        :aspect process)\n                    :mod (s2c3 / 长期)\n                    :mod (s2g / 国际)\n                    :ARG0-of (s2a2 / and\n                        :op1 (s2q / 确保-01\n                            :ARG1 (s2y / 参与-01\n                                :ARG0 (s2g2 / 国家\n                                    :refer-number plural\n                                    :example s2c\n                                    :ARG0-of (s2x / 相关-01\n                                        :mod (s2l / 利益)\n                                        :aspect state))\n                                :manner (s2e / 有效)\n                                :aspect process)\n                            :aspect process)\n                        :op2 (s2q2 / 确保-01\n                            :ARG1 (s2a3 / and\n                                :op1 (s2c4 / 采样-01\n                                    :mod (s2d / 独立)\n                                    :aspect process)\n                                :op2 (s2f / 分析-01\n                                    :mod (s2s2 / 实验室)\n                                    :aspect process))\n                            :aspect process))\n                    :aspect process)\n                :place (s2k / 框架\n                    :mod (s2o / organization :wiki \"International_Atomic_Energy_Agency\"\n                        :name (s2n3 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\")))\n                :aspect process)\n            :temporal (s2a4 / after\n                :op1 (s2c5 / 持续-01\n                    :ARG0 (s2c6 / 磋商-01\n                        :ARG0 (s2b2 / 部门\n                            :ARG0-of (s2z / 主管-01\n                                :aspect state)\n                            :mod (s2a5 / and\n                                :op1 s2c\n                                :op2 s2c2))\n                        :ARG1 (s2w / 问题\n                            :topic (s2p2 / 排海-00\n                                :ARG1 (s2s3 / 水\n                                    :ARG1-of (s2w2 / 污染-01\n                                        :ARG0 (s2h2 / 核)\n                                        :aspect state))\n                                :source (s2c7 / city :wiki \"Fukushima_(city)\"\n                                    :name (s2n4 / name :op1 \"福岛\"))\n                                :aspect process))\n                        :frequency (s2r / 轮\n                            :quant (s2d2 / 多))\n                        :aspect performance)\n                    :aspect performance))\n            :aspect performance)\n        :op2 (s2h3 / 恢复-02\n            :ARG0 s2c\n            :ARG1 (s2i / 进口-01\n                :ARG0 s2c\n                :ARG1 (s2s4 / 水产\n                    :ARG0-of (s2f2 / 符合-01\n                        :ARG1 (s2b3 / 标准)\n                        :aspect state))\n                :ARG2 s2c2\n                :aspect process)\n            :manner (s2z2 / 逐步)\n            :ARG0-of (s2j2 / 基于-01\n                :ARG1 (s2z3 / 证据\n                    :mod (s2k2 / 科学))\n                :aspect state)\n            :temporal (s2a6 / after\n                :op1 (s2s5 / 实施-01\n                    :ARG0 s2c\n                    :ARG1 (s2c8 / 措施\n                        :mod (s2j3 / 监测-01\n                            :aspect process))\n                    :aspect performance))\n            :aspect activity))\n    :aspect performance)\n\n# ::snt 3\n# sentence level graph:\n(s3b / 表示-01\n    :ARG0 (s3p / person\n        :name (s3n / name :op1 \"岸田\" :op2 \"文雄\")\n        :ARG1-of (s3h / have-org-role-92\n            :ARG2 (s3c / country\n                :name (s3n2 / name :op1 \"日本\"))\n            :ARG3 (s3s / 首相)))\n    :ARG1 (s3c2 / contrast-91\n        :ARG1 (s3k / 扩展-01\n            :ARG0 (s3o / organization\n                :name (s3n3 / name :op1 \"国际\" :op2 \"原子能\" :op3 \"机构\"))\n            :ARG1 (s3j / 计划-01\n                :ARG1 (s3j2 / 监测-01\n                    :ARG1 (s3p2 / 排海-00\n                        :ARG1 (s3w / 水\n                            :ARG1-of (s3c3 / 处理-02\n                                :aspect performance))\n                        :aspect process)\n                    :aspect process)\n                :aspect state)\n            :aspect performance)\n        :ARG2 (s3z / 知道-01\n            :ARG0 s3p\n            :ARG1 (s3h2 / 恢复-02\n                :ARG0 (s3c4 / country\n                    :name (s3n4 / name :op1 \"中国\"))\n                :ARG1 (s3j3 / 进口-01\n                    :ARG0 s3c4\n                    :ARG1 (s3s2 / 水产\n                        :mod s3c)\n                    :aspect process)\n                :temporal (s3a / amr-unknown\n                    :mod (s3j4 / 具体))\n                :aspect performance)\n            :temporal (s3m / 目前)\n            :polarity -\n            :aspect state))\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4a / and\n    :op1 (s4d / 导致-01\n        :ARG0 (s4s / 损毁-01\n            :ARG0 (s4a2 / and\n                :op1 (s4e / earthquake\n                    :wiki \"2011_Tōhoku_earthquake_and_tsunami\"\n                    :name (s4n2 / name :op1 \"东日本\" :op2 \"大地震\")\n                    :temporal (s4t / date-entity :year 2011))\n                :op2 (s4h / 海啸\n                    :ARG1-of (s4y / 引发-01\n                        :ARG0 s4e\n                        :aspect performance)))\n            :ARG1 (s4f / facility\n                :wiki \"Fukushima_Daiichi_Nuclear_Power_Plant\"\n                :name (s4n / name :op1 \"福岛\" :op2 \"第一\" :op3 \"核电厂\"))\n            :aspect performance)\n        :ARG1 (s4z / 停止-01\n            :ARG1 (s4y2 / 运作-01\n                :ARG1 (s4x / 系统\n                    :mod (s4l / 冷却))\n                :aspect activity)\n            :aspect performance)\n        :aspect performance)\n    :op2 (s4r / 注入-01\n        :ARG0 (s4c / company\n            :wiki \"Tokyo_Electric_Power_Company\"\n            :name (s4n3 / name :op1 \"东京\" :op2 \"电力公司\"))\n        :ARG1 (s4w / 海水)\n        :ARG2 s4f\n        :purpose (s4l2 / 冷却-01\n            :ARG0 s4c\n            :ARG1 s4f\n            :manner (s4z2 / 直接)\n            :aspect performance)\n        :aspect performance))\n\n# ::snt 5\n# sentence level graph:\n(s5a / and\n    :op1 (s5c / 储存-01\n        :ARG2 (s5h / 核废水\n            :temporal (s5a2 / after\n                :op1 (s5s / 使用-01\n                    :ARG1 s5h\n                    :aspect performance))\n            :quant 300000\n            :unit (s5d / 吨))\n        :duration (s5t / temporal-quantity\n            :quant 12\n            :unit (s5n / 年))\n        :aspect performance)\n    :op2 (s5k / 开始-01\n        :ARG1 (s5p / 排放-01\n            :ARG1 s5h\n            :manner (s5f / 分批)\n            :aspect activity)\n        :temporal (s5q / 去年)\n        :aspect performance)\n    :op3 (s5y / 预计-01\n        :ARG1 (s5x / 需-01\n            :ARG0 s5p\n            :ARG1 (s5t2 / temporal-quantity\n                :quant 40\n                :unit (s5n2 / 年))\n            :aspect state\n            :modal-strength partial-affirmative)\n        :aspect state))\n\nThis sentence:\n\n6\t日本 称呼 核废水 为 “ 处理水 ” ， 中国 称为 “ 核污染水 ”\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6c / 称呼-01\n        :ARG0 (s6c2 / country :wiki \"Japan\"\n            :name (s6n / name :op1 \"日本\"))\n        :ARG1 (s6h / 核废水)\n        :ARG2 (s6h2 / 处理水)\n        :aspect habitual)\n    :op2 (s6c3 / 称为-01\n        :ARG0 (s6c4 / country :wiki \"China\"\n            :name (s6n2 / name :op1 \"中国\"))\n        :ARG1 s6h\n        :ARG2 (s6h3 / 核污染水)\n        :aspect habitual))\n\nI made these choices:\n\n- **Senses:** I looked both verbs up in Chinese PropBank. 称呼-01 and 称为-01 each have the roles ARG0 (the namer), ARG1 (the thing named) and ARG2 (the name).\n- **The unstated object:** In the second clause, the thing China names is left out. It is the same 核废水 as in the first clause, so I reused that node (`:ARG1 s6h`) instead of adding a new one.\n- **The two names:** 处理水 and 核污染水 are each one word in the sentence, so I kept each as a single concept and did not split them into parts like 处理-02 or 污染-01.\n- **Joining the clauses:** Only a comma links them. I used `and`. `contrast-91` would also be defensible, since the sentence sets the two names against each other.\n- **Aspect:** I marked both naming events `habitual`, meaning each country keeps using its name. This was a close call, and `state` would also be reasonable.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS8AoKEAgTGAI4AUIIdGhpbmtpbmcSDGnCOnpFgobTE/rBfxoMB8O0lXJBIKrgB7GtIjAPskMYIxU+piXmULxuhDzAdbNAV6nux/NLdLlx8qLNCfXdJ7aGEsfHUG4RyQ3ny5wqjQrmeZbJ8BmYjfiFqiWWo2ubgH+o5qxmc1wRVsUwvNzFoi7CaxmmpdAafOQtkjMB01fwLaFqKcQInzMgEF689vXDU1Yv8+PhnaWaoF40L6jnf/s1moAQ0uFW/mrilUubrfMDZ4YHs0zBW0P0LNeRfQR0FlwhbzbQeELOBRtayGOFztj3wJbWpPFxn3BB3bDzqTx/W1FTcXrXkLBk7snby1Fif1vpHW2WzQmardNkZTWdEsUVqQ5G5XMTEAizbTnj0xfpfxkElmUm0lnkJyd+OrKDpFDq/pUSQ4VlyFi1dQixm0KaHukabiRhUi8MZqPWEm0PbsmVlLChBR1cZJ6bYN3GavGH8B75rY3w9Vtj/v0Ura5Z59P7zvGFGIAk8Ai1yffA740i+hTVXXir5+q9Aw+/Gc7lbqf6Pp66H5zBYqWZM2sYWA6rOJ+VOQloXqeLAVDGGi0Eq53+ys4LRwI4rMqUeGrUQ20R1yqqNDXi87Yqg4R4nAd1KOmvRgJGXefVREJAAi28nR9sQSx4S7sCp6EvzGV4uHjfHVz5e5pZIwzSQ8arFuJqzxcLtOsQBcs62m2mPFGArmy+7A/F4gOSzzXEuAGKWHi+bhi/ywu1phzivtK9voUEi9Cg4gJ0UrD1PO7/9e8tc/XOlVPDs44UvN89N0QIiCLEYT8g3Tokbx0Y74N2k9gRToc5ivLoa43VTMZeP/YjnCHJYLXsAGnu3ICoAj8u5gw8sBOzRJvIouiH+5j4rOVh778R6LMt6qlx/n094Pk41piPfkfgHMzg6INJcogQtUNnRw0rARdpiOYl56uTS1pyMtvv/rIVgTNHNPFCtzkyeFu7e1oHxBrQotRCkNe/0L3DfIdZmcuu6fXqVAdwTH/LRvCgeTc6ONIAJOrSCSDPUIgKLFzH4FL454cbMeIyKlBmX/MSnl8BmeZfNMZVgG6hSpeRe8ZWev1H/4wJCTVY+ZbkbHKMw9/o7FKeZIhAVsmM4G6YG2yIHl3sar7WdQ25VV0LigDtt6UzIeshwLy+IIKQVkedTox7HzMGylcZIfqJyN5OmQagqSSVevKU9ae/G/7ULafQ4Jta8Tt7I+/o1XsTwKBfYF9LgVufj5SiISrohwxypozpE1hIHtOmuUFJeiy2cRK0BtPLAUaLWj8ISSaJuD1KXB7xmG8xqnUc9JK3AkbMUnyM/qmcv6DjzmuyNs5NTgMEW3Rv4Kx0bUTrJwMbhCUwyX3qi9YTKnW5SUIAZ7yvOhdLr/aHLHPc5xOv/PwHHaGo3HguStY2Ta9IQyn73wBPT7RFAI+jv9Amt9ZOW28WHU9SxG/JX+Ny/KLqN413J7QGRu2tk5rQUGmlFpXi3wjPUjiUuNtcONB4W+IeFGv4EqmZMX26L1ntC3hFrwJ02/OLYCH8MB6vrklH+7lV9EaG8+IYnsmjJ3KCQRmdTY831qbeih5B5O5q6o58cAkQZnRu/K3ZT++yzt2pvsaNz0CNqJISX7R602lH+JS01E5JoTqCBkK4T348nhfFgcQpRMWqzvhsI9M/QD1szRB+kRkcfUyY97f3SaCW94cV3hnnc7z7/PLZOU05CEta/+4UMOKZvvedJ7H2TUdPZZ36bSut2ZqO+wjUKQJYlH5JfEbd2c+/AHSkWlS+oen9ZCIF1baVTKaUJ0RIusM2go14ujY8gZEG02Ll4PMKpmRgnBRvjtbO6DKcPNZDgJgTg9mmhW/5jmAYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I gave both naming events the present time and full certainty from the author. I added three links to earlier sentences: Japan, China and 核废水.\n\n- **Temporal:** Both naming events (`s6c` 称呼, `s6c3` 称为) are habitual and still going on, and the sentence has no time expression. So each takes `document-creation-time` as its parent with `:overlap`.\n- **Modal:** The author states both namings as facts, so both are `full-affirmative` under `author`.\n- **Coreference:**\n  - Japan (`s6c2`) links to its last mention, `s3c` in sentence 3. Sentence 4 has 日本 only as part of the earthquake's name, which is not an entity node.\n  - China (`s6c4`) links to `s3c4` in sentence 3.\n  - 核废水 (`s6h`) links to `s5h`, the same waste water in sentence 5.\n  - I did not link the two names, 处理水 (`s6h2`) and 核污染水 (`s6h3`). They are what the water is called, not the water itself. The water in sentence 3 (`s3w`, \"处理水\") is the same thing, but `s6h` already links to the nearer mention in sentence 5.\n\n# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s6c)\n               (document-creation-time :overlap s6c3))\n    :modal ((root :modal author)\n            (author :full-affirmative s6c)\n            (author :full-affirmative s6c3))\n    :coref ((s3c :same-entity s6c2)\n            (s3c4 :same-entity s6c4)\n            (s5h :same-entity s6h)))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

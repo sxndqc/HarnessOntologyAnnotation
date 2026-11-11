@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-9.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1292,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 28,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 6366,
+     "input_tokens_details": {
+      "cache_write_tokens": 1289,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 28,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 6394
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 692,
+    "cache_read_input_tokens": 6363,
+    "output_tokens": 281,
+    "reasoning_tokens": 146,
+    "openai_usage": {
+     "input_tokens": 7055,
+     "input_tokens_details": {
+      "cache_write_tokens": 689,
+      "cached_tokens": 6363
+     },
+     "output_tokens": 281,
+     "output_tokens_details": {
+      "reasoning_tokens": 146
+     },
+     "total_tokens": 7336
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 9 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n\n8\tDoctors will examine him for signs that the cancer may have come back while he [was] awaiting trial in a Russian jail.\n\nTheir graphs:\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name\n                    :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect activity)\n\n# ::snt 7\n# sentence level graph:\n(s7h / have-mod-91\n    :ARG1 (s7p / person\n        :name (s7n / name :op1 \"Pope\"))\n    :ARG2 (s7r / remission-02\n        :ARG1 (s7f / form\n            :mod (s7r2 / rare)\n            :mod (s7c / cancer\n                :mod (s7b / bone)))\n        :aspect state)\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c2 / country\n            :name (s7n2 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)\n\n# ::snt 8\n# sentence level graph:\n(s8e / examine-01\n    :ARG0 (s8d / doctor\n        :refer-number plural)\n    :ARG1 (s8p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG2 (s8s / sign\n        :refer-number plural\n        :topic (s8c / come-01\n            :ARG1 (s8c2 / cancer)\n            :direction (s8b / back)\n            :temporal (s8a / await-01\n                :ARG1 s8p\n                :ARG2 (s8t / try-02\n                    :ARG1 s8p\n                    :aspect process)\n                :place (s8j / jail\n                    :mod (s8r / country\n                        :name (s8n / name\n                            :op1 \"Russian\")))\n                :aspect activity)\n            :aspect performance\n            :modal-strength neutral-affirmative))\n    :aspect performance)\n\nThis sentence:\n\n9\tA spokeswoman said that Pope was suffering from malnutrition and high blood pressure .\n\nIts graph:\n\n# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG1-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)\n            :aspect state))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :mod (s9h2 / high)))\n        :aspect activity)\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_oL7gRwUelcg04c3vDZ4a2P3z",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "say",
+       "suffer"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"say\",\"suffer\"],\"language\":\"en\"}",
+       "call_id": "call_oL7gRwUelcg04c3vDZ4a2P3z",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_08a0a865e0fc2205006af3fd0dc77087d1bdbab7d9e1658241",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_oL7gRwUelcg04c3vDZ4a2P3z",
+     "content": "## say\n\n### say-01 (say)\n\n- ARG0: Sayer\n- ARG1: Utterance\n- ARG2: Hearer\n- ARG3: Attributive\n\nExample 1 (Transitive): A Lorillard spokeswoman said \"This is an old story.\"\n- ARG0: A Lorillard spokeswoman\n- ARG1: \"This is an old story\"\n- rel: said\n\nExample 2 (Fronted): [Kent cigarettes were sold]-1, the company said *trace*-1\n- ARG0: the company\n- ARG1: *trace*-1\n- rel: said\n\nExample 3 (Inverted): [What matters is what advertisers will pay]-1, said *trace*-1 Newsweek's chairman\n- ARG1: *trace*-1\n- ARG0: Newsweek's chairman\n- rel: said\n\nExample 4 (Split): S-[\"What you have to understand,\" said John [*?*], \"is that Philly literally stinks.\"]\n- ARGM-DSP: [*?*] (tag the leaf node of the *?* itself, and '*' link to the S node containing the ENTIRE utterance\n- ARG1: [*?*] (tag the parent node)\n- ARG0: John\n- rel: said\n\nExample 5 (with listener): John said to Mary: \"you're an idiot.\"\n- ARG0: John\n- ARG2: to Mary\n- ARG1: \"you're an idiot\"\n- rel: said\n\nExample 6 (Weird, attributive usage:): \"Well that's odd,\" said John of the disappearance of his nose.\n- ARG1: \"Well that's odd\"\n- ARG0: John\n- ARG3: of the disappearance of his nose\n- rel: said\n\nExample 7 (split utterance): John-1 is said *trace*-1 to be an idiot.\n- ARG1: *trace*-1 to be an idiot\n- rel: said\n\n### say-02 (discourse function)\n\n- (no roles)\n\nExample 1 (TAKES NO ARGS): Do you think 0 this war is going *-1 to end up...much less popular say a year from now...?\n- rel: say\n\n## suffer\n\n### suffer-01 (suffer, endure/undergo something painful)\n\n- ARG0: entity suffering\n- ARG1: malady\n\nExample 1 (intransitive): The company's return on equity could suffer if it made a higher bid.\n- ARG0: The company's return on equity\n- ARGM-MOD: could\n- ARGM-ADV: if it made a higher bid\n- rel: suffer\n\nExample 2 (with PP-malady): John suffers from delusions of grandeur.\n- ARG0: John\n- ARG1: from delusions of grandeur\n- rel: suffers\n\nExample 3 (with S-malady): Thou shalt not suffer a fool to live.\n- ARG0: Thou\n- ARGM-MOD: shalt\n- ARGM-NEG: not\n- ARG1: a fool to live\n- rel: suffer",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s9s)\n               (document-creation-time :overlap s9h)\n               (s9s :overlap s9s3))\n    :modal ((root :modal author)\n            (author :full-affirmative s9p)\n            (author :full-affirmative s9h)\n            (s9p :full-affirmative s9s)\n            (s9p :full-affirmative s9s3))\n    :coref ((s8p :same-entity s9p2)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_08a0a865e0fc2205006af3fd0f924487d1bce0685002ee8e70",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0VoWbPzmd3V9FBPlfMo1LX5Ef3NnPQhtvH1wgy7WS7lKRV6DTuuV-QiLRV0kgmcq75V_BLGNuaSSfKCquqi-ZTpoCnEifOfOEulFz7ax2Wd0ENqEguMjR0lzgoygZtJ4UpnaIrTSetLWGBDyKZcElLEKKDcLnlWV5AsbM5Sv6HNmsl3JsAmfXMezdjVJ02CJESCa2f4kR685JcFyLeuE0RFPpr2ip4AFJFbHOhqfvDKT75kZJ9vgv1BgXhlE0yZs09NlnLPEbWFOW2DnH7hFrm2jHhKkOM110K85kG4NfIbmyXpnGAR2ImJ4ab8i7RMovaW2c84WG1iHddnK_N-y5_S8CRjR7G2xU-Ap7IkavvthMTLN4MotiybjTVGfbLcu7zgCKCdDGkX2Mq7Yn1hwUQ-SX7orEsBvUBaF1ee_I3sFnUOHW-VoNygLrAGU_ZJs4_upGQ2n2wItag1Z5LZ3BXp5tto1fc_3FyI5NB6AqfgDWOqhuqATqKkSQZqRa8-M5l9cd3GlKaYk_PFCrC19IVVuEsseFmRqCKswQSgbktIkkXwTUsGKRwybSPA53QQ0S8hVwUzRoVGtw-hOsYYhHst6ivmT-MANixvC9iO20N7uWAWtUj2lYFSV6kRAgAuoZmVHwU_dBlxmcQ1R76YBxEs8mnICBvODEKn6n3JrIAxVfqPMgmDP_x6XHD2d4Fl8qBkXV6UWEvLbMzogycDl5VJFxhURmS6Pm7-R47eDGkw965itBNSBdpefPEtEYNHwlk2mVZBQu08B6fmZ2Y23JSAECvztvTS7W-DUyi6vvqLnO7ezrvaTSSAKEezfvD6Fr5rWPhgHTqqf6LcMu0pwZIBujA5TtmsPsM4-f9wGnDuVGyJc0cvR8MJ4T4RVohZFTPxrifO12WkNdgevXWYnBFqD8Xy9eIyYgB_mUcGiVgd6HMNCOmdAXWpA9tXgddeV2J5hcsmGqDfphudCtuJj3iodylm-xfA3S5_7gI0TaW46kZR51ha1gvuPjCiIWsUzlIgB7_KZiiP6fxW33R2zUrfUDYaJr1gVZEWdJZxDF7sC6WfeRSgySthh9-ZeXQlTgRnkFnhJePnt7WFBrrmFntxA-7gxSkqDO0XnUiOh31FCJvBzyW0Rlv7irJliS4nr36iCoi2teKoW9JII45Cy1_u5hGROUcmFDgu7zLhGPkp5yaCmYHkwfKawaBNQlKJxe2VU8c_A7OcG6EIoWmoMvToQpegXUqFB5a68YV3GIB5wvtULDFxQEfrlpY0j0bQn-2lYk3O8ntwmyyVFz7Dqlvgx_w4qjvVKHtSrUCGIQ_AqO1z0xCmwixjU8cmO6NciQVkT3gtdR5dMdevrqZQXK5v4nbwCUaVtLJmasmtLsE9oMBoTnTISNTaX3rxwC1ctG6LB9oKVEhPJySsLJkfOFyw5ig4STmBkC8ekXPZLYxWKCWPDsTBah4lhWqcNVhvLIprbCwYMJ6-41yxXe5_GIvCyoPT8rpnIVQ5c4n9DiQqagfP5kewZl2HgswdC69Rk7vaclmyq9nNgqg2cCZWajpzFe0OAuruycOBEzIQidTmoSkSeslwQPi4Yv233ipZFJcenrtRWVrvWxiWWZmvrJZFr6j736ML7clg-vo_O6UoXEQPWHjIy7EwKMrqNqEUXE5cBRMo3Wvr86bPp68JBoiare9tonhkLQb-ei8AGZqVzrXxAwCH5LRLmDMyF3E0F3eCCPKygqmVITj2yS9C-hkM2eOEkhZEZWNT1NpoeSXGeZFHclxHW0ytcQBbSXX8FTRGTkdRVkGcZcQe5sh4go8hHEb-lhtmtOiaZmcliWnm8G8kyVXBjWpSISk5eZn7PqFTiZYOBwzXvlzTrNk0MTQ3Ve7dVbgtBXMFzyfb7hwh-ml0mirY2-7vxtX4iaH1JAJ4Sw2GqYu-kO84J4N7ZKNfRHARsq6QHb71ug2ITSD-zPeJERIaeKW5ybAVVVB5xZAD0A5zI6PT5qvG2h6Xv1onZh1Z0-mziZRZY4z1pU-CU5pIDGTVu4mfuQEJx7m1gRMqJ-S0ljlamOohBqFJFUe8Q5XiDdi4n55rJUBtoFG9Hwzf6G1jVwjiCHkmG5yDreuTxHDD3CD_2Y9SWOoV80JV6O6Ohf7SOhga9hH4h-QzTd7fECqsERLC0ZCnY4TZNQMVEEXbwCzj0DKJsCCAzEC68-dm2ezZ32Nf3-qF1lb9oSJt0znk6vgeK5RvpOVuFYI-L6lHj7ZphQBNVy8-BqMWVe3ENTFWVE82iBNB41al6ti326LZWyqVZWJU9FEs0mlMjEVgOg6G6eOIif9GkUgMrJJPy9B5NmPq8F10pg3E1Q0SMCtXN5QOHSaBuMt3x_-lex0Fjbx9S2QbQ2kBPf_U2vZRJ4MXt6Scq63TJAYnxQ6GUQsjBjxrUgvaDcH_NSecYIgtnf3iMEGWxdTfWS6u3WtwKodFOIJV76zlqAkFXXEeJ6UfI9cmPkXXMZx8M8avFSjve2xIWydsN5ghXMu_jcaCWd6X3BvfaAXYDorZSNEfSP8A6Qwi7ttWv-pdwlCwsto_Ph7s-aMR7zbDWF6_B1ilsOP71yMpFdoQkILmbsmKsl5tbUWpo_c9omnxYTeBPutBj3W8-YqerreklUmmaXcaTweDF7mFfZnlrIL8FXFZqtEF_h83uT3LymULMbY-UqkCBG6_Wj32qZ_vPkCTFbf5RNeAxpi2Qi7J3Qk9n1NW2EVo0eaZsu_r-QyYPj3ACL6f9R_4SbLrTuaS1wv3c1z_6voyJDagURjGszlDGBeAnzQEFo3GvaxGVYM1hMcdUFDt4lsvGFaCGqRDgXrTfnfJG3SdrG37Gf6qNN6gODhWt6UYpv7UfAd5jTXYlJWMD_ZaDP3Vef5pbvhZu3RjMCE54RiIor2j5-LUi49hhoDuJANB-OGdkGhKKxT9JzGNwoPepG0GCNaQmxbwupo_k2mYyfkAcmR_WAMkHRl7juQi3noixQLE4JKFiyPH57NIjqGxI52pdZBKpk7r0YYLfyzwG_F8mAkbcZQ4Rg4xdWuGDQkl3ytSahOcAdJxMWNbSjdtwgcN43N0Ahyse42oMMir0FDbTDDXm7KSeqBr2JJ062lgMc_GSWwLs761N1eR8VfB--XFplp05Oevq93ApGizaEbFLalG3NnCwqhZtOauG54Mp874E_DxmrVk7fe6Qk5SoPzAc84K6mS6BQWqocyk-0ER4uAglR806TulKKiVsK8IyONgBpz0dD1sB_z4sRd8EViXYCGL_M-K3uGFhZWqC9j-k-fIUohNwtkVt_bokDdr7rAe4aKrE6lDNrVKzCyxWTEL44GzLbrrq6Yw2CluYOd6QbZi0Zrj_FSiHVfYjT7HtJtKsoBDVVAdDU6"
+      },
+      {
+       "id": "msg_08a0a865e0fc2205006af3fd13ea5c87d19edc117e8890e58d",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s9s)\n               (document-creation-time :overlap s9h)\n               (s9s :overlap s9s3))\n    :modal ((root :modal author)\n            (author :full-affirmative s9p)\n            (author :full-affirmative s9h)\n            (s9p :full-affirmative s9s)\n            (s9p :full-affirmative s9s3))\n    :coref ((s8p :same-entity s9p2)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,176 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 95,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 46,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5216,
+     "input_tokens_details": {
+      "cache_write_tokens": 92,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 46,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5262
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1758,
+    "cache_read_input_tokens": 5213,
+    "output_tokens": 651,
+    "reasoning_tokens": 296,
+    "openai_usage": {
+     "input_tokens": 6971,
+     "input_tokens_details": {
+      "cache_write_tokens": 1755,
+      "cached_tokens": 5213
+     },
+     "output_tokens": 651,
+     "output_tokens_details": {
+      "reasoning_tokens": 296
+     },
+     "total_tokens": 7622
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_6sosITUCgMmW0qJ02PuT4y7i",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "达成",
+       "参与",
+       "独立",
+       "监测",
+       "恢复",
+       "进口",
+       "排海",
+       "排",
+       "共识"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"达成\",\"参与\",\"独立\",\"监测\",\"恢复\",\"进口\",\"排海\",\"排\",\"共识\"],\"language\":\"zh\"}",
+       "call_id": "call_6sosITUCgMmW0qJ02PuT4y7i",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_075b55a8969b2cf6006af3fcf5572087d1bd665324c68aa65a",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_6sosITUCgMmW0qJ02PuT4y7i",
+     "content": "## 达成\n\n### 达成-01\n\n- ARG0: parties\n- ARG1: agreement, consensus, etc.\n\nExample 1: 城市 北 出口 道路 建设 工程 已 与 香港 泰华 公司 达成 建设 协议\n- ARG0-CRD: 城市 北 出口 道路 建设 工程\n- ARG0-CRD: 与 香港 泰华 公司\n- ARG1: 建设 协议\n- ARGM-ADV: 已\n- rel: 达成\n\n## 参与\n\n### 参与-01\n\n- ARG0: participant\n- ARG1: activity\n\nExample 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。\n- ARG0: 日本 进出口 银行\n- rel: 参与\n\nExample 2: 法国 从来 没有 参与\n- ARG0: 法国\n- ARGM-ADV: 从来\n- rel: 参与\n\n## 独立\n\n### 独立-01\n\n- ARG0: theme\n- ARG1: independent of\n\nExample 1: 吉尔吉斯 独立 以后 两 国 关系 发展 顺利\n- ARG0: 吉尔吉斯\n- rel: 独立\n\n## 监测\n\n### 监测-01\n\n- ARG0: monitor\n- ARG1: thing monitored\n\nExample 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中\n- ARG0: 联合国\n- ARG1: *T*-1\n- ARGM-TMP: 自 １９９３年 以来\n- rel: 监测\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 进口\n\n### 进口-01\n\n- ARG0: importer\n- ARG1: thing imported\n- ARG2: entity arg1 is imported from\n\nExample 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期\n- ARG0: 外商 投资 企业\n- ARG1: 设备 和 原材料\n- ARGM-ADV: 免税\n- rel: 进口\n\nExample 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备\n- ARG0: 中国\n- ARG1: 技术 和 成套 设备\n- ARG2: 从 三十多 个 国家 和 地区\n- ARGM-ADV: 与 此 同时\n- rel: 进口\n\nExample 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口\n- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物\n- rel: 进口\n\nExample 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品\n- ARG1: 初级 形状 塑料\n- ARG1-QTY: 一百一十万 吨\n- ARGM-ADV: 其中\n- rel: 进口\n\n## 排海\n\nNot in PropBank.\n\n## 排\n\n### 排-01\n\n- ARG0: entity described\n- ARG1: position ranked\n\nExample 1: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃 目前 分别 排 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARG0: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃\n- ARG1: 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARGM-ADV: 分别\n- ARGM-TMP: 目前\n- rel: 排\n\nExample 2: 广东 的 科技 综合 实力 排 在 上海 、 北京 之后 居 全 国 第三 位\n- ARG0: 广东 的 科技 综合 实力\n- ARG1: 在 上海 、 北京 之后\n- rel: 排\n\n### 排-02\n\n- ARG0: agent\n- ARG1: thing discharged\n\nExample 1: *pro* 每 年 向 太湖 减少 *PRO* 排 磷 一千六百多 吨\n- ARG0: *PRO*\n- ARG1: 磷\n- ARG1-QTY: 一千六百多 吨\n- rel: 排\n\n### 排-03\n\n- ARG0: agent\n- ARG1: entity arranged\n\n### 排-04\n\n- ARG0: agent\n- ARG1: entity excluded\n\n### 排-05\n\n- ARG0: agent\n- ARG1: entity that the agent performs according to\n\n### 排-06\n\n- ARG0: agent\n- ARG1: a line\n\nExample 1: 他 只 要 拿出 这个 卡片 跟 护照 ， 经过 *OP* *pro* 特别 安排 *T*-1 的 通关 ， 不 必 排 *OP* *T*-2 很 长 的 队\n- ARG0: 他\n- ARG1: 很 长 的 队\n- rel: 排\n\n## 共识\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识)\n        :topic (s1w / 问题\n            :topic (s1p / 排海-00\n                :ARG1 (s1f / 废水\n                    :possessor (s1f2 / facility\n                        :name (s1n3 / name :op1 \"福岛\" :op2 \"核电站\")))\n                :aspect process))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h / 恢复-01\n        :ARG0 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect activity))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_075b55a8969b2cf6006af3fcf8063887d18951458b69a7d033",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0FltyaoTG7uwgpmyD80XTN9pWx5QAg5wLynsT9kgJTb972lbrJ2vDekdd15H1W8vJBPZ6GTZ9gCp8nerAA-vLuW_ltFriA48jc7sFFvihm0EyHzxEMpYQfxFQDkDATLjAXxhTfs_WOyuvzF15Yq3uKB5wTP2tu8UcnOGfgKjwJ5v60E62QxNArmjRh7-7OFCDZbeiIdPJExqkiJe9CVfdTd1y10vaCPmxb3qADf04BDiJ1MzQTVW1-gKDDfKFpcSI7tMnoUAVzUc952DDuBXHfjFeXtGGSsJsJN6vj-dlSq7p4guBDF37oJ1wjpzB1XrxAxo91GModCUzCPrF1oMaM3ZlATp9W3O_GyVEL7vczOD2TxHhTjX6NYZ0AiKPEmVgwkXF13xlEHLTcd2xUluyzz9po1FWotT5P47aVOvkUq-46URoZFvft3U0lQitg4yvN2nxRRjVmQCAYFqGEL4wEkUJJwE_X36H-tdmKfXcH_uQ39cxxn8G0M3H9i1a2Tf_zpoZ0m7-j8COWoL9M2uuqZSRZzm_f8EV8GUgUoRvH4ZFUT7tC4xwGQj3O5SPqOrSzXki3whbAtx57tldPoSPHFx3QTOuK3nUCBauUlGnKZbsDYnRC-6QYNmiiuXbx_HeRhHbapfExc6rUiyqeo3g4Dqum2EMC3R9hCsAuKmqRfYlO3dExi3QpJX0yLSCmanwekCrP-SJngsVzMz7CgmdX7s6MdBTsjVa0UfY9OlJ6ZDdiRiXR9Lc0CDUFwIMPAT0p1r16vhrU4MmoRrQ7-IAmKg3U3DiFQl3yHu842KgCdKT3iWCbOdurotwM3nJiWdt2YMeJRjRNJ8K9jkdfPrNjEvgdetK_yW-LA47rV_gd7gbUR2GnlbM2NSKJcGkbbjiTdILATWBx8mbb_gtB29YtJsO6SR_EQs1ETMhibNoCAMh5Cll8T0L9MJxMct3nfzpZlVY0oJFqNM6yHmZDavAB9kGpMx9UV44QOOMSZs0N5PeqxOo5mn1AiyoNi0_JEq-wN3w8FsVu5K8rIqVB5MGteWtMbAo07KYWk3TfPyc5-VxBBaNmn3yJ_AnJ5suQrnsW6JEccbkWGDiavDPQt4Gl8PxmYWhth_JWRLa2YzetjpdrleOC9hifAW2NxncOwd9ZwEacECwVwgYqqsuRlT48lZs7ZAIndVzaktpTO4GkrMu80o8sMyyIODJCkH1CFHqJ82zlpZvxgklcZlDdYHgL7Otym5Rb3Qd1-Ic_qMbifQIn8ahR_KdAmlyiLPawsJZ4URlibrstuthMZobnclj4TX6cbgNfQ5XH_UpN-zyi4WFkNv35LZ2qlw24JxnotRnsTBzwv-5NDsSAqkc8jCK7I-H9usDE6eMbxjoyLOw5USbwASDWyQyy1LEvws5-jLsvzRTvXfrPFRdAzjsEcPBvgCD2b0MNnZg9vK7_D-npn3jOTzgx_UOARmNOnT-6HhAdjX8AmB6Kux9wz60k4EVPS5bk3o7IKSeB1g9EQYq_rK7bdTd9uSs0xpYB_GZEjKGZaMsuxvIe4aioxHxcRZDrq6RL0qIj4q9dCvVACXcoQFOsaLG5sCgTVvYjhDGmr29enLlDxY4fzM7-p8Wfj3ksZfWEDf96JmTJJziGpup8lW3kgmeEZ0hq7VcK-MzpmaXdj2MYa0D5Iuhhps9PR3jHwf3RXqCZ0HWwqnmw3OTLONkC-w2llQHxWzFs4ECWT6tC1rJM-R1Yj_LasZEcM9zs7j5eka-UgbZWRvOUaJgj9oo1oCPbW8imk8-JEXZAtF15iAwa40eET-8JCNcFKvz4Eawx_VKrA-7x8_jTrO-t2163nnLLhoLlbw471M89EUUGj5KnbE8kyrN9gU-LNAjoYG5CpKaSDTxb_VOdzJkbK6g7m1T_f08md4J151rxorMlvFtLcfHHpzeAfml3sK9yQUxQvO6ZbOFnNTEypCv0o-MQdlT5jsYpBRddXLF2X9mNhtCvOqlZKnqZDuvXYvwbeH5RH5oYaxJ0FFHE4PTESD3Zv0zIwQKiB4-YA7z-KyfPsb8VEgKd-UkLdgozRXBDntUnd0eMnfcmLWjgDN06Ehh7MgU55LWlfiyoYni9cHidd3GnuQcUNZEgPSJvX7nHQ04NKIqapSc2M1xbpPpjfH8NxXQBi56xyZNaLRToGY5f5NDXfBl0zfeQvWO7bh1DG1IGKRfTYTmWFw2wQETjCMCN_XQXJEZEYAHuu4ZebITBR7BYG1PPem2DbZDOh_TXQnE5Cl2W4935tKCnkg-cGKNn4dYQbxY4yPCd3G6kqBcUnNj_8X7W46ug8ccA01MdKe-ZY7m82e9aENsSWDxJeq1oS-kEkrjcNKFDQ77nrGH5CTlg6TR1yA4C07e7AzAnza62VLBKz0pSxH1_jeSwwb7l-9sHG013Bq9-La-150vEIqfBOI1FniX72i2kOE3OnzCFi8MBrfZS-U7cliJukvu_Jo0CXYUr8y7kRjqN_Hf0z0foMxTWoBTiGgaymabTYXV_IcwUYb3_S_HHq_KZUn4HeGrVwPQ380yySOnteyLEtDR_qp8qlKMk_V64FiPkBREVQH59HxAISFVrAGpbN9nHKKk0n2qgvAEDUupLP5B03jH0PGZB7cGdDarIVONtz10qGsKchgxKOLg1oJijyABL7PZhIBIVp1bK4MUU3IdEoeRpj65SkmubnTgjKwyExnLfCrrv3Lrueqanrhabr5ezR3MaYrvwlCckV1win9TjXxXjQTADh4ogHeYiW83SsukLprWnbpY4Ovzmse6TH_5DkiUq0x8XEtpyks6ykwuRQStoKdt-FeIeQFPT0UKXy_jdhk4RtJrn-S752SiIcoHR3kGL8weLgrm74LevatTb8qdAbZdxFdBiuguzi__YaSbP_dciWLeg6bFjP6f9TdxkcFIORR32LjFKMX_IJXcDbkSe2JQ5eGvYLcnQ035vo0iFu722Z-Xuj9lNovgaCiGe47tDNyYa502HzS0zgRfKGnstBTuv-Clzu_2BcaQzN1YOWbyM4ov9GpxXr5KHrHQcrzTdBHaETjEIElGoPTSF3qu8a-Y6H3fRBlQeIR0g_qKRGnRNu6dM1zLaSHw_21ZtLfXS4zt8bfDumxiFvAyFxqPuK84aj0q1pzexguX7M7E4G8-DTpO0-3QfzByIu4yQr2Trfa6_gHv_rw82euGrXwl1xjOBoaf7fpzTfGauhDZ8hp29zg00uL2lmYJ1aInFlsvD45jMzoT4eQk79mbXlnrVmsJWfvxSf-_1eJ18COs5vlaPY_XOLhCDD8J56Md6hKCLeirLvkY_GKu5fQtppTw3yegCIYi43p7FINGRdJbBbFAUJ-63POX-jCt6Zy2LabL1GbqzIHILHuzfC9spZld2CWJuGgPaQn7hBLipTrDRNgsyXKxIqMvYJggRTZIdckERB2I_shqp177dkRDDjZwrcxWqWhFoVKD4TakmxgGvKTHqupH7YdlvZmW_x5oFU0ZIYsmNp9wzM1AjcETE6hWxKNFb-eZ1piMdXPXsFM_nC7HdA8aaQtWoG-elKWKEbFiPBSbkePG_cRdf_5u5MZclEVQ36Knp1HNGLf8I6rLhCRcob_x6u2kIpi2bQI9Vsj8l_IlNGVWQxtgtwxpxc8po0ODl7KWmOu2tNZz-P9BX1HfhPo6ZMRM2f8T6ZjNIj-3kuT8ciT1_kC3l5TeyVyH_OuxF8NTyUHjPyS6LwivM9ERQEdrrsdhiZ468xCveqhwg5GVYM0UFbiK9ZaAtdhibPr7OsYQPVSlP9lHsa5zfVdtZJfYch8969JNRoVlkYfSKHH-_vUs8tsxSnu_huA-VVgPb982yXWgQ47XYEJwaAItxUe1eWRJJ_lx8YFJz_REKZEmLAGHe2xbBzDhNu095JwHGbQcGlXt3Ji8Vi6w9Xo4nCJDglklkEU1XY5Brq6o1ASYhyzQ0bKVdQ3HNuO2Mwf-FCgAUcjj0oNbvxm0J10xFWbn_6MZyFrIydB2Q2jTyAe-b9gq4k8MkIYaQ9C1IHFk7sQL9E-wznVACCQoT9lP6tdj0NSszYLwFE0D19s3dd_VgEsGNXIVVqOKYhr1fgrtcCHJjyh9xzY8Y5K-EGwmxOtRi6WugkvR2PXr91uj3gXATHyrBHTr7HGdVHWXbI0mdp6XMV1tnl_Zbn0KBxdzoapyHP1P8z7nlFEv3lodQC2NdOyDKHF4OyYUq0hlGozCHHcehWjPiENKoH6Xm3aB9r-kAGpo_GgIrJXOckpyS4yVdiEkGCqnxrPpQJWUcIE1vgEp8ipEtyRNlFw-lQIa-SGckN0mft1K888Qqlhm9KXxRVbEIK28wM0eBAWY68GmShc9V5jT0wQ3hk3Zq0AO42ReZBQQyX1NETQb7iIA6G2WPfseB4CbT6CpQmz70yO9p2abPaanMen90CKxy-tA_GTHpfhZIylMFa5SAURKFJcp5u1A6vChzRo-AohSpZC9s-7_1jUBFjgbbfzpd61ez3Mj0lCt8yL6UUBJCAwVwxCPAmyMfwn9rCeap00R-j0D7VgORlaGDCOVNa6CJyuc8nSbUL0cZibNaLjVuu2W8FgfBC6Sy74nnuShCGceimsl72Og9nb8E_pYyvxXW9m5L1w_7t5TYbxEcfqu3erKMbdz0tItDaktSLipICs3arw3DHI0tESE6sXkS7NO5TndFsGew-PnyrIpsj4U20xQSmq3GQ9LPRiXzEB_p43JdpWLnxdNjq9WbPHz6OOo3z_wuWPdQecDD-mMytuhvd0Ejc2HppLvxA5X993ihJnKuikl2uPOp0_P-pksi4CGe2zLbS9lI0ydfj9hshRKbla2hfnDKv7oGV18ahvXfsiE6HvXTpaAEpPRxxCcLhEYP92SrIe_cpqfDadVDnVphmcwASp6RcnSspIi_eDNP5SIUZALzg4GHxa-WzYcQYavvuSgIgwTdhEq2ejHuXDO3oDrgxRkXkhGVJLMvzoCyvmpbtXu5Ia44UKdEhlE1-BiOCJHNGapmY5sya1LBNJjkeEgn6vGye7fq2hbMezNmVXcvW_4L5YNe7bFsW_2oWxhPSq4u5g979Le2_ztDWorPMtAF0b_MAIMxPaFIZAvFtma_oKS1UbPYBbsynuTqdQ=="
+      },
+      {
+       "id": "msg_075b55a8969b2cf6006af3fd02173c87d197f34b8c0fe4a61c",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识)\n        :topic (s1w / 问题\n            :topic (s1p / 排海-00\n                :ARG1 (s1f / 废水\n                    :possessor (s1f2 / facility\n                        :name (s1n3 / name :op1 \"福岛\" :op2 \"核电站\")))\n                :aspect process))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h / 恢复-01\n        :ARG0 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect activity))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

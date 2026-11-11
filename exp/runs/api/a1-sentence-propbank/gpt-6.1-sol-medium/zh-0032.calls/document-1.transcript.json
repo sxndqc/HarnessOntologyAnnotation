@@ -1,0 +1,173 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 457,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 38,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5531,
+     "input_tokens_details": {
+      "cache_write_tokens": 454,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 38,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5569
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1235,
+    "cache_read_input_tokens": 5528,
+    "output_tokens": 368,
+    "reasoning_tokens": 191,
+    "openai_usage": {
+     "input_tokens": 6763,
+     "input_tokens_details": {
+      "cache_write_tokens": 1232,
+      "cached_tokens": 5528
+     },
+     "output_tokens": 368,
+     "output_tokens_details": {
+      "reasoning_tokens": 191
+     },
+     "total_tokens": 7131
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n\nIts graph:\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识)\n        :topic (s1w / 问题\n            :topic (s1p / 排海-00\n                :ARG1 (s1f / 废水\n                    :possessor (s1f2 / facility\n                        :name (s1n3 / name :op1 \"福岛\" :op2 \"核电站\")))\n                :aspect process))\n        :aspect performance)\n    :op2 (s1c3 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect activity)\n    :op3 (s1h / 恢复-01\n        :ARG0 (s1j2 / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect process)\n        :manner (s1z / 逐步)\n        :aspect activity))\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_9xW8gU9qJBqMJdU0xpxHXimD",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "达成",
+       "参与",
+       "监测",
+       "恢复",
+       "进口",
+       "排海"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"达成\",\"参与\",\"监测\",\"恢复\",\"进口\",\"排海\"],\"language\":\"zh\"}",
+       "call_id": "call_9xW8gU9qJBqMJdU0xpxHXimD",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0c3a21fedfaeec91006af3fd2210c887d184664e6543fe73de",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_9xW8gU9qJBqMJdU0xpxHXimD",
+     "content": "## 达成\n\n### 达成-01\n\n- ARG0: parties\n- ARG1: agreement, consensus, etc.\n\nExample 1: 城市 北 出口 道路 建设 工程 已 与 香港 泰华 公司 达成 建设 协议\n- ARG0-CRD: 城市 北 出口 道路 建设 工程\n- ARG0-CRD: 与 香港 泰华 公司\n- ARG1: 建设 协议\n- ARGM-ADV: 已\n- rel: 达成\n\n## 参与\n\n### 参与-01\n\n- ARG0: participant\n- ARG1: activity\n\nExample 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。\n- ARG0: 日本 进出口 银行\n- rel: 参与\n\nExample 2: 法国 从来 没有 参与\n- ARG0: 法国\n- ARGM-ADV: 从来\n- rel: 参与\n\n## 监测\n\n### 监测-01\n\n- ARG0: monitor\n- ARG1: thing monitored\n\nExample 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中\n- ARG0: 联合国\n- ARG1: *T*-1\n- ARGM-TMP: 自 １９９３年 以来\n- rel: 监测\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 进口\n\n### 进口-01\n\n- ARG0: importer\n- ARG1: thing imported\n- ARG2: entity arg1 is imported from\n\nExample 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期\n- ARG0: 外商 投资 企业\n- ARG1: 设备 和 原材料\n- ARGM-ADV: 免税\n- rel: 进口\n\nExample 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备\n- ARG0: 中国\n- ARG1: 技术 和 成套 设备\n- ARG2: 从 三十多 个 国家 和 地区\n- ARGM-ADV: 与 此 同时\n- rel: 进口\n\nExample 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口\n- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物\n- rel: 进口\n\nExample 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品\n- ARG1: 初级 形状 塑料\n- ARG1-QTY: 一百一十万 吨\n- ARGM-ADV: 其中\n- rel: 进口\n\n## 排海\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s1d)\n               (document-creation-time :overlap s1p)\n               (document-creation-time :after s1c3)\n               (s1c3 :overlap s1j)\n               (document-creation-time :after s1h)\n               (s1h :overlap s1j2))\n    :modal ((root :modal author)\n            (author :full-affirmative s1d)\n            (author :full-affirmative s1p)\n            (author :full-affirmative s1c3)\n            (author :full-affirmative s1j)\n            (author :full-affirmative s1h)\n            (author :full-affirmative s1j2)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0c3a21fedfaeec91006af3fd23dec487d19d18672b4fa754ce",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0s-UNQXoxbbZXIU8GPyarynTwdwXEU76tpxTDgLs3aD1WDzEzap1393XZ5yf6PnvBPhGmdI90DBDPxXBUzSLDW8SCzUWbgFHGBP7suE0w5b1ux7JA26o_AjoX5hrosbPQ8nKxitZ9wYFpUsDUZaMT9JnQdrouAOeVABiLKn4q_1gXoUoY84sl5ACjlZWNolOl7QgHbmmZZiFNOq9V-3PqIjqJIO4tWRWc2eNSuw3NQly0aqXOYDA0uWkYnHndy0VnX7n35jjDCj65BSZEOgOGEqchxYLAJGi9FyViK6L4ErSrJcU7NROaRDD3SGTr_TQ4VEGj7XfSu4TOMUq45CbGJohWFLNXJHdZ51ZcTLlspMfF3uIIidL8m9_wNBFpbymVKpYQVVfltj2jZQ918GAcjTnkcVh5bM2Y2BKqlk6CqRMHkYgtZ3BVxyAFbYEwfhMKzyfNqtcXNwCkOU51VyEOxHmv9RpOsnLbL3pl98FwNTqubMb_PlbHj1cWSuEMHoafWxYZB6SUU7-gsyXM478uUy8GlpmpMHn6w9ToavS2wZuk3RwkmBM0rhK6mxqvNmIHkda7CNHp3pGAywHwJjrhFuzEP0k11wnfi_vKpPHbXYOP6Wiju-v3MJqVZ_qLY3xCgy79fOMTXhHfjdo34oK5FFSXEmLwaZ89Q6ay01sYC7ioSpcIXiL7kCPm16QsMelda833_byt3FIbH7UuYIgvSawQdh15mzKZcjgQGP_0KkcjQTJJrtFD6-9v3YveokMJbNa1KcShei-yqD1a92kqp8M4z4zkf5PXKNoPjJcAu_RnAgkyZjl4nNaR3Rsjby_5IM7nkNw9VKYIt-iFJ6iGWJHfZF3OZ_Elaa_NOybHvWVxNRvdUkDWmwqu8_NHgRiyANXeMpho96B_jUEDmu34tVHaTrqenX3Vd3KDgpRQQjwEPEsZznLTqfDTFAcfplxL-LNy9ayAUwPf9AKUe078xoypT2QpJSCrHq_sqAiSL-DAQm2GvXbQd8Bs-UDpQCT9ug8lcDtZivTE068s4hzPJ-G7lajW8IKleQRqQawpkEV4cHdGdon6QKqBvHinqqnXKKHf8UzIvNS4pEDOJmW3_dj4yd8g-b3KyVumijpt1A5mRmc-a3a4ZjS3ibH9jsETDKevItNWo6wAj1v1uZckrRw6Jfe_WzgalxlFLQvvGIZpnzdLjYIXY5Ph5b7HbFMenur2FtYR8bMcer77sn299HOv3YX8upIxw6ytNDtGNSHFD8f4jyXlUukFdoO-7MH42cd2bJ-e1buIhPGbVnPE7Ie67vugeLojrpJNLJYBwD0OqCSF5TzJvlIu9r6KXwXjTubAqjhJXhyE-papnOGO-JFtlLzo54ShU8wmrLeqimbRH5c5ttfTujW6cixpzT-KErP_hUlx3TVf6DyFZAAqg61HqWTwqwXbuxMCYln6YW37bN0kzJ-sNp3gdeMDsC-oYc_3Y-rmP7Nrlpo-4fWVRSkyQVTZku91bD9U-nznau_Y6zENZV9Su4lZ_WrmvPMZvrH58g6ve8gcsPaejN9_pvHELwFnkYK_uPnheiFJC1xiTC1Qm-egiRmZMTfA4y9VhHrY6KcmzOEIgZwsusBnFHeYYHOP93uNZmoFb_p1iQZRl-dpNHJQSF8MHLlgrsKKHI-n6YPwnZX21NXBdopYaiwUkHhd3PiUJIuQgv6SaSYWzX3OwNKx-qGt6ZD8mk0cH8yJOCnNqGNEv9M5wN-zr2I7BPGTBEyS33F730Zbw5WKYF9SokNlIlIT2_mpKGLrifAkoKSfbH_mPMOcfFxEh_1jClyz1nSkW0ORpYkjxqsokzrWmlWXfKemBG3IRWRskd2GWV5VK9sqNmlLv6xt7nr_o73SAcZVstTxIgopoPgELmOzlHbXN5C2PIU1vn4GaQ-i2PuC8unPFN_MLWp6LQkDwwIi8FPXIyi2NtStqh3aFeINHZIuFX8FItkCwF9s2PxRtp9F14XtIMbp6OCwgKZhzLHe2kgmbfE1-sKRiq6DkftFBsmwvs69xSD-ns11czo5FVn8X9ygeeAny-BT2kHAm4LQ7VpeTGwK7VIPkF__hv_2JUru7VQGESL2c9ywM-vzhWYot_2TCd_NhTdI7QbKOrC71xrAAB9mw6eDpwenreuxkOd1IFqYDp0TGVuglnVBcYomCY20wXmTJqp8CZF70g3JCCbPY1P9P4WrUOFe3iw-gTakpBBX6t99e0c3p0tcCPkjBOgg0cKQ4Y2OHngPKYf1xQMD6TEUY_yDTpuz6VhQ5aEm6BHApePdYl3usp5iFT_8dU44IWnEYDEFhxfY1GfONTf5xOGcXK4Ru8JhxCtnGxH8a8LVZfja4PFDGDOK9E3CJXlTLsWjtwcnnKFpONAa9Bpqr8eQ-1fWNvKmwl4LQQ5c9LXHOAS6G2KJiMvGrYpXOWEpSV_HISV3q9NHOVUQhMCl0qMhi2gHpHlsVo0ndQkxi4ze3Tmxqjcl3pXH-sFvLrLvsrPO64nAeaaa380XHrChWhoAuwN52Mijd8WSGFBnX_QF8tTh2ddavLPxe53HVUijE6y_d9YaMuadAxiLVp0Jf5pk0U9KfSxCU_VHrlyVmMki8Bg8bpyhPMJZ9Ci5MSmZDygz8Ip9ErZwzQomKsDWjDZODlyi3Gn6el_nzfr0N3SJ4lFRFmprfeuEs_rn328-qhRvwyELvxpKqCsLcvNHzO44xZyKHcejxl07Ok83JPrbQC2h6a1olcUR3SAQ9WZQLzcRKmb1hdUt6L5OM-sWoN_mMyLsRi_v6kq90aPCCx9kKBTb7aX4k_3TNmYLx61ByL5vtIXdwQVKyObDFMd7a7ljgekCcEibqHclCxGI-f2cQCkPj-kq5Z7-4AhnNnOFSSvG8bLL4isOGwallDiujWf2PeI_6BU1MFy4AQHWAU3D86ZMs1qN8FRfWe6MsAkqmFYyoFzEVXADIbohY7u5gkEDQXHqcJx1_k213Q6QU6nNloMe2mUyYVTOqePOIJ0smno-wAq8v2Cl_tGPU19kGkAiKhrD6fKZ9axo2kmpDNA8aIKAbIzbg_SU5wABWGcAk7qlnEJqB8a6yaA9cyq-H1Ar1tXbT7_NKjvWrUVKa_-kgvwuN4DPW87kb-0ou0lYlokDqB85iRmXDgMNlQBO2bK02RbHSgxjWGeykTupPuoIOWnR-K-GiG8lVySRJqdbVQBj_qt_kD3abMF0DZyMLUU77PONDDP_co6PV3-m194YwXwHhqbfe2TCs7if9Z4AxdB1z-nl3WCwXCW4VW2aRJSf3bHcmxjgNMSY9jZOwHTV-qkj6HoHjXT2bYVQDofcAZtg3IaoLHnmWJffHc8DMN-gk_UvyJljNWCXlloxpHBVksfavCBMJnEVLsL3Bi_Rb_4y1S2vW2_PR3tWuo_lm4nJm7CzACg1q9h6oFOx_ZFkTxr3d1_b7CE4Se-0-FGdCL7A-V64BUOQzySSXJ3zxfouZbcgLmtzmhwp-evJ_IsxSJJi7P4m8FK7OzZyfIr9-__JYT3B9vbTBiCpPes42hTIf_w13-wExWZDpGIvlr6SdcP9pM1WZRhyksH3La2aAnXq5W7-OnmCSBvrLBZYJByAUxcblxZxclxxw5V1lx9Tmci--i11hpN3p7Qg5-OvIvAqY8mQZ7p6mDtyCdOSKjri7BJm8vFyNVAH8ZLyKUeI10PxqZTU8-zvORSyz_Tz23jJhU91EXqHc2X56KF481ucieZbeo3-9RdOfo_tM-_LMQJOWA55d8lQXSr0VR1DsJgT7_CJMaJQZdd1CmzDX-vcJK4lbr7vEvaEWzTc5R_OpMOzeiquPgWY5nwiOsYI3v7Td7wP8S-mmNVo8DBGfqZMRqVgk4v6PENA4vcP7VJ1VMTpuxel_dJNleqojeevOBTBR-tts0T6IWoi9ItcFQqwhawrP-VGahO3WWvkvJUd14xIrojTm4oIGGk4BCBria5vLQXWAAJ3k-uM2udm1p0XdbeKmwxNxgQ9F7jjkgrHKGOuF6CRSduR7YoM3ciYhMbuYMhz_p28xohvh_9zSxuEEu5zFjZMCUPcQadgPzfPrMqJbin8roibYSij5Om0r9QPs2hjKcfDhHMiN7sVKPStCCjXPPgNpEvR3aO3F11dXU1mrJVB14y-jVPQ3QY__kZBcTKHmgFkuZQ7zYXquAyfsuUmgG3g="
+      },
+      {
+       "id": "msg_0c3a21fedfaeec91006af3fd2a76e087d1b146b679e57f9537",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s1d)\n               (document-creation-time :overlap s1p)\n               (document-creation-time :after s1c3)\n               (s1c3 :overlap s1j)\n               (document-creation-time :after s1h)\n               (s1h :overlap s1j2))\n    :modal ((root :modal author)\n            (author :full-affirmative s1d)\n            (author :full-affirmative s1p)\n            (author :full-affirmative s1c3)\n            (author :full-affirmative s1j)\n            (author :full-affirmative s1h)\n            (author :full-affirmative s1j2)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

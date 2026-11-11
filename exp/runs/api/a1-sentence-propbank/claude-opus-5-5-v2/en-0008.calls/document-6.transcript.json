@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9780
+    },
+    "cache_creation_input_tokens": 9780,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 808,
+    "output_tokens_details": {
+     "thinking_tokens": 373
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 6 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\nTheir graphs:\n\nI treated \"for the first time in more than eight months\" as an ordinal: first (value 1) within a range of \"more than eight months\".\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :wiki \"Edmond_Pope\"\n        :name (s1n / name :op1 \"Edmund\" :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :ord (s1o / ordinal-entity\n        :value 1\n        :range (s1m / more-than\n            :op1 (s1t3 / temporal-quantity\n                :quant 8\n                :unit (s1m2 / month))))\n    :aspect performance)\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s2 / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h2 / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h / health))\n    :aspect performance)\n\nMy choices, briefly:\n- **Predicate:** I used `pardon-01` (\"legally relieve of guilt\"). Putin is the pardoner (`:ARG0`) and \"him\" is the guilty party (`:ARG1`). The other sense, `pardon-02`, is for forgiving a small social slip, so it doesn't fit here.\n- **Putin's title:** \"Russian President\" is written as a role with `have-org-role-92`, with Russia as the organization (`:ARG2`) and `president` as the title (`:ARG3`). This follows the guidelines' \"president of Russia\" example.\n- **\"for health reasons\":** This is a cause, so I wrote `:cause (reason :mod health)`. This is a judgment call. AMR often writes it as just `:cause (health)`, and the expert annotation may do the same.\n- **Aspect:** `performance`, because the pardon is a finished event in the past.\n- **\"him\":** Written as a third-person singular `person`. Linking him to the person he refers to in an earlier sentence happens later, in the document-level step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\nThis sentence:\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nIts graph:\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medicine)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSuwsKEAgTGAI4AUIIdGhpbmtpbmcSDJXSlpduMuKm+DldGBoMFBGc1z1fNb/fYTayIjDSOs5BWmAoX9JOwnuU8FAT1geyFWEHtvCcDdnr3r4TMg/kxFYBGU2eaKrkMRUk8Esq2AoEb5oHVF/S9U1RiyslZEbiQv1jOU6iwqCax6zcgLuK5Bba/Fi34VZByLn9aQF1CEDiJsw1S9KaOHxiSCtAqgUjRqH0DFJMCnHSi4oXQDBjd9oPsGzXFfPfZUw1MOIfkOvczWrWyF2YlxoS+Wn/6RGxQWxwcmXanSShU1dcLeq5i2kVyb1z5ZhKvNuv5iNqvt2IG8f0LCjfV2LOgi54JKXQvAwtAm5kINAYCBleo5rbg5lZaFvGtY+AvofJNbEfoHFop6MUwI0wYXiok5yqP00ooKpgZfBJwqJ+M475UyTRD3YASCeaw2ACqADgGSmR0NC1srm+FTcoVkU3m5axjKq9hfvOREnCMu+ioZvoK2oiHtok7TFn2njNydeeacMz9QxtGhsFqKcoXphOwYR9IgWVJcEussL7Bh51HoLphnjsR8cTi4/MWDTmqTVgi/faOj1GdUyyC8PbYu13a1POyCgTYbBdUdtFjwSAk7oLBrRIDnc1Sq0p3z7FZSxMh/rR17LHsl8lVjWwE6ep3F549W2xsSHrtgxvYPopYFNtSrxo+S7cnEYGNmeNTc5TwNUe5nR4ZJZ9qdTDuAmFSPmU2URi+RYK4nyDyIOZfn4z3RVuip9qOQx0mjxu+gTYM4M0Y6elshAG3oVHm84FLR3jKu/givGO4FqBPP8sNQCWvbqCg4EV7EAopGho67bm4dB6J6pH63lSXqr63rm+4WsNERxGkaZLBKGVa2jUO+L5xId6i+/VhH3pJzX/JBIEygS/KdygHFQDJdQNYEM4bAAwkN9wAc+zCKSZh6xK/zEjT4+ZBfT3bgyFW3FMp/T4CvDtn8h+IebK/v6zwK+F1M/mN4W+aLMsGB3sDmSMrxq9medq5LsJD9hM+lOHcABEtPRMEys7AJh5hWvHXJ+LuUxhprHTR8Gx2MC0Ofo6bAgS5JjOxuyzpna0mVMpMm83ramO6XzX7SOMJecHD5zSfOiAriHQuHCfYyZUHs2Oz0b45LaVxGrtjpgNU9f7xgx//FenLdavHesyw/AVyKTxb39hXSUt5LfOkt3yX2C4rLgEs/PnRJZDPh/jq40TLgxuA9uSbihFSkOej6MtdwzkPVMkgYuVKq+9Wwddtmm0uKAIL1994jf6Ea7EMsYpQSnC3jq9v9mCSA7wmexF7cjxWSlNDYyZIaNar4upr4vHB7LPvcRWRCTH3+KfOFTzfLjXS2SXO3LDBH+6XBePtmygcUaNboQOqC8tc766QY8RPR3Y76j7UyldvyGyy6xQNoE9HzA+CfMUCzYnvtDBflOU7N1y6hyoFeKvajn3VhZYWQvM9pYDKUHakpboO7fztsc0eMsnuGnQZ83hR+SRGrJuoliXncrvwGp884+FhcUkYzs5AwXk0FLa6yaIBpa7S7gFkMcAxkAnXYzQBMGOqQaa4itugHZyRRciO4QSW5JJwPbbJdQKz3W/GQjTJDoB2XuvO5kQk/D3EFq7sSMU5XxD1k6YhUfvjDnjWj6PZacc3+2/akFJgv3kC+6LsBEQ4rFWk29RVOFvOldxeIzRd2IIiFH4yUbtAYNSOwybEGvXFJ5noCdIv9p7y08odcSIw8HJTAysIv2rRl3DfR6uk/0HrWSQKazib456A3f+iILr/pi8eNP3Oog0kYh/AqDLQwVoWQWUWZxq2XfLIyvnA/n6BDmOhM9L3XDlx7IM47gAkjKd37inKgkQjiMbALPlpq8cpAEozpH8UPxItBrf00nBs0nnInWtcPXiWFVTlz1kvIqh835MVQViYbwNOswwA4ucDk7XGyp4m17Q19yLLreyZsN11QAr7pVtuh9OYGAYAQ==",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :after s6s)\n               (s6s :after s6r)\n               (document-creation-time :overlap s6h2))\n    :modal ((root :modal author)\n            (author :full-affirmative s6s)\n            (author :full-affirmative s6r)\n            (author :full-affirmative s6h2))\n    :coref ((s5p :same-entity s6p)\n            (s5b :same-entity s6t2)))\n\nMy choices, briefly:\n- **Time order:** \"will spend\" is a future event, so the spending is `:after` the document creation time. The return comes after the stay because of \"before he returns home\", so `s6r` is `:after` `s6s`. Being Sherry's husband (`s6h2`) is a state that holds now, so it is `:overlap` with the document creation time.\n- **Modal strength:** \"will\" is a plain assertion, so the author is `full-affirmative` for all three events.\n- **Coreference:**\n  - \"He\" is the Pope of sentence 5 (`s5p`).\n  - I linked \"there\" (`s6t2`) to the base (`s5b`). It could also point to Ramstein itself (`s5c2`), so the expert annotation may differ here.\n  - I didn't link \"home\" to anything, because no earlier mention clearly matches it.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

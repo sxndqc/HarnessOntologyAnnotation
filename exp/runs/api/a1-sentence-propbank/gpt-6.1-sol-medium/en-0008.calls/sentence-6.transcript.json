@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 68,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 28,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5189,
+     "input_tokens_details": {
+      "cache_write_tokens": 65,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 28,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5217
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 2052,
+    "cache_read_input_tokens": 5186,
+    "output_tokens": 341,
+    "reasoning_tokens": 90,
+    "openai_usage": {
+     "input_tokens": 7238,
+     "input_tokens_details": {
+      "cache_write_tokens": 2049,
+      "cached_tokens": 5186
+     },
+     "output_tokens": 341,
+     "output_tokens_details": {
+      "reasoning_tokens": 90
+     },
+     "total_tokens": 7579
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 6 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_QEiWFW4Neh6nI9i17HzuF7ZO",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "spend",
+       "return"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"spend\",\"return\"],\"language\":\"en\"}",
+       "call_id": "call_QEiWFW4Neh6nI9i17HzuF7ZO",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_03d74ad8d34421d2006af3fcf5545487d1b12989759a29ad51",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_QEiWFW4Neh6nI9i17HzuF7ZO",
+     "content": "## spend\n\n### spend-01 (use money, paying money/time)\n\n- ARG0: spender, buyer\n- ARG1: thing bought, commodity\n- ARG2: seller\n- ARG3: price paid, money\n- ARG4: benefactive\n\nExample 1 (demonstrating commodity and price): The NIH currently spends about $8 million annually on fetal-tissue research.\n- ARG0: The NIH\n- ARGM-TMP: currently\n- ARG3: about $8 million\n- ARGM-TMP: annually\n- ARG1: on fetal-tissue research.\n- rel: spends\n\nExample 2 (with TMP): They spent $325,000 in 1989.\n- ARG0: They\n- ARG3: $325,000\n- ARGM-TMP: in 1989\n- rel: spent\n\nExample 3 (arg0): Government spending is actually increasing .\n- ARG0: Government\n- rel: spending\n\nExample 4 (arg 0, 1 and 3): The question is whether his spending $7.7 million on food, drink, hotels and parties is excessive.\n- ARG0: his\n- ARG3: $7.7 million\n- ARG1: on food, drink, hotels and parties\n- rel: spending\n\n### spend-02 (bide time)\n\n- ARG0: bider, waiter\n- ARG1: unit of time\n- ARG2: activity\n\nExample 1 (spend time): He spends his days *trace-1* sketching passers-by or *trace-2* trying to.\n- ARG0: He\n- ARG1: his days\n- ARG2: *trace-1* sketching passers-by or *trace-2* trying to.\n- rel: spends\n\nExample 2 (simpler example): Mr. Bernstein has spent much of his time in recent years on human rights issues.\n- ARG0: Mr. Bernstein\n- ARG1: much of his time\n- ARGM-TMP: in recent years\n- ARG2: on human rights issues.\n- rel: spent\n\n### spend-04 (be used up)\n\n- ARG1: thing used up\n- ARG2: cause\n\nExample 1 (arg 1 only - most common): the spent fuel rod\n- ARG1: fuel rod\n- rel: spent\n\nExample 2 (with arg 2): Man! I am completely spent from that basketball game!\n- ARGM-DIS: Man!\n- ARG1: I\n- ARGM-EXT: completely\n- ARG2: from that basketball game\n- rel: spent\n\nExample 3 (adjectival): The shampoo and conditioner are completely spent.\n- ARG1: The shampoo and conditioner\n- ARGM-EXT: completely\n- rel: spent.\n\n## return\n\n### return-01 (come back)\n\n- ARG1: entity in motion\n- ARG2: (extent -- rare)\n- ARG3: start point\n- ARG4: end point\n- ARGM: medium\n\nExample 1 (typical): I-1 need *trace*-1 to return on Tuesday.\n- ARG1: *trace*\n- ARGM-TMP: on Tuesday\n- rel: return\n\nExample 2 (metaphorical): Parents are returning to the cloth diaper.\n- ARG1: Parents\n- ARG4: to the cloth diaper\n- rel: returning\n\nExample 3 (Example of end point as 'return to ...\"): they expect a return to full operations by Saturday\n- ARG4: to full operations\n- ARGM-TMP: by Saturday\n- rel: return\n\nExample 4 (Example with arg 1 and 4): their return to black townships across the country\n- ARG1: their\n- ARG4: to black townships across the country\n- rel: return\n\nExample 5 (Example with args 0 and 4): their return to Earth\n- ARG1: their\n- ARG4: to Earth\n- rel: return\n\nExample 6 (Example with arg 1): The possible return of the verification team\n- ARG1: of the verification team\n- rel: return\n\nExample 7 (revert to): a return to Soviet-era symbolism in Russia\n- ARG4: to Soviet-era symbolism in Russia\n- rel: return\n\n### return-02 (give back)\n\n- ARG0: giver\n- ARG1: thing given\n- ARG2: entity given to\n\nExample 1 (Japanese baseball): Fans politely return foul balls to stadium ushers.\n- ARG0: Fans\n- ARGM-MNR: politely\n- ARG1: foul balls\n- ARG2: to stadium ushers\n- rel: return\n\nExample 2 (seeking comment): Charles LaBella didn't return phone calls seeking comment.\n- ARG0: Charles LaBella\n- ARGM-NEG: n't\n- ARG1: phone calls seeking comment\n- rel: return\n\nExample 3 (Example with all args): his return toast to Mr. Nixon\n- ARG0: his\n- ARG1: toast\n- ARG2: to Mr. Nixon\n- rel: return\n\nExample 4 (Example with args 1 and 2): the return of cheaper shares to the lender\n- ARG1: of cheaper shares\n- ARG2: to the lender\n- rel: return\n\nExample 5 (Example with all args): Their return of our refugees to their homes\n- ARG0: Their\n- ARG1: of our refugees\n- ARG2: to their homes\n- rel: return\n\nExample 6 (Possibly confusing use): Jack's safe return\n- ARG1: Jack's\n- ARGM-MNR: safe\n- rel: return\n\nExample 7 (Args 1 and 2): The return of East Jerusalem to the Palestinians\n- ARG1: of East Jerusalem\n- ARG2: to the Palestinians\n- rel: return\n\n### return-03 (bring back)\n\n- ARG0: entity bring something back\n- ARG1: thing brought back\n- ARG2: attribute of arg1, state arg1 is brought back to\n\nExample 1 (transitive active): The company had returned the plant to routine inspection in August.\n- ARG0: The company\n- ARG1: the plant\n- ARG2: to routine inspection\n- ARGM-TMP: in August\n- rel: returned\n\nExample 2 (Example with arg 1): the best punt return , quarterback sack , etc\n- ARG1: punt\n- rel: return\n\nExample 3 (Example with arg 0 and arg 1): The mechine's ball return was broken.\n- ARG0: The mechine's\n- ARG1: ball\n- rel: return\n\n### return-04 (send back)\n\n- ARG0: sender\n- ARG1: thing sent\n- ARG2: sent-to\n\nExample 1 (all args): Mr. Koskotas is fighting extradition proceedings that [*T*-2] would return him to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete.\n- ARG0: [*T*-2]\n- ARGM-RCL: that -> extradition proceedings\n- ARGM-MOD: would\n- ARG1: him\n- ARG2: to Greece, where he is charged with embezzling more than $250 million from the Bank of Crete\n- rel: return\n\n### return-05 (exchange, trade)\n\n- ARG0: agent, entity trading\n- ARG1: theme\n- ARG2: other exchanger\n- ARG3: secondary theme\n\nExample 1 (Args 1,3): North Korea agreed to dismantle its nuclear program in return for economic aid.\n- ARG1: for economic aid\n- ARG3: North Korea agreed to dismantle its nuclear program\n- rel: return\n\nExample 2 (Example with args 1): in return for removing all our tariff barriers\n- ARG1: for removing all our tariff barriers\n- rel: return\n\nExample 3 (Often in the form of 'in return for'): In return for services rendered\n- ARG1: for services rendered\n- rel: return\n\nExample 4 (It is rare to find this with more than arg 1): In return for your patience\n- ARG1: for your patience\n- rel: return\n\n### return-06 (give a dividend)\n\n- ARG0: thing providing a dividend\n- ARG1: dividend, earnings\n- ARG2: recipient\n\nExample 1 (Monitary example (usual use)): a 0.89 % return on assets for Security Pacific\n- ARG1: 0.89 %\n- ARG0: on assets\n- ARG2: for Security Pacific\n- rel: return\n\nExample 2 (the return percentage can be 'earnings'): KKR racked up annual returns of 60 % in the three years it owned Storer .\n- ARGM-TMP: annual\n- ARG1: of 60 %\n- rel: returns\n\nExample 3 (Non-monitary example): Returns from just under a third of the polling stations\n- ARG0: from just under a third of the polling stations\n- rel: Returns\n\nExample 4 (Arg 0 is often inanimate): A return of investments of 32%\n- ARG0: on investments\n- ARG1: of 32%\n- rel: return\n\nExample 5 (Animate arg 2): whose returns after tax have trailed tuition increases\n- ARG2: whose\n- ARGM-TMP: after tax\n- rel: returns",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name\n                    :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect activity)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_03d74ad8d34421d2006af3fcf781d487d1823199cfb57ae7c0",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_z8lj1ll4N5r5hQB6zL8vEf2zxUOgcucthL_biXko_pS0ONff8gEpqR5dukOA0sDE1sId5fWFPFr5EH7jHgDHy8Tmj93b_X8kifbQXcMfEilNbODd862xPLdPRGXqKGwJbCswzy1RflhVlSOCrZDLNzGgl0HqHU8vhMBEd4RoyqaippqZ467up9e_FNZMvxeDPQ1kQlVvD_yUeLjYfCHbdTRG-vJZLuLKFKwnw2WZHA8Cp82zjSB7bMic1oXDxT-gqforKS8nazU5hqEsy3MsuBb7kCLAY3WQLVfddPcC4DQ_IpbgwS752mxzgiAw7IToy-Z_FU61Tq4zK5YA448gUG42VSZDN_HKwuRL92SW6zfuowb11A7DqiSfl6SwaccR4FIamgVHZEQ7xainczNKVUugh-2voewQPCAxPFZNiaPU-w1RIpLdRbch_FYlVAR8eIOlnis6MzFHuJF9NRCasIkvDMhbqzrUo-fQnug_YjPVI1Yi8rJD5k1HOkAl5Zs1SpiLH6J22CDAA0QD--zh877eTROVjpDmcl-l04WBEfXWLAHRal1ry2AJ8hCSDHtYK729oCjum28VFnmK1VmJnK3lNphPYsJv24KylrVXQM5qYSrIhaxXTNYHOPDnZ4frQwbJMpYj54BeI0Z8ecG0_sSX192iVBJ6jWobTsJCzWUnwSg1u7coTuUHFAXBGLmCjYCxlNQxfwnYx0mE5VVTadN-LuXjc9kNgHfosqn_PJwSkKT6kI_5d418ILQ0vCs5oKhfn3nNDT-j_2_DwwHsp2-gqGY3cpG5UY-POHc6t3xnCg1vkr6KS_YB7moF0HBppsuEXGxYQEsQogZ4OomBD-hHt_vOhOHqY2ET6TlrgYoGQFBZDD9uy2r2yoxn4TUqdxhxWilHqMr6OXKbS9pOVWXxIRtjCp2uwEqE9tAc5N0mpGdfZ2pxwf4PcHCAPJ79MH7X6saCbdyCamK2FKTU4DljTPkktDReUswJLLq6MIQg6AwSutH1PDuMWkzk-rrF80Ecp7gu5MyDURQDPokF6Fz3DfPs9UFgkJL5KaRmDZcgF5u9-X1okGA6ahoBS40ittlMN09EUxZ0haNBWbQ6poZBOZjjAu-sEvxiqF8vpTiONGFT9vIz-SEM7ruT-QjK8ALrHbtTV6GGWbwDOiN5pcwh5wUePnkWyFu1lyrXZ_vc2eg4V_MkVsCEBVnrQeYz0pox6RRvUvWXRROUrO42YHOzb6EpgGuLhTSWrePfA-tQ0he5-g8Y9hj86LQTQZz1a7_v9p72NwgqBYuof0oKnDlzinJTSsOfKUNGpeMePkkdKP7uOCFVv5p6237JlgSQZX_1rsNUVsrDBI-22fK03iVuHvPW40Pi6_5WEHw0CO7HbxV64wMVUmn-f0amiTq_Ts6TbdV5yRahc60bnhPNfGyYK69pM_wBWSLvsvhfSJje-4z_raOVx3huuRY1K1kAY3Op8-zv1-OgItpZBQAqS-bTAgToze7_YCgf3dyAw87vOLG57nrK-i-yOhfyhEPKCf_2rQ5qT0MKmMncuDqPmiOehZnT7Hz0oSsGpD00phH56IQOtHi1mdn9iF8xyO_fAolKF5KntY8bFAXOWItytmlI43gJfnL1dbHqHfAT8nw32XlaV2uJ-a3I_6B5We-0t4InIvuu572ExkPm1pc6Qd5MvuEzxhxR3Hrk6cyUz98IbNDK5eGhOAFcD6xE8F36CKiZSyu8f6_ksg9v6NrnqAvCnQrWHDUq87VInqyoqfxgfSRl_vZSKkyliUMV5FYvp-m1F7JSEhWsJoaAptB9JvVCKkIUT29ViTmWckqRncunY18soFieSsymV_2AYGac5WJhhPZMcPN8mGfAyZ_eCB8xJP9qMZEBiCGFQi18KhtzI-L2vempDIL0baw1iKpmQZyELrIS4jmFfuA1PU6RLsmnwFjuDwNXjAYk33utc8HUtnThxI2HNKKftnWmVG2o-T5CPvsbSm7lAtJZSZUUuTB5PC5vHbb-RW1GntA5QxLkdSo9YmUX2RFOxuWDP8rGyEWQQlGMhSRtMPhWzQlpulLdufXFxaN4PJHAdjqdU6nwCDtZE2oIP1pWyyQ7R3c7ptfREoqpaPsFCNKVMYo99nNWJMA-bFMs0ha2ykClpPH9j_NGeqZk5jdLbLlm505_JCfaUlS38t9dP7_eTMsoCCo44x5crQdQLq33n64r32ggSj8yfZ0pE-SVJRMnahLZnPkMR90CY4sZijmhqrDUHrePzDj_nrIKNBjcchdIfswTqWAvFF9l15msAk8zCCOdPn3ya2mewS_nK6YEHPYfcf45NzkuJh7U2l_HjmyL9Rd0mKKxU8oKMh3gFbTXXajhYan4kV6pKewEe_DVv0tD9sIqT1ieUd6T97S2F4EEg8ipEnngygKm-0McazO7XegDivcHeGV-E6x7iU6Cwd29-Rz5OUJ4oecG-fYr0Acr8YJ9jTQdQvVqnr5TqI6qKhFsw1-VLRc0ZyWRxGs6DuP739Zf05sI5TW8WusS6BFahO-jUikUtZ8h5hqfpQ63fYFUzfBHxb4BkWuDjViLhZ3VUOIkNd8IxAF2fEbk3KdMugSqWRjTcIvdNWUqjjDQ1O_QjX1cNR8wYnYscQ_73OpA_AjTLsAgIU-Me8tw6CG3kipLGNe05VgtdIh30EPrHqxd1Ng_g0U-42iuAaM_n5zl4Uh_9a__IUGMjeTGSdCW5fUkhu9gyzgEYcmGJUt5KtTsWcU5xiRyVJC4m5e3JzplAKu07fGiULZUUYz12t7GpxChqp180L4GwIAbS0-vrLyqXzYfDT3kiQs6zWewbS0pMKycBfBqX7QnnN9eF3HcgQquB9Ez-Gw3U4Rsi2O02nj13_NesByZ1ncrWYnoUqwMytwQ=="
+      },
+      {
+       "id": "msg_03d74ad8d34421d2006af3fcfa888c87d1b1de085228fdf1bf",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medical)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name\n                    :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect activity)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

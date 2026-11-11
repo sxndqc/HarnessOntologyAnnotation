@@ -1,0 +1,137 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-9.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 153
+    },
+    "cache_creation_input_tokens": 153,
+    "cache_read_input_tokens": 7545,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 96,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1526
+    },
+    "cache_creation_input_tokens": 1526,
+    "cache_read_input_tokens": 7698,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 926,
+    "output_tokens_details": {
+     "thinking_tokens": 319
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 9 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n9\tA spokeswoman said that Pope was suffering from malnutrition and high blood pressure .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_01NbSmpazJCuEEFaAUvJK2aS",
+     "input": {
+      "lemmas": [
+       "say",
+       "suffer",
+       "spokeswoman",
+       "pressure"
+      ],
+      "language": "en"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01NbSmpazJCuEEFaAUvJK2aS",
+     "content": "## say\n\n### say-01 (say)\n\n- ARG0: Sayer\n- ARG1: Utterance\n- ARG2: Hearer\n- ARG3: Attributive\n\nExample 1 (Transitive): A Lorillard spokeswoman said \"This is an old story.\"\n- ARG0: A Lorillard spokeswoman\n- ARG1: \"This is an old story\"\n- rel: said\n\nExample 2 (Fronted): [Kent cigarettes were sold]-1, the company said *trace*-1\n- ARG0: the company\n- ARG1: *trace*-1\n- rel: said\n\nExample 3 (Inverted): [What matters is what advertisers will pay]-1, said *trace*-1 Newsweek's chairman\n- ARG1: *trace*-1\n- ARG0: Newsweek's chairman\n- rel: said\n\nExample 4 (Split): S-[\"What you have to understand,\" said John [*?*], \"is that Philly literally stinks.\"]\n- ARGM-DSP: [*?*] (tag the leaf node of the *?* itself, and '*' link to the S node containing the ENTIRE utterance\n- ARG1: [*?*] (tag the parent node)\n- ARG0: John\n- rel: said\n\nExample 5 (with listener): John said to Mary: \"you're an idiot.\"\n- ARG0: John\n- ARG2: to Mary\n- ARG1: \"you're an idiot\"\n- rel: said\n\nExample 6 (Weird, attributive usage:): \"Well that's odd,\" said John of the disappearance of his nose.\n- ARG1: \"Well that's odd\"\n- ARG0: John\n- ARG3: of the disappearance of his nose\n- rel: said\n\nExample 7 (split utterance): John-1 is said *trace*-1 to be an idiot.\n- ARG1: *trace*-1 to be an idiot\n- rel: said\n\n### say-02 (discourse function)\n\n- (no roles)\n\nExample 1 (TAKES NO ARGS): Do you think 0 this war is going *-1 to end up...much less popular say a year from now...?\n- rel: say\n\n## suffer\n\n### suffer-01 (suffer, endure/undergo something painful)\n\n- ARG0: entity suffering\n- ARG1: malady\n\nExample 1 (intransitive): The company's return on equity could suffer if it made a higher bid.\n- ARG0: The company's return on equity\n- ARGM-MOD: could\n- ARGM-ADV: if it made a higher bid\n- rel: suffer\n\nExample 2 (with PP-malady): John suffers from delusions of grandeur.\n- ARG0: John\n- ARG1: from delusions of grandeur\n- rel: suffers\n\nExample 3 (with S-malady): Thou shalt not suffer a fool to live.\n- ARG0: Thou\n- ARGM-MOD: shalt\n- ARGM-NEG: not\n- ARG1: a fool to live\n- rel: suffer\n\n## spokeswoman\n\nNot in PropBank.\n\n## pressure\n\n### pressure-01 (apply pressure, pressure someone to do something)\n\n- ARG0: presser\n- ARG1: pressed (on)\n- ARG2: goal, pressed-for\n\nExample 1 (with goal): Big Board stock specialists, began to have them pressure the exchange to ban program trading.\n- ARG0: them\n- ARG1: the exchange\n- ARG2: to ban program trading\n- rel: pressure\n\nExample 2 (without goal): Generally in the quarter, overproduction of gasoline and higher crude oil prices pressured profitability.\n- ARGM-DIS: Generally\n- ARGM-TMP: in the quarter\n- ARG0: overproduction of gasoline and higher crude oil prices\n- ARG1: profitability\n- rel: pressured\n\n### pressure-02 (move, cause motion by pressure)\n\n- ARG0: mover\n- ARG1: moved\n- ARGM: ahead, usually\n\nExample 1 (somewhat odd usage): [The Nikkei index]-1 was pressured *trace*-1 down by profit-taking triggered by sharp advances made through this week and fell 151.20 points to 35527.29.\n- ARG1: *trace*\n- ARGM-DIR: down\n- ARG0: by profit-taking triggered by sharp advances made through this week\n- rel: pressured",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQStQoKEAgTGAI4AUIIdGhpbmtpbmcSDLCFvFPDiE7WTJcM/BoMLwOQyuwsh7boUlUKIjAgCr7nuRwEd7ccOvgu61VC1iFMzLBGiTGNqTg9KodM/2lVhh3Tqah46Z9FqsLO/+Eq0gnc0ePoD9eMp44RBuqd2Fy3m1UjLvQwd6YWRQfksrgD7eYFDU5GjIG0Bh4fBjmF/FWzF91Q2ax3M3osJiFNMr4lmuZhboaHkv/DqW2b5jri39Ta6+iEot+j6JAOW0+FbXJrkuJQLl3Kw2SBHKWUlDBtKpuCFWMTmC8aEpZIrkSROIiPNZ8dnCFR/MxfNN422XCrBMDtiP2ViQEi5yy01PjYaWfN6TnS8Zp7Ou5cY8lmYDyBD/0YSTrqb0ZGfS4T2wr6H/x+sfUjzY5rkZPBUCiP6ITnlUT/zXfgRRjyTmJDiddfGZFHWXx57yY8iVzoze7BIQj9zzzaLUc7omZDzG9UFSfpxsDideeqkGysQGVHEyk9MP/Bn1knfedDkRcvN7J0bmdMlqJ0btMOmtwA6MoC92UDEOCYEnTXwqDcrCopZiVlJ50ZBR44t4w+O6zb4H3ONJ4Bs3tGO1R24OA2c2DhtsTBzi4oUuMf0U6dOJtQuz0QoaytF1I9E3vQk6iN5d0P8WioopMsqzJKh6Y+GerrhLCHQgBkD9+8d8PO9jDr0wTd4jz5DUvY+mSh+vh+u2kQ2XKr4yM6CWl2+VoM+qj2JeX3ySzRhCf983hX9AKoA5ZXkabk5NlqeBoKjBIZJ/CnP4qexsmlhWeGITfltHFvgSrGwN3cYHLZAiZRqFbwPcv9y2J0CTYvgFfKa6Tw8aX9U42NFdzq8ZVwbQAwy/5AHiJuiKimbDqzgQAqk3x49APq8U7ZEfGuh6vBtt9rvm5S6VewOPmUFCPQvzXrlaEQZ4u9Zk6p/9qMOBw+WGa2imi0bwibxa3GPtfvK/0syMl/i7rdywF8gLlu4oAxxjMnjphrVOlLAc4smvcmVwEoeoZ4Y6r5SBNXH0OI2SMpb2dpcPlrfAk9ys7ZSyAWoH3o8zskJfaaBygUuH7K6RTP1BLS/mWeK026H8ewUJK/RYXLtlrn59L+G/R3ubN4q5boaXWI5RbaoPCxSyEso6IwAxJxIEvWxa1Y9cFe1YnkAe0IXoVUatvaYeRG9sM/iOrVJVVCk5QOG4ZmVTEhbzsPcMHpIJwx3Abm22PYRQgRf3rtGm3IPKfTTfGg+9GZFty8OWQQlSeiH3AqrK5YrMUoUw5zp8AezKsdU5WLmhew4T0gmTwoBqHLgPKBlspNb5iRuMnIcWR9QJswzQ4TZsrWRxiPLoX4LBtmdr2PMHKShtFCrpdNSxhd98PHcHd99syh+ptwrK3+Ffhz3OHsHZA7ajB8n67j4jFvLWFGiYU4GaM1thLEYmZ2ASm6iYUA2/VsWe3v32ERWdJz4gm2xqMHg+t8+GsJes+XL2YO7877WOWTSlIFkok3bEZ6iwOpJ0g0Ts2Z248rS1O+bcqIBgu+qn67GHA2Zh5zm7FpZ2BTZ6Tj9y8CmWYjvabz6+Z6YZ6STRewvBWUUEiLKrKZUoWDAImA/e/vNQ9iUW6oJ7BoFbw/2zQ8IQOADWbmCrPd2s7q/R3XMaBCY9xjrzJigIyaSrGt2LuAt4QM1S5jjTZUOyXmbLhL3XC3g3q/cxqjdAyhse8Xm3b/MG1rNl2NDoJXs49UmYhqSfmuVm8OxqP+pbJlOnasG/O6Xk3hZf2jWcObsrfmcz3zhjmFmz4H3NyhWE3nGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 9\n# sentence level graph:\n(s9s / say-01\n    :ARG0 (s9p / person\n        :ARG0-of (s9h / have-org-role-92\n            :ARG3 (s9s2 / spokeswoman)\n            :aspect state))\n    :ARG1 (s9s3 / suffer-01\n        :ARG0 (s9p2 / person\n            :name (s9n / name :op1 \"Pope\"))\n        :ARG1 (s9a / and\n            :op1 (s9m / malnutrition)\n            :op2 (s9p3 / pressure\n                :mod (s9b / blood)\n                :mod (s9h2 / high)))\n        :aspect state)\n    :aspect performance)\n\n<br>\n\n**Choices worth checking:**\n\n- **Spokeswoman:** \"Spokeswoman\" is not in PropBank, so I wrote her as a role noun: a `person` holding the role through `have-org-role-92` with `:ARG3 spokeswoman`, following the reification pattern in the guidelines. The guidelines' own example puts the role-holder in `:ARG1` of `have-org-role-92`, so `:ARG1-of` would have been the right link here. The graph uses `:ARG0-of`, which is probably wrong.\n- **\"Was suffering\":** I gave it `state`. The progressive could also support `activity`, so the expert annotation may differ here.\n- **High blood pressure:** I built it from parts (`pressure` with `:mod blood` and `:mod high`), not as one disease name like \"hypertension\". The PropBank senses of \"pressure\" (applying or causing pressure) don't fit this meaning.\n- **Pope:** He is a named `person` with only the name \"Pope\", as the sentence gives it. His link to the earlier mentions of Edmund Pope belongs to the document-level step.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

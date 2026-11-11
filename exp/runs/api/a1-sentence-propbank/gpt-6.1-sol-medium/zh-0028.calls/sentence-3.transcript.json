@@ -1,0 +1,172 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-3.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 5208,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 34,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5208,
+     "input_tokens_details": {
+      "cache_write_tokens": 5205,
+      "cached_tokens": 0
+     },
+     "output_tokens": 34,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5242
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1619,
+    "cache_read_input_tokens": 5205,
+    "output_tokens": 597,
+    "reasoning_tokens": 285,
+    "openai_usage": {
+     "input_tokens": 6824,
+     "input_tokens_details": {
+      "cache_write_tokens": 1616,
+      "cached_tokens": 5205
+     },
+     "output_tokens": 597,
+     "output_tokens_details": {
+      "reasoning_tokens": 285
+     },
+     "total_tokens": 7421
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 3 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n3\t能够 在 拨接 电脑 设备 之 余 ， 还 能够 方便 用户 进行 PS3 、 Xbox360 、 蓝光机 等等 设备 的 连接 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_L5EQHDIGlfMiKsnV4ojPuxSe",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "拨接",
+       "方便",
+       "进行",
+       "连接",
+       "能够"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"拨接\",\"方便\",\"进行\",\"连接\",\"能够\"],\"language\":\"zh\"}",
+       "call_id": "call_L5EQHDIGlfMiKsnV4ojPuxSe",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_007872bb48b82c18006af3fcf46db887d1b1c0fb91d1a1157e",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_L5EQHDIGlfMiKsnV4ojPuxSe",
+     "content": "## 拨接\n\n### 拨接-01\n\n- ARG0: agent/cause\n- ARG1: entity connected\n\nExample 1: 这个 网站 只要 用 电话线 直接 拨接\n- ARG1: 这个 网站\n- ARGM-ADV: 只要\n- ARGM-MNR: 用 电话线\n- ARGM-ADV: 直接\n- rel: 拨接\n\n## 方便\n\n### 方便-01\n\n- ARG0: agent\n- ARG1: theme\n- ARG2: predicate\n\nExample 1: 芬兰 的 零售商们 为 *PRO* 方便 公众 *PRO* 购物 ， 在 因特网 上 联合 建立 了 *OP* *T*-1 统一 的 服务 网址 。\n- ARG0: *PRO*\n- rel: 方便\n\nExample 2: *pro* 极 大 地 方便 了 南商北贾\n- ARG0: *pro*\n- rel: 方便\n\n### 方便-02\n\n- ARG0: faciliator\n- ARG1: event\n\nExample 1: 为了 *PRO* 进一步 方便 企业 在 区 内 的 出口 加工\n- ARG0: *PRO*\n- ARGM-ADV: 进一步\n- rel: 方便\n\nExample 2: 价格 便宜 ， 增产 增收 效果 显著 ， 使用 方便 ， *pro* 没有 污染 ， *pro* 同时 可以 培肥 地力\n- ARG1: 使用\n- rel: 方便\n\n### 方便-03\n\n- ARG0: thing\n\nExample 1: 李鹏 总理 邀请 朱马古洛夫 总理 *PRO* 在 *OP* *T*-1 方便 的 时候 访 华 。\n- ARG0: *T*-1\n- rel: 方便\n\n### 方便-04\n\n- ARG0: entity described\n\nExample 1: 一 名 国中 二 年级 的 学生 因为 内急 他 跑到 当地 的 一 家 泡沫店 的 旁边 暗巷 去 方便\n- ARG0: 一 名 国中 二 年级 的 学生\n- ARGM-PRP: 因为 内急\n- ARG0: 他\n- rel: 方便\n\n## 进行\n\n### 进行-01\n\n- ARG0: agent\n- ARG1: thing arg0 carries out\n\nExample 1: *pro* 然后 有 专门 队伍 进行 监督 检查\n- ARG0: 专门 队伍\n- ARG1: 监督 检查\n- rel: 进行\n\nExample 2: 新 技术 的 推广 应用 主要 由 企业 依靠 市场 机制 来 进行\n- ARG0: 由 企业\n- ARG1: 新 技术 的 推广 应用\n- ARGM-ADV: 主要\n- rel: 进行\n\nExample 3: 据 介绍 ， 北仑港 二 期 集装箱 码头 目前 正在 进行 前期 筹备\n- ARG1-PSE: 前期 筹备\n- ARG1-PSR: 北仑港 二 期 集装箱 码头\n- ARGM-ADV: 正在\n- ARGM-TMP: 目前\n- ARGM-MNR: 据 介绍\n- rel: 进行\n\nExample 4: 小浪底 水利 枢纽 工程 地下 厂房 的 引水洞 原 设计 要求 是 全部 进行 钢盘 混凝土 衬砌\n- ARG1: 钢盘 混凝土 衬砌\n- ARGM-ADV: 全部\n- rel: 进行\n\nExample 5: 据 介绍 ， 对 *OP* *T*-4 最 轻 的 男婴 的 抢救 进行 了 一 个 半 小时 ， 但 没有 成功\n- ARG1: 对 *OP* *T*-4 最 轻 的 男婴 的 抢救\n- ARGM-ADV: 一 个 半 小时\n- ARGM-MNR: 据 介绍\n- rel: 进行\n\nExample 6: 市民 *PRO* 如 欲 *PRO* 竞投 债券 ， 可 透过 公布 名单 上 任何 一 名 市场 庄家 或 认可 交易商 进行\n- ARG0: 市民\n- ARGM-MNR: 透过 公布 名单 上 任何 一 名 市场 庄家 或 认可 交易商\n- ARGM-CND: *PRO* 如 欲 *PRO* 竞投 债券\n- rel: 进行\n\nExample 7: 比赛 共 进行 五 轮\n- ARG1: 比赛\n- ARG1-QTY: 五 轮\n- ARGM-ADV: 共\n- rel: 进行\n\n### 进行-02\n\n- ARG0: agent\n- ARG1: thing arg0 keeps going\n\nExample 1: 中方 希望 这 一 会谈 能够 继续 进行 下去 并 不断 取得 进展\n- ARG1: 这 一 会谈\n- rel: 进行\n\n### 进行-03\n\n- ARG0: agent\n- ARG1: thing arg0 carries out\n- ARG2: time/place/state arg1 is carried on until \n\nExample 1: 可惜 省方 尚 未 进行 到 *PRO* 将 此 精神 扩大 至 其他 河川 上 实施\n- ARG0: 省方\n- ARG2: *PRO* 将 此 精神 扩大 至 其他 河川 上 实施\n- ARGM-ADV: 未\n- ARGM-ADV: 尚\n- ARGM-ADV: 可惜\n- rel: 进行\n\n### 进行-04\n\n- ARG0: entity that moves forward\n\n## 连接\n\n### 连接-01\n\n- ARG0: connector\n- ARG1: entities connected\n\nExample 1: 九江 是 *OP* *T*-1 连接 长江 南北 的 要道\n- ARG0: *T*-1\n- ARG1: 长江 南北\n- rel: 连接\n\nExample 2: 社会 保障局 的 电脑 系统 连接 着 美国 财政部 和 联邦 储备 委员会 的 电子 支付 系统\n- ARG1: 社会 保障局 的 电脑 系统\n- ARG1: 美国 财政部 和 联邦 储备 委员会 的 电子 支付 系统\n- rel: 连接\n\nExample 3: 花旗 银行 今天 与 上海 银行卡 网络 签约 ， 作为 第一 家 外资 银行 正式 加入 上海 ＡＴＭ ／ ＰＯＳ 网络 ， 并 直接 与 上海 ＡＴＭ 自动 取款机 连接\n- ARG1: 花旗 银行\n- ARG1: 与 上海 ＡＴＭ 自动 取款机\n- ARGM-ADV: 直接\n- rel: 连接\n\n## 能够\n\n### 能够-01\n\n- ARG0: ",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3d / 设备\n            :mod (s3c / 电脑))\n        :aspect activity\n        :modal-strength neutral-affirmative)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户\n            :refer-number plural)\n        :ARG2 (s3l / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3d2 / 设备\n                :refer-number plural\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :name (s3n / name\n                            :op1 \"PS3\"))\n                    :op2 (s3x / product\n                        :name (s3n2 / name\n                            :op1 \"Xbox360\"))\n                    :op3 (s3b2 / 蓝光机)\n                    :mod (s3e / 等等)))\n            :aspect process\n            :modal-strength unspecified)\n        :mod (s3h / 还)\n        :aspect activity\n        :modal-strength neutral-affirmative))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_007872bb48b82c18006af3fcf7807087d1817f724e5abd2ee4",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0Eh-myEFPKSGyfgGwU82hQehAFZbik7NcCYKBEIbBACwKP88MTxdap1OU22WISvSaa-dSqKrzZLSvMGIBn6GX47oTWojHsW6KIFcG_hOjwcuzw5bsEAPkGy1qN09hUE20ogZZ4J6ZrOs7sHP_answNhuU_c679AhAB33-zbCrrLwECyBnOxrLNlu5PSBI8Q0GQ_CfZjGC17xtcmpvUNNz0Ybk0ZDvY3xItniMPTOFe_s0vo31RLXXDBwht-lG8HHaOiP8nd3fSEpNAMsjE0OD_kFwUyoKzHRigiC_HwaRtS0ahwbI3nFbf9J2YCT2EPuqHpE4f8FiEU2fPfqWkA2-sX3hOuQ2SKGGddmFbvHshfL5IPq5RkMaiCMR6roZBbZUmeWjX8ITQ7_oKYaHsXDFlbQRlUqScNmCLxKIzg_pz1N_4FIPhOyNi4qHXKN7dJ4Q1oSRHH6PsZLYO18zpMadCTlFMHN4WfVtTnHk5KZroOqt_taof4OebVWHuYgtx-vcAhCpWKoffoGrz-wxs7--uC84tO7YyzbWxBLwDpfmcnh6EG81XtvVI0P76l4c9JjtSaDb2xJ_lG_ivtV0TUg7sXvI49D4hLfZhWbRXtsGiXrs_POxOAXTZqAWPRmp9KHA2bNos4wj4tsk66-wxtSD5p1WahMT4cZ7s-n6bzTVqsJ3p4lE8vssQkA0CMJ7xyvkwxfeC4o-luuw6Jpr-y1IxzAcW1q9X-_F3w9yW2Fapr761N-SOgcwSTlXR3P6cOz8rs_cqMcYGRB9k91YYwkdf34QICPYW7xIDNmci5waKlUxn5VsjpeFW1KenWSJfGYH2oElhDZfZ1VHWzdfVhxEsXWcZePdoCHzmf6dW29o6ceXDowthVzPXwFsaFAdQfnvLBk-weA3UcakEDWgCL1Mn5A6A2EChj3LIU7n1v1cEwRDm6-DVOUarbXzpXaKm-IleuIl5Mm0eqaQl4ELJzwCzVLDdcJNAU_OBSNCz7YAw3paGuwLHqxBamDBYhUdFiT4e__L6bVmH2UWpCbLltMbzV1iWLYf_oWMudX6KUtihJ4NOLthcE8zEuoXs6NH0ZL7zBLmstzMFW1JWswwLCBHhCB1UedmCEC3_QBtpkLKwhMJ7apZ5iPiFWQOQkyQoWDVVF9kYmGuyad1kFQMPoLisHflKUAv8jVFS0Gtms9ZVAgDnrEMXVX2reGROjX17SJY985mbfMnPspMdM5jPS0rWhr3UsOzG5wGnY784AY7JvRtyQD5IoS4Oep1UAgQZOjkL53Lu3NbzxuZ-xe9IMbOzBXwDHh-vfbVgjxT2A6ZjJLq7SHyz-IEWXEMPCuBc5k_eVMQcR53IEvU74g8oSKsixiT4QnVK3L4J10_qykGVIhvL5fuz30nPky9_uj5R0LO_SeaVoSmOPbaDSnQRi4sqt_pSJlrH0c3D9VCLA8dfwf2RJoiBV8JS-kCvL-z1mfrQpNFTnXUvcQlcofdlErxjcuptb25Kzy-SSHLqAkTtKng5KR7ygC5_RVNjIyOXdtLM9HqBnnwIEIfPV5X-dIlNj6cTeAr9DoROIaea2pDFEc1I62HrkCKBlCnUBWJ8aShzRVd-J8pMlnc8hu1rNLUc8XOCAbVv7K8Tst1yWvYgM3NCKbv8nXe_gqVZKXdspg69dxpVfhtGayfsMYx7oQm3p-Z9T4_Wtg8fPUODyaMh-T8J97NzLH7o9RE7rixvrEgR4L9gWp3pM__TeyAqVxMevTMaTjzA1JtxQtlYJdl3HxNJ-db7bOOXyp_IXrn3HewGzUEYGRkExmivmJisMLWHEYMxs93f-6bHG4nf0eMIyDKafpJ1RSo_hJuMjufZD5bUc4rI14H_Orccx1M5SPrRlSzhuXdhNHM1fDA0UpkyFbhlLXR4lIp4WISpXyvJifXgK3570lmHxK20vVarfktCcDfA6jxUxBPr_76Ewf3glAHPssCCy44Kvog5ApM_qPUo_kdh8shcpkHgIjwlmvsggGPyqEctQoWMSTF92oikQ9UYqsnpxDEqyQAr90zMbMqvf1DAiPTWQKVwYa7CWrmm_6lUQ-DSzOfLox1UMjP72kBam2SV22xhkBE7DzfqrUqKMdAw3AbL8Ru9jboY7eMYyiPN93r-k-5orthbrKGHJ5-ajv785_x49Rv_Pon-rwJk9AHYzmE1A392D2BREEk1dQXQ0EMa-j8oSkaDZ-u3jgo07QEiY5r_ZdWKWgVw5nLBo3GchOX1CudXtuErOSL7E20mutsHyCMuQxVT0AeCVW1A5qxuVIfrwmDva2ETXrM53bovZaCnePTHjFg2H86H7oc2o-gy_t2vva9gpBiXVCd04yaXzbISPAa1lGC1jqdXZSf9p5_Z-I8tuhxiLOuW_7Rm68127YDRFK2aZ0kQG6wPGUdyNBM_BEeOkrYz44LiKS3vwQa6wrLa13K4Uye1qSN_n1usD3bUNcl6The02zUupgYJEH3x_So_D2HIgYFDo4_S2Lc0s88KkUUU4qHaRDtLstXb6dxAz0VfqGV4LbYn6uMBgYUNO0ixn-TqQfIXKYe6x5EiTVwRLchWIY9-oZFeUOWqmxVDG14tlj4orBPOfaMxsGu05arNDRVDG7d-b3fs1S7jXBntC-HyIaP-Fi48JkHr5ehvrmzslBph8Jqa0l8kICJse2R3Glur1_Ijcwwk7jCCGstgRHnEGCpNSf7a7ySY8eUSsvHQbv0FCTl_O3PkcLQEakWWiJ7AHNeWa6hOzeEX3gmRU29yoVN_UtS839giDc9qzP8cW4GkElAiruml5OwYzp95ZB5Moa7UHlAp5Vw7PmOOkahshgo3WHONe47pzFFlKYWmCMrV58jEhTOTapKucrfpVSDg4NUj-TF3oqA4FeT8nPapCZXZJsYorEr9mReNDtbOzuGYKKim_peXAmh_qkbrnaYGjotSSsdYybQ0BsZa6fnVynq52zPXlhRsnlPrkU7wiRPHVp8jAiBGTvZ9iH2IQ63ObU-J34lDHcz0-vsRcjRjahUO4DofhIYGeTWzbb9EeQaEcBDASr35Wtg2n5jX7mef-aCuVXsYFEN9FyoTf8UHmgLRxiseW4Ww29PMYUaAQ_H7Vtn1EPkyBNnhcN9p9gArCfJCw_GTQKENExUL41bTvZaN9GhVtc6W5n_mWAauhbVXky3EuBWmzSg9Gngbbufqb8b3OGvzdDThedTiV0EUEu9AbaZgxXNSAMs8LlfjtwCmW3fxW2Me81-3JLQCBXcIrpYNQOqTLpFcIpm1ySL7yVEpazwdm_yA2grU-xRE1X1RfXpmri4Vbn6C8jKGpUbK6xu-KAAslLtYaYLG1CxmrWFgG_9dhy_2l1IdVCUMx55imidi--tzQE5EtP1fUTRlFmoE_abwiLf_B6BtNfIoo-XwfNjRM_YbNsiDSnlrkzGGinxoYvi0bX8PZjz72AC645WQB7icbQdmdaZNoDzJJgWYQAHI8-To52KbO_rfX5eu3ckMjnnla7S66wqu4_tRInziSzJP1HHxl-44pU4kYlv9b5pheO795-jHuMKlflTGzjsJpemq28yYfW8QeNIJtQz4O9XleHc7HZKf2t2OfElGwVOn4mDVX2fEFwZ-dsJ_jkpnhNyhjE8zxWbLteok6V7h19lpZf3kNVCK7HhkrYQIKAhlqnMYj_xJCQd9Pe29iTWYx5lsGT9kSiJQlzdaeMCkMdwy8gbwfZStnXig0NhuB2C06UgRtadnJGJTQLT3sv_P9e8alzEZEHjvljfZJR-kM-JsehDurjTWhsjov_bX9ZJNttavfQbUvHpFm46rXKuVnQSLyT3OExfaUNBpb7eRIeVGrTdz_HiVzr3323era-pEJ9VNMO9WPEHJhz45_G67HiFmsNgwxUZh17XDVfvEcM05g6uK6OzGBV4IeFVTdsCDevy_e4vSspXi6plH2wvAmdgSGI1L9juGJju3Ltuo2dXjuHHL9lSbmBmNjN04p-1C1WZv6lk7inTXczs_0tPsJO4SE_KuYPOqjX-W-2BWWoouIWiHXdPtHPaDnab_Vq-JkkaFZPpBaJ0XzS9n44DzkzmnP0fCrn71QM0kfWw6nNadlC8m9tU8vlz-I5G_BM6ZBed9JxWKZt9CDH9urwrftdBGMCmWtvsG_r3_Q4-SxlXMmwXDbB6fjQJTQA6_4QS1fnb7zMhF-qVSmjVQ3MSfU6leBTdj-RjRWVyhi0qswynfoRrTr4Pbdk6soJgr8EngxwbRGVLRXzvowRFMqjX7mcLYGrb0q4TGf0ui4NPxoEzGi3p6FQufT7oaX8TjcaIkAqmCsyupm8QQMAyWPjGuk12Gc80kHUHTCBaAho4i8DU9YKiSsahKpWv9IKLjy2X1B-vBk_SVJxiroHjgX-Dzh4ut8N3LiyoNdCtaJMiixWoypNkS1YC-_7YGe9rG3apUP1kUStBy-kS4yFNXRCUWPy3dqPQTPH6UP0lQHpVITNVgzalsvN8FAivEG1lLnPMR8T4WpQOYgZCFcMpbms37StSiqYng4MoMs8gYXKR6xWGGwylwjBfIT6kScRsv_R9EBJb5wcYcyKX1SShe_hFxleJ5H5I4F8rTApEJZdDKVYRLEZ62YCrzE7azcw556fk0U989cjcbbojOlfOzMdASS8_x2UUMxQ8gjRwzkpcJna-mOkiJas3FxZCjKkuqXfipR8v49mKF6QxpD1a03DnaW7kZwdmRfSWHRWzopL-UzY3EmXXk1XC3UXO6B_kKTkTHwxoj-eDtRgyT_O3QTC66t0f8UD3dHGPLOtI-CzUa3tr4PUfS5Ku32BzHKP-J-2kkRBSUhRRhy19sTMLmS9t_hd4F_yTRVKqFHyqoTezcuhy1MQpkemGItSeTHWGdsrM85dl4jOfk6E4I5mzQv1uyE7HiRy7TqBCzHtaIQMzujeped81pql_NM-MtNI2MMSqIUj0bYIknRc_huKqSSm-5hz0ZQ8NSoUqNJ4DDOoeETvklx834Dpdr_IUFtvR0E4t8tPqipCEXKWftVLBbiaBP7fyGvequUV7MlPhFvJc0k2Fj3c98TtfKEdgR610Dc6a8ynMmMwYMoVwTDJwyjEptM4cowQaTHm3_tykePEI6zr0mSmogCP3ktw98JTmo-_lF3gn2gpJ3z5cElMykLZS-EjkWT_Yx745XHLJuurvd6OsYTEgSKLNLVPTOCJzGXQ=="
+      },
+      {
+       "id": "msg_007872bb48b82c18006af3fd01eb7087d19f9cb1b119f9edc6",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 3\n# sentence level graph:\n(s3a / and\n    :op1 (s3b / 拨接-01\n        :ARG0 (s3t / thing\n            :refer-person 3rd\n            :refer-number singular)\n        :ARG1 (s3d / 设备\n            :mod (s3c / 电脑))\n        :aspect activity\n        :modal-strength neutral-affirmative)\n    :op2 (s3f / 方便-01\n        :ARG0 s3t\n        :ARG1 (s3u / 用户\n            :refer-number plural)\n        :ARG2 (s3l / 连接-01\n            :ARG0 s3u\n            :ARG1 (s3d2 / 设备\n                :refer-number plural\n                :example (s3a2 / and\n                    :op1 (s3p / product\n                        :name (s3n / name\n                            :op1 \"PS3\"))\n                    :op2 (s3x / product\n                        :name (s3n2 / name\n                            :op1 \"Xbox360\"))\n                    :op3 (s3b2 / 蓝光机)\n                    :mod (s3e / 等等)))\n            :aspect process\n            :modal-strength unspecified)\n        :mod (s3h / 还)\n        :aspect activity\n        :modal-strength neutral-affirmative))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

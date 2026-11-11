@@ -1,0 +1,170 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-4.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 57,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 31,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5178,
+     "input_tokens_details": {
+      "cache_write_tokens": 54,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 31,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5209
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 377,
+    "cache_read_input_tokens": 5175,
+    "output_tokens": 387,
+    "reasoning_tokens": 219,
+    "openai_usage": {
+     "input_tokens": 5552,
+     "input_tokens_details": {
+      "cache_write_tokens": 374,
+      "cached_tokens": 5175
+     },
+     "output_tokens": 387,
+     "output_tokens_details": {
+      "reasoning_tokens": 219
+     },
+     "total_tokens": 5939
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 4 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_gT4k3D4JjHk6rrMeJYIOoLrB",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "pardon",
+       "president",
+       "health"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"pardon\",\"president\",\"health\"],\"language\":\"en\"}",
+       "call_id": "call_gT4k3D4JjHk6rrMeJYIOoLrB",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_08063f16934e06aa006af3fcf4bd1c87d1856e41da72228a68",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_gT4k3D4JjHk6rrMeJYIOoLrB",
+     "content": "## pardon\n\n### pardon-01 (legally relieve of guilt)\n\n- ARG0: pardoner\n- ARG1: guilty party\n- ARG2: for what\n\nExample 1 (transitive): Under the guise of ``healing the wounds of the nation,'' President Carter pardoned thousands of draft evaders, thus giving dignity to their allegations of the war's ``immorality.''\n- ARGM-LOC: Under the guise of ``healing the wounds of the nation\n- ARG0: President Carter\n- ARG1: thousands of draft evaders\n- ARGM-ADV: thus giving dignity to their allegations of the war's ``immorality\n- rel: pardoned\n\n### pardon-02 (give forgiveness, usually for a minor social misstep)\n\n- ARG0: person forgiving the faux pas\n- ARG1: guilty party, misstepper\n- ARG2: crime, sin or faux pas\n\nExample 1 (lacking social mores): \"Pardon me,\" John said after emitting a thunderclap-like belch at the dinner table.\n- ARG1: me\n- rel: pardon\n\nExample 2 (pardon my french sense): \" All of which, pardon me for saying this, could be put down to employee screwups.\"\n- ARG1: me\n- ARG2: for saying this\n- rel: pardon\n\nExample 3 (beg your pardon): \"Beg your pardon, Sir, but Cornwall is dead! \"\n- ARG0: your\n- rel: pardon\n\n## president\n\nNot in PropBank.\n\n## health\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_08063f16934e06aa006af3fcf760e087d1a68e4c208081d2c6",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0C8Ij49kxkP1swHu0GGfwWV1jJOX_WJMrJfkFK79eP5fkejYmj3wMiFcODyK5kD8xBpnO5rROLBCREpIWtq-4iI63LD7nIbrT1nryv0r3kDzxK6Iepucx6Pj5q09drKtwMDTdYuT4aK4ZeQ9FtCW55b3PBFpn4b-vgDqLEaLQlVRQsrWOZbg1mJx1ScNz2FiOjK-kdutXNNEFyCDCwNqQIXl422DvKcW7TETku1zfj7sSMtuDHG-_5J8INRVwAn4xoDrQd1MciugoesJkTB4BTADUeju0b2BZorZI9EgykHSS_dwvVLjt0kCwMNFASg78uZvyg6pFWBzbYkEvIDf8__z8N4icE7G6lM2O41loQSdkEt5voQ-9QEmgWnMQ4oTXZGQ9_SXvn4T5jAnhcb-vyr0WpU-8WfMINHzbq7wDwDT-pJ5X26DWjKsnOyql1aYGQUqWLIXxeir4MVRKEpIP0cuIVBF4hRpfXhfdhaMtJ3le83Nz9TtiKI5vDL3Jf74ymkeD3IiKPa7P65pOkRkaekNyzgw20dc-Dl6Ay9c3jChKo3tYjM4pXOmnBHDwLQxhOx7oxEvoy9_zY-CIr_3qA8NpootqwMeOk_tBADbdTEp2-nk5h0u-bGNMVLZVvzEcDe6ShuTnzNoXXGG9GTTNdd2bc_w1snMI2GbPPRsBXaUlREsRIDUvk32004DiFbyu8L0sIDr4WMuHAuMjxnBn5e7aP-7Ua5YsKbeAfdb7wZ2j3oNf8sZYDaEHSllqhetOWv6ul3WDU744Jahud1nxNcmXwTe7iE0fdQV7VBjBREOSEob9EujlrXsMzfBKahMaDMlpsMMq5O7FL4k_qe-B_uvcJkXpJqshMiDIkykRTAna4NjGNgqg-alZQ6cKZle8HRGxWv2Z0JfGcxTEjtRXfgQs3rgcTwzimyxZLG33cyLM98kPHB1ocHydPc6g3NQb4Xu8CqAU1FPPxJAVQy4YT4wJ2ug9FAualhC_4ITaTriF5Ov4zWbYD4dFyd2JG44QV345-UZnVrIeVBi5_Apmo3MnGvLQR6h62X1klokB9m77N7jyyG4AgUJgW7qu2Fdm8mvVV5DSycVtrio0umXUQ9NMaC0A3TLLGq56Z3i73fbnENwsddpAS6IUfs7aiRyyhnO5uczBvsBt1QjwLOUUb1Qa9_jbhbx_VIIXbDUcKNJYNKwDgmAfGxxa7ixFQ_uTHGUmzDuIwYzbPGVZIU12WKT1HVuTNRB9hTr3o8TDU8UTtBjYXJ0g1g8cFZng4B8HztaGvtSX5Y3UBGN3gxc35s9fmygE6kLA8guRw-EInUq0gDWUCH3py-Esy0goCmHYMixSmXa2faRp-GlmqqUosAmLbHTIQNCCEwq2XU_xZomCu7va8zX5J0-5_Z3Oj_XRPsM_UW9st20qq5-K74jY2S-cfESj61RBn2HhkgzYhhPpevBKNxV0h0x9_dv55tP4tGrWkOffCA-ie8JwxjCG84ap8CCCsl02L90VZA69ieiS4MJ0chirjDtPLhRWUL1Wel-BtRHebKSASbqSiGKbB80MZVwYOJCLnuZsAtF3MPNj65Cq7iJy967jw2M1aUTqhJY3p-LnnKWIj3mLJccHHlJJ1hj9HmJX1wAnVD-oGCB-Mr2t5S9mF6qXs1eLFTH2F9X3qSTAp6z1la5anFvmU7bErkgDj_M1zH4ojMV-7obaT6IwSZ7YudGpDo9nOf_8n8q8ahmrvBoyqGyx_cuc1KL71pQ_rdapBoMpiH3heLYT69T1Y5dTXbpKmN7WkRGKIuYX8AhGBbe3thtKAxbqFx6tg0KKsZk0LCsY1IcqyTZz7_ElAWh1QDhSVoo2LGOfsHf-1vHvOPYfpHKF2dTKIEj-vcXx9kEpIrRuOdMZxvNpQSD_mzryn6CB657ENNyQgv2qYEGFC1sLnzZvj6POe1dP38Lw_5xQHRJrGIT4O00DrnUGqyAMvejUrAQry0MBd0OufxHbZVzosxFlOU_oSlVCtdMbwUDQps8dppRG2f-UNk6iM37CThPQovVyLX4u-OyKk4D7a3UwBc1AbpQ03MeL171uUrnYNWnwbBt8bXThZ0jOoJxhsOYmoKLgdaPBgelKObkVCTAbJlLfMYX9CEl0dE6Y8HpYMkAGW2G_qaa63e5esQhcmC2_v1bdpeNksg0KCDrEwDB35WS_FeGp2qO_h2oKCCcnCzHUUi8UAx1smwk3WXcc4dE-IF284XTQvphC1zSHBIx63c1MBFSO4JPcMSpN7O-rzxKXWeSTUX0nZFWBS1X3u1TjbWIgctMyHm2sasO6AaOcxjOChCmvsWXpjYcYGOjfWLt2yYIZ2Lb4qkNB9bGBxz_hmdxYJ6-c6yd6BXV_fL6Po9WQd5YNLI4q0PhbKKYXx2golISLCl1BO2T4jhPNhSBxjveXY0z0zGWrH8oJEw5hPerx2kD0_uBxmFxxda2qXz6oAJ4dM7W9cnlxDwdm4lRh4rmN_UVX0xm257i9o4AKuA_6VNkC3HqIxWLMWu8pC5e-ZtHRZUisV0PXZDsuJ4a3NBcpE6BTnr99FE5lWxIa6GCPRIc0UJx3Wkeg4J0JRhlB94Q0rkBulu9y2ZzKPZVlwt8TKHRbXRD07JMd8kqDsYqWb_4pGQdSoqKDZNc_tvvA2EhpZopeCLS9ZoEzJji06HChvxqphRWY4qg-aBfxyvtDPqALwntC464iuz_YjI2yxoipOGZhmqRT9txQIV23KYWOnlojZg2WFX4K8IPBgRogZ9myli-mjFTRau104ERmdbmo1T44Nx2fIRviX0KRP_jP3kk0ghm9wV13mP1uZy1vModl0xpzB2LgxuGsdfxE5QyZ_qRsrG3MzJSSQKgBuWZYa1nVrwuADF5nHZWBTV8ZTFgV3o_ZhFuOwkfc1ov87mGg2lTBvFEbMa6YqVn_KXPxLz7hFgUS0PqBWYQfTZA555kNkdaKxYhSwdFGcoXut0q4OvEzgxTxn3PBkt8qZqH8MnadRCvDD3UiwxSQbaMTOh1gnfcLRfb1Agc-24ySGxrC6ZAjN-X4KmYq80Ofz9R9whc6KzJq3feGTQ5YMjhNDZgqjEqsHy1cLkG28dFBuI7nkIBprxf3umq6mPfYkgLml_ujqg5cGPT22zX9EFelg756eymxAkzcEUzPymJh_6IYOlDt6xJJ7vHCqdCA5GAhoqP_v84L4z3MbmHC9M8ZSXTvyQDRnl8d6ZmGGvc6lsy0VkrxOiMAgS1mRqpvPm-JRXPsTz0qcIYLlMRZ31GEgDMwa-z3d-bgXH3mvzPgtXomdpIaDZEDDSVUxsOB-hcFgWIFysC2IXwWNBZHMo4Jj_VlO56LAGLPQEvbSuzbp-zpW7diRRtAd-dD4wkBA6PtHWC8Uy9wI7vs-qxkMEsA0IcIQ5fKRuAEdhTSj7ILVM8mH10Co-VU827Qwn3TnF0VLv042QUkVQndXlKxO1yK9DK56hxTzVbOtEQ_iuYcdtHLRDI39y7QNGcQlIzedx2GicrIaoxMTR-z8dIWHym4I4Ry4NzFjnY174azXQa7-s0Otl9fgiQBLNg8vQDRJxCIC9Tn1RmwgexU0Ib9ibkRzme7XnF-ImKa31GoYIqE8RBsnQNbXITo2va-lATKO_X9qHGSYOjsQ9ymHtneMAie6xFRLjs8EgMEJaIx2KVQKpe8fWYHFeJSFm0orUf7MkmhHS9aYI8RlmeYlk879wUgvP-wcPom9Lvv5PyxyWRmwP5VxISZm2OwhAhoSoVrFYoGJ4R9bS36qrW4ykuWVB1bgvrMhPE6uSw7Z7Cw14lGE1FwDzQLzWa9k1-LlVir_Zr2dwDxiMz9dYRNDxcG4NxDcvHXoJ3wt3wICLVS71VnlaFNG-QqPnR1ERjBo96xxpAYqjT46hF_cZ_RzLM2p3JlhoWHs2svf1l2YNGg32v2de_MSWaudtNxjCXRhVtQNbbXrgdVKNoFv2JdeRMus0oiO6H2yp_EPR26MD6xrPgT_1Q0_xM4go6NrfphA7TWODJ9vArQjdziwG-jXy61p-AitiyEbQ1uaFn-mpszTvFquDA6pZvMKXflvDkw4JYf30lu8w_-1g5SwrEQt6-_m5wQsB93ZouvZn66QEgsLhZJ4FImgNQlaxq0vj11DiFwSzePdmMLUBZESJDwcv8rz0q0MQoTRa0W4wXO9BsHvLE5zv1dqnmA7JNeAPVknIPYsXEE9ysymaqfOdnMdGSMSCHVDF5j7djtS5Lb0eCrDQPYTj8ZoVmpjVhl7e1npxgLO9ys8_1-R74X_kGU7lyyVh-jAUISGaOTj6_j5CSba8m0b6_dQcBL9KKmZkg_EqThWyhoEJEvol6BlHL5FASICZd9xWLajRJrEoHkxu93QpN7nxn-bLO4="
+      },
+      {
+       "id": "msg_08063f16934e06aa006af3fd003f0487d1b49be36687afff5b",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -25,6 +25,7 @@ runs/<method>/<sub>/<label>/ with <doc>.raw.txt (the answer as written), <doc>.u
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -37,6 +38,7 @@ import score  # noqa: E402
 import umrdoc  # noqa: E402
 
 SUBS = ["s1-abridged", "s1-full", "s2-search", "s2-propbank", "s2-gold"]
+ABLATIONS = ["a1-sentence-propbank"]   # API only: s2-propbank sentence by sentence, see api/a1-sentence-propbank/
 ALL_DOCS = json.load(open(os.path.join(EXP, "data", "docs.json"), encoding="utf-8"))["docs"]
 DOCS = [d for d in ALL_DOCS if d["lang"] in ("zh", "en")]      # set by --langs
 LANGS = ["zh", "en", "cs", "la", "it", "arp", "nv"]
@@ -66,7 +68,31 @@ def official_gold(name):
 
 
 def annotation(doc):
-    return {"name": doc["name"], "lang": doc["lang"], "lines": umrdoc.input_lines(doc), "sentences": len(doc["sents"])}
+    lines = umrdoc.input_lines(doc)
+    return {"name": doc["name"], "lang": doc["lang"], "lines": lines, "sentences": len(doc["sents"]),
+            "sents": [{"index": s["index"], "line": l} for s, l in zip(doc["sents"], lines.split("\n"))]}
+
+
+def assemble(reg, tree):
+    """The answer of a document as one text in the whole-document format. One wave without for_each:
+    its last node's umr. Otherwise the waves' stored fields per sentence, in order: "graph" (a sentence's
+    graph) and "relations" (its document-level relations), the relations gathered under one final
+    "# document level relations:" (each relation then goes to the latest sentence it names)."""
+    last = tree[reg["waves"][-1]["name"]]
+    if not any(w["init_input"].get("for_each") for w in reg["waves"]):
+        node = last[-1]
+        return (node.get("umr", "") if node["status"] == "ok" else ""), node["status"], node.get("error")
+    graphs, rels, errors = [], [], []
+    for w in reg["waves"]:
+        for node in tree[w["name"]]:
+            if node["status"] != "ok":
+                errors.append("%s: %s" % (w["name"], node.get("error")))
+            if node.get("graph"):
+                graphs.append(node["graph"].strip())
+            if node.get("relations"):
+                rels.append(re.sub(r"(?im)^\s*#\s*document level relations:?\s*$", "", node["relations"]).strip())
+    text = "\n\n".join(graphs) + "\n\n# document level relations:\n" + "\n".join(rels) + "\n"
+    return text, "ok" if not errors else "partial", "; ".join(errors)[:1000] or None
 
 
 def written_gold(name):
@@ -117,16 +143,21 @@ def run_api(sub, model, effort, docs, jobs, label, cache_only=False):
         t0 = time.time()
         traces = []
 
-        def call_skill(skill_name, skill, system, user):
+        def call_skill(skill_name, skill, system, user, tag=""):
             tools = skill.get("tools") or []
             r = llm.answer(model, system, user, tools, effort, os.path.join(CACHE, "answers"), cache_only)
-            traces.append({k: v for k, v in r.items() if k not in ("text", "messages", "responses")} | {"skill": skill_name})
-            write_transcript(out_dir, name, model, effort, system, user, tools, r)
-            return {"umr": r["text"]}
+            traces.append({k: v for k, v in r.items() if k not in ("text", "messages", "responses")}
+                          | {"skill": skill_name, "episode": tag})
+            if tag:      # several calls per document: <doc>.calls/<wave>-<k>.prompt.md, .transcript.json
+                os.makedirs(os.path.join(out_dir, name + ".calls"), exist_ok=True)
+                write_transcript(os.path.join(out_dir, name + ".calls"), tag, model, effort, system, user, tools, r)
+            else:
+                write_transcript(out_dir, name, model, effort, system, user, tools, r)
+            return {next(iter(skill["emit"])): r["text"]}
 
         tree = registry.run(reg, annotation(doc), call_skill)
-        node = tree[reg["waves"][-1]["name"]][-1]
-        text = node.get("umr", "") if node["status"] == "ok" else ""
+        text, status, error = assemble(reg, tree)
+        node = {"status": status, "error": error}
         with open(os.path.join(out_dir, name + ".raw.txt"), "w", encoding="utf-8") as f:
             f.write(text)
         umr, report = umrdoc.parse_answer(doc, text)
@@ -412,7 +443,7 @@ def table():
         base = os.path.join(RUNS, method)
         if not os.path.isdir(base):
             continue
-        subs = [""] if method == "shared-task" else SUBS
+        subs = [""] if method == "shared-task" else SUBS + ABLATIONS
         for sub in subs:
             d = os.path.join(base, sub)
             if not os.path.isdir(d):
@@ -460,8 +491,9 @@ def main():
     a = ap.parse_args()
     langs = LANGS if a.langs == "all" else a.langs.split(",")
     DOCS = [d for d in ALL_DOCS if d["lang"] in langs]
-    if a.command in ("api", "chat-prompts", "chat-score", "harness-score") and a.target not in SUBS:
-        raise SystemExit("sub-experiment must be one of %s" % ", ".join(SUBS))
+    if a.command in ("api", "chat-prompts", "chat-score", "harness-score") and a.target not in SUBS + (
+            ABLATIONS if a.command == "api" else []):
+        raise SystemExit("sub-experiment must be one of %s" % ", ".join(SUBS + ABLATIONS))
     docs = [d for d in a.docs.split(",") if d] or [d["doc"] for d in DOCS]
     if a.command == "api":
         run_api(a.target, a.model, a.effort, docs, a.jobs, a.label)

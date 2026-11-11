@@ -1,0 +1,104 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see document-5.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1073,
+    "cache_read_input_tokens": 5074,
+    "output_tokens": 151,
+    "reasoning_tokens": 71,
+    "openai_usage": {
+     "input_tokens": 6147,
+     "input_tokens_details": {
+      "cache_write_tokens": 1070,
+      "cached_tokens": 5074
+     },
+     "output_tokens": 151,
+     "output_tokens_details": {
+      "reasoning_tokens": 71
+     },
+     "total_tokens": 6298
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 5 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n1\tEdmund Pope tasted freedom today for the first time in more than eight months .\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\nTheir graphs:\n\n# ::snt 1\n# sentence level graph:\n(s1t / taste-01\n    :ARG0 (s1p / person\n        :name (s1n / name\n            :op1 \"Edmund\"\n            :op2 \"Pope\"))\n    :ARG1 (s1f / free-04\n        :ARG1 s1p\n        :aspect state)\n    :temporal (s1t2 / today)\n    :temporal (s1t3 / time\n        :ord (s1o / ordinal-entity\n            :value 1)\n        :temporal (s1t4 / temporal-quantity\n            :quant (s1m / more-than\n                :op1 8)\n            :unit (s1m2 / month)))\n    :aspect performance)\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2p2 / person\n        :mod (s2c / country\n            :name (s2n2 / name :op1 \"American\"))\n        :ARG1-of (s2h / have-role-91\n            :ARG3 (s2b / businessman)\n            :aspect state)\n        :ARG1-of (s2c2 / convict-01\n            :ARG2 (s2c3 / charge-05\n                :ARG1 s2p2\n                :ARG2 (s2s / spy-01\n                    :ARG0 s2p2\n                    :modal-strength unspecified\n                    :aspect process)\n                :refer-number plural\n                :aspect process)\n            :temporal (s2w / week\n                :mod (s2l / last))\n            :aspect performance)\n        :ARG1-of (s2s2 / sentence-01\n            :ARG2 (s2p3 / prison\n                :mod (s2c4 / country\n                    :name (s2n3 / name :op1 \"Russian\")))\n            :ARG4 (s2t / temporal-quantity\n                :quant 20\n                :unit (s2y / year))\n            :temporal s2w\n            :aspect performance))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02\n                :aspect state))\n        :aspect process\n        :modal-strength unspecified)\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :name (s4n / name\n            :op1 \"Vladimir\"\n            :op2 \"Putin\")\n        :ARG1-of (s4h / have-org-role-92\n            :ARG2 (s4c / country\n                :name (s4n2 / name\n                    :op1 \"Russian\"))\n            :ARG3 (s4p3 / president)\n            :aspect state))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :reason (s4h2 / health)\n    :aspect performance)\n\nThis sentence:\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\nIts graph:\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# document level relations:\n(d / document\n    :temporal ((s4p :after s5f))\n    :modal ((root :modal author)\n            (author :full-affirmative s5f))\n    :coref ((s4p4 :same-entity s5p)\n            (s2c :same-entity s5c)))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_036d78b9247fa0b7006af3fd09ede887d1b1c088c6e6ae4d6e",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0M8iCft_bmFwyyOFZCl9HQjVhZsb7MfsKySnOmFDaxYEh19Qek85SeIxBs9DPpd76ENKy2pmuXtyHbqAcNEKlL-jFlU7RVJJdd1ZmwpvbQTsu6BGInIwzvgLuboihylsxj46LW5BwkjP89jmNXFIKt8n-ICZvW9WS6M5mGeRiLbLEjBWOtm4sUCBfONwnbbnMDai5PcUgWUNYZiOu7sHzR04DLOVpCZ4PcS4RIdAAGSYFibnHeNvgqPG2XKFjMwRrHEhtQzFTJ_W2Y2fEdL3YG-B7Uxc-U4qytDygDzOejBdilPvCAtf1Azg3x5brCYH3LptelgxVSxhPB2rJ8YGL6nUQqPnelZGlZ4NzYInHB1aiTtk-3DLGVo8JcuOYj2KTqE8dzVEWl6XLoqZErXBRZYqxrg7Qj5mBQ-CsHx0_TPvcqwLIttjrlRjHPmquBGd3g_c_Wo7AcXcYQD8Q7AuhQegqShXlVh9qAJIGxrbF76mNvbnczGQplw0XGE8Ml4gFsB2eCUoUQ34Ftp4mKddHurskAB4hMvOEZg3Fq7i6q-alZG9iTb-blFKjjWl-X3LDPlLGozeP0b2I0R2bc9RxoRcmDIBd9AJISv7Fs-E7SME75ZAAz3k0zKyngxryA0t39xqAyR3YTU3nN3KWu9T-taZikuXeWqrTYtkxxQG_P8syWPrtti6tSIVTw-eMb--eM5p0EZgftd2EjcYiYVhU4niJMf_rmTruy_z-QQ7yGTOqLmgyJtoxywRbjF_Ybm4FS63PxeCvqMAhDdnJ_XiSa_Ff6TyMqs3MJJZEcefGodqeJ5UfkRMeW1xZaHXroaZAe8hWWy_qrjQyMR79gL5OoXC5GIbQwfEyWvJ7JH5TsarWB2C6QCFxLOOfG1rOqT5KKzm_vyIef-1BONbsEKqkac8tGo3sFU0LZxZGz02z_XpHp46FocnZNmywbNZDxViAKHgG2d9eUaqtoWiY7iST6Rtmkj5WADYbhkDMETnYnN5FBYuvO7cmgx0DR9j5J9mSrmw1wOpCbFsIk2c4SCZOIgq3rLQPoUPbuxwXyXyBVW8CqDfEkGMqfH9ju2Ho4OERab1HUC0rtVoJEOGCUQpZDNgIiWq5d0t1WQsbqq3hzoYqIfXSwtbMxpSwAROuyErz1cjWc2hHWdhtclk-4HUNtGagaWWSQRqj0BQGUAffKbnuxKfBDKvmXyX28ePJUTrXwRg7tMLZbOIWl0OgoMQbWKlBpJmakJYSJ2ei25kcpImSY0E0qs_l22AIwF_uNGxRzRlfnh24WGIUQVIQfJtJAylelWGX0vfqUERKH8NwHH8NY6mzTRKXGsZIkueb89XJ-aCprL4WD85vScZg_JJOf6s95xTsltVfBFOxQm8QZv0qVLQuQxWF-JGdH3cbkQardejZWsd5kBERPJqJoPAnHGDn28uxuIHNbjwbQAMygZkg6QVawB6OVkiUPn7QkwhL2oECXY_U4Q7GZlhjWbxBUd1zrLmYF8Fz6SiUoSVAqv3UYeHX7YNmlFdBUWjAAAwyXfFWIkdJLbm7S_kUl0q5nAjvq2gCFmkFcBz_cqQTh6OOqfLtsTYemyuFnNjsQT0dOU93UN74Ixnf6dvRauhQb4uSMPNcKq_EhUbs1C-Vyaf7ndgZ0sp758l6Ol0R6tK3hXZuRYRm7Rq40J6cQPJ9GOHPhQnC1CcjnLzVR-FsOtROlcY9gAlr9Bqijbgloo-C7dux-XQFiAGjrWadRRdEUyNyeOhjH1y1o3L20mF2Fl6mGSJ2Vjzw6sQ7W_yRDuKGPRw6cv8kqLdhAveU2bzAU8UICjX8peZKJRNtT5JHjZIMiOqrf_Ck6zAb1vhuM31XYnsNvQ47ZpUmyWF0whrYaxVgUroAiufj4bWUh9GMaQsaYg303WoH0q4abBy2w0fsYgpCFa62MQauGBghY3haUHaRa5E2rC4jGDt2k4sVbnsG7THXSxd2v_YZhr96nwjWukg4B3uZiPWbh3Q_9Z2MA8BV04D9cvTb9rxmqbeKJvqYwdi3Q7JCHsF1wCNFKVpQ8ICOw-7nJlP_OaXYyajiEHQG3vnTzcRl18QRXp8PHBIydHBC5b3AhYHSXEUhwT_mfpHrZWTOWvPY0H1I8WKCyXdBhuuKq0GrYaqVWlzQfuz1hoXrMvamFXOy3LOdvVJO6-zptkfz6EgNxfiBJFrZtl9fcFyWzfz7mooL6DKx_FMhEdHy-H1ghaS5DBLj0nKFbuFPMDootX-n73ICFDHxjGT4-U6QWUHHNBjIGD0V5lBUsee8x8vFCtubt77uxzua2X0xKf6dujlUxHuMM-Dp1SBDoOJBrqnWqGxT3s2UW4eYE_KnUP1AW-G2Borx7m7zgtSe_HwGZkdjivNR5vjp8saej2p3rM8s4Ylu470vYaf3o_8e6Hvu8H3L41okoGPZO"
+      },
+      {
+       "id": "msg_036d78b9247fa0b7006af3fd0bc9d887d181252ba581cfe089",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# document level relations:\n(d / document\n    :temporal ((s4p :after s5f))\n    :modal ((root :modal author)\n            (author :full-affirmative s5f))\n    :coref ((s4p4 :same-entity s5p)\n            (s2c :same-entity s5c)))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

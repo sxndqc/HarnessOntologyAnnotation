@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-7.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9740
+    },
+    "cache_creation_input_tokens": 9740,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 635,
+    "output_tokens_details": {
+     "thinking_tokens": 207
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 7 of 9\n\nThe previous sentences (at most five; number, tab, words):\n\n2\tPope is the American businessman who was convicted last week on spying charges and sentenced to 20 years in a Russian prison .\n\n3\tHe denied any wrongdoing .\n\n4\tRussian President Vladimir Putin pardoned him for health reasons .\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n\n6\tHe will spend the next several days at the medical center there before he returns home with his wife Sherry .\n\nTheir graphs:\n\n# ::snt 2\n# sentence level graph:\n(s2i / identity-91\n    :ARG1 (s2p / person\n        :name (s2n / name :op1 \"Pope\"))\n    :ARG2 (s2b / businessman\n        :mod (s2c / country\n            :wiki \"United_States\"\n            :name (s2n2 / name :op1 \"America\"))\n        :ARG1-of (s2a / and\n            :op1 (s2c2 / convict-01\n                :ARG1 s2b\n                :ARG2 (s2c3 / charge-05\n                    :ARG1 s2b\n                    :ARG2 (s2s / spy-01\n                        :ARG0 s2b\n                        :aspect process)\n                    :aspect performance)\n                :temporal (s2w / week\n                    :mod (s2l / last))\n                :aspect performance)\n            :op2 (s2s2 / sentence-01\n                :ARG1 s2b\n                :ARG2 (s2p2 / prison\n                    :mod (s2c4 / country\n                        :wiki \"Russia\"\n                        :name (s2n3 / name :op1 \"Russia\")))\n                :ARG4 (s2t / temporal-quantity\n                    :quant 20\n                    :unit (s2y / year))\n                :aspect performance)))\n    :aspect state)\n\n# ::snt 3\n# sentence level graph:\n(s3d / deny-01\n    :ARG0 (s3p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s3d2 / do-02\n        :ARG0 s3p\n        :ARG1 (s3t / thing\n            :mod (s3a / any)\n            :ARG1-of (s3w / wrong-02))\n        :aspect process)\n    :aspect performance)\n\n# ::snt 4\n# sentence level graph:\n(s4p / pardon-01\n    :ARG0 (s4p2 / person\n        :wiki \"Vladimir_Putin\"\n        :name (s4n / name :op1 \"Vladimir\" :op2 \"Putin\")\n        :ARG1-of (s4h2 / have-org-role-92\n            :ARG2 (s4c / country\n                :wiki \"Russia\"\n                :name (s4n2 / name :op1 \"Russia\"))\n            :ARG3 (s4p3 / president)))\n    :ARG1 (s4p4 / person\n        :refer-person 3rd\n        :refer-number singular)\n    :cause (s4r / reason\n        :mod (s4h / health))\n    :aspect performance)\n\nMy choices, briefly:\n- **Predicate:** I used `pardon-01` (\"legally relieve of guilt\"). Putin is the pardoner (`:ARG0`) and \"him\" is the guilty party (`:ARG1`). The other sense, `pardon-02`, is for forgiving a small social slip, so it doesn't fit here.\n- **Putin's title:** \"Russian President\" is written as a role with `have-org-role-92`, with Russia as the organization (`:ARG2`) and `president` as the title (`:ARG3`). This follows the guidelines' \"president of Russia\" example.\n- **\"for health reasons\":** This is a cause, so I wrote `:cause (reason :mod health)`. This is a judgment call. AMR often writes it as just `:cause (health)`, and the expert annotation may do the same.\n- **Aspect:** `performance`, because the pardon is a finished event in the past.\n- **\"him\":** Written as a third-person singular `person`. Linking him to the person he refers to in an earlier sentence happens later, in the document-level step.\n\n# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :wiki \"United_States\"\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :wiki \"Ramstein-Miesenbach\"\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :wiki \"Germany\"\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)\n\n# ::snt 6\n# sentence level graph:\n(s6s / spend-02\n    :ARG0 (s6p / person\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s6t / temporal-quantity\n        :quant (s6s2 / several)\n        :unit (s6d / day)\n        :mod (s6n / next))\n    :place (s6c / center\n        :mod (s6m / medicine)\n        :place (s6t2 / there))\n    :temporal (s6b / before\n        :op1 (s6r / return-01\n            :ARG1 s6p\n            :ARG4 (s6h / home)\n            :companion (s6p2 / person\n                :name (s6n2 / name :op1 \"Sherry\")\n                :ARG1-of (s6h2 / have-rel-role-92\n                    :ARG2 s6p\n                    :ARG3 (s6w / wife)\n                    :aspect state))\n            :aspect performance))\n    :aspect performance)\n\nThis sentence:\n\n7\tPope was in remission from a rare form of bone cancer when he was arrested in Russia.\n\nIts graph:\n\n# ::snt 7\n# sentence level graph:\n(s7r / remission-02\n    :ARG1 (s7f / form\n        :mod (s7r2 / rare)\n        :mod (s7c / cancer\n            :mod (s7b / bone))\n        :possessor (s7p / person\n            :wiki \"Edmond_Pope\"\n            :name (s7n / name :op1 \"Pope\")))\n    :temporal (s7a / arrest-01\n        :ARG1 s7p\n        :place (s7c2 / country\n            :wiki \"Russia\"\n            :name (s7n2 / name :op1 \"Russia\"))\n        :aspect performance)\n    :aspect state)\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSswgKEAgTGAI4AUIIdGhpbmtpbmcSDCcjWtS0q9qhlojPdxoMuKgmzd8OmNqOaU5uIjA+2e+hn8XSwBM4FBAN6GVCQsik8KSMfMV/67Gly6vQrTz+usEDWA7/spskHAMxvzAq0AfN0gua4hoWUdtn61bh04mQ5VJtup33pJvAxPB44CsxfQzBJi5Z2p0NQl891SxH4hkYRX1RDpdEPZqvP2GFwNL08dBohzgGv6rIh0edFapXOWyHEz/0i2J8MGaP4sWRuGb0syHuHH3LWZNXF1GD3Ia2c62quX+9WksCfv/jSDqeHqLVGR91G2dgPUJs50xTbJ0rlaZO3xc2qQku8rH2dPQDNTBDGSyFDZqesVQdoAemHpzPllXaaveUoKAqcU8DvDVYnYTAJTXVcsN0vfDQESqrSPHghoEphIpDw9tiQz+0idmdAVPpiSegFx210JbgDBWdJI4z/v3+NiTRQU3UVrRFEIgotr6XZX1M2HXuf62agqnlCgwvmL1WnZZMSYo5/1KEnhSD4LWDDuDetIL8NdooPEF3yW+MKejmo/A1tsV25kM1GLMvvd7nmo9cd9XHSpQFkC6j+S3k7NHvFKvfB9UQladlJNv6IiSUwXqcC2rr6mBB0WHN/MIw/RX6eOv77EqLo1Uvda5GqYAkv8HCe5B6StI2zRFL3rwcDO5VTvB9swAnuHmvsT5/7pWEAN+ivngjE483UUES1uveZCF9zZwgy0UuxbtbJYZ/0kyqy6JwzpuKLULq0MkCdwZRMflB5aQPvItJ4G3O8bdK17nvCyROOJnRTIHeB4/fMLdeXiNhj6dhvbnzUG4UQXZioEtoz2rRyygtRB+5mgvyiw9Y6OTfs/4srSPyOs4w4olq214WVlt00PsL3QMlmzSnCTUGV98W9S8Q14GZ9xQrR5s+slItY09flnw7EB+ezMcS9VHKuU/nMCoyWoJQQm87IlhB/E5iO1QpcUF4SAN972vKoLxj55qRln97xagF6Nj/vnPj+oOKNI4Dnq3Vwwtg4LjeGyTdEfpMKjPwvWYtlJyMKC9iKq4sO9Ij1ENmaGPXTd/5lGdcU5SeaMXrwk1zF0pKwbpUuI0O0rdMnAITo2/KJip2uYvIgTJYUiak8Aa9BCV/AHmYiEMNlZPWUex3QSvfDzZ1Q/GK4C13vUQNnMFnMokoq9Grz3KuYsVfPk6VMNj+O5jaMBhLidyakcFp1vikbKaYlKB6BgWz9UPXDG70AxMadls7UaeWBD3FrBC4FYOMOcNgGN5RiAM2f1gzbmSCyhWuGTVh5uatbFUmZQaZKSmB6W3qgn3bqQ6VUUn5w2f1zwPQE/eX30ZqyREnWkdEctVq9FMc9j91oEn93YaEuxQXS1fdsxJ4UHhTImTaK0VS4N88I1OwA70FNSD5x7+61fB/FcKWMEssV5qOCcOzKZUyGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s7a)\n               (s7a :overlap s7r))\n    :modal ((root :modal author)\n            (author :full-affirmative s7r)\n            (author :full-affirmative s7a))\n    :coref ((s6p :same-entity s7p)\n            (s4c :same-entity s7c2)))\n\nMy choices, briefly:\n- **Time:** The arrest is a finished past event with no date in its clause, so its parent is `document-creation-time` (`:before`). The remission is a state that holds at the time of the arrest (\"when he was arrested\"), so it overlaps the arrest. I left out an order between the arrest and the conviction in sentence 2, because the text never states it directly.\n- **Certainty:** The author states both events as plain facts, so each gets `full-affirmative` from the author.\n- **Same entity:** Pope is linked to his closest earlier mention, \"He\" in sentence 6 (`s6p`). Russia is linked to its closest earlier mention as a whole country, `s4c` in sentence 4. The Russia in sentence 2 (`s2c4`) only describes the prison, so I didn't use it.\n- **Lookups:** I didn't look anything up. Neither event's type or conceiver was in doubt.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

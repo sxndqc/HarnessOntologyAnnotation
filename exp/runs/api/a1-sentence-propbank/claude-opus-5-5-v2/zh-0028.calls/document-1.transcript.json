@@ -1,0 +1,82 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see document-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 853
+    },
+    "cache_creation_input_tokens": 853,
+    "cache_read_input_tokens": 7469,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 470,
+    "output_tokens_details": {
+     "thinking_tokens": 147
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 1 of 12\n\nThe previous sentences (at most five; number, tab, words):\n\n(none)\n\nTheir graphs:\n\n(none)\n\nThis sentence:\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n\nIts graph:\n\nI tagged this sentence as a list of three specifications joined by `and`.\n\n# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1b / 比例\n        :mod (s1p / 屏幕)\n        :mod (s1r / rate-entity-91\n            :ARG1 16\n            :ARG2 9))\n    :op2 (s1k / 宽屏\n        :quant 21.5\n        :unit (s1y / 英寸))\n    :op3 (s1i / identity-91\n        :ARG1 (s1f / 分辨率\n            :possessor (s1t / thing\n                :refer-person 3rd\n                :refer-number singular)\n            :mod (s1z / 最佳))\n        :ARG2 (s1x / product-of\n            :op1 1920\n            :op2 1080)\n        :aspect state))\n\nChoices worth checking:\n\n- **为:** PropBank has a lexical roleset for it (`为-01`, \"predicative\"). I treated 为 as a copula instead, so it became the abstract predicate `identity-91`, following the rule for 是. If the gold annotation uses `为-01`, the roles would be `:ARG0` 分辨率 and `:ARG1` 1920 × 1080.\n- **Numbers:** \"16 : 9\" is written as `rate-entity-91` (16 to 9), and \"1920 × 1080\" as `product-of`. Neither is covered by the guidelines, so both are my own approximations.\n- **它:** I made it a `thing` (3rd person, singular) that owns 分辨率. It most likely refers to the screen or monitor, which a later coreference step would link.\n- **Kept as one concept:** 宽屏, with 21.5 `英寸` as its quantity and unit, and 最佳 as a single modifier. I did not split 最佳 into 佳 with `:degree` 最.\n- **Not in PropBank:** 比例 and 分辨率, so both are plain entity nouns.\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS+wcKEAgTGAI4AUIIdGhpbmtpbmcSDEYdkSgpDsVbl5GMuBoMFB6wf+DBymZsI61ZIjBsuWJNpGkcwW6OedXN/L46K6ddC05MtFeSxXu8ks/lsnRmS4fZ7/h1UDt8FwoccLYqmAcI1YJUApYgITm7fTWf3YZrVzfCY57Qcm5JV+vfGT9ydtTKKoFvIWrcvQ+7Whz/my5DoccXhngFh1QI5GRMrnAagdnIkibOiT0KEaQ4XD+qXN0k6zNXh9sYwvxxo4FFihWH1PtPTvU/JkBG9NaVZ9rZLZt2gXutL8pj+L2W01D7mSTps0iOUk3ILCb7vcwBMUaP8luHXIo1kp8GXUYZyFTZkk2J8MKHIXl5wCvAgY9vx81H61kSAg6FJx/4w4A04OQ0oic5GKM6fRpGugKpkOL02kt+BJpxwBsR8JrMbu9b8kB7WZosYl8okITr3Agr3rfUQb/2lXb5efhae/YZ9zvCEpgFbaVwzA0KdkYTBATC/aM/cHAw9VHDjoK/f8FklvGVYO6XF01r/ZJqXLpzxsUANVZu9vvyOVnjbNgLI2lbd0J/24H9jJpn9CMlQjSSqgJUugrn6VNG3U7O7emmIP9dUqfu1Vo38UAtHrrQmVr92eUGSn7aogl2kabgRz9Uk2W9gg1ZXsqHWzR6iymvhgS8i5YX9jCbqohS9iaOu4C6mjBFdvljr2A4S7UTOCyWqrvdqg0jOu3eLjS9yBmEAflJxBjPboAq/uePzXn4RC7vdPs1F1rEpxjO+doxfEuY7kcStcuteMoTjaOp9H7oqZiqoYm1Yb5LoTePWeTDRzj53l0fVPSc2irNxken4pAHbLjZeLblAoicN7cdT1nSQflDc570YYPsh5GNu2WSD5o2V0w8kes7Jk4xJJuzROnd6w7ScBP6X6tpYLU2K/JB53q4TxI/xV6Crl7PcxWUIWHK/Uvmr4JrI6hr2pOqRGa9MHpUO6CZbBMlfxHrIm41QQ5bXWGbUnPnXgf5VEQF145mCqcmU7x6rH4ANbVBBjQTMtKm07XOtwZ43g4ziLDkWCeNMbF7jXbuWAmgLXMoAjqaP1vWDZItOG4fVZCbPFpHc7m7OepxGOvrY5N75R9c9SxEiFT/81jvNKvLCPNeX1rysAB2KCui98eFvOsUEihwwqZxDX4VaZtTU7B3fqfz6hP8vCY4aTimHEvZsavDDx4yz1oLOBwk/lSfXm/z1P55LZl6+j+RZ+hUPgdk71KG+GEpMseiKp0/j/JYVMyhz+kCUJCznwmGwjQdZ8pgCdbfe5xAGFgh3xKiKH2CFnwLB8VNsIzXmHm7VoCp/fR13SbRGeQJ6mYgn4CTzChZ/9xcd8q8NiJ8Cy3MiBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# document level relations:\n(d / document\n    :temporal ((document-creation-time :overlap s1i))\n    :modal ((root :modal author)\n            (author :full-affirmative s1i)))\n\nThe only event in this sentence is `s1i` (`identity-91`, the 为 clause). Because it describes a property that holds now, I placed it at `document-creation-time` with `:overlap`. The author states it plainly, so it is `full-affirmative` under `author`.\n\n- **No other events:** 比例, 宽屏, 分辨率 and the number structures are things, not events, so they have no temporal or modal relations. I counted `rate-entity-91` (16 : 9) as a number structure rather than an event.\n- **No coreference:** this is the first sentence, so there is no earlier mention to link to. 它 (`s1t`) probably refers to the screen in this same sentence. A link within one sentence would be a re-entrancy in the sentence graph, not a `:coref` triple, so I added none.",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

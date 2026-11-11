@@ -1,0 +1,170 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-5.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 62,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 30,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5183,
+     "input_tokens_details": {
+      "cache_write_tokens": 59,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 30,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5213
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 1907,
+    "cache_read_input_tokens": 5180,
+    "output_tokens": 269,
+    "reasoning_tokens": 106,
+    "openai_usage": {
+     "input_tokens": 7087,
+     "input_tokens_details": {
+      "cache_write_tokens": 1904,
+      "cached_tokens": 5180
+     },
+     "output_tokens": 269,
+     "output_tokens_details": {
+      "reasoning_tokens": 106
+     },
+     "total_tokens": 7356
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: en\nDocument: en-0008, sentence 5 of 9\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n5\tPope was flown to the U.S. military base at Ramstein , Germany .\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_ceQaIHWsqHc79jP4j7fdERCG",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "fly",
+       "base",
+       "military"
+      ],
+      "language": "en"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"fly\",\"base\",\"military\"],\"language\":\"en\"}",
+       "call_id": "call_ceQaIHWsqHc79jP4j7fdERCG",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0c9570daa90ad639006af3fcf5448487d194a7f5c912ff8638",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_ceQaIHWsqHc79jP4j7fdERCG",
+     "content": "## fly\n\n### fly-01 (fly through the air, travel via air, fly in a flock)\n\n- ARG0: pilot, agentive entity capable of flight (like a bird)\n- ARG1: passenger, cargo\n- ARG2: aircraft flown, flight number, steed, non-agentive thing in motion\n- ARG3: type of flight plan, mission, cognate object (like 'a flight' or 'sorties')\n- ARG4: airline\n\nExample 1 (fly-v: unaccusative, traveller as subject): And some investors fault Mr. Spiegel's life style; he earns millions of dollars a year and flies around in Columbia's jet planes.\n- ARG1: he\n- ARGM-DIR: around\n- ARG2: in Columbia's jet planes\n- rel: flies\n\nExample 2 (fly-v: transitive, pilot as subject): As a ``good-will measure,'' [the pilots]-1 had been working four extra hours a month and had agreed *trace*-1 to fly UAL's two new Boeing 747-400 aircraft.\n- ARG0: *trace*-1\n- ARG2: UAL's two new Boeing 747-400 aircraft\n- rel: fly\n\nExample 3 (fly-v: with destination): He will fly to San Francisco on the afternoon of the 20th to participate in another round of speeches .\n- ARG1: He\n- ARGM-MOD: will\n- ARGM-GOL: to San Francisco\n- ARGM-TMP: on the afternoon of the 20th\n- ARGM-PRP: to participate in another round of talks\n- rel: fly\n\nExample 4 (fly-v: with recipient): John flew the paper airplane to Mary.\n- ARG0: John\n- ARG2: the paper airplane\n- ARGM-GOL: to Mary\n- rel: flew\n\nExample 5 (fly-v: with employing airline, arg4): [All of the first group of pilots who went abroad to receive training for new fighter aircraft]-1 have left the military *trace*-1 to fly for civilian airlines\n- ARG0: *trace*-1\n- ARG4: for civilian airlines\n- rel: to fly\n\nExample 6 (fly-v: with arg3): Since this war began, something like 23,000 coalition sorties have been flown.\n- ARGM-TMP: Since this war began\n- ARG3: something like 23,000 coalition sorties\n- rel: flown\n\nExample 7 (flight-n: Within LVC): Just last week , for example , Trans World Airlines and Pan Am Corp. 's Pan American World Airways went so far as to offer cash rebates or gift checks of $ 200 to $ 1,000 to certain frequent-flier members making trans-Atlantic flights in business class or first class .\n- ARG1: certain frequent-flier members\n- ARGM-LVB: making\n- ARGM-DIR: trans-Atlantic\n- ARGM-MNR: in business class or first class.\n- rel: flights\n\nExample 8 (flight-n: pilot as subject, source and destination): This month we celebrate and remember Amelia Earhart's flight from Hawaii to California.\n- ARG0: Amelia Earhart's\n- ARGM-DIR: from Hawaii\n- ARGM-GOL: to California\n- rel: flight\n\nExample 9 (flight-v: With DIR): The maximum count of birds flighting in at dusk was a remarkable 183.\n- ARG0: birds\n- ARGM-DIR: in\n- ARGM-TMP: at dusk\n- rel: flighting\n\nExample 10 (fly-v): I never fly Frontier anymore.\n- ARG1: I\n- ARGM-NEG: never\n- ARG4: Frontier\n- ARGM-TMP: anymore\n- rel: fly\n\nExample 11 (fly-v): He flew on flight 664 to Albuquerque.\n- ARG1: He\n- ARG2: on flight 664\n- ARGM-GOL: to Albuquerque\n- rel: flew\n\nExample 12 (For first/business/economy class, use :manner.): When I fly intercontental, I always fly first class.\n- ARG1: I\n- ARGM-TMP: always\n- ARGM-MNR: first class\n- rel: fly\n\n### fly-02 (fly in the face of: flout)\n\n- ARG0: flouter\n- ARG1: \"in the face of __\"\n\nExample 1 (ULA example): There I believe we would decidedly fly in the face of established case law .\n- ARG0: we\n- ARGM-MOD: would\n- ARGM-ADV: decidedly\n- ARG1: in the face of established case law\n- rel: fly\n\n### fly-03 (hit a fly ball, has strange past participle)\n\n- ARG0: hitter\n- ARG1: bases\n- ARG2: where player moves to after hitting fly ball\n\nExample 1 (Args 0 & 2): Kemp came closest to a home run in the fourth inning when he flied to very deep right field.\n- ARG0: he\n- ARG2: to very deep right field\n- rel: flied\n\n### fly-06 ((cause to) hold a spatial configuration in the air)\n\n- ARG0: causal agent\n- ARG1: thing suspended in the air\n\nExample 1 (fly-v): He flew a flag above his house\n- ARG0: He\n- ARG1: a flag\n- ARGM-LOC: above his house\n- rel: flew\n\n### fly-yy (insect (and other non-predicative senses))\n\n- (no roles)\n\nExample 1 (fruit fly): A large number of fruit flies hovered over the rotting bananas.\n\n## base\n\n### base-01 (be located in)\n\n- ARG0: agent basing something somewhere\n- ARG1: institution\n- ARGM: M-LOC location, where arg1 is based\n\nExample 1 (base-v (according to the tree): showing physical location): [Hearst]-2, based *trace*-2 in New York, ....\n- ARG1: *trace*-2\n- ARGM-LOC: in New York\n- rel: based\n\nExample 2 (base-v: With agent): When referring to the achievements made in recent years by greatly investing in national infrastructure , Xiang Wang , concurrently a member of the national CPPCC , a member of the Standing Committee of the Jiangxi Province CPPCC , president of the Group , etc. said frankly to the reporters that \" *PRO* basing ourselves in the inland and ' building bridges and paving roads ' for the development of the local economy was a wise choice on my part . \"\n- ARG0: *PRO*\n- ARG1: ourselves\n- ARGM: in the inland\n- rel: basing\n\nExample 3 (base-v: All arguments): They based the company in Southern California but maintained a Boulder operation.\n- ARG0: They\n- ARG1: the company\n- ARGM-LOC: in Southern California\n- rel: based\n\nExample 4 (based-j): Using the city where-1 I am based [*-1] as an example , nearly all the medium and small - sized state - owned enterprises have closed down\n- ARG1: I\n- ARGM-LOC: [*-1]\n- rel: based\n\n### base-02 (justified by, made up of)\n\n- ARG0: justifier, agent (rarely seen)\n- ARG1: decision, whole\n- ARG2: justification, parts/ arg1 is made up of what?\n\nExample 1 (base-v: justify): ...a [market structure]-1 based *trace*-1 on such variables\n- ARG1: *trace*-1\n- ARG2: on such variables\n- rel: based\n\nExample 2 (base-v: transitive, agentive): John based his decision on gut instinct\n- ARG0: John\n- ARG1: his decision\n- ARG2: on gut instinct\n- rel: based\n\nExample 3 (adverbial, with trace): Milton Roy will pay an initial $ 4 million *trace*-*U* for the operations and [additional payments during the next four years]-1 based *trace*-1 on the earnings performance of the businesses.\n- ARG1: *trace*-1\n- ARG2: on the earnings performance of the businesses\n- rel: based\n\nExample 4 (adverbial): [The exact amount of the refund -16] will be determined *trace-16* next year based on actual collections made *trace*-* until Dec. 31 of this year.\n- ARG1: *trace-16*\n- ARG2: on actual collections made *trace*-* until Dec. 31 of this year\n- rel: based\n\n## military\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0c9570daa90ad639006af3fcf7bb6c87d1b866214cb4f6f23b",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_z9-Fhg6CJRkDhUHMapCxZAOnelUpRBH470ZUpyr94MyFjMROCPRqJlXsjGelqRVh_VymuOEqZKZ91fbZlPQM2tNBYlQU844FmHO0ciUMhAQ4RviGBwg-BvagTiYSTnkgiPWQjRXn3ZZEsJqFKRFdR_7_-NNunU0GeUsgOyVoYpPqCSVwB83im_We2cX4udGLXsKK6jZNCdT6qD3U3QCQ_3HBxS52dAI9KhHDn87FAgQGxalQoEH9SPmV3bdbf-q84wk1pgCt3XHID510SUForVHmnUqM7VXLUJ_sAuDeLGGq91qxLw9Ar9ZffIoa-WXPYgS2khrqWZXGWvzIrLGifaIWvopoQ7AGMyI-zAMewSO6cI0n0Zhf3zJxFDfdUO7n8PfKQa96MU2oy37lrB-eWg_xEm-YiuVF8TWYTt5bn1d3yU_bolXIB18Ve-FhYh_xTzIsx0GTIQksDE94DyQkOlU9mUS8xfxkLM5DaFkw0nvFi8ekU2SB61ggFsxUtb1YeGdbvb347L_ZCqy6TUCNO2Ij6Sw2bkkuWEJHYr4JU0qmw6EL2lrLkhzaq-HWzxnRt_bnYQ2GHHry1MfZVmLv4YG_3G00tb2eMpGVdi8gtcXxCrM3ELVLJeeaoXZJBpEisuzOh-7PbUMmxZSmfaPBLDvDJanlx_C7Z9UCGwC5TMEoV0qqsStNXRAv-6HadlMe3SnMLUCav0pMmQ0H9RuNAhQ8s2wc_Tmj6mHW02U-vQRBJReVUmL8pEDh4g1T3lYX1RQblqf3y8ZC9w9zyT2ckB9ecMhox3WCWCb0w_4fGDvHG8D-jDtid8xzLK1aBRpVmoc4FZSYmh7CHGJ_lTpp_qzGshTOZ_pM3V-rVP8q4BD5YL1A7462UoE6SbbJLsdF2VHalS3ZbmrUYbv7DdSoNn-3YMcNa9CARWVYek_MJ8S5DDb_M8ak1jWvm_9BiGU0RwurD1ZCoPF-gZ3vCXv7W7Ujft15q_gtTiK7nBDyhyYiQORFhDrur9QH-2edCOx0d9TQbpzAjT90jlUhzH5CJ6ih3q-G6xYoXro4uBiGXl_UUNokNhJpIDA3MFBXtVMmGOf8mlYmFNzSt9T33gt3tgpYXpJj1AVGNGPqHk6X1g2GBPtOvw3JjBfpkqDymmOzZGPpN-9WpO-z3E1HCZbrld3nm4ngvodR_4Pv9Ffdtl-ZaBAtfoVW1S2hujMJiFzjxDv87uJE464ny60kUb9ZXrexuAKSNxKLgZia7W6TokUeLNNxA___HjIcgMuPeo6EfBxPOCNPD0X3wK_laicr1jARCuAy8TVPhyF2kPHb7x_8T5qyfnSahLQRpBywMWVwIr4xqFbUT37FNRD4b0F6YUUZd0EsXAW1yLHckM-b4ykgffNtzjTyiI-8J4CaZIcA5QNE8jFAFiRBJgpZZgIT-d9DJm0d0hP1t5otpw108Yk_qJyvC0P6rCx_O5eC8O-67Bd_-fr5-IMwhC-5aUFD2mprK64nrxR9YanugOEFrMmm1ud2NbCL5dDqeGLYrV9Gmtzp5aufbLs-tn3iICGHLazvNjJnqkgO3ojreJodgoRfvr89Ybt_HiaTRI-DcLO85nkbcMTfAM92NNYlUYPzwPRxejJuEYVCzsrgHeUciGwDCESVtpM5URl7jU9yzeRuJCDwasApu2ItUhOFaAiQRufO1SmxYuKGauVOO6nUHIWLDIGz7-1ILPuAhzT_x8btHG7PE9Bj9zq0D_Xjom2oXJ8vSd3PyIs5-GKTWGwc6mB_592wE-HG51nWwOOXwUa8bqv_uHPba2bmCQ64B5_4Yb8SlLd6otoeVlSPAV0yhfPFtuJtpmPaftIW1NY2Rc557f6zdYNBRjA1CKTxECpMfQS_AZuIFBjl2EkujO5pauhtdU9pPZ6FLGoB9gHzwzSU5GM7a_HCxKN-xmj1zr3IkckJAAYzh3hB2AVQ6AFMpZyRKYP5BnSzJJZ5A0oQAEUhzX600HzUui5SsrEHubdUsX0uEaSnwk3QZ-yoZClP_KEBLwgB82Izpg23LYqTUANOxeRnJ0Vr8RL_hb9HdOHln1Fp9SWlSnM0zqIgd0krQMPtR55hpBYKus_i7sJpym2z1B8OUAgNRrUiV0B2jG8WaFFTWGDBbzXQMPgXeBLc_4KOlLGI5u4i3hGEZwNY9KqiSexy9UUKg9tTcdb5paroEN1WUDJF2vmWtlFCaMRWy5sAOLpdhGBmROwpqjLDbAh6K44S-pGzzSMQO4fdw4OSFmTPnFlstoa6-zgt4tc9glQ83E6KLJ34SR6BF7a0lA7rpeI544APDSC5jScQBR8jCwmNth8togYHtypSaYMlYmxGpQTJ3NQ4ihKpq4CIbLb_-lFPbCFP5kAs1LggIP8r9-9stE37yPn3BwYMveRgxL62vC7Oo-oVUkmqtVWOhehkMFLiPslvIOmnQaAcDEhWYtY7vQOJTGsFJgA6uuVZkyFXt-LSpyA82-YPvOMpwIu4NBRk8J8ezPIFIy2ILu1OcH7U4LsARE4ngV4OudcboF_-eQ3FgRNE2pM40hHRazr1CPIyX7MWcehCaFHsQkUT_zFdkcgTEpnPKJs3mgzBhGuhAJBlsT4hiPBtGw0AryrI73DIm6fncbkNNr43NmFGR7iiZAxSwGZF3frFiFGiN5bZDXNfnczYQTLGKRuIGsuwViDcbJ3MbK4Szy8ZQkmdCmDpNNTBCrruqFaMuq9mn7io7XoBKvRCVNtzh1zJWnLSnUU2j3ubmHbhZU0p7UxN1_hsURziLAoWUtHPKWksq8iNQugfIDosNPAn7boEtHK3EHyMjQ_0EhjTp_Peqe1kgm0Dv3-ZcWs5MjV46DfxQHU0Zo_4We2IqH9FsDtz_rrZ0qBLfbkro8I97FezevcHd5eSTzqFMpQqIBo4QwXCl7btY3ywKNB_0WaJQ9cG8soBQ3JQ5Toz7qSMZY8O-woON-hcTrKuzCgWgHe532St71WaurvlPAQJQfJsg_94WRz_FQ"
+      },
+      {
+       "id": "msg_0c9570daa90ad639006af3fcfbafd087d189c0a7260b4b4ebf",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 5\n# sentence level graph:\n(s5f / fly-01\n    :ARG1 (s5p / person\n        :name (s5n / name :op1 \"Pope\"))\n    :goal (s5b / base\n        :mod (s5m / military)\n        :possessor (s5c / country\n            :name (s5n2 / name :op1 \"U.S.\"))\n        :place (s5c2 / city\n            :name (s5n3 / name :op1 \"Ramstein\")\n            :place (s5c3 / country\n                :name (s5n4 / name :op1 \"Germany\"))))\n    :aspect performance)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

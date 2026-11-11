@@ -1,0 +1,173 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 85,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 39,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5206,
+     "input_tokens_details": {
+      "cache_write_tokens": 82,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 39,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5245
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 656,
+    "cache_read_input_tokens": 5203,
+    "output_tokens": 693,
+    "reasoning_tokens": 516,
+    "openai_usage": {
+     "input_tokens": 5859,
+     "input_tokens_details": {
+      "cache_write_tokens": 653,
+      "cached_tokens": 5203
+     },
+     "output_tokens": 693,
+     "output_tokens_details": {
+      "reasoning_tokens": 516
+     },
+     "total_tokens": 6552
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0028, sentence 1 of 12\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n1\t16 : 9 的 屏幕 比例 、 21.5 英寸 宽屏 ， 它 的 最佳 分辨率 为 1920 × 1080 ，\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_OYTNwKtBhd3CZ0rbq2Naeixk",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "为",
+       "最佳",
+       "分辨率",
+       "屏幕",
+       "比例",
+       "宽屏"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"为\",\"最佳\",\"分辨率\",\"屏幕\",\"比例\",\"宽屏\"],\"language\":\"zh\"}",
+       "call_id": "call_OYTNwKtBhd3CZ0rbq2Naeixk",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0ceb51d4e43831ab006af3fcf561a087d1934afbf7161d4f8d",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_OYTNwKtBhd3CZ0rbq2Naeixk",
+     "content": "## 为\n\n### 为-01\n\n- ARG0: entity being predicated\n- ARG1: predicative\n\nExample 1: 乡镇 企业 贷款 增幅 为 百分之六十一点八三\n- ARG0: 乡镇 企业 贷款 增幅\n- ARG1: 百分之六十一点八三\n- rel: 为\n\nExample 2: 图 为 １２日 李鹏 总理 在 马六甲州 参观\n- ARG0: 图\n- ARG1: １２日 李鹏 总理 在 马六甲州 参观\n- rel: 为\n\n### 为-02\n\n- ARG0: a role of arg0\n- ARG1: entity playing the role of arg1\n\nExample 1: *OP* *T*-2 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德 为 团长 的 澳大利亚 代表团\n- ARG1: 团长\n- ARG0: 以 澳大利亚 国际 发展局 援助局 总局长 弗拉德\n- rel: 为\n\nExample 2: *pro* 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中 ， 以 日本 为 最 多\n- ARG0: *pro*\n- ARG1: 最 多\n- ARG2: 以 日本\n- ARGM-LOC: 在 *OP* *pro* 与 中国 缔结 *T*-2 友好 城市 中\n- rel: 为\n\n### 为-03\n\n- ARG0: entity being predicated\n- ARG1: predicate\n\nExample 1: 巴格瓦特 是 *OP* *T*-1 １９９６年 ９月 被 任命 为 印度 海军 参谋长 的\n- ARG0: *T*-1\n- ARG1: 印度 海军 参谋长\n- ARGM-TMP: １９９６年 ９月\n- rel: 为\n\n### 为-04\n\n- ARG0: agent/doer\n- ARG1: thing done\n\nExample 1: *PRO* “ 有 所 为 ， 有 所 不 为 ” 的 原则\n- ARG0: *PRO*\n- rel: 为\n\n### 为-05\n\n- ARG0: agent/doer\n- ARG1: reason/purpose\n\nExample 1: 我们 学 电影 ， 嗯 ， 写 东西 是 为 什么\n- ARG0: 我们 学 电影 ， 写 东西\n- ARG1: 什么\n- rel: 为\n\n## 最佳\n\nNot in PropBank.\n\n## 分辨率\n\nNot in PropBank.\n\n## 屏幕\n\nNot in PropBank.\n\n## 比例\n\nNot in PropBank.\n\n## 宽屏\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1f / 分辨率\n        :mod (s1z / 最佳)\n        :possessor (s1k / 宽屏\n            :refer-person 3rd\n            :refer-number singular\n            :quant 21.5\n            :unit (s1y / 英寸)\n            :mod (s1b / 比例\n                :mod (s1p / 屏幕)\n                :quant (s1q / quotient-of\n                    :op1 16\n                    :op2 9))))\n    :ARG2 (s1m / product-of\n        :op1 1920\n        :op2 1080)\n    :aspect state)"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0ceb51d4e43831ab006af3fcf7d8dc87d1ad0f682b6db02d09",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_0LoQzYcI3O__kRfb5zDiGx2fRGa5ZKJG-hskg8lvoKUuro0DObl7OBA3FcHPiW9hi6VueUgazJhz7eDJhDQBww3b0mP10C9-MnysZi3UsrWF1ucqrdyTfPTVAxUH0bKZ1-HFv16SVfhe1NFXWaDheSiKBQ_E7PJ873EMr7OgGLxw7JpKJAxeTP1Y5RFr6IOzdM_GVK0MDhJfUIOzekgc0nOmFvTTfFfne-prHycw49ZcXbAniLjx77wKaWrvDPye9T8A0SHmpMpdZFQRPNWYBlsofy-epIU7xjPouYcwdSiMeJdrpI2j0-K5zAdWoTJPWcd1eZaAsQm4pF-YcZbWqUgPWPwgR3LqxwKS2uxFY-F6z9sQerpDl4dae6GoiphJZUSgqZxF_VafU-0uno4nXvFb3x_KQm4LvjtJzWD5AEcp5Pfi_RNxo4ErGvRaBYk5jgZRy0GQ9ubiCVTw194Ov3XYqOUUj4RAf9K12SlcddVIcvODrpWiTe73-eHfAdgOEuCsrjJ6kLj2FaNsCTMBsKClfjxwgx78gj3bMiCwlfcel9_uLpw1qjbYjqOgro3__hPWas2yPAwA-z1D1getqZGxtqCa7qSbBxedWs9S2fHVoqbLEU8W_bgqkFlQp8-CNZxY5E7jcy3MrVoDzet8eWRN2U_H8l6B44xZxHHa2CgX2ugzjGJANHadQZx87Ve8PqCInR6AS5Te2UNNZF86dWb7uhB1kH5Ps1BTQBfpNXlkrzYbILWGBU1mP_6h6mBzPW_Cb-nWtw9wzXNgvl_iQZorjPY48lE_yU47meWhbonE1BY2EVsZWgjfNeIsCL4gl74B4Et7W13DejM15kC-tFb4zF0vhyCdcL0T3IBS7p4o4hsu9mWhPBCKGjGj9CdDIELWNTRAgL6dwygNsOKuYPHY9TLBluZ-tHmNDzaekoMdyNhFD-bNSnBGyFxUP52GmCz98OKvhAcxBm12SctNH_ErxxMbnZtRrLAnI9kHyLo0sU_IoAvZHwflyGM9q2r_vc26CcLylsons6z5v_tOUiSRcnwykdggZ8s07QUDofgCrSyyiCVwnVVw1sCA0x4TVs0iGHPfRW9UOmt9rElXhBjSzXLh0xLAHLB2nmml81FQJtdQ1UFU9p2Xd6xUlcwD1HGze-F39e8GxJ1qJX6ZETWWzQuehqqP11XOMJxBCbV3CMEfkSE9Bw1VEh4lY93-Ut769Ud1YWSR5dyn1pgqL4ZrcXSAWMyAlZKglssN9TpIxzWweDfII7fSBwG_i0TmC1ERXMtA5xjByyuS7sSeB5p6g0ssfp1JkRHMkP39YOQOqalmhsuCVZp1v-yERzs7X1tE_CuwCN_oe3-zOPpMcAQ9OsGkDE56UmVW-l4AzdtvRLOp3szwWICrVyrf_aGZk27aUgQxVoYW3H9rXSbLKTe8dIv0IKUDY5Xrq412tPO6nHWhKACsLH1O-P_nm5pQhlo9fAZHZd0qgh88WJdPgq6HrCtV6azQkZ-tOvedkUDs_1gLxmt2VzwZNh2ksGdmG3PyEXBkgflJlIybCzZ0-HK1eYVkt0wm0X6lxFlg-pokVDEaUiZOXtPe-WvS8fqgQwDj9nFX3fVRf8wwKGzC8K2z3ZtO1wvihmc4y3wF4m1WdSJ3T7MVDC8Uw0Ky_xJPL2PxYUP25ots7QKY5ZcH7jkTq02PaMD5qMsEv9K7gQ9fMKHV30Hh_hMCkU2bifG9GntFQcZbUniAtwpsNGULLw0dw9Nf_T_7zQ0MmS8HPhDrfvyGI2LEloSgGuIqd4cLVmoLfcSpj_DaXqD0wz73f1Pbc2dAhL3KTGCoBNJvfXA7RKh7bJGOAqg9KNzHa9BhsrHFn1ENqFmX2tdUIU-b29x32VnglpAIiJio0Tljlk8gJsV2ix7N1byJDS3TwdKoBFnvRSOQh7ZfoZpXJ25LUZtTUULFg9PgeImxJH87aYMB-FOKXGoc6-T9hwV_C-hWkzLj5GB7A8JoBdi7A_uu-0pnquv9GNIM3oP2E4WYyDfJSc-RHRn-kg_AeY-LPcN-KF4QRU5eXemHza0iKAicgcubjjvGBbtqwgd4EBEPyX6YjrpNsHR6-uuIq0IdTCHkoNPJ_cyxBpHtBPeq2oWVtj2zMaBaltKDUy9jjLmxCG4MwaflcbL6toZmlIZ_NvbLx6r8sAUiJHt83leAAr5MvGC_M7luV383S79aEmZxN10r6ltP9-2HvX_mitGYZI0nzew-bK7uxNEX_iZ6sXJ-27R75RnlfUmRDfPDaTfMj3qJXU6pIoo93cNS5jVgJi9qbwephQRhGKciEirF9EHI4W1t-u2wJdVeyI6xTHdFgrNnImkNqDrC3cIErKcudGj7zDYAq-4gromlFnOGy91yIegreMdRM0TItmiwZWK0jmZoBBnePR3Oz-MzHstzZyHWhTvJEVtvVv5NODc80M0k01XqbPxO_0rCuwS5XDCGt3KJpzn_fbLVmwgrj89240FMHncfxvXH81nXOBfgOkRohyrUgBBgerAr6j2F4QleJ5JX7qg-hmX5JQDRGLg1ZFgpKVTPjr_sDKfSK6cXpOjc0IxSQSVHEc1uugJ5KHgTZWXIMXGMJ6uEfS2mPAz2OVLGzPhwDBij8bRvXCU8rkT5AhXxbNu37c2FOutH_nbIFMr9lxLnNuZGvAAk5Gs5lJTbH_4dZWcDIhs3nb5e6S_VPsYrGy5drDerF38objPv-VU7kxdds0zNIkD2_ms9KFWKEiuuaDndo92YiA60EdO3Y0v_4eZhcfPXAVXbXwbh-sgh2iM0Csn-S2ojtx6WJDEEeKEKohA_YXVH9jQRu3eey0wvebndVv0LP2TQeNAwxSuzfj6au-yrjjxKfRA3NSKZ18LD7dC-v5zHX-tVwHxhDX2UHPrEHWmrzb5gx84xkZ8AeQvXcLlsuFXLjxZPxa4_eg5j9ZukrjoLONQj4zH2vOC14DWfhcHImFIveb-3_i8rdgqDRY13SGkbYC1PdT5BB7OsjRgpeQJu409sNm74-Pm1DPWAQ422WWYPE8AerRdNZjPvpn06hjBGAZ9s4wuAdtZuNJTF7nXo815qH5Z9mSBN2-HCHR6EFlUP2UQOA_Pb6QjkBtGKCYEgzWLxluMMvGevtUnhb0iESQJGC11W6fpVmt30PXAKjswqgrgm7SGtoGjdvL27S4n7xo13oPU50KhIXtggD7eT1dlJuxNjWFEEk8HaReUN3veY_y5qMsJ43dgIK-9l0aHZVdYVfTZqUftzwZK-Ce_3-Nz_qAzqwaLfWleNV5elbvmjBYGnEZLfLUczHtNeGkqnWRlW71jMfwGVgdrEQXXyG_HXamkq0kzixqY7rW8dzmNr0IcL4zyOcDEfagql7DFmT2-t4oXBxp8hRlUDcLu4blkO5ycgJBvg-MjHbf8M511bEI2H6g289bU075umz24oEL4uJEuATcHfQKBBTfEnjZFXxzKzvGprgpSRPEFJxHMrcNIEdBK55cPjvid3xv_uyD7o1G7vwriXVZ8IjYWeDhyDWNGv-u4bFFysWtjSU6QlaOCul_UrHfML8ivkciC94xM3ACcaW9cTz2HAynNdLyt6tflugjUFQr6iuvZQpwc0CGW6lMhgClkMf3L7ccOCoyF3iYijczJ3Ax70aLR1giaCvfRQbnCnJ5hEOq-5UGGoU8XqcjNGmdsq2xBSPZI-wJ2rK5Vx5dU7_9JHlX1PEq5fH73HSJWjDWm0nMrE4jk8vEcpPQOLsTC30rJWNoXa1GagNN3aUDr2U0O5zz6gEmhvFnFWBxPmPdEldWPnFM3DG6tgci4ZzghLslEbWhUCPlNubE5u6eLPhpl4EE6UhxpqNYcLUXF3BTSNdrktShAahJxYB5WGX4N0jAQ5zkp1zyK2y--N9-X7TIwJiCUBXHSMRAAgt1c1Jthq8jGRVGOpk7XLDKcbpvhtSfh_0WOnwUiRMnZUQvJItuAm7uTEfj0aOMpqMOvnNDbSqf9KMPLNPExafQCeVXiU0KUw2AW6rL6A9YU-qyH3ayWw5DDyAyuqq9cPOgB_mW3FnnZM4a6aWjzo-pMorgXleMASfHRhDEOV3eiCEf1fVVhQqA6WZPoA6-zecb-Qp_gIJzG3_8BFY9ooeyK75LAYD7-QT2HSvIq8kNDbNYS5lEoG0wkRYg781hhl17MOJfm2dBGdIfJDbk8DM1euYX8vDYArvcxLqsaxy739GlYSsLLU9nw9OwXDrmLeNLQQRE3NxESQeQqz0wTS9EMw_UbkNVOHLNlHrFqD_HH0JTgVs6jOLPcjc5cNwmXstfUcLWllW9oMmTVBR5gA3Jzz_w0Dqogcp47MRr39RTk4GlRCm1CwVGrnrsgM-eKiNol9fhkM6b-TEx7SkG8s2Fhgc17kQdWSQurdvToUEtJ9wy4c0b6vPr__u7-bZXfNupXtVx6_f4vHHw7rzAKqcNYXrYK3qgXwDD89APulPiZiavjo1m3z6M8_7VhER8dgUpdD58BH29fcB_lHIYuzEKEM9HQLWbLCxQPhuJa41vFE6GDMIJ-RXihNPFGKxKV3dQ19DOp-FZCyKULb6IZgty8VwnKu0zEmbf10HVPcTcPMbaK1_MsRDnggbC99Tgs9_rnMy65oxdfOo0_rBzpRqEop0bFYph2ZqT4wZt1BzhvvUlojbLrtuElQUCRe6-zuLJdYXOR5brys71zfgiGC_39He3LkB6mzAsMYFuXyRkTpyk6UvELL6jxPPfLaoLojpjnzahBP5zjQn9F43EVgMyJxd9EW5DqMCHpVlzNl3TQvB3REyx_0drE4rRIndcSlw8dLk5BUk6JLGVRpwmcKeIZUnDxuqCEA86Wgyl-JtlRaRN1gMUNiRP1kSrDoXaCJSyewJ3Tui3Aa8ks-1-nKqv3yD886WwkjxUieFicCpLgK5oZ3GDzPUl-eD0O2_3U9j8jJ8KyTReCyaOmx39smOra5YRUHFBaNDuwVlS619A5CrRzQhE-_9vUet9-UeemDazMvsiyHaWqdLfDSoXbasrd_q9ewQz2xAQD14c1mf8u1PgujsEPXLZNPtB1n_3TCG4QMnLD7LD3O9JJTsAmMQfvwEwWWj8raVAKFLxQeYqpLSClKca3nRT3xNd8X7_TYqAdr0qlrgCbP-06bNShMOtRs7z-MvUzWXxP5NAZft2QU5j-ynaQadEiAsJEpE6zLxtYfvgiZxhBNmxLizcpor4piC0TOE8R360fFH_4zQsgQvdZDMQNkvKP6skrc2C788rVcuQY3AC42AMDUuLqy9k3JdVYEpZRjVwwjAlzYpdioCdBvMmDvLKP1oFCbz8oaFCGprzX1bCJaSTKJMzaAEz8LD8yenEZelAjv3WO75bO8Eade2tHwRiZYajiMFFSkbJr820XDsMlCB6qTT7yk1xtQY1M22tEBtJ9Riiul3YkcT5bsrgfU301a_w7Yg6lQ7guRsXAnevFLDGkJijTqughSGm-4fK6GvQKtO7Xj1Bas67hFCxA1NvviMzfwLoZCdtOUX8ZDW_mlFFwnW_UE2AxES-ARwXymVM0vArC3mnjR7Q6-Mq9YT6C5ZjdbtuyUBu6hsoce_hxnumyBvRHizwl66eSLgIRElw02mp0hfGPUEv9msZGYegCjeSvoAN2dAkC94FRI3wLDQkDfO8boo6IJB-dSDlowbNCHBhNg65TgEFntrl-ewTvahepRUv6TMuLT8LhXl1LzWsg8F5OvS9DZ0c2V1Wl5CFddwwANNkssZ9OjL5keUOKg20xhlgq7jiR6TzS7Btubot8PulycJ4ZEWWMlzL4QJACLZ31ne1MwTTLe8rdz0yC0TeVu-emY06pANVBY2eX6XTT7jkjt8KcGHRteoqqKiMbp00gPjAnInTLeHiPtou2JgOGauLnudTGMseZM9zuCTLng58Odce9PeVlpOaQaorh30cQ6CsMlK_dAtQnbD4w4wT1y_GeJl5764-8cBrAEoD_YNEZnkb-8Bx36c1EMGdlT8Kxa492hru3m3tNyDRFYKuNYcK492atYt1ctqZ-kFLNDE6d1PB7thJTGYVJoqW88iaQFolm_kJBSJ6wHR4l7EzV0W_kpZ5faKqefr-YljEh8Gix9_P9eA8l8Vam05C4jfL7XkQxQR48Iquq5XpOD_f-DFfrBZfR9twH2owZdgdaudXIwwFWDBo2lxVEdQL3R_sQ6lAEvoYc7ZikembiKMMgmoh8IPZwNy-4m_piMVtVjU3vDg6NDjizMn7E3e76cj_IC0Pk7OohytYn_AE_4VySnS_TldTI-8EXOpA4bAYEIHyPx0gOm7uMED1K44e82seCJSR9MiaVuafT8BcnqnTmn9w8mQ0fDd8e-sODkO4YivJOh_M0Kb0N29JikEp6v5QBR1LEoQyiNY5RPULIlVuzrvUUjNfqrTHHw1JkDS-7h-ZgeaJcwxUq8eWDGGds7rV3cEhfKRDJsX77xiYqcndk510aVBBsCiUyM9kvV8HSB52GUyYD2rzuzIhXmqY9jrB0CDC3Pf2JJFxYKdF9Wv9zC6zFKr8bnEvdR5lla9_YygGLtJYP6ct8log2J945xTkIEgHPTPX4Y5cW-MWaq7J_0NnZf3yJoaw3QInx2pTF_zVO1hgiHxGh3p7CRvIu9to7KzVWaNJVuItnqwafj7PijkFu6QyF7oByOcABlaZ2dKb7TJOLiv7vrxZlRip6r6L9_1thk_J8nQfc7Nv5TJuXW7X_0PT78v5p0306Xa2pfVJxa877rO72yS0-lSY6U3fjY0kTy_C1x8j3xD3jhJPGal9S_ySct7bjLFlmwQzIu4gHzSLctmaiPIyy-tadkCpcaF_vI-vsgsJPIwE6QHq8hq8EHkQasqVg_nsK1136aUE3flcz766VT3a-8DgBUTK0oUaYf4BLS2zGIdgf-t4ipZ_35hmrZ1Sqb_fWd9RKFiDf92lGtogw1Bg3x2qYkJDFjnHIH0UH9uDY_Pivrj37iyw8fVpXHa4ujeXNDsbbpjgJz5lBIhS0YUeKwbTs8KPu5gFCihIVcm0p7oLeJdCHxqhs6hWnuecFDgYyMpxu3wlWSSONyILO7A2cRly-Ziy4a2mKCVsqt7SEXL68NMYAMXmoZ-6Pnk1PGIzxsySg5K6UPl_gCFG8zK0Y9UA0j0C0LXu4sdgtg-bX_w2LWp5dHKyschgNQz6qsY9iFA8PfR7kH8MNlVeKno64-TfgQTItOOFZFEurHKFVzhoBjJOd3AZsQ2tL85Db05bV6GES1x_YduaMwhTFw9u3A_xYjodgE2vYgfRNFrKQjdB_AcWfnyd7zT1dHhkllD01owaxPDi-tInstnFes-PAJ0XZrHrBE1UFtongzTEFrS1zEXmPJqsV1YInem14vb4SgNra2KUwHG-cKwBw-_MHKyY2OIV2nVCWbddnil2VfWKcInZClXsI_IoqXhfz57PUJL2Q871-svyqcRprVZvvQMoQdDqOVIcF5vUtS8QdaOe61CwIu9aMsvRO6vj-7UEGRhcbRtG4ZJMv1YY80dTvk6tyWqTVIjJt7jLwgW7sqHMTOTfJtLYMx9hSQ=="
+      },
+      {
+       "id": "msg_0ceb51d4e43831ab006af3fd092c9087d19297d64603cb68a6",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1f / 分辨率\n        :mod (s1z / 最佳)\n        :possessor (s1k / 宽屏\n            :refer-person 3rd\n            :refer-number singular\n            :quant 21.5\n            :unit (s1y / 英寸)\n            :mod (s1b / 比例\n                :mod (s1p / 屏幕)\n                :quant (s1q / quotient-of\n                    :op1 16\n                    :op2 9))))\n    :ARG2 (s1m / product-of\n        :op1 1920\n        :op2 1080)\n    :aspect state)",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

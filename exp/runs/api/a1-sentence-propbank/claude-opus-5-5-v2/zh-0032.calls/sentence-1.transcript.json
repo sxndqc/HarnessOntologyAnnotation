@@ -1,0 +1,141 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see sentence-1.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7744
+    },
+    "cache_creation_input_tokens": 7744,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 108,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2676
+    },
+    "cache_creation_input_tokens": 2676,
+    "cache_read_input_tokens": 7744,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 862,
+    "output_tokens_details": {
+     "thinking_tokens": 363
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 1 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n1\t中国 和 日本 就 福岛 核电站 废水 排海 问题 达成 共识 ， 中国 将 参与 独立 国际 监测 ， 并 逐步 恢复 日本 水产 进口\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "id": "toolu_011LWmPB2j8mKooTbk56Dhrs",
+     "input": {
+      "lemmas": [
+       "达成",
+       "参与",
+       "监测",
+       "恢复",
+       "进口",
+       "排",
+       "共识",
+       "独立"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_011LWmPB2j8mKooTbk56Dhrs",
+     "content": "## 达成\n\n### 达成-01\n\n- ARG0: parties\n- ARG1: agreement, consensus, etc.\n\nExample 1: 城市 北 出口 道路 建设 工程 已 与 香港 泰华 公司 达成 建设 协议\n- ARG0-CRD: 城市 北 出口 道路 建设 工程\n- ARG0-CRD: 与 香港 泰华 公司\n- ARG1: 建设 协议\n- ARGM-ADV: 已\n- rel: 达成\n\n## 参与\n\n### 参与-01\n\n- ARG0: participant\n- ARG1: activity\n\nExample 1: 另外 ， 日本 进出口 银行 已 与 俄罗斯 签订 合同 ， 参与 俄扎鲁比诺港 扩建 工程 建设 。\n- ARG0: 日本 进出口 银行\n- rel: 参与\n\nExample 2: 法国 从来 没有 参与\n- ARG0: 法国\n- ARGM-ADV: 从来\n- rel: 参与\n\n## 监测\n\n### 监测-01\n\n- ARG0: monitor\n- ARG1: thing monitored\n\nExample 1: 在 *OP* 联合国 自 １９９３年 以来 所 监测 *T*-1 的 １４３ 个 国家 中\n- ARG0: 联合国\n- ARG1: *T*-1\n- ARGM-TMP: 自 １９９３年 以来\n- rel: 监测\n\n## 恢复\n\n### 恢复-01\n\n- ARG0: event\n\nExample 1: 西非 经济 明显 恢复 *PRO* 增长\n- ARG0: 西非 经济\n- ARG0-PRD: *PRO* 增长\n- ARGM-ADV: 明显\n- rel: 恢复\n\nExample 2: 中华 人民 共和国 对 香港 恢复 *PRO* 行使 主权\n- ARG0: 中华 人民 共和国\n- ARG0-PRED: *PRO* 行使 主权\n- rel: 恢复\n\nExample 3: 西非 经济 和 货币 联盟 各 国 的 经济 增长 已 明显 恢复\n- ARG0: 西非 经济 和 货币 联盟 各 国 的 经济 增长\n- ARGM-ADV: 已\n- ARGM-ADV: 明显\n- rel: 恢复\n\n### 恢复-02\n\n- ARG0: restorer\n- ARG1: thing restored\n- ARG2: restored state\n\nExample 1: 联合国 安理会 ７月 底 作出 决定 ， 采取 “ 一切 必要 手段 ” 恢复 *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力 。\n- ARG0: 联合国 安理会\n- ARG1: *OP* *T*-1 被 军人 推翻 *T*-1 的 海地 总统 阿里斯蒂德 的 权力\n- rel: 恢复\n\nExample 2: 三 *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数 要 恢复 到 牲畜 归 户 时 的 水平\n- ARG1: *OP* *pro* 过去 过量 宰杀 *T*-2 的 牲畜 头数\n- ARG2: 牲畜 归 户 时 的 水平\n- rel: 恢复\n\n## 进口\n\n### 进口-01\n\n- ARG0: importer\n- ARG1: thing imported\n- ARG2: entity arg1 is imported from\n\nExample 1: 中国 将 延长 外商 投资 企业 免税 进口 设备 和 原材料 宽限期\n- ARG0: 外商 投资 企业\n- ARG1: 设备 和 原材料\n- ARGM-ADV: 免税\n- rel: 进口\n\nExample 2: 与 此 同时 ， 中国 从 三十多 个 国家 和 地区 进口 技术 和 成套 设备\n- ARG0: 中国\n- ARG1: 技术 和 成套 设备\n- ARG2: 从 三十多 个 国家 和 地区\n- ARGM-ADV: 与 此 同时\n- rel: 进口\n\nExample 3: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物 不 准 进口 或者 出口\n- ARG1: *OP* *T*-1 侵犯 知识 产权 （ 包括 商标 专用权 、 著作权 和 专利权 ） 的 货物\n- rel: 进口\n\nExample 4: 其中 ， 初级 形状 塑料 进口 一百一十万 吨 ， 增长 百分之四十七点七 ， 价值 九点五亿 美元 ， 成为 *OP* *T*-2 今年 以来 中国 最 大 的 单项 进口 商品\n- ARG1: 初级 形状 塑料\n- ARG1-QTY: 一百一十万 吨\n- ARGM-ADV: 其中\n- rel: 进口\n\n## 排\n\n### 排-01\n\n- ARG0: entity described\n- ARG1: position ranked\n\nExample 1: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃 目前 分别 排 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARG0: 维·威廉斯 、 塞·威廉斯 姊妹 和 库尔尼科娃\n- ARG1: 世界 第五 *RNR*-1 、 第二十 *RNR*-1 和 第十三 位\n- ARGM-ADV: 分别\n- ARGM-TMP: 目前\n- rel: 排\n\nExample 2: 广东 的 科技 综合 实力 排 在 上海 、 北京 之后 居 全 国 第三 位\n- ARG0: 广东 的 科技 综合 实力\n- ARG1: 在 上海 、 北京 之后\n- rel: 排\n\n### 排-02\n\n- ARG0: agent\n- ARG1: thing discharged\n\nExample 1: *pro* 每 年 向 太湖 减少 *PRO* 排 磷 一千六百多 吨\n- ARG0: *PRO*\n- ARG1: 磷\n- ARG1-QTY: 一千六百多 吨\n- rel: 排\n\n### 排-03\n\n- ARG0: agent\n- ARG1: entity arranged\n\n### 排-04\n\n- ARG0: agent\n- ARG1: entity excluded\n\n### 排-05\n\n- ARG0: agent\n- ARG1: entity that the agent performs according to\n\n### 排-06\n\n- ARG0: agent\n- ARG1: a line\n\nExample 1: 他 只 要 拿出 这个 卡片 跟 护照 ， 经过 *OP* *pro* 特别 安排 *T*-1 的 通关 ， 不 必 排 *OP* *T*-2 很 长 的 队\n- ARG0: 他\n- ARG1: 很 长 的 队\n- rel: 排\n\n## 共识\n\nNot in PropBank.\n\n## 独立\n\n### 独立-01\n\n- ARG0: theme\n- ARG1: independent of\n\nExample 1: 吉尔吉斯 独立 以后 两 国 关系 发展 顺利\n- ARG0: 吉尔吉斯\n- rel: 独立",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 1\n# sentence level graph:\n(s1a / and\n    :op1 (s1d / 达成-01\n        :ARG0 (s1a2 / and\n            :op1 (s1c / country :wiki \"China\"\n                :name (s1n / name :op1 \"中国\"))\n            :op2 (s1c2 / country :wiki \"Japan\"\n                :name (s1n2 / name :op1 \"日本\")))\n        :ARG1 (s1g / 共识\n            :topic (s1w / 问题\n                :mod (s1p / 排海-00\n                    :ARG1 (s1f / 废水\n                        :source (s1h / 核电站\n                            :place (s1c3 / city :wiki \"Fukushima\"\n                                :name (s1n3 / name :op1 \"福岛\"))))\n                    :aspect process)))\n        :aspect performance)\n    :op2 (s1c4 / 参与-01\n        :ARG0 s1c\n        :ARG1 (s1j / 监测-01\n            :mod (s1d2 / 独立)\n            :mod (s1g2 / 国际)\n            :aspect process)\n        :aspect performance)\n    :op3 (s1h2 / 恢复-02\n        :ARG0 s1c\n        :ARG1 (s1i / 进口-01\n            :ARG0 s1c\n            :ARG1 (s1s / 水产)\n            :ARG2 s1c2\n            :aspect habitual)\n        :manner (s1z / 逐步)\n        :aspect activity))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

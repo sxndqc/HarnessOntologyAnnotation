@@ -1,0 +1,169 @@
+{
+ "model": "gpt-6.1-sol",
+ "effort": "medium",
+ "provider": "openai",
+ "reasoning_effort": "medium",
+ "system": "see sentence-6.prompt.md",
+ "tools": [
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 71,
+    "cache_read_input_tokens": 5121,
+    "output_tokens": 29,
+    "reasoning_tokens": 0,
+    "openai_usage": {
+     "input_tokens": 5192,
+     "input_tokens_details": {
+      "cache_write_tokens": 68,
+      "cached_tokens": 5121
+     },
+     "output_tokens": 29,
+     "output_tokens_details": {
+      "reasoning_tokens": 0
+     },
+     "total_tokens": 5221
+    }
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "gpt-6.1-sol",
+   "usage": {
+    "input_tokens": 630,
+    "cache_read_input_tokens": 5189,
+    "output_tokens": 238,
+    "reasoning_tokens": 70,
+    "openai_usage": {
+     "input_tokens": 5819,
+     "input_tokens_details": {
+      "cache_write_tokens": 627,
+      "cached_tokens": 5189
+     },
+     "output_tokens": 238,
+     "output_tokens_details": {
+      "reasoning_tokens": 70
+     },
+     "total_tokens": 6057
+    }
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: zh-0032, sentence 6 of 6\n\nThe sentence: its number, a tab, then its words separated by spaces.\n\n6\t日本 称呼 核废水 为 “ 处理水 ” ， 中国 称为 “ 核污染水 ”\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "tool_use",
+     "id": "call_NxF1cLDGS3A7SjX1IQ8ozsXs",
+     "name": "propbank_lookup",
+     "input": {
+      "lemmas": [
+       "称呼",
+       "称为"
+      ],
+      "language": "zh"
+     }
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "arguments": "{\"lemmas\":[\"称呼\",\"称为\"],\"language\":\"zh\"}",
+       "call_id": "call_NxF1cLDGS3A7SjX1IQ8ozsXs",
+       "name": "propbank_lookup",
+       "type": "function_call",
+       "id": "fc_0788e5d0e8ee4b8d006af3fcf5479487d19755c32fb7e76911",
+       "status": "completed"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "call_NxF1cLDGS3A7SjX1IQ8ozsXs",
+     "content": "## 称呼\n\n### 称呼-01\n\n- ARG0: agent\n- ARG1: entity arg0 calls\n- ARG2: name arg1 is called\n\nExample 1: 他 用 「 语言流 」 称呼 自己 的 语法\n- ARG0: 他\n- ARG1: 自己 的 语法\n- ARG2: 用 「 语言流 」\n- rel: 称呼\n\nExample 2: 一时 之间 很多 朋友 都 不 称呼 我 的 名字 ， 而 叫 我 「 女 状元 的 爸爸 」\n- ARG0: 很多 朋友\n- ARG2: 我 的 名字\n- ARGM-ADV: 不\n- ARGM-ADV: 都\n- ARGM-TMP: 一时 之间\n- rel: 称呼\n\nExample 3: *OP* 而 *pro* 吃 食 *T*-3 的 便 是 *OP* *T*-2 用 台语 称呼 —— 『 菜头糕 』 的 萝卜糕\n- ARG1: *T*-2\n- ARG2: —— 『 菜头糕 』\n- ARGM-MNR: 用 台语\n- rel: 称呼\n\nExample 4: 反正 *OP* *T*-1 买 *pro* 的 人 也 都 不 问 *pro* *pro* 如何 称呼\n- ARG1: *pro*\n- ARGM-ADV: 如何\n- rel: 称呼\n\n## 称为\n\n### 称为-01\n\n- ARG0: name giver\n- ARG1: name receiver\n- ARG2: name\n\nExample 1: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话 ， 那么 文部 草原 应当 称为 *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARG1: 文部 草原\n- ARG2: *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARGM-CND: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话\n- rel: 称为\n\nExample 2: 防城港 、 钦州 、 北海 和 湛江 ， 被 人们 称为 西南 出海 大 通道 的 “ 龙头 ”\n- ARG0: 人们\n- ARG1: 防城港 、 钦州 、 北海 和 湛江\n- ARG2: 西南 出海 大 通道 的 “ 龙头 ”\n- rel: 称为",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "type": "text",
+     "text": "# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6c / 称呼-01\n        :ARG0 (s6j / country\n            :name (s6n / name :op1 \"日本\"))\n        :ARG1 (s6w / 核废水)\n        :ARG2 (s6t / 处理水)\n        :aspect activity)\n    :op2 (s6c2 / 称为-01\n        :ARG0 (s6z / country\n            :name (s6n2 / name :op1 \"中国\"))\n        :ARG1 s6w\n        :ARG2 (s6w2 / 核污染水)\n        :aspect activity))"
+    },
+    {
+     "type": "openai_items",
+     "items": [
+      {
+       "id": "rs_0788e5d0e8ee4b8d006af3fcf7440c87d1aac363059c94f9db",
+       "summary": [],
+       "type": "reasoning",
+       "content": [],
+       "encrypted_content": "gAAAAABq8_z78T9OmPWCyvX8_IoOMdJRnUfiWP9N4AVNGpYNVJwtcXtyNZlFqq-xetzczf6RTpG3LuXKucK8X989Xu9ul8HPhVEsmrFq0Jg1fzP7lj9bkX1AGxxZ15RDs7mMwxASvwoh_sdCqBEHF3GVyvqI-WLaJmx14YNGaV383lQ6RiOCWpf14jxoylAAShwshpt80kGVXy5QzLSv2srsNfvtmWJwVt8uAecGzApR_JWSUuI2mkywhBdzAj4o_VNTKbWlAyDJddGBepKos3QjffJZpmV5prwir1zzMB_68xIXvK_GRcA_YcT7hbWm2CoO032D6PwlsPqM8tNahQUCnpLApV_n1XMdrb-CR15vYaxiImslvxHf9GpWG1_sc8g2k0fGIURTbwzKyiNzQNhxLqzpVpv8pKofxEHqds70hvdTMdSwlnPpO2MhM6xF2lrZXixI5NfiXDTTeW51DtauSy9zf_Md00C5LclKA9bLLV52zAJxoegxrtKsYzmKyWx0Z436rBkwsugTsrsmTggIJ2ZtrHj_P1JkSdq9Gt67yCe9juC5JOOyPHUvAF3BMUZ8pAkruvUBhigupJVXf94mb_rITOBBraYpCgJPBJ7SExahbks2eS9F0pKScFERkFpt3Yv8y0HVd1-MM63rT9VWCE6N6xQhXABDNMNIitH4f8207u6gFY6kR0UrbksC9gB32tqrOhis9HYH05M1FX81zQOCuKhNmjDGTfGay4GEDupLNe1qI62hl7Pzbr9hdsqSWvu8nM-QHcgnN0bIdCOSwmzEtkSspAsU4VkL5NLfH27MzsYq_tzUQ6XGSAjWO1eaj6_V4XQfN5vHkCwbSHgL-8-XJoblf2ieix7Jq3DpeiWyy3J_pdZnL_Hil-XCLLYs7gubgf89W9REZ7RyuMldu7aSrOTe5HhcGdS3Dw0iam8nE1QkeOdoglVZXIUevhks_MX43xZWiAtCeCZ4OZF1RokFM74_vovLwTTKU4E1DBac8Y5bWG1KobLR_iEBpcLmZDt3GUoeeCN38iERveXoFNXIprJA4SXz8yKDczjpQTGoaefum9EcdAZ0cHQx86mi2Xk92QUcbD9YdR4Rs7HSS9jvXlf52XpOOtyP6JQ7l39ihk7sE3AubSkyauxJ2E-g7zYyV-Cafn0ZFDfHRMGAFn8tuxrdajHcipBeWxM6G4pJ8E5p0tMmjVIAE6y60rf3xN9LQ9h8wAJ59iqF6EX-U-WbWp5dKitA33y1NTyhHlVoqGz4IrygLdNeQZiGoP8rIce2I4roTuk8z1LvnAgk2qJ9jqdW4a3lYkVbmrD7UryQUPB8XsW1c26BTsg7bAiCzYnyjEOAYG4QMqgn-YZM6jAtnzfzEiGiJKlp4ZstvbwLqfxwDrPdezfBoje9U5trOVBCRI7na4pnzv_NpOJ9QN_KYsLIweYf2cyB_pOa5ptV_ON8jZneiZB_GjgLisYs5CGgWKC7RyvH9Wql2ZW_qs-s8QEMcg_ohQZfiVdeUJJ_GLXQT4kVi6IymHforkRq3RRHCbXG_jbmgvPPYIN1Rias-5VcJFNCWTXL-YEmKSPeAPxRzAO17tEwBUSKXrnYkxrcNOtZYuJnCJGrKxioFttCiI8BkMYp0N4ziv0UX9tcirElL100G3dRdADSvi7vdghkv-NjyM1i6lYGBUonpMYRch51gJ59I9c3U3S81BKOK3oNE1PR3Ny0ng1pJDfz8Cs3ewdWIn1oNcb4vWgEvclJ_BlRKKGuVwlZ63FjGjDAP8--Y55b696jid_kr7GINOWyNbGQOcPFwou5hMkclDzJPQfiEY1JoDblr6SL6BDhxaO8SL0BarHglWaQ5j1HAFmqGZjFrpwC8pfugmS9iVbzaDCqjwh7YNeI0jFMwuf7pDCbNB2gUqalhRDxaiEoGdoHgn6BXT1doO0j1mLZ6cUP2-dcCIW8wmFgxPQvKUqZpbgdEy8po0AJ-g7kKxJp0oU7BMviaDs03zknMkh6RP7Myk5SUGPucoYh4NOmD8rnMj4t2Dz33qcadun4BNufFip8P8lGk_RHBG42hvo5_XnvC9cK02MXpgUJKeElfA6sBszbFsdBjHj6w_QcF8YXZRSBgiU_XkKIY0_HcByIhwRbfB_yu4w9hYUerlDh1ovCSXoFqU8x8wEg8-glsT651KHKIU0tz7XqQreNWGkEahAjzPrVovDWrDFnSi3Ei-cmNBqkeRA_XTqymal7_8Ziva8y1vFbK7oRkezyMgBLMWnphES6hbCYl7vT1LiwC37e0ieRj86chR1iCAQgFp74KFI4iaLFiix9laDqh6-LRBMKGpwmZTpnrhlnkuUOYqM3adzxDm5lVyKhTHmo6y-xOIxD04WnZvZxE5qaE3gsx-AHvTRvTsF8woIrgv4bZRnmQvdqkyqxdZYLklYngHYWPycr22h1Zg9tJRmGFlv8Lru1z7QQ-8mmgiTTQ6bWWxK9ZqbiL84NZl3XjKwirHWciav4E6b1GuL80VoAbio0zllN7j0EvFtdv3XO4P3Mr3lqNf4eT0gVrqkeauGwWUnyniiF-3x1Owi6L7wWz9hHPkJhgInhZQ=="
+      },
+      {
+       "id": "msg_0788e5d0e8ee4b8d006af3fcf9d08c87d1a31ad2910dfbea6b",
+       "content": [
+        {
+         "annotations": [],
+         "text": "# ::snt 6\n# sentence level graph:\n(s6a / and\n    :op1 (s6c / 称呼-01\n        :ARG0 (s6j / country\n            :name (s6n / name :op1 \"日本\"))\n        :ARG1 (s6w / 核废水)\n        :ARG2 (s6t / 处理水)\n        :aspect activity)\n    :op2 (s6c2 / 称为-01\n        :ARG0 (s6z / country\n            :name (s6n2 / name :op1 \"中国\"))\n        :ARG1 s6w\n        :ARG2 (s6w2 / 核污染水)\n        :aspect activity))",
+         "type": "output_text",
+         "logprobs": []
+        }
+       ],
+       "role": "assistant",
+       "status": "completed",
+       "type": "message",
+       "phase": "final_answer"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
