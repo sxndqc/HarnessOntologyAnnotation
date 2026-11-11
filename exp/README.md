@@ -18,7 +18,7 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
 
 1. **直接调 API**（`api/<sub>/`）：`run.py api` 用 Messages API 跑 registry，工具在本地执行。
 2. **chat 界面**（`chat/<sub>/`）：`chat/<sub>/prompts/<doc>.md` 是生成好的 prompt，复制到 chat 窗口；回答存成
-   `chat/<sub>/answers/<doc>.txt`，再用 `run.py chat-score` 打分。chat 里没有工具，第二步的资源换成附件：
+   `chat/<sub>/answers/<label>/<doc>.txt`（每个 chat 模型一个目录），再用 `run.py chat-score` 打分。chat 里没有工具，第二步的资源换成附件：
    搜索条件上传完整 guideline；PropBank 条件上传这篇文档每个词在 PropBank 里的全部条目（预先查好）；
    gold 条件上传每句最相似的训练句子（用 `search_annotations` 按每句的实词预先查好，每句 3 条、每篇最多 60 条）。
 3. **Claude Code 的 harness**（`harness/<sub>/`）：每篇文档一个工作目录（`harness/<sub>/TASK.md` + guideline 文件 + 工具命令），
@@ -106,7 +106,7 @@ python3 exp/run.py chat-prompts s1-abridged
 ```
 
 在 chat 窗口里粘贴 `prompts/<doc>.md` 的全文；有附件的子实验同时上传表里列的文件。回答太长被截断时让它继续，
-把各段原样接起来存成 `chat/<sub>/answers/<doc>.txt`（前后多出的说明文字没关系，代码块标记也会被去掉），然后：
+把各段原样接起来存成 `chat/<sub>/answers/<label>/<doc>.txt`（`<label>` 是 chat 模型，比如 `claude-ai`、`chatgpt`）（前后多出的说明文字没关系，代码块标记也会被去掉），然后：
 
 ```bash
 python3 exp/run.py chat-score s1-abridged --label claude-ai-opus     # → runs/chat/s1-abridged/claude-ai-opus/

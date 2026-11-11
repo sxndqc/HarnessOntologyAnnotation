@@ -225,11 +225,12 @@ def gold_attachment(doc, search, per_sentence=3, limit=60):
 
 
 def answers_score(sub, label, method="chat"):
-    """Score saved answers: chat/<sub>/answers/<doc>.txt (saved by hand) or harness/<sub>/answers/<label>/<doc>.txt
+    """Score saved answers: chat/<sub>/answers/<label>/<doc>.txt (saved by hand; or answers/<doc>.txt) or
+    harness/<sub>/answers/<label>/<doc>.txt
     (written by harness/claude_code.py, with <doc>.meta.json) -> runs/<method>/<sub>/<label>/."""
     base = os.path.join(EXP, method, sub, "answers")
-    if method == "harness":
-        base = os.path.join(base, label)
+    if method == "harness" or os.path.isdir(os.path.join(base, label)):
+        base = os.path.join(base, label)      # answers/<label>/<doc>.txt (chat: one folder per chat model)
     out_dir = os.path.join(RUNS, method, sub, label)
     if not any(os.path.exists(os.path.join(base, d["doc"] + ".txt")) for d in DOCS):
         raise SystemExit("no answers in %s (save each answer as <doc>.txt there)" % base)
