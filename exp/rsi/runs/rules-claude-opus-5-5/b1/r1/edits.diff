@@ -1,0 +1,117 @@
+--- before
++++ after
+@@ -108,8 +108,10 @@
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+ `(m / monetary-quantity :quant 500 :unit (d / dollar))`. Ordinals: `(o / ordinal-entity :value 2)`.
+-Numbers are written as digits. In Chinese, a real measure word is a unit (三杯水 → `水 :quant 3 :unit 杯`);
+-an ordinary classifier (个, 本, 只, 位) is dropped (三本书 → `书 :quant 3`).
++Numbers are written as digits. In Chinese, a numeral + measure word or classifier keeps the classifier as the unit,
++ordinary classifiers included (个, 本, 只, 位, 份, 面): 三杯水 → `水 :quant 3 :unit 杯`, 一本书 → `书 :quant 1 :unit (s / 本)`.
++A demonstrative + classifier (这个, 那份) also keeps the classifier as `:unit`.
++The title marks of a work or publication name (《 and 》) are part of the name: `:op1 "《"`, then the words, then a last `:opN "》"`.
+ 
+ ### 2.3 Abstract predicates (non-verbal clauses)
+ 
+@@ -141,10 +143,12 @@
+ ### 2.5 Discourse relations (combining clauses)
+ 
+ - coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+-- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而) `but-91`;
+-- concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
++- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `(b / but-91 :ARG1 ... :ARG2 ...)`.
++  These frames take `:ARG1`/`:ARG2`, never `:op1`/`:op2`. A time word or adverbial of a clause attaches to that
++  clause's event, never to the discourse frame;
++- concession `:concession`, condition `:condition`, reason `:reason` (for 由于/因为 phrases giving the reason for a state, an action or a judgement), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+-- *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:cause`; *in order to* (为了)
++- *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; *in order to* (为了)
+   → `:purpose`; *although* (虽然, 尽管) → `:concession`.
+ 
+ ### 2.6 Multi-word expressions
+@@ -169,11 +173,39 @@
+ Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+ UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
+ 
++### 3.1 Attachment rules (frequent errors)
++
++- Every adverb that carries meaning (*already, still, also, all/both*; 已经, 仍, 也, 都, 均) gets its own node,
++  attached as `:mod` to the predicate it scopes over, not to a noun.
++- A modifier that applies to each of several coordinated nouns is placed on each conjunct with the same variable
++  (re-entrancy), not once on the `and` node.
++- Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
++  noun compound or a nominal event; in a compound "N1-verb N2", the role is filled by the compound's own noun.
++- "Known/famous for X" (…而闻名, 以…著称): the famous entity is the `:ARG1` of the fame predicate, attached as
++  `:ARG1-of` on that noun, and the X clause is `:reason` of it, with that noun as its agent. When such a clause
++  follows "A is a B", attach it inside the B noun, not as a separate conjunct.
++- Role choice for noun modifiers: a country, city or place modifying a noun → `:place`; a channel or medium
++  (TV, radio, network, print) → `:medium`; an edition, section or component of a whole → `:part-of` (not
++  `:possessor`).
++- Comparatives and superlatives use `have-degree-91`: *the most P X* → `(x / X :ARG1-of (h / have-degree-91
++  :ARG2 (p / P) :ARG3 (m / most)))` (Chinese: `:ARG3 (m / 最)`); *more P than Y* adds `:ARG4 Y`. Use `:degree`
++  only for plain intensifiers (very, too; 很, 非常, 太).
++- A property word or chengyu used attributively ("absurd content", X 的 Y with X a property) is a `:mod` concept,
++  not an event: it gets no aspect and no temporal or modal links.
++
+ ## 4. Attributes
+ 
+ ### 4.1 Aspect (`:aspect`, on every event)
+ 
+-Use the coarse values:
++Decide in this order before using the table:
++1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
++   reporting, compiling, broadcasting)? → `habitual`. This holds whatever the tense, and also under an
++   aspectual verb (continue, stop).
++2. Does a completive or aspectual predicate (*has already stopped, has ended*) describe a present condition? → `state`.
++3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process`.
++4. Is it a verb of naming or labelling (*is called X*, 被称为)? → `performance`.
++
++Otherwise use the coarse values:
+ 
+ | value | use for |
+ |---|---|
+@@ -190,7 +222,9 @@
+ ### 4.2 Polarity, mode, degree, quantity
+ 
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+-  then negative (5.2).
++  then negative (5.2). A negator fused into a verb (未经-type verbs: "without having undergone") gives no
++  `:polarity`. The verb is `full-negative` in the modal layer. Events nested under it do not inherit the
++  negation; check the gold data for their strength.
+ - `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+   `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+ - `:degree` for intensifiers and downtoners (*very, too, most*; 很, 非常, 太, 最) as a concept:
+@@ -211,9 +245,20 @@
+ - `:before` (child before parent), `:after` (child after parent), `:overlap` (child and parent overlap),
+   `:contained` (child inside parent), `:contains`, `:depends-on` (between time nodes).
+ - Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
+-- Time expressions first: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
+-  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague one
+-  (*nowadays*, 现在) on `past-reference` / `present-reference` / `future-reference`.
++- **Which nodes get a temporal parent.** Only real eventive predicates and specific time expressions. Do NOT
++  give a temporal parent to:
++  - copular or identity predicates (`identity-91`, `have-role-91` of a defining "A is a B" sentence);
++  - states used as attributes inside a noun phrase (*famous X*, a relative-clause state);
++  - property modifiers;
++  - vague deictic time words (*now, currently, nowadays*, 现在, 目前, 当前).
++- Precision counts as much as recall: when a link is not clear, leave it out.
++- Time expressions: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
++  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`.
++- **Within a sentence, chain the events.** Pick one anchor event (usually the main eventive predicate) and link
++  the other events of the sentence to it: `:overlap` for simultaneous states, `:contained` for a state or event
++  inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
++  earlier sentence's event. For the main event of a sentence describing the present situation, the gold data
++  often uses `(document-creation-time :depends-on e)`; check with `search_annotations`.
+ - Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
+   (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+   `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+@@ -249,7 +294,8 @@
+ - `(earlier :same-entity later)`: two mentions of the same entity — a pronoun and its antecedent, a repeated
+   name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+   link entity nodes, never `name` nodes.
+-- `(earlier :same-event later)`: two mentions of the same event.
++- `(earlier :same-event later)`: two mentions of the same event instance, with the same participants. Two
++  different events of similar meaning (e.g. two different kinds of stopping) are not linked.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+ 

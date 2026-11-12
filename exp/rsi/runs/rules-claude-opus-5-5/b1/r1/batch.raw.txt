@@ -1,0 +1,158 @@
+I've annotated all 5 sentences, followed by the document-level relations. Some choices were judgement calls, and the main ones are below.
+
+- **未经 ("did not undergo", sentence 2):** I found it neither in PropBank nor in the gold examples I could see, so it is `未经-00`. Following the guidelines, it has no `:polarity -` but is `full-negative` in the modal layer. I gave the 查证 (fact-checking) event under it `full-affirmative` from the author; I couldn't confirm that choice.
+- **闻名 ("famous for", sentence 1):** PropBank makes the famous entity `:ARG0`, but the guidelines say to make it `:ARG1`, so I used `:ARG1-of` on 小报. The reporting clause is its `:reason`.
+- **Aspect:** 发行 (publishing) and 报导 (reporting) are `habitual` because they are the paper's routine work; 综合 (compiling) is too, even though it has 了. "Has already stopped" (停止, 停刊) is `state`. 称为 ("is called") is `performance`, as the rule for naming verbs says. I made 拥有过 ("once had") `performance` because of 过, though "own" could also be read as a state.
+- **"Most creative in American history" (sentence 5):** This uses `have-degree-91`, with 最 as `:ARG3` and "American history" as `:ARG5` (the set compared within).
+- **Words I didn't treat as events:** 恶搞 ("spoof") is a `:mod` on 新闻 (news), not an event. 都会 ("urban", two words in the input) is a single `:mod` concept on 传奇 (legend).
+- **Coreference:** All mentions of the paper form one chain: the name in sentence 1, 该周报 in 2, 3 and 5, and the name in 4. I did not link sentence 1's "stopped publishing" to sentence 4's "stopped print publication" as the same event, because it wasn't clear they are one.
+- **Time links:** I left out 目前 ("currently") and the 查证 event, as the guidelines advise when a link is vague.
+
+# ::snt 1
+# sentence level graph:
+(s1i / identity-91
+    :ARG1 (s1p / publication
+        :wiki "Weekly_World_News"
+        :name (s1n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》"))
+    :ARG2 (s1x / 小报
+        :quant 1
+        :unit (s1x2 / 份)
+        :ARG1-of (s1x3 / 停止-01
+            :ARG1 (s1x4 / 发行-01
+                :ARG1 s1x
+                :aspect habitual)
+            :mod (s1x5 / 已经)
+            :aspect state)
+        :place (s1c / country
+            :wiki "United_States"
+            :name (s1n2 / name :op1 "美国"))
+        :mod (s1x6 / 超市)
+        :ARG1-of (s1x7 / 闻名-01
+            :reason (s1x8 / 报导-01
+                :ARG0 s1x
+                :ARG1 (s1a / and
+                    :op1 (s1x9 / 奇闻)
+                    :op2 (s1x10 / 轶事)
+                    :op3 (s1x11 / 传奇
+                        :mod (s1x12 / 都会))
+                    :op4 (s1x13 / 新闻
+                        :mod (s1x14 / 恶搞)))
+                :aspect habitual)
+            :aspect state))
+    :aspect state)
+
+# ::snt 2
+# sentence level graph:
+(s2a / and
+    :op1 (s2x / 综合-01
+        :ARG0 (s2x2 / 周报
+            :mod (s2x3 / 该))
+        :ARG1 (s2a2 / and
+            :op1 (s2x4 / 新闻
+                :mod (s2x5 / 各式各样)
+                :mod (s2x6 / 奇怪))
+            :op2 (s2x7 / 专栏
+                :mod s2x5
+                :mod s2x6))
+        :aspect habitual)
+    :op2 (s2x8 / 未经-00
+        :ARG1 (s2x9 / 内容
+            :quant (s2x10 / 许多)
+            :subset-of s2a2)
+        :ARG2 (s2x11 / 程序
+            :mod (s2x12 / 一般)
+            :mod (s2x13 / 查证-01
+                :ARG1 (s2x14 / 新闻)
+                :aspect process))
+        :mod (s2x15 / 都)
+        :aspect state))
+
+# ::snt 3
+# sentence level graph:
+(s3x / 拥有-01
+    :ARG0 (s3x2 / 周报
+        :mod (s3x3 / 该))
+    :ARG1 (s3x4 / 节目
+        :quant 1
+        :unit (s3x5 / 个)
+        :mod (s3x6 / 电视)
+        :ARG1-of (s3x7 / 属-02
+            :ARG0 s3x2
+            :aspect state))
+    :mod (s3x8 / 也)
+    :mod (s3x9 / 曾经)
+    :duration (s3x10 / 短暂)
+    :aspect performance)
+
+# ::snt 4
+# sentence level graph:
+(s4b / but-91
+    :ARG1 (s4x / 停刊-01
+        :ARG0 (s4x2 / 纸本
+            :part-of (s4p / publication
+                :wiki "Weekly_World_News"
+                :name (s4n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》")))
+        :mod (s4x3 / 已经)
+        :temporal (s4x4 / 目前)
+        :aspect state)
+    :ARG2 (s4x5 / 继续-01
+        :ARG1 (s4x6 / 发行-01
+            :ARG0 s4p
+            :ARG1 (s4x7 / 网络版
+                :part-of s4p)
+            :aspect habitual)
+        :mod (s4x8 / 仍)
+        :aspect activity))
+
+# ::snt 5
+# sentence level graph:
+(s5x / 称为-01
+    :ARG1 (s5x2 / 周报
+        :mod (s5x3 / 该))
+    :ARG2 (s5x4 / 报纸
+        :ARG1-of (s5h / have-degree-91
+            :ARG2 (s5x5 / 创意)
+            :ARG3 (s5x6 / 最)
+            :ARG5 (s5x7 / 历史
+                :mod (s5c / country
+                    :wiki "United_States"
+                    :name (s5n / name :op1 "美国")))))
+    :reason (s5x8 / 内容
+        :mod (s5x9 / 荒诞不经)
+        :possessor s5x2)
+    :aspect performance)
+
+# document level relations:
+(d / document
+    :temporal ((document-creation-time :before s1x3)
+               (s1x3 :before s1x4)
+               (document-creation-time :before s1x8)
+               (document-creation-time :before s2x)
+               (s2x :overlap s2x8)
+               (document-creation-time :before s3x)
+               (s3x :overlap s3x7)
+               (document-creation-time :overlap s4x)
+               (s4x :overlap s4x5)
+               (s4x5 :overlap s4x6)
+               (document-creation-time :overlap s5x))
+    :modal ((root :modal author)
+            (author :full-affirmative s1i)
+            (author :full-affirmative s1x3)
+            (author :full-affirmative s1x4)
+            (author :full-affirmative s1x7)
+            (author :full-affirmative s1x8)
+            (author :full-affirmative s2x)
+            (author :full-negative s2x8)
+            (author :full-affirmative s2x13)
+            (author :full-affirmative s3x)
+            (author :full-affirmative s3x7)
+            (author :full-affirmative s4x)
+            (author :full-affirmative s4x5)
+            (author :full-affirmative s4x6)
+            (author :full-affirmative s5x)
+            (author :full-affirmative s5h))
+    :coref ((s1p :same-entity s2x2)
+            (s2x2 :same-entity s3x2)
+            (s3x2 :same-entity s4p)
+            (s4p :same-entity s5x2)
+            (s1c :same-entity s5c)))
