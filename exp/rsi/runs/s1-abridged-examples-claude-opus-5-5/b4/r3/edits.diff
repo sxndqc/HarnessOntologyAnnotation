@@ -1,0 +1,71 @@
+--- before
++++ after
+@@ -52,7 +52,7 @@
+ `(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+ Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. A middle dot in a transliterated name is its own `:opN` (格内洛索·波普 → `:op1 "格内洛索" :op2 "·" :op3 "波普"`).
+-In Chinese names keep the title brackets 《 》 as their own `:opN` (《世界新闻周报》 → `:op1 "《" :op2 "世界" ... :opN "》"`). Do not add `:wiki` in Chinese documents. A 「 」 headline right after 一篇/篇 or an article noun (新闻, 文章, 标题) is `(publication :name (name :op1 "「" … :opN "」"))`, one `:opN` per word, punctuation included, with `:quant 1 :unit (篇)` after 一篇; no inner events, no `:quote`, no modal or temporal triples; after a common noun: `(新闻 :ARG1-of (identity-91 :ARG2 (publication …) :aspect state))`. A 「…」 that is the direct object of a reporting verb (报导, 说, 称, 指) with no such noun is reported content: a full clause (events, arguments, aspect, temporal and modal triples), each event `:quote <report>`. A named event with a year (2000年总统大选) is `(event :name (name :op1 "2000" :op2 "年" :op3 "总统大选"))`, not a date-entity; a following 时 adds no node. A named institution is one name (美国参议院 → `(building :name (name :op1 "美国" :op2 "参议院"))`). A country or place name that modifies a noun (美国小报) is `:place`, not `:mod`. Do not corefer a repeated country name that is only such a modifier. In Chinese documents a named human is `individual-person`, not `person` (`(individual-person :name (name :op1 "格内洛索" :op2 "·" :op3 "波普"))`); keep `person` for pronouns and unnamed people.
++In Chinese names keep the title brackets 《 》 as their own `:opN` (《世界新闻周报》 → `:op1 "《" :op2 "世界" ... :opN "》"`). Do not add `:wiki` in Chinese documents. A 「 」 headline right after 一篇/篇 or an article noun (新闻, 文章, 标题) is `(publication :name (name :op1 "「" … :opN "」"))`, one `:opN` per word, punctuation included, with `:quant 1 :unit (篇)` after 一篇; no inner events, no `:quote`, no modal or temporal triples; after a common noun: `(新闻 :ARG1-of (identity-91 :ARG2 (publication …) :aspect state))`. A 「…」 that is the direct object of a reporting verb (报导, 说, 称, 指) with no such noun is reported content: a full clause (events, arguments, temporal and modal triples). After 报导, `:quote` goes on the 报导 node itself (pointing to itself), none on the content events; after 指/宣称/说, each content event gets `:quote <report>`. A named event with a year (2000年总统大选) is `(event :name (name :op1 "2000" :op2 "年" :op3 "总统大选"))`, not a date-entity; a following 时 adds no node. A named institution is one name (美国参议院 → `(building :name (name :op1 "美国" :op2 "参议院"))`). A country or place name that modifies a noun (美国小报) is `:place`, not `:mod`. Do not corefer a repeated country name that is only such a modifier. In Chinese documents a named human is `individual-person`, not `person` (`(individual-person :name (name :op1 "格内洛索" :op2 "·" :op3 "波普"))`); keep `person` for pronouns and unnamed people.
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+@@ -119,7 +119,7 @@
+ `:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
+ `:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+ 
+-- Chinese adverbs are concepts, not only aspect cues. 已经, 都 and 其中 → `:mod (<word>)`; 也 only as the sole adverb of a simple clause; no node for 甚至, 还, 就, 仍 beside 继续, or 都 in 都以…为目的; 靠 X V → `V :reason X`, no 靠 node; 曾经 → `:temporal (曾经)`. A medium (电视, 网络) is `:medium`.
++- Chinese adverbs are concepts, not only aspect cues. 已经, 都 and 其中 → `:mod (<word>)`; 也 whenever it is the clause's only adverb (also after a 为了 clause); no node for 甚至, 还, 就, 仍 beside 继续, or 都 in 都以…为目的; 靠 X V → `V :reason X`, no 靠 node; 曾经 → `:temporal (曾经)`. A medium (电视, 网络) is `:medium`.
+ - A modifier shared by coordinated nouns goes on each conjunct by reentrancy, never on the `and` node.
+ - Do not add arguments (agents, possessors, organizations) that the text does not express. Never re-use a participant from elsewhere in the sentence as an unexpressed agent or possessor: every re-entrancy needs a pronoun or an overt word. Exception: the overt subject of a control or aspectual verb (继续, 停止, 开始, 想, 打算) is also `:ARG0` of the embedded event or nominal (它停止了它的发行 → 发行 `:ARG0` 它). 旗下 is `:mod (旗下)`, not a possessor. Do not fill the subject of a later clause with an entity from an earlier clause (…，不过仍继续发行网络版: 发行 has no `:ARG0`).
+ - An edition, version or part of a publication or organization (纸本, 网络版, 分部), or its content or article (内容, 一篇新闻), takes `:part-of` its whole, not `:possessor` — but only when the whole is written with it (《…》的纸本). A bare 网络版 gets no `:part-of`.
+@@ -156,7 +156,7 @@
+ | `performance` | a process that ended and reached its result: completed past events (*denied*, *was arrested*, 了, 过) |
+ | `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |
+ 
+-Aspect cues: a publication's or institution's own recurring verbs (发行, 报导, 综合, 印刷) used as predicates are `habitual`, even with 了, unless one occasion or article is given (time clause, 一篇, one headline → `performance`); this cue does not extend to other verbs. A relative clause describing what a newly founded thing was designed to do (容纳…文章的版面) is `process`. A purpose event (为/为了 X, `have-purpose-91 :ARG2`, `:purpose`) is `activity`, not `performance`, even when it is modally full-affirmative. 已经 + 停止 or another end verb is `state` only inside a relative clause that describes an entity (已经停止发行的小报); as the main predicate, 已经 + an end verb (已经停刊) is `performance`. Passive naming (被称为) and a past claim (宣称) are `performance`. Possession and other stative verbs (拥有, 有, 属, 是) stay `state` even with 过, 了 or 曾经, and even when limited by 短暂. An event nominal that is the object of 停止/开始 (它的发行) is `process` (no habitual). 生存, 存在 → `state`; an ongoing activity noun (活动) → `activity`. A negated event (未, 没) never gets `performance`; use `process` when its type cannot be told.
++Aspect cues: a publication's or institution's own recurring verbs (发行, 报导, 综合, 印刷) used as predicates are `habitual`, even with 了, unless one occasion or article is given (time clause, 一篇, one headline → `performance`); this cue does not extend to other verbs. A relative clause describing what a newly founded thing was designed to do (容纳…文章的版面) is `process`. A purpose event (为/为了 X, `have-purpose-91 :ARG2`, `:purpose`) is `activity`, not `performance`, even when it is modally full-affirmative (except the clause-initial 为了 have-reason-91 case of 2.5). 已经 + 停止 or another end verb is `state` only inside a relative clause that describes an entity (已经停止发行的小报); as the main predicate, 已经 + an end verb (已经停刊) is `performance`. Passive naming (被称为) and a past claim (宣称) are `performance`. Possession and other stative verbs (拥有, 有, 属, 是) stay `state` even with 过, 了 or 曾经, and even when limited by 短暂. An event nominal that is the object of 停止/开始 (它的发行) is `process` (no habitual). 生存, 存在 → `state`; an ongoing activity noun (活动) → `activity`. A negated event (未, 没) never gets `performance`; use `process` when its type cannot be told.
+ 
+ 
+ 
+@@ -249,7 +249,7 @@
+ - Copular root (5.1): 是…已经停止发行的小报，以报导…而闻名 → `(document-creation-time :before 发行) (发行 :overlap 停止) (闻名 :contained 发行) (发行 :overlap 报导)`; modal `(author :full-affirmative identity-91)`.
+ 
+ 
+-- 曾经 + 过 (4.1, 5.1): 也曾经短暂的拥有过一个节目 → `(拥有-01 :temporal (曾经) :aspect state)`, `(document-creation-time :before 拥有) (拥有 :overlap …)`; 曾经 has no temporal parent.
++
+ - Negation (4.2): 都未经一般的新闻查证程序 → `(经-01 :mod (都) :aspect process)` without `:polarity`; modal `(author :full-negative 经) (author :partial-affirmative 查证)`.
+ 
+ 
+@@ -257,9 +257,9 @@
+ 
+ 
+ 
+-- Clause links (2.5): 因为 X，为 Y，于是 Z → `(have-reason-91 :ARG1 (have-purpose-91 :ARG1 创立 :ARG2 运用 :aspect state) :ARG2 改为 :aspect state)`; temporal `(创立 :overlap 运用) (创立 :before 改为)`.
+-
+-- 改为 (3): 小报《…》将由黑白版面改为彩色版面 …不符合《…》标准 → `(改为-01 :ARG1 (版面 :part-of (s7n / newspaper :name … :ARG1-of (identity-91 :ARG2 (小报 …))) :mod (黑白)) :ARG2 (版面 :mod (彩色)))`, no `:ARG0`; later `(标准 :possessor s7n)`.
++
++
++
+ 
+ - Roles (3): 黑白印刷也成了该刊的特色 → `(成-01 :ARG0 (印刷-01 :manner (黑白) :aspect habitual) :ARG1 (特色 :poss… (刊 :mod (该))))`; temporal from previous sentence's main event.
+ 
+@@ -267,9 +267,9 @@
+ 
+ 
+ 
+-- 虽然…不过 (2.5): → `(but-91 :ARG1 (and :op1 宣称 :op2 (identity-91 :ARG1 标语 :ARG2 报导)) :ARG2 (identity-91 :ARG1 (目的 :purpose-of 报导) :ARG2 (博君一笑)))`; no modal triple on but-91/and.
++
+ - Quote (5.2): 宣称其报导都是真实的 → `(have-mod-91 :quote s12x …)`, `(author :full-affirmative have-mod-91) (s12n :full-affirmative have-mod-91)`, likewise each content 报导; slogan → `(identity-91 :aspect state)`.
+-- 被指 (5.1): 被指与X有暧昧关系，后来领养 → `(consecutive :op1 (有-03 :quote 指) :op2 (领养 :quote 指))`, `(指 :overlap 有) (有 :after 领养)`, conceiver = the `and` subject.
++
+ 
+ 
+ - Pronoun (2.4): 他们的报导…他们的标语 → `(报导-01 :aspect habitual)`, `(标语 :possessor s12n)`; next sentence 他们 → `(s12n :same-entity s13p)`.
+@@ -278,3 +278,7 @@
+ - Title (2.2): 刊登一篇「苏联复制…」 → `(刊登-01 :ARG2 (publication :name (name :op1 "「" :op2 "苏联" … "」") :quant 1 :unit (篇)))`, no events inside.
+ - Adjective (2.1): 内容虽然荒唐 → `(荒唐-01 :ARG0 (内容 :part-of 周报) :aspect state)`.
+ - Report (5.1, 5.2): 指柯林顿1992年靠外星人背书当选 → `(当选-01 :ARG0 柯林顿 :reason (背书-00 :ARG0 外星人))`, `(指 :before 当选)`, `(刊 :full-affirmative 指) (author :full-affirmative 当选)`.
++
++- 报导「…」 (2.2, 3): 报导「外星人支持布什当总统」 → `(报导-01 :quote <itself> :ARG1 (支持-01 :ARG0 (外星人) :ARG1 (当-02 :ARG0 布什 :ARG1 (总统))))`; 当 no aspect/modal; a later 外星人 is a new node.
++- 为了 (2.5): 为了讽刺…，他们也…报导 → `(have-reason-91 :ARG1 (报导-01 :mod (也)) :ARG2 (讽刺-01 :ARG0 他们 :aspect performance))`; 有能力点出 → `点出 :ARG0 编辑`.
++- V+N (2.1): 合成照片 → `(注销 :overlap 合成)`; 复制人 → `复制-01 :aspect process`, no temporal parent; have-example-91 bare.

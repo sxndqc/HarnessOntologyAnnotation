@@ -1,0 +1,298 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see batch.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 525
+    },
+    "cache_creation_input_tokens": 525,
+    "cache_read_input_tokens": 16208,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 184,
+    "output_tokens_details": {
+     "thinking_tokens": 38
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8475
+    },
+    "cache_creation_input_tokens": 8475,
+    "cache_read_input_tokens": 16733,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 256,
+    "output_tokens_details": {
+     "thinking_tokens": 47
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 3,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1812
+    },
+    "cache_creation_input_tokens": 1812,
+    "cache_read_input_tokens": 25208,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 9703,
+    "output_tokens_details": {
+     "thinking_tokens": 6265
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: chinese_umr-0001, sentences 16-20 (5 sentences)\n\nThe document, one sentence per line: the sentence number, a tab, then its words separated by spaces.\n\n16\t2000 年 总统大选 时 ， 该刊 报导 「 外星人 支持 布什 当 总统 」 ， 还 注销 了 双方 握手 的 合成 照片 ， 甚至 指 柯林顿 1992 年 也 靠 外星人 背书 当选 。\n17\t不过 周报 内容 虽然 荒唐 ， 但 其 编辑 也 有 能力 在 标题 点 出 真实 新闻 的 荒谬 与 可笑 。\n18\t如 全世界 在 争论 复制人 的 道德 问题 时 ， 它 在 显著 位置 刊登 一篇 「 苏联 复制 一万个 希特勒 」 。\n19\t为了 讽刺 美国 的 外交 政策 ， 他们 也 报导 了 一篇 「 美国 买通 外星人 去 追杀 宾拉登 」 。\n20\t该刊 的 一篇 新闻 「 12 位 美国 参议员 是 外星人 ！ 」 甚至 被 好事者 贴到 了 美国 参议院 记者团 的 墙上 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS3QUKEAgTGAI4AUIIdGhpbmtpbmcSDB269uX1rdIelWHLRxoMeS6py4UVGI/Bca+fIjDd9lVOHVS0kDkKD1LUbVHIYsW/OGfNI/qAGMju6GLxW0qFjCshNryu8xLZ8LWr1Wcq+gSVGCY/qwJ5LsbseZcluEC9bT1T/FT0QHJ34bamFDaTAURFHsM02FluBOJw30LnXclREovfCyRdXPvlAnV/ZGrVGHA0g+0SfdSeiyXOptBVEItoSvmHixHtMMmSBLyhc/d3Cy8ILXx+egghze0vGuuqj7p3Mj+mEapcUUFfRNfmSmSWVTboTFTTUR9pC0ydJk4koZCfJoq3vb6XFumC0e6EppjrMBF3YUXzzCEsqncnOy7S9GxT9LAOTGp/fHFMM+AzvIjtnfcJIj79qQ+c0Q9BVA8frZgQL+ln4dwSD9POAupOadc4o5yteMSnP0/dUmEIXuPGdCqkcQ+Zi6vA8JmkKrSS6W7VrZ3MiIPl0DMAik/oZ25YNRD41/go+RUS6fYbSBQUzsBMalfRNpl2qL2aWFg/83z32bPMQzAXm4Z0iJaFfYrU4QuVp3mQGD0qrUX1CEZPV7O1yLGkiSoSXcF6+N4iUpklsjFkfmq2vwvw15HC4/DM+ihNqsifEyN/LBRADRMnCGOAxIqMplNnqv1DvSHWnh/YSFygJthkZr87lmufWKAw4y8PzM9mVc2phZYOGKtnQQJ5w+aE2DaNul04MPlGmxCD6IhboVhrsVFiHLAY52lrK7Aqre0iqdcpaCuBfRO1oTDIWy86YDRpWVJAEdlcIEuhqfo3W/kbdJvuJH2OudjmBiZdsEncSSW6O2jmGTXYWmCr1bRHnPoixXCJgsi+ViX0IIvlHFmW9QLIII4mS1JDh28Yh2D6f6ist1S+CXaA4KPAcSGIcPGzQMAHOTM0RsfVm+J5Gp9W3RVjV8SaJUyNELtFkvgr5jVY/2iXa75uTG75BAh8GAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_014ZNTruPeg7xU2UCKps2GsC",
+     "input": {
+      "lemmas": [
+       "报导",
+       "支持",
+       "当",
+       "注销",
+       "握手",
+       "合成",
+       "指",
+       "靠",
+       "背书",
+       "当选",
+       "荒唐",
+       "有",
+       "点出",
+       "点",
+       "争论",
+       "刊登",
+       "复制",
+       "讽刺",
+       "买通",
+       "追杀",
+       "贴",
+       "大选"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_014ZNTruPeg7xU2UCKps2GsC",
+     "content": "## 报导\n\n### 报导-01\n\n- ARG0: reporter\n- ARG1: thing reported\n- ARG2: audience\n\nExample 1: *OP* *T*-1 报导 二十一 县 市 选情 的 队伍\n- ARG0: *T*-1\n- ARG1: 二十一 县 市 选情\n- rel: 报导\n\nExample 2: *pro* 报导 一 位 香港人 *PRO* 在 大陆 「 包 二奶 」\n- ARG0: *pro*\n- ARG1: 一 位 香港人\n- ARG1-PRD: *PRO* 在 大陆 「 包 二奶 」\n- rel: 报导\n\nExample 3: 你 不 报导\n- ARG0: 你\n- ARGM-ADV: 不\n- rel: 报导\n\nExample 4: 「 过去 大家 都 认为 *OP* 高尔夫 选手 *T*-2 最 成熟 、 稳定 的 阶段 在 三十 岁 以後 ， 伍兹 却 颠覆 这样 的 观念 ， 」 民生报 报导 *T*-1\n- ARG0: 民生报\n- ARG1: *T*-1\n- rel: 报导\n\n## 支持\n\n### 支持-01\n\n- ARG0: supporter\n- ARG1: cause supported\n\nExample 1: 国际 社会 积极 支持 图们江 开发\n- ARG0: 国际 社会\n- ARGM-ADV: 积极\n- rel: 支持\n\nExample 2: 今年 以来 ， 联合国 开发 计划署 在 中国 吉林 ， 举行 了 图们江 地区 国际 旅游 会议 ， 对 中国 长白山 冬季 冰雪 旅游 等 项目 积极 支持\n- ARG0: 联合国 开发 计划署\n- ARG1: 对 中国 长白山 冬季 冰雪 旅游 等 项目\n- ARGM-ADV: 积极\n- rel: 支持\n\nExample 3: 这 是 海口 投资 环境 不断 改善 和 政府 鼓励 、 支持 的 结果 。\n- ARG0: 政府\n- rel: 支持\n\nExample 4: 李鹏 总理 还 说 ， 中国 支持 中亚 各 国 之间 以及 它们 同 俄罗斯 之间 *PRO* 保持 友好 关系 。\n- ARG0: 中国\n- rel: 支持\n\nExample 5: *PRO* 给 当地 国会 议员 写信 ， 支持 *pro* 延长 中国 的 贸易 最惠国 待遇\n- ARG0: *PRO*\n- rel: 支持\n\n## 当\n\n### 当-01\n\n- ARG0: agent\n- ARG1: theme\n- ARG2: substitute\n\nExample 1: *pro* 不 许 *PRO* 破坏 草场 ， 以 草 当 柴\n- ARG0-: *PRO*\n- ARG1-: 柴\n- ARG2-: 以 草\n- rel: 当\n\n### 当-02\n\n- ARG0: position holder\n- ARG1: position\n\nExample 1: 一 位 *OP* *T*-3 被 评为 省 “ 优秀 共产党员 ” 和 “ 全 国 劳动 模范 ” 的 刘加坤 当 支部 书记\n- ARG0-: 一 位 *OP* *T*-3 被 评为 省 “ 优秀 共产党员 ” 和 “ 全 国 劳动 模范 ” 的 刘加坤\n- ARG1-: 支部 书记\n- rel: 当\n\n### 当-03\n\n- ARG0: person\n- ARG1: entity arg0 is in front of\n\nExample 1: 有次 ， 北京 国台办 高层 官员 *PRO* 当 著 许多 干部 的 面前 问 了 一 句 ： 你 在 东莞 集结 了 这麽 多 台商 ， 人气 这麽 旺 ， 你 的 心 里 是 怎麽 想 的\n- ARG0-: *PRO*\n- ARG1-: 许多 干部 的 面前\n- rel: 当\n\n### 当-04\n\n- ARG0: entity described\n- ARG1: position arg0 is in\n\nExample 1: *pro* 明明 觉得 自己 犹 当 盛年 ， 人生 尚 未 登顶\n- ARG0-: 自己\n- ARG1-: 盛年\n- ARGM-ADV: 犹\n- rel: 当\n\n### 当-05\n\n- ARG0: agent\n- ARG1: patient\n\nExample 1: 金大中 当时 连 内裤 都 拿 出去 当 了 *-1\n- ARG0-: 金大中\n- ARGM-TMP: 当时\n- ARGM-ADV: 都\n- rel: 当\n\n### 当-06\n\n- ARG0: agent\n- ARG1: entity arg0 consider it to be\n- ARG2: entity considered\n\nExample 1: *pro* 别 太 拿 她 当 回 事\n- ARG0-: *pro*\n- ARGM-ADV: 别\n- ARGM-DGR: 太\n- rel: 当\n\n### 当-07\n\n- (no roles)\n\n## 注销\n\n### 注销-01\n\n- ARG0: agent\n- ARG1: theme\n\nExample 1: \n- ARG1: 该 公司\n- rel: 注销\n\n## 握手\n\n### 握手-01\n\n- ARG0: people shaking hands\n\n## 合成\n\n### 合成-01\n\n- ARG0: agent\n- ARG1: thing arg0 synthesizes\n\nExample 1: 但 *OP* *T*-1 复杂 的 蛇 毒 不 易 *PRO* 合成\n- ARG1: *PRO*\n- rel: 合成\n\n## 指\n\n### 指-01\n\n- ARG0: agent\n- ARG1: thing arg0 uses\n- ARG2: entity arg0 refers to with arg1\n\nExample 1: 我们 并 不 单 指 一 年 的 开支 增长 ， 而 是 以 多 年 期 作 规划\n- ARG0: 我们\n- ARG2: 一 年 的 开支 增长\n- ARGM-ADV: 单\n- ARGM-ADV: 不\n- ARGM-ADV: 并\n- rel: 指\n\nExample 2: 这 是 指 外企 的 中方 管理 人员\n- ARG1: 这\n- ARG2: 外企 的 中方 管理 人员\n- rel: 指\n\nExample 3: 所谓 「 长 多 」 ， 究竟 指 *PRO* 多 长\n- ARG1: 所谓 「 长 多 」\n- ARG2: *PRO* 多 长\n- ARGM-ADV: 究竟\n- rel: 指\n\n### 指-02\n\n- ARG0: agent\n- ARG1: thing arg0 points out/claims\n\nExample 1: 电视台 新闻 报道 指 由於 连场 大雨 ， 水务署 在 城门 水塘 开启 水闸 排洪\n- ARG0: 电视台 新闻 报道\n- ARG1: 由於 连场 大雨 ， 水务署 在 城门 水塘 开启 水闸 排洪\n- rel: 指\n\nExample 2: 该 两 名 中国 人士 在 三月 时 已 被 指 *-3 *PRO* 行使 *OP* *pro* 伪造 *T*-2 中国 护照 和 管有 *OP* *pro* 伪造 *T*-1 香港 旅行 证件 而 分别 被 判 *-3 入狱 六 个 月\n- ARG1: *-3\n- ARG1-PRD: *PRO* 行使 *OP* *pro* 伪造 *T*-2 中国 护照 和 管有 *OP* *pro* 伪造 *T*-1 香港 旅行 证件\n- ARGM-ADV: 已\n- ARGM-TMP: 在 三月 时\n- rel: 指\n\n### 指-03\n\n- ARG0: agent\n- ARG1: patient\n- ARG2: predicate\n\nExample 1: \n\n### 指-04\n\n- ARG0: agent\n- ARG1: expecation\n\nExample 1: \n\n### 指-05\n\n- ARG0: agent\n- ARG1: entity Arg0 points at\n\nExample 1: \n- ARG1: 他\n- rel: 指\n\n## 靠\n\n### 靠-01\n\n- ARG0: depender\n- ARG1: theme\n\nExample 1: 随着 改革 开放 的 深入 ， 过去 *OP* *T*-1 只 靠 国家 投入 或 银行 贷款 的 一汽 开始 着手 拓宽 融资 渠道 。\n- ARGM-ADV: 只\n- rel: 靠\n\n### 靠-02\n\n- ARG0: theme\n\nExample 1: 但 以 我 过去 的 经验 ， 这 事 还 是 不 大 靠 得 住\n- ARG0: 这 事\n- rel: 靠\n\n### 靠-03\n\n- ARG0: entity described\n- ARG1: entity arg0 leans against\n\nExample 1: 这 一 个 兵 靠 在 那 就 睡觉\n- ARG0: 这 一 个 兵\n- ARG1: 在 那\n- rel: 靠\n\n### 靠-04\n\n- ARG0: entity described\n- ARG1: entity arg0 moves towards\n\nExample 1: *PRO* 距离 靠 得 更 近 一些\n- ARG0: *PRO*\n- ARGM-ADV: 距离\n- ARGM-EXT: 更 近 一些\n- rel: 靠\n\n### 靠-05\n\n- ARG0: entity described\n- ARG1: entity arg0 is next to\n\nExample 1: 旁边 2 座 ， 一 个 靠 窗 ， 一 个 靠 过道\n- ARG1: 窗\n- rel: 靠\n\n### 靠-06\n\n- ARG0: entity described\n\n## 背书\n\n### 背书-01\n\n- ARG0: \n\n## 当选\n\n### 当选-01\n\n- ARG0: electee\n- ARG1: position\n\nExample 1: 黄龙云 当选 中共 珠海 市委 书记\n- ARG0: 黄龙云\n- ARG1: 中共 珠海 市委 书记\n- rel: 当选\n\nExample 2: *OP* *T*-1 新 当选 的 自由党 和 国家党 联盟 政府\n- ARG0: *T*-1\n- ARGM-ADV: 新\n- rel: 当选\n\nExample 3: 在 *OP* *T*-1 今天 下午 召开 的 中共 珠海 市委 第四 届 委员会 第一 次 全体 会议 上 ， 黄龙云 当选 为 中共 珠海 市委 书记 。\n- ARG0: 黄龙云\n- ARG1-AS: 中共 珠海 市委 书记\n- ARGM-LOC: 在 *OP* *T*-1 今天 下午 召开 的 中共 珠海 市委 第四 届 委员会 第一 次 全体 会议 上\n- rel: 当选\n\n## 荒唐\n\n### 荒唐-01\n\n- ARG0: entity that is ridiculous\n\nExample 1: 嗯 ， 我 想 那 会 是 一 种 *OP* *T*-1 非常 不 负责任 的 做法 ， 它 剥夺 了 很多 人 *pro* 接受 治疗 的 希望 ， 嗯 ， 假如 我 说 我 的 药物 对 每个 人 都 起 作用 ， 那 他 的 说法 更加 荒唐 ．\n- ARGM-DIS: 那\n- ARGM-ADV: 更加\n- rel: 荒唐\n\n## 有\n\n### 有-01\n\n- ARG0: owner\n- ARG1: entity owned\n\nExample 1: 原 苏联 解体 后 ， 该 军队 集群 转归 俄罗斯 *PRO* 所 有\n- ARG0-: *PRO*\n- rel: 有\n\nExample 2: *OP* *T*-1 统一 的 德国 能够 在 联合国 发挥 *OP* *T*-2 更 大 的 作用 ， 在 联合国 作出 决定 时 有 *OP* *T*-3 更 大 的 发言权\n- rel: 有\n\n### 有-02\n\n- ARG0: entity described\n- ARG1: predicative (often quantity of arg0)\n\nExample 1: *OP* *T*-1 第五 个 出生 的 男婴 体重 最 轻 ， 只 有 四百九十五 克\n- ARG0-PSE: 体重\n- ARG0-PSR: *T*-1 第五 个 出生 的 男婴\n- ARGM-ADV: 只\n- rel: 有\n\n### 有-03\n\n- ARG0: location/domain described\n- ARG1: entity that exists with respect to arg0\n\nExample 1: 中国 现 有 保险 公司 二十六 家\n- ARG0-: 中国\n- ARGM-TMP: 现\n- rel: 有\n\nExample 2: 据 统计 ， 今年 全 省 高新区 的 技工贸 总 收入 、 *OP* *pro* 完成 *T*-3 的 工业 总 产值 均 比 去年 有 较大 幅度 增长\n- ARG0-: 全 省 高新区的技工贸总收入 、 完成的工业总产值\n- ARGM-ADV: 均\n- ARGM-TMP: 今年\n- rel: 有\n\nExample 3: 随着 内地 贸易 、 金融 、 零售 等 服务业 有 步骤 地 对 外 开放\n- ARG1-: 步骤\n- rel: 有\n\n### 有-04\n\n- ARG0: \n\nExample 1: *OP* *T*-1 实际上 有 领取 奖金 的 传销商\n- rel: 有\n\n### 有-05\n\n- ARG0: entity described\n- ARG1: state/event that exists with respect to arg0\n\nExample 1: *pro* 有 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- ARG0-: *pro*\n- ARG1-: 八 家 外资 银行 获准 *PRO* 在 上海 浦东 经办 人民币 业务\n- rel: 有\n\n### 有-06\n\n- ARG0: entity described\n- ARG1: entity owned by/exist with respect to arg0\n\nExample 1: *PRO* 虽然 开发 有 整车 产品 三 个 系列 二十三 个 品种 ， 改装车 产品 三 个 系列 十二 个 品种\n- ARG0-: *PRO*\n- ARG1-: 整车 产品\n- ARG1-QTY: 三 个 系列 二十三 个 品种\n- ARG1-: 改装车 产品\n- ARG1-QTY: 三 个 系列 十二 个 品种\n- rel: 有\n\n### 有-07\n\n- ARG0: entity described\n- ARG1: entities arg0 includes\n\nExample 1: 据悉 ， 这些 新 措施 的 主要 内容 有 *PRO* 以 *PRO* 发展 规模 经营 、 组建 企业 集团 为 重点 ， 推进 省属 外贸 公司 的 战略性 重组 ； 加大 *OP* 支柱 产业 产品 *T*-1 出口 的 力度 ； 办好 *OP* *T*-2 在 香港 举办 的 外商 投资 招商会 和 九八 中国 投资 贸易 洽谈会 等\n- ARG0-: 这些 新 措施 的 主要 内容\n- ARG1-: 以发展规模经营 、组建企业集团为重点 ， 推进省属外贸公司的战略性重组 ；加大支柱产业产品出口的力度 ；办好在香港举办的外商投资招商会和九八中国投资贸易洽谈会等\n- ARGM-ADV: 据悉\n- rel: 有\n\n### 有-08\n\n- ARG0: entity described\n- ARG1: activity\n\nExample 1: 个别 企业 及 公司 的 业务 在 某些 环节 如 不 获 任何 协助 ， *pro* 就 难 有 贡献\n- ARG0-: *pro*\n- ARG1-: 贡献\n- ARGM-DIS: 就\n- ARGM-ADV: 难\n- rel: 有\n\nExample 2: 帛琉 则 成为 美国 的 托管 地 ， 并 於 一九八○ 年代 开始 与 我 国 有 了 政治 上 的 接触\n- ARG0-CRD: 帛琉\n- rel: 有\n\n### 有-09\n\n- ARG0: entity described\n- ARG1: amount extra\n\nExample 1: 古稀 有 二\n- ARG0-: 古稀\n- ARG1-: 二\n- rel: 有\n\n## 点出\n\n### 点出-01\n\n- ARG0: agent\n- ARG1: theme\n\nExample 1: *PRO* 放眼 未来 ， 詹正田 点出 几 项 观察 重点 ：\n- ARG0: 詹正田\n- ARG1: 几 项 观察 重点\n- ARGM-ADV: *PRO* 放眼 未来\n- rel: 点出\n\n## 点\n\n### 点-01\n\n- ARG0: agent\n- ARG1: thing arg0 lights up\n\nExample 1: 居民 努力 地 要 把 环境 与 人 的 关系 找 回来 ， 在 街 上 点 灯 ， 搬出 凳子 坐 下来 谈古说今\n- ARG0: 居民\n- ARG1: 灯\n- ARGM-LOC: 在 街 上\n- rel: 点\n\n### 点-02\n\n- ARG0: agent\n- ARG1: entity drops of which arg0 puts\n- ARG2: place arg1 is put\n\nExample 1: 微阵列 晶片 则 是 将 基因 的 片段 或 寡核酸 、 蛋白质 、 抗体 冷 生物 分子 点 在 晶片 上\n- ARG1: 基因 的 片段 或 寡核酸 、 蛋白质 、 抗体 冷 生物 分子\n- ARG2: 在 晶片 上\n- rel: 点\n\n### 点-03\n\n- ARG0: agent\n- ARG1: entity arg0 touches (with finger)\n\nExample 1: 吴思华 则 以 英特尔 为 例 ， 说明 知识 「 点 矽 成 金 」 的 威力\n- ARG0: 知识\n- ARG1: 矽\n- rel: 点\n\n### 点-04\n\n- ARG0: agent\n- ARG1: thing arg0 paints\n\nExample 1: *PRO* 作 陶猪 时 ， 他 起身 到 屋 前 的 竹林 ， 随手 折下 竹枝 ， 来 点 猪 鼻孔\n- ARG0: 他\n- ARG1: 猪 鼻孔\n- ARGM-TMP: *PRO* 作 陶猪 时\n- rel: 点\n\n### 点-05\n\n- ARG0: agent\n- ARG1: thing arg0 orders\n\nExample 1: 再 不然 ， *pro* 就 到 火车站 前 的 小美 冰淇淋 里 ， 点 上 一 片 西瓜 ， 然後 就 坐 上 一 天 ， 以 店 里 的 客人 当 素描 对象\n- ARG0: *pro*\n- ARG1: 一 片 西瓜\n- ARGM-DIS: 再 不然\n- rel: 点\n\n### 点-06\n\n- ARG0: agent\n- ARG1: thing arg0 counts\n\nExample 1: \n- ARG1: 钱\n\n## 争论\n\n### 争论-01\n\n- ARG0: agent\n- ARG1: thing arg0 argues about\n\nExample 1: 对 当今 *OP* *T*-3 争论 持久 的 鸟类 起源 的 各 种 假说\n- ARG1: *T*-3\n- rel: 争论\n\n## 刊登\n\n### 刊登-01\n\n- ARG0: agent/causer\n- ARG1: location\n- ARG2: entity published\n\nExample 1: 香港 特别 行政区 政府 今日 （ 星期二 ） 在 宪报 刊登 《 香港 特别 行政区 护照 条例 草案 》 。\n- ARG0: 香港 特别 行政区 政府\n- ARG1: 在 宪报\n- ARG2: 《 香港 特别 行政区 护照 条例 草案 》\n- ARGM-TMP: 今日 （ 星期二 ）\n- rel: 刊登\n\nExample 2: 据 德新社 ２３日 报道 ， *OP* *T*-1 将 于 本 月 ２５日 出版 的 《 明镜 》 周刊 将 刊登 叶利钦 的 有关 谈话 。\n- ARG1: *OP* *T*-1 将 于 本 月 ２５日 出版 的 《 明镜 》 周刊\n- ARG2: 叶利钦 的 有关 谈话\n- ARGM-ADV: 将\n- rel: 刊登\n\nExample 3: 蒙古 禁止 新闻 媒体 *PRO* 刊登 酒类 广告\n- ARG1: *PRO*\n- ARG2: 酒类 广告\n- rel: 刊登\n\nExample 4: 有关 *pro* 将 十月 一日 列为 *OP* *pro* 新 增 *T*-1 法定 假日 已 於 七月 一日 在 香港 特别 行政区 政府 宪报 刊登 。\n- ARG2: 有关 *pro* 将 十月 一日 列为 *OP* *pro* 新 增 *T*-1 法定 假日\n- ARG1: 在 香港 特别 行政区 政府 宪报\n- ARGM-ADV: 已\n- ARGM-TMP: 於 七月 一日\n- rel: 刊登\n\n## 复制\n\n### 复制-01\n\n- ARG0: agent\n- ARG1: theme\n\nExample 1: 中国 乒协 将 复制 １９ 枚 世乒赛 金牌\n- ARG0: 中国 乒协\n- ARG1: １９ 枚 世乒赛 金牌\n- rel: 复制\n\n## 讽刺\n\n### 讽刺-01\n\n- ARG0: agent\n- ARG1: entity arg0 satirizes\n- ARG2: means\n\nExample 1: 灯 上 题 了 一 首 诗 *PRO* 讽刺 此 事\n- ARG1: 此 事\n- ARG2: *PRO*\n- rel: 讽刺\n\n## 买通\n\n### 买通-01\n\n- ARG0: agent\n- ARG1: theme\n- ARG2: content\n\nExample 1: \n- ARG0: 黄光裕\n- ARG1: 上千 名 各 级 官员\n- ARG2: 作为 其 保护伞\n- rel: 买通\n\n## 追杀\n\n### 追杀-01\n\n- ARG0: agent\n- ARG1: entity that arg0 chases and tries to kill\n\nExample 1: 当时 枪手 在 *pro* 枪击 过后 ， 再度 追杀 被害人\n- ARGM-TMP: 当时\n- ARG0: 枪手\n- ARGM-TMP: 在 枪击 过后\n- ARGM-ADV: 再度\n- ARG1: 被害人\n- rel: 追杀\n\n### 追杀-02\n\n- ARG0: agent\n- ARG1: entity that arg0 chases and tries to kill\n- ARG2: result\n\nExample 1: 虽然 *pro* 侥幸 逃过 了 枪击 ， 但是 *pro* 遭到 了 枪手 以 钝器 追杀 成 重伤\n- ARGM-ADV: 虽然 侥幸 逃过 了 枪击\n- ARGM-DIS: 但是\n- ARG1: *pro*\n- ARG0: 枪手\n- ARG2: 重伤\n- rel: 追杀\n\nNot looked up (only the first 20 lemmas of a call are; call again with these): 贴, 大选",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQS2wYKEAgTGAI4AUIIdGhpbmtpbmcSDBWS92e/U2LJuX1pARoMxn9Sv+JfqvduUFgvIjBv0w/akSAdZhTvV2kEVRCpHIKptgoIlyU093LQYnU7561QRv1ZGW2T21YpTKVlDqYq+AWcfo3XLd4ViMkq4k1o7Yw3pzeW+paRmAclD9K8TBfrJsrMQkGZtVbNZfRdqw+he2vUqUVGiFMI/CexHo8aMp0zc5qxFeoaLjAbHiqk36jJAFhVpISEVFvMvxcCtHxnXAhno6mKjwX8kTfeMhAzQk1TMPnpM/zj83TUKYrcXUzJCrA9NzgmMgb+A4vlbsrZamxa8ABwzI90Sx6O1Hvzg1R7sLbM2/bLWdLhCjxbNY4zv42oiw+g0sJeyoycGwLZdARBQJStIrbalOriyAL4kx/bXzRChez6grs9rlErB0w7TnJMAhGtS2V+nv2+ImcfOwpPNdl/1B63xWl9M6Kkmu7VNhEBYxEst2F+Cx+Mso0mxErrhsaObzAh4ZOjNOduluBewUPRBR/HlWSjOADJPxWNpDHWZph9WQqYGbRJJFv9L6nrRWQ1Aa//8qC7isc1tRfsf7UXVcWfvTuxpP+djLcgnTGzVbyJUMPfaCoLdsjIUXYlKtB1mlEM5W27i4p0FtNyihGdc9KxhE/vvo6g6wPfGcFtQx5WVVDZbUe8RqU3s1IZr6xND5lh9IUK7wiBjP0hMncnHTZd9Zem5wlMTIujYmrwC+ca03t1A6ojpSTxC3eHdBqh6BstzlpX1rFqlXjdFf3WF1gJn2okcSmMtlApCjyIi1ZtYRo+x/Myfpf25Sg3JJ7u99HNXu2I+yuwabhtbm8Nwaw9Nm/orQoDcezrWGigZ1vWocnIHqIsidOOdvc9/rkVjx0TipBTXirjyjrF36zidwlSO8/GWFsXXxWsCmn3YAjYurxX3LoBpHtXb7G+UFUcH4XPoVwQcuH9tf+R+XZFlZ/OlPukZ9djt3Kp9qhJttXBI4uKHOCi6DogJlgvfvEmebTBpRuXvLxRJkK01qpn7mOCzjqxvmAET1zEttVhLkAUM8rKvM54x0SPX3Mtx6dbKAFfZyokVl5bkf2PFvBy4h/iacwLB/pSh0xDaUsIRfWJU8mnZ7L8hCXYrYPUZ3utDB7FGAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01MpjaeBAMisijVUVZiXVGtL",
+     "input": {
+      "language": "zh",
+      "keywords": [
+       "外星人",
+       "该刊"
+      ],
+      "max_results": 3
+     },
+     "name": "search_annotations",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    },
+    {
+     "id": "toolu_01A19YfnbYtJ22E1pRBAJ3Mc",
+     "input": {
+      "lemmas": [
+       "贴",
+       "大选",
+       "贴到",
+       "有能力",
+       "荒谬",
+       "可笑"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01MpjaeBAMisijVUVZiXVGtL",
+     "content": "{\"gold\": [], \"found\": 0, \"left_out\": \"14 matching sentences of the test documents are not shown\"}",
+     "is_error": false
+    },
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01A19YfnbYtJ22E1pRBAJ3Mc",
+     "content": "## 贴\n\n### 贴-01\n\n- ARG0: agent\n- ARG1: thing arg0 pastes\n- ARG2: place arg1 is pasted\n\nExample 1: *OP* *T*-1 长满 茧 的 茶农 之 手 贴 著 茶叶 的 气息 过活\n- ARG1: 茶叶 的 气息\n- ARG2: *OP* *T*-1 长满 茧 的 茶农 之 手\n- rel: 贴\n\nExample 2: 就 像 *OP* *T*-1 贴 在 布告栏 上 的 宣传品 ， *PRO* 被 风 吹掉 了 ， *PRO* 再 贴 一 张 就 好\n- ARG1: *T*-1\n- ARG2: 在 布告栏 上\n- rel: 贴\n\nExample 3: 他 把 *OP* 一 格格 样片 贴 在 墙 上 临摹 *T*-2 ， 画成 一 张张 的 动画 纸\n- ARG0: 他\n- ARG1: 一 格格 样片\n- ARG2: 在 墙 上\n- rel: 贴\n\nExample 4: 《 晴天 娃娃 》 才 贴 几 次 就 得到 *OP* *T*-1 *pro* 意想不到 的 支持\n- ARG1: 《 晴天 娃娃 》\n- ARGM-EXT: 几 次\n- ARGM-ADV: 才\n- rel: 贴\n\nExample 5: 近千 名 *OP* *T*-3 来自 官方 和 民间 的 陶工 合力 完成 这些 *OP* *T*-4 需要 塑 、 堆 、 捏 、 贴 、 刻 、 画 的 陶俑\n- ARG2: *T*-4\n- rel: 贴\n\n### 贴-02\n\n- ARG0: agent\n- ARG1: money contributed\n- ARG2: project\n\nExample 1: 你 自己 来 贴 钱\n- ARG0: 你 自己\n- ARG1: 钱\n- rel: 贴\n\n## 大选\n\n### 大选-01\n\n- ARG0: agent\n\nExample 1: *pro* 提前 大选\n- ARG0: *pro*\n- rel: 大选\n\n## 贴到\n\n### 贴到-01\n\n- ARG0: agent\n- ARG1: place where Arg0 posts Arg1\n- ARG2: entity being posted\n\nExample 1: *pro* *pro* 摆上 糖瓜 后 把 *OP* *T*-1 贴在 灶台 上 已 一 年 的 灶王爷 图像 揭 下来 在 灶坑 旁 烧 了 *-3 ， 等到 *pro* 三十 贴 春联 时 再 把 一 张 新 的 灶王 贴到 原来 的 地方 ， 并 贴上 一 幅 *OP* *T*-2 上联 是 “ *pro* 上天 言好事 ” ， *T*-2 下联 是 “ *pro* 回宫 降 吉祥 ” ， *T*-2 横批 是 “ 一 家 之 主 ” ， 再 放上 一 个 香炉 每逢 *PRO* 过节 都 焚香 祈福 。\n- ARG0: *pro*\n- ARGM-DIS: 再\n- rel: 贴到\n\n## 有能力\n\nNot in PropBank.\n\n## 荒谬\n\n### 荒谬-01\n\n- ARG0: entity described\n\nExample 1: *OP* *T*-1 今天 *PRO* 看 起来 这麽 高级 的 运动 怎 会 有 *OP* *T*-2 如此 荒谬 的 起源\n- ARG0: *T*-2\n- ARGM-ADV: 如此\n- rel: 荒谬\n\n## 可笑\n\n### 可笑-01\n\n- ARG0: agent, entity, or action that is funny\n\nExample 1: *OP* *T*-1 真 名 是 柯蒂斯·杰克逊 的 饶舌 歌手 ＂ 五 角 ＂ 说 *pro* 单单 挑 他 的 海报 是 可笑 的 ．\n- rel: 可笑",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "I annotated all five sentences (16–20). Some choices are uncertain, and I could not check them against gold:\n\n- **No gold to compare with:** I searched the gold annotations for this document's key words (外星人, 该刊) and got nothing back; all 14 matches are in test documents. So the choices below are mine.\n- **Links to earlier sentences:** Only sentences 16–20 were given. Their first mention of the paper (该刊, sentence 16) is not linked to sentences 1–15.\n- **Concepts that follow the token:** 总统大选, 复制人, 一万个 and 墙上 are each one token, so I used them as written, without splitting.\n- **注销 (sentence 16):** I annotated it as written (`注销-01`), although in context it probably means the paper ran the photo.\n- **Sentence 20:** I treated 「12位美国参议员是外星人！」 as the content of the news item: the item is linked to it through `identity-91`, and the claim itself is `have-role-91`.\n- **Coreference:** The paper chain runs 该刊 → 周报 (and 其) → 它 → 他们 → 该刊. I linked 外星人 in sentence 19 to sentence 16 as the same aliens. I did not link the senator-aliens in sentence 20, or the two mentions of 美国.\n\n# ::snt 16\n# sentence level graph:\n(s16a / and\n    :op1 (s16b / 报导-01\n        :ARG0 (s16k / 刊\n            :mod (s16g / 该))\n        :ARG1 (s16z / 支持-01\n            :ARG0 (s16w / 外星人)\n            :ARG1 (s16d / 当-02\n                :ARG0 (s16p / individual-person\n                    :name (s16n / name :op1 \"布什\"))\n                :ARG1 (s16t / 总统)\n                :aspect process)\n            :quote s16b\n            :aspect activity)\n        :temporal (s16x / 总统大选\n            :temporal (s16d1 / date-entity :year 2000))\n        :aspect performance)\n    :op2 (s16c / 注销-01\n        :ARG0 s16k\n        :ARG1 (s16h / 照片\n            :ARG1-of (s16s / 合成-01\n                :aspect performance)\n            :topic (s16w2 / 握手-01\n                :ARG0 (s16f2 / 双方)\n                :aspect process))\n        :mod (s16h2 / 还)\n        :aspect performance)\n    :op3 (s16e / 指-02\n        :ARG0 s16k\n        :ARG1 (s16f / 当选-01\n            :ARG0 (s16p2 / individual-person\n                :name (s16n2 / name :op1 \"柯林顿\"))\n            :temporal (s16d2 / date-entity :year 1992)\n            :mod (s16y / 也)\n            :manner (s16l / 靠-01\n                :ARG0 s16p2\n                :ARG1 (s16bs / 背书-01\n                    :ARG0 s16w\n                    :aspect process)\n                :aspect state)\n            :quote s16e\n            :aspect performance)\n        :mod (s16sz / 甚至)\n        :aspect performance))\n\n# ::snt 17\n# sentence level graph:\n(s17b / but-91\n    :ARG1 (s17h / 荒唐-01\n        :ARG0 (s17n / 内容\n            :possessor (s17z / 周报))\n        :aspect state)\n    :ARG2 (s17y / 有-01\n        :ARG0 (s17p / 编辑\n            :possessor s17z)\n        :ARG1 (s17l / 能力\n            :mod (s17d / 点出-01\n                :ARG0 s17p\n                :ARG1 (s17a / and\n                    :op1 (s17m / 荒谬-01\n                        :ARG0 (s17x / 新闻\n                            :mod (s17r / 真实))\n                        :aspect state)\n                    :op2 (s17k / 可笑-01\n                        :ARG0 s17x\n                        :aspect state))\n                :place (s17t / 标题)\n                :modal-strength neutral-affirmative\n                :aspect habitual))\n        :mod (s17e / 也)\n        :aspect state))\n\n# ::snt 18\n# sentence level graph:\n(s18k / 刊登-01\n    :ARG0 (s18t / thing\n        :refer-person 3rd\n        :refer-number singular)\n    :ARG1 (s18w / 位置\n        :mod (s18x / 显著))\n    :ARG2 (s18p / 复制-01\n        :ARG0 (s18s / country\n            :name (s18n / name :op1 \"苏联\"))\n        :ARG1 (s18h / individual-person\n            :name (s18n2 / name :op1 \"希特勒\")\n            :quant 10000\n            :unit (s18g / 一万个))\n        :quant 1\n        :unit (s18u / 篇)\n        :quote s18k\n        :aspect performance)\n    :temporal (s18z / 争论-01\n        :ARG0 (s18q / 全世界)\n        :ARG1 (s18w2 / 问题\n            :mod (s18d / 道德)\n            :topic (s18f / 复制人))\n        :aspect activity)\n    :aspect performance)\n\n# ::snt 19\n# sentence level graph:\n(s19h / have-purpose-91\n    :ARG1 (s19b / 报导-01\n        :ARG0 (s19p / person\n            :refer-person 3rd\n            :refer-number plural)\n        :ARG1 (s19m / 买通-01\n            :ARG0 s19c\n            :ARG1 (s19w / 外星人)\n            :ARG2 (s19z / 追杀-01\n                :ARG0 s19w\n                :ARG1 (s19l / individual-person\n                    :name (s19n2 / name :op1 \"宾拉登\"))\n                :aspect process)\n            :quant 1\n            :unit (s19u / 篇)\n            :quote s19b\n            :aspect performance)\n        :mod (s19y / 也)\n        :aspect performance)\n    :ARG2 (s19f / 讽刺-01\n        :ARG1 (s19e / 政策\n            :mod (s19j / 外交)\n            :possessor (s19c / country\n                :name (s19n / name :op1 \"美国\")))\n        :aspect activity)\n    :aspect state)\n\n# ::snt 20\n# sentence level graph:\n(s20t / 贴到-01\n    :ARG0 (s20p / 好事者)\n    :ARG1 (s20q / 墙上\n        :possessor (s20j / 记者团\n            :mod (s20o / government-organization\n                :name (s20n2 / name :op1 \"参议院\")\n                :place s20c)))\n    :ARG2 (s20x / 新闻\n        :quant 1\n        :unit (s20u / 篇)\n        :possessor (s20k / 刊\n            :mod (s20g / 该))\n        :ARG1-of (s20i / identity-91\n            :ARG2 (s20r / have-role-91\n                :ARG1 (s20s / 参议员\n                    :quant 12\n                    :unit (s20u2 / 位)\n                    :place (s20c / country\n                        :name (s20n / name :op1 \"美国\")))\n                :ARG3 (s20w / 外星人)\n                :quote s20i\n                :aspect state)))\n    :mod (s20m / 甚至)\n    :aspect performance)\n\n# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s16d1)\n               (s16d1 :overlap s16b)\n               (s16b :overlap s16z)\n               (s16z :overlap s16d)\n               (s16b :overlap s16c)\n               (s16c :before s16s)\n               (s16s :overlap s16w2)\n               (s16b :overlap s16e)\n               (document-creation-time :before s16d2)\n               (s16d2 :overlap s16f)\n               (s16f :overlap s16l)\n               (s16l :overlap s16bs)\n               (document-creation-time :before s17h)\n               (s17h :overlap s17y)\n               (s17y :overlap s17d)\n               (s17d :overlap s17m)\n               (s17m :overlap s17k)\n               (document-creation-time :before s18k)\n               (s18k :overlap s18z)\n               (s18k :overlap s18p)\n               (document-creation-time :before s19b)\n               (s19b :overlap s19f)\n               (s19b :overlap s19m)\n               (s19m :overlap s19z)\n               (document-creation-time :before s20t))\n    :modal ((root :modal author)\n            (author :full-affirmative s16a)\n            (author :full-affirmative s16b)\n            (author :full-affirmative s16k)\n            (s16k :full-affirmative s16z)\n            (s16k :full-affirmative s16d)\n            (author :full-affirmative s16c)\n            (author :full-affirmative s16s)\n            (author :full-affirmative s16w2)\n            (author :full-affirmative s16e)\n            (s16k :full-affirmative s16f)\n            (s16k :full-affirmative s16l)\n            (s16k :full-affirmative s16bs)\n            (author :full-affirmative s17b)\n            (author :full-affirmative s17h)\n            (author :full-affirmative s17y)\n            (s17y :neutral-affirmative s17d)\n            (s17d :full-affirmative s17m)\n            (s17d :full-affirmative s17k)\n            (author :full-affirmative s18k)\n            (author :full-affirmative s18z)\n            (author :full-affirmative s18t)\n            (s18t :full-affirmative s18p)\n            (author :full-affirmative s19h)\n            (author :full-affirmative s19b)\n            (author :full-affirmative s19f)\n            (author :full-affirmative s19p)\n            (s19p :full-affirmative s19m)\n            (s19p :full-affirmative s19z)\n            (author :full-affirmative s20t)\n            (author :full-affirmative s20k)\n            (s20k :full-affirmative s20r))\n    :coref ((s16k :same-entity s17z)\n            (s17z :same-entity s18t)\n            (s18t :same-entity s19p)\n            (s19p :same-entity s20k)\n            (s16w :same-entity s19w)))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

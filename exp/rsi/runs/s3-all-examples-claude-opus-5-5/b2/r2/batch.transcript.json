@@ -1,0 +1,205 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see batch.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 16348
+    },
+    "cache_creation_input_tokens": 16348,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 220,
+    "output_tokens_details": {
+     "thinking_tokens": 87
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3572
+    },
+    "cache_creation_input_tokens": 3572,
+    "cache_read_input_tokens": 16348,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 4197,
+    "output_tokens_details": {
+     "thinking_tokens": 2211
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: chinese_umr-0001, sentences 6-10 (5 sentences)\n\nThe document, one sentence per line: the sentence number, a tab, then its words separated by spaces.\n\n6\t《 世界 新闻 周报 》 创刊 于 1979 年 。\n7\t创始人 格内洛索 · 波普 因为 旗下 的 八卦 小报 《 国家 询问 报 》 将 由 黑白 版面 改为 彩色 版面 ， 为 充分 运用 遗留 下来 的 黑白 印刷机 ， 于是 创立 了 黑白 版面 的 《 世界 新闻 周报 》 ， 容纳 那些 不 符合 《 国家 询问 报 》 标准 的 文章 。\n8\t黑白 印刷 也 成 了 该刊 的 特色 。\n9\t在 1980 年代 ， 《 世界 新闻 周报 》 发行量 达到 120 万 份 。\n10\t不过 至 2007 年 ， 该刊 发行量 已经 跌至 8 万 3 千份 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQSyQYKEAgTGAI4AUIIdGhpbmtpbmcSDHaMf06BAARyQuScSBoML5PTL0BYrBCb9rtvIjCX8oqWllFXhmVjiYutahBa1ETy3ptIQLn2o2xVB/atM5YL9nm8VRFl8yHH0asIadQq5gXdqP7y2pn+7iuJrhmvNMJBIll0k60JqDvwifEOHPnh3OyEV3HCA5s++0+QrS839+mM4jALm3xVERkjGeqkBLGA3w2C8x0lRwWEdHmGF3LfaikoDFT22tPSg2j+5x+gREMc/u00KTl1/1lq+p6fS9f9zOOh9wctnZ5YtOntewbqnzomfC8HQgKODEyL9N6wWAKiaS504sIfgFts0x5x3H3nVcHKTIBSJd/25Si2AoAn1+3DY3mtzOdM+oxTEMVbarMAoc2SOzcTgjZwst8Df9tOsRyfZ//ecqk3RNUF8Ifbo5Dovyk7qwfW2UmjwFu/4YcTIE9kHs2mrFc/rkkFCcuwykUZ8JTr2xlxH/174JkgjO9qCDBaD6yxGdII+/6caLGJ7UVPxQ0TesyApxQRrO9Zri7K66poKj/VTb99A/pPcbCbl5r+vpEMy152oBvfUwtiU8hoKuI1WmX067E6bz6d9KJu+ghW3oUb2cZTyn6CSCqohySV7+o1B16hRNhYFiRSgcGi2yiZaKK9kga+dPx5sCA80xfZb9GAw/qS6YfetEe6wyzcJBbJb+d+3uJam6Wi9hSXjDm4F2+bS13OGUqXKvSXt5xEXz99Qv5MlDseMsHImFRD6++Ca1WRr96LL2K6WmtKtW/J/Azufs+Cc7QWfK4pWV7HhnFpXWQdR49xCLNq2uilLQUL9KVeu6xnUAam17qkRHKqn23ZLpejofpjhfDzDL2+kI1qfrTSOa6NZfAYUY4goss5eUmJLZfgbMfRjDWQWgKv7KNKJfbiq/aLQAHZHJeK+By31fsXhGHCXW5u02gVcuuQb+zAUqCTe+tiIOBVCP4JBomGdqfw39jh4OXW+p2ma4HBVH29vxBt8qBl9eJ3MOrlHvHu5bhY7Hx3nauPfaaP56Hi+5eQ75BtDkVeKzM+iyx1zSd4CXVocjuHBMuA15KvK+h1xw8oQ04aswwoD1wCm14NinWtUn9FW9o+5rh3GAE=",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01B8G3YqoWmKmTNAwoGfPg5D",
+     "input": {
+      "lemmas": [
+       "创刊",
+       "创立",
+       "容纳",
+       "符合",
+       "成",
+       "跌至",
+       "运用",
+       "遗留",
+       "达到",
+       "改为",
+       "印刷",
+       "发行",
+       "创始"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01B8G3YqoWmKmTNAwoGfPg5D",
+     "content": "## 创刊\n\n### 创刊-01\n\n- ARG0: paper/journal which starts publication\n\nExample 1: *OP* *T*-1 由 《 自由 时报 》 投资 *-2 的 《 Taipei Times 》 即将 创刊\n- ARG0: *OP* *T*-1 由 《 自由 时报 》 投资 *-2 的 《 Taipei Times 》\n- ARGM-ADV: 即将\n- rel: 创刊\n\n## 创立\n\n### 创立-01\n\n- ARG0: establisher\n- ARG1: thing established\n\nExample 1: 邓小平 为 香港 的 未来 创立 「 一 国 两 制 」 的 构想 。\n- ARG0: 邓小平\n- ARG1: 「 一 国 两 制 」 的 构想\n- ARGM-BNF: 为 香港 的 未来\n- rel: 创立\n\n## 容纳\n\n### 容纳-01\n\n- ARG0: container\n- ARG1: thing contained\n\nExample 1: 广东 奥林匹克 体育场 可 容纳 ８万 观众\n- ARG0: 广东 奥林匹克 体育场\n- ARG1: ８万 观众\n- rel: 容纳\n\n## 符合\n\n### 符合-01\n\n- ARG0: theme\n- ARG1: consistent with\n\nExample 1: 中 美 保持 友好 既 符合 两 国 人民 利益 ， 也 有利于 亚太 地区 乃至 世界 的 和平 与 稳定\n- ARG0: 中 美 保持 友好\n- ARG1: 两 国 人民 利益\n- rel: 符合\n\n## 成\n\n### 成-01\n\n- ARG0: theme\n- ARG1: end result\n- ARG2: initial state\n\nExample 1: 弹指一挥 间 ， 许多 往事 已 成 笑谈 。\n- ARG0: 许多 往事\n- ARG1: 笑谈\n- ARGM-TMP: 弹指一挥 间\n- ARGM-ADV: 已\n- rel: 成\n\nExample 2: *OP* *T*-1 以 固定 （ 一九九零年 ） 市价 计算 的 工程 总值 ， 是 透过 *OP* *T*-2 适当 的 物价 指数 去 平减 工程 名义 价值 *PRO* 至 一九九零年 价格 水平 计算 而 成 。\n- ARG1: *OP* *T*-1 以 固定 （ 一九九零年 ） 市价 计算 的 工程 总值\n- rel: 成\n\n### 成-02\n\n- ARG0: entity described\n- ARG1: thing arg0 completes/succeeds in\n\nExample 1: *pro* 如果 不 成 ， *PRO* 退而求其次 就 是 光启社\n- ARG1: *pro*\n- ARGM-ADV: 不\n- ARGM-ADV: 如果\n- rel: 成\n\nExample 2: *OP* 後人 读 *T*-3 的 先秦 书籍 ， 更 是 *OP* 一 群群 汉代 学者 一 段段 编定 *RNR*-5 、 拼凑 *T*-4 而 成\n- ARG0: 一 群群 汉代 学者\n- rel: 成\n\n### 成-03\n\n- ARG0: entity described\n- ARG1: state arg0 is in\n\nExample 1: *OP* 台商 *T*-3 开车 的 猛劲 ， 与 *OP* *T*-6 随处 可 见 *OP* *T*-4 亮灯 厂房 加班 的 热度 恰 成 正比\n- ARG0: 台商 开车 的 猛劲 与 随处 可 见 亮灯 厂房 加班 的 热度\n- ARG1: 正比\n- rel: 成\n\n### 成-04\n\n- ARG0: entity that can work\n\nExample 1: 我 说 *pro* 好 那 下次 如果 要是 *pro* 见 着 了 的话 ， 嗯 ， 你 跟 我 说 一 声 *pro* 成 吧 ？\n- rel: 成\n\n## 跌至\n\nNot in PropBank.\n\n## 运用\n\n### 运用-01\n\n- ARG0: agent\n- ARG1: thing arg0 uses\n\nExample 1: 鼓励 学生 *PRO* 运用 图书馆 资源\n- ARG0: *PRO*\n- ARG1: 图书馆 资源\n- rel: 运用\n\n## 遗留\n\n### 遗留-01\n\n- ARG0: entity described\n- ARG1: entity arg0 leaves behind\n- ARG2: location arg1 is left at\n\nExample 1: 而 贝里琉 岛 与 安佳尔 岛 为 二 次 大战 期间 美军 与 日军 的 主要 战场 之一 ， 仍 遗留 著 当年 日军 *OP* *T*-1 四通八达 的 地下 通道\n- ARG1: 当年 日军 *OP* *T*-1 四通八达 的 地下 通道\n- ARG2: 贝里琉 岛 与 安佳尔 岛\n- ARGM-ADV: 仍\n- ARGM-DIS: 而\n- rel: 遗留\n\nExample 2: *OP* 排湾族 祖先 所 遗留 *T*-1 文物\n- ARG0: 排湾族 祖先\n- ARG1: *T*-1\n- rel: 遗留\n\nExample 3: *OP* *T*-1 胡适 遗留 大陆 的 许多 书信 与 遗稿\n- ARG0: 胡适\n- ARG1: *T*-1\n- ARG2: 大陆\n- rel: 遗留\n\nExample 4: *OP* 旧 时代 所 遗留 下来 *T*-1 的 敌意 与 对立\n- ARG0: 旧 时代\n- ARG1: *T*-1\n- rel: 遗留\n\n## 达到\n\n### 达到-01\n\n- ARG0: theme\n- ARG1: point reached\n\nExample 1: 保税区 的 出口 加工 年 产值 将 达 一百五十亿 元\n- ARG0: 保税区 的 出口 加工 年 产值\n- ARG1: 一百五十亿 元\n- ARGM-ADV: 将\n\n## 改为\n\n### 改为-01\n\n- ARG0: agent\n- ARG1: thing changed\n- ARG2: changing to\n\nExample 1: 黑山头 口岸 联检 部门 将 *OP* *T*-2 原来 要 二 *RNR*-1 至 三 天 办 完 的 出入境 手续 改为 一 天 办 完 。\n- ARG0: 黑山头 口岸 联检 部门\n- ARG1: *OP* *T*-2 原来 要 二 *RNR*-1 至 三 天 办 完 的 出入境 手续\n- ARG2: 一 天 办 完\n- rel: 改为\n\nExample 2: *pro* 一九五四年 改为 地级市 ， 由 四川省 管辖 。\n- ARG1: *pro*\n- ARG2: 地级市\n- ARGM-TMP: 一九五四年\n- rel: 改为\n\nExample 3: 东北 各 地 换下 *OP* *pro* 原先 悬挂 *T*-1 的 五色旗 ， 改为 *PRO* 悬挂 青 天 白 日 满 地 红 国旗\n- ARG0: 东北 各 地\n- ARG1: *PRO* 悬挂 青 天 白 日 满 地 红 国旗\n- rel: 改为\n\n## 印刷\n\n### 印刷-01\n\n- ARG0: agent\n- ARG1: thing arg0 prints\n\nExample 1: 地铁 车站 和 路 边 广告牌 上 已经 换上 了 *OP* *T*-1 印刷 精美 的 演唱会 大幅 海报\n- ARG1: *T*-1\n- rel: 印刷\n\n## 发行\n\n### 发行-01\n\n- ARG0: issuer\n- ARG1: theme\n- ARG2: goal\n\nExample 1: 这 部分 资金 将 全部 来源于 国家 金融 机构 ， 不 对 社会 公众 发行 金融 债券 。\n- ARG1-PSR: 这 部分 资金\n- ARGM-ADV: 不\n- ARG2: 对 社会 公众\n- rel: 发行\n\nExample 2: 到 目前 为止 ， 中国 的 有关 部门 和 机构 在 美国 市场 共 发行 债券 四十七点二亿 美元\n- ARG0: 中国 的 有关 部门 和 机构\n- ARGM-LOC: 在 美国 市场\n- ARGM-ADV: 共\n- rel: 发行\n\nExample 3: 国家 开发 银行 日前 在 日本 资本 市场 成功 地 发行 了 三百亿 日元 武士 债券 。\n- ARG0: 国家 开发 银行\n- ARGM-TMP: 日前\n- ARGM-LOC: 在 日本 资本 市场\n- rel: 发行\n\nExample 4: 《 全集 》 中 的 三 卷 已 由 台湾 商务 印书馆 重印 *-1 ， 在 台北 、 香港 、 新加坡 、 吉隆坡 、 洛杉矶 发行 。\n- ARG1: 《 全集 》 中 的 三 卷\n- ARGM-ADV: 已\n- ARGM-LOC: 在 台北 、 香港 、 新加坡 、 吉隆坡 、 洛杉矶\n- rel: 发行\n\n## 创始\n\n### 创始-01\n\n- ARG0: agent\n- ARG1: entity founded",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 6\n# sentence level graph:\n(s6c / 创刊-01\n    :ARG0 (s6n / newspaper\n        :name (s6n2 / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\"))\n    :temporal (s6d / date-entity :year 1979)\n    :aspect performance)\n\n# ::snt 7\n# sentence level graph:\n(s7h / have-reason-91\n    :ARG1 (s7h2 / have-purpose-91\n        :ARG1 (s7c / 创立-01\n            :ARG0 (s7p / individual-person\n                :name (s7n4 / name :op1 \"格内洛索\" :op2 \"·\" :op3 \"波普\")\n                :ARG1-of (s7h3 / have-org-role-91\n                    :ARG3 (s7r / 人\n                        :ARG0-of (s7c2 / 创始-00\n                            :aspect performance))))\n            :ARG1 (s7b / 版面\n                :mod (s7h4 / 黑白)\n                :part-of (s7n / newspaper\n                    :name (s7n5 / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\"))\n                :ARG0-of (s7r2 / 容纳-01\n                    :ARG1 (s7w / 文章\n                        :mod (s7n6 / 那些)\n                        :ARG0-of (s7f / 符合-01\n                            :polarity -\n                            :ARG1 (s7s / 标准\n                                :possessor s7n3)\n                            :aspect state))\n                    :aspect process))\n            :aspect performance)\n        :ARG2 (s7y / 运用-01\n            :ARG1 (s7m / 印刷机\n                :mod (s7h5 / 黑白)\n                :ARG1-of (s7l / 遗留-01\n                    :aspect performance))\n            :manner (s7c3 / 充分)\n            :aspect activity)\n        :aspect state)\n    :ARG2 (s7g / 改为-01\n        :ARG1 (s7b2 / 版面\n            :part-of (s7n3 / newspaper\n                :name (s7n7 / name :op1 \"《\" :op2 \"国家\" :op3 \"询问\" :op4 \"报\" :op5 \"》\")\n                :ARG1-of (s7i / identity-91\n                    :ARG2 (s7x / 小报\n                        :mod (s7q / 旗下)\n                        :mod (s7b4 / 八卦))))\n            :mod (s7h6 / 黑白))\n        :ARG2 (s7b3 / 版面\n            :mod (s7c4 / 彩色))\n        :aspect performance)\n    :aspect state)\n\n# ::snt 8\n# sentence level graph:\n(s8c / 成-01\n    :ARG0 (s8y / 印刷-01\n        :manner (s8h / 黑白)\n        :aspect habitual)\n    :ARG1 (s8t / 特色\n        :possessor (s8k / 刊\n            :mod (s8g / 该)))\n    :mod (s8y2 / 也)\n    :aspect performance)\n\n# ::snt 9\n# sentence level graph:\n(s9d / 达到-01\n    :ARG0 (s9l / 量\n        :quant-of (s9f / 发行-01\n            :ARG1 (s9n / newspaper\n                :name (s9n2 / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\")))\n        :ARG1-of (s9h / have-quant-91\n            :ARG2 1200000\n            :unit (s9u / 份)))\n    :temporal (s9t / date-entity :era 1980)\n    :aspect performance)\n\n# ::snt 10\n# sentence level graph:\n(s10d / 跌-01\n    :ARG1 (s10l / 量\n        :quant-of (s10f / 发行-01\n            :ARG1 (s10k / 刊\n                :mod (s10g / 该)))\n        :ARG1-of (s10h / have-quant-91\n            :ARG2 83000\n            :unit (s10u / 份)))\n    :temporal (s10t / date-entity :year 2007)\n    :mod (s10y / 已经)\n    :aspect performance)\n\n# document level relations:\n(d / document\n    :temporal ((root :depends-on s6d)\n               (s6d :overlap s6c)\n               (document-creation-time :before s7c)\n               (s7c :before s7g)\n               (s7c :overlap s7y)\n               (s7y :before s7l)\n               (s7c :overlap s7c2)\n               (s7c :overlap s7r2)\n               (s7r2 :overlap s7f)\n               (s7c :overlap s8c)\n               (s8c :overlap s8y)\n               (root :depends-on s9t)\n               (s9t :overlap s9d)\n               (s9d :overlap s9f)\n               (root :depends-on s10t)\n               (s10t :overlap s10d)\n               (s10d :overlap s10f))\n    :modal ((root :modal author)\n            (author :full-affirmative s6c)\n            (author :full-affirmative s7h)\n            (author :full-affirmative s7h2)\n            (author :full-affirmative s7c)\n            (author :full-affirmative s7c2)\n            (author :full-affirmative s7r2)\n            (author :full-negative s7f)\n            (author :full-affirmative s7y)\n            (author :full-affirmative s7l)\n            (author :full-affirmative s7g)\n            (author :full-affirmative s8c)\n            (author :full-affirmative s8y)\n            (author :full-affirmative s9d)\n            (author :full-affirmative s10d))\n    :coref ((s6n :same-entity s7n)\n            (s7n :same-entity s8k)\n            (s8k :same-entity s9n)\n            (s9n :same-entity s10k)))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

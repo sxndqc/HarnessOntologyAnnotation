@@ -1,0 +1,154 @@
+I annotated sentences 6–10 below. Two limits to know first:
+
+- **No links to sentences 1–5.** Those sentences weren't provided, so no `:coref` or temporal triple reaches back to them. If 格内洛索·波普 or the paper is mentioned there, those cross-sentence links are missing.
+- **Dates may not match the gold.** Following the first example in the guidelines, I anchored each year or decade to `document-creation-time` with `:before`. The abridged guidelines say absolute dates hang from `root`, and many gold sentences give a date no triple at all, so this could be scored differently.
+
+Other choices worth checking:
+
+- **Founder (创始人):** I used `创始-00` and `have-org-role-91`, as the guidelines' worked example does, even though PropBank lists `创始-01`. I gave the role no organisation (`:ARG2`), because the sentence doesn't name one.
+- **Sentence 7:** I built it on `have-reason-91` and `have-purpose-91`, as section 2.5 requires.
+  - The purpose verb 运用 gets a plain full-affirmative from the author, because the guidelines don't settle this case.
+  - I treated 充分 as `:manner` of 运用.
+- **"until 2007" (至 2007 年):** I wrote it as `:temporal (至 :op1 date-entity)`, following a gold sentence with the same construction.
+- **Sentence 10:** I left out 不过, as the guidelines say to for a sentence-initial 不过, so `跌-01` is the root.
+
+# ::snt 6
+# sentence level graph:
+(s6c / 创刊-01
+    :ARG0 (s6z / newspaper
+        :name (s6m / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》"))
+    :temporal (s6d / date-entity :year 1979)
+    :aspect performance)
+
+# ::snt 7
+# sentence level graph:
+(s7h / have-reason-91
+    :ARG1 (s7h2 / have-purpose-91
+        :ARG1 (s7c / 创立-01
+            :ARG0 (s7p / individual-person
+                :name (s7m1 / name :op1 "格内洛索" :op2 "·" :op3 "波普")
+                :ARG1-of (s7h3 / have-org-role-91
+                    :ARG3 (s7r / 人
+                        :ARG0-of (s7c2 / 创始-00
+                            :aspect performance))
+                    :aspect state))
+            :ARG1 (s7b / 版面
+                :mod (s7h4 / 黑白)
+                :part-of (s7z1 / newspaper
+                    :name (s7m2 / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》"))
+                :ARG0-of (s7r2 / 容纳-01
+                    :ARG1 (s7w / 文章
+                        :mod (s7n3 / 那些)
+                        :ARG0-of (s7f / 符合-01
+                            :polarity -
+                            :ARG1 (s7b2 / 标准
+                                :possessor s7z2)
+                            :aspect state))
+                    :aspect process))
+            :aspect performance)
+        :ARG2 (s7y / 运用-01
+            :ARG1 (s7j / 印刷机
+                :mod (s7h5 / 黑白)
+                :ARG1-of (s7y2 / 遗留-01
+                    :aspect performance))
+            :manner (s7c3 / 充分)
+            :aspect activity)
+        :aspect state)
+    :ARG2 (s7g / 改为-01
+        :ARG1 (s7b3 / 版面
+            :mod (s7h6 / 黑白)
+            :part-of (s7z2 / newspaper
+                :name (s7m3 / name :op1 "《" :op2 "国家" :op3 "询问" :op4 "报" :op5 "》")
+                :ARG1-of (s7i / identity-91
+                    :ARG2 (s7x / 小报
+                        :mod (s7q / 旗下)
+                        :mod (s7b4 / 八卦))
+                    :aspect state)))
+        :ARG2 (s7b5 / 版面
+            :mod (s7c4 / 彩色))
+        :aspect performance)
+    :aspect state)
+
+# ::snt 8
+# sentence level graph:
+(s8c / 成-01
+    :ARG0 (s8y / 印刷
+        :manner (s8h / 黑白))
+    :ARG1 (s8t / 特色
+        :possessor (s8k / 刊
+            :mod (s8g / 该)))
+    :mod (s8m / 也)
+    :aspect performance)
+
+# ::snt 9
+# sentence level graph:
+(s9d2 / 达到-01
+    :ARG0 (s9l / 量
+        :quant-of (s9f / 发行-01
+            :ARG1 (s9z / newspaper
+                :name (s9m / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》"))
+            :aspect habitual)
+        :ARG1-of (s9h / have-quant-91
+            :ARG2 1200000
+            :unit (s9u / 份)
+            :aspect state))
+    :temporal (s9d / date-entity :era 1980)
+    :aspect performance)
+
+# ::snt 10
+# sentence level graph:
+(s10x / 跌-01
+    :ARG0 (s10l / 量
+        :quant-of (s10f / 发行-01
+            :ARG1 (s10k / 刊
+                :mod (s10g / 该))
+            :aspect habitual)
+        :ARG1-of (s10h / have-quant-91
+            :ARG2 83000
+            :unit (s10u / 份)
+            :aspect state))
+    :temporal (s10z / 至
+        :op1 (s10d / date-entity :year 2007))
+    :mod (s10y / 已经)
+    :aspect performance)
+
+# document level relations:
+(d / document
+    :temporal ((document-creation-time :before s6d)
+               (s6d :overlap s6c)
+               (document-creation-time :before s7c)
+               (s7c :overlap s7y)
+               (s7c :before s7g)
+               (s7y :before s7y2)
+               (s7c :overlap s7r2)
+               (s7r2 :overlap s7f)
+               (s7c :overlap s7c2)
+               (s7c :overlap s8c)
+               (document-creation-time :before s9d)
+               (s9d :overlap s9d2)
+               (s9d2 :overlap s9f)
+               (document-creation-time :before s10d)
+               (s10d :overlap s10x)
+               (s10x :overlap s10f))
+    :modal ((root :modal author)
+            (author :full-affirmative s6c)
+            (author :full-affirmative s7h)
+            (author :full-affirmative s7h2)
+            (author :full-affirmative s7c)
+            (author :full-affirmative s7h3)
+            (author :full-affirmative s7c2)
+            (author :full-affirmative s7r2)
+            (author :full-negative s7f)
+            (author :full-affirmative s7y)
+            (author :full-affirmative s7y2)
+            (author :full-affirmative s7g)
+            (author :full-affirmative s7i)
+            (author :full-affirmative s8c)
+            (author :full-affirmative s9d2)
+            (author :full-affirmative s9h)
+            (author :full-affirmative s10x)
+            (author :full-affirmative s10h))
+    :coref ((s6z :same-entity s7z1)
+            (s7z1 :same-entity s8k)
+            (s8k :same-entity s9z)
+            (s9z :same-entity s10k)))

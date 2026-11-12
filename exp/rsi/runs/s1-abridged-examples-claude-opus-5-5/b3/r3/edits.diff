@@ -1,0 +1,89 @@
+--- before
++++ after
+@@ -4,13 +4,13 @@
+ graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+ is under **Input** at the end, one sentence per line.
+ 
+-**Make the annotation as correct as you can**: it is compared node by node and relation by relation with an expert gold annotation. Check every decision against the guidelines, follow the examples, and check each graph (concepts, aspect, role direction, document-level coverage) before moving on.
++Check every decision against the guidelines and examples, and check each graph before moving on.
+ 
+ ## Guidelines
+ 
+ # UMR guidelines, abridged
+ 
+-UMR 0.9 abridged, for Chinese and English at Stage 1 (numbered PropBank roles), with the names of the UMR release data.
++
+ 
+ ## 1. What a UMR is
+ 
+@@ -81,8 +81,7 @@
+ Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. A middle dot in a transliterated name is its own `:opN` (格内洛索·波普 → `:op1 "格内洛索" :op2 "·" :op3 "波普"`).
+ In Chinese names keep the title brackets 《 》 as their own `:opN` (《世界新闻周报》 → `:op1 "《" :op2 "世界" ... :opN "》"`). Do not add `:wiki` in Chinese documents. A country or place name that modifies a noun (美国小报) is `:place`, not `:mod`. Do not corefer a repeated country name that is only such a modifier. In Chinese documents a named human is `individual-person`, not `person` (`(individual-person :name (name :op1 "格内洛索" :op2 "·" :op3 "波普"))`); keep `person` for pronouns and unnamed people. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+-`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+-`mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
++`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+ `disease`, `product`, `spaceship`, `planet` (地球), ... (as in AMR).
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+@@ -134,7 +133,7 @@
+ ### 2.6 Multi-word expressions
+ 
+ An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+-is one concept). A discontinuous word (帮……忙) is one concept aligned to its span. A fixed four-character idiom is one concept. A pair of coordinated nouns written together (奇闻轶事) is split: `(and :op1 (奇闻) :op2 (轶事))`.
++is one concept). A discontinuous word (帮……忙) is one concept aligned to its span. A pair of coordinated nouns written together (奇闻轶事) is split: `(and :op1 (奇闻) :op2 (轶事))`.
+ 
+ ## 3. Relations
+ 
+@@ -152,7 +151,7 @@
+ 
+ - Chinese adverbs are concepts, not only aspect cues. 已经, 都, 也, 甚至, 还 and 其中 → `:mod (<word>)`, but no node for 就, for 还 after 后来, for 仍 beside 继续, or for 都 in 都以…为目的; 曾经 → `:temporal (曾经)`. A medium (电视, 网络) is `:medium`.
+ - A modifier shared by coordinated nouns goes on each conjunct by reentrancy, never on the `and` node.
+-- Do not add arguments (agents, possessors, organizations) that the text does not express. Never re-use a participant from elsewhere in the sentence as an unexpressed agent or possessor: every re-entrancy needs a pronoun or an overt word. Exception: the overt subject of a control or aspectual verb (继续, 停止, 开始, 想, 打算) is also `:ARG0` of the embedded event or nominal (它停止了它的发行 → 发行 `:ARG0` 它). 旗下 is `:mod (旗下)`, not a possessor. Do not fill the subject of a later clause with an entity from an earlier clause (…，不过仍继续发行网络版: 发行 has no `:ARG0`).
++- Do not add arguments (agents, possessors, organizations) that the text does not express. Never re-use a participant from elsewhere in the sentence as an unexpressed agent or possessor: every re-entrancy needs a pronoun or an overt word. Exception: the overt subject of a control or aspectual verb (继续, 停止, 开始, 想, 打算) is also `:ARG0` of the embedded event or nominal (它停止了它的发行 → 发行 `:ARG0` 它). Likewise the verb of a quoted slogan whose owner is written (他们的标语：「只报导事实…」) takes that owner as `:ARG0`. 旗下 is `:mod (旗下)`, not a possessor. Do not fill the subject of a later clause with an entity from an earlier clause (…，不过仍继续发行网络版: 发行 has no `:ARG0`).
+ - An edition, version or part of a publication or organization (纸本, 网络版, 分部) takes `:part-of` its whole, not `:possessor` — but only when the whole is written with it (《…》的纸本). A bare 网络版 gets no `:part-of`.
+ - For an intransitive Chinese verb such as 停刊-01 (or a `-00` verb not in PropBank), the sole participant is `:ARG0`.
+ - When an event noun names what the head noun is (查证程序: the procedure is the verification), use `(程序 :ARG0-of (identity-91 :ARG1 (查证-01)))`, not `:mod`.
+@@ -246,16 +245,15 @@
+ - Every event the author asserts: `(author :full-affirmative s1e)`.
+ - 可/能/可以 before a predicate (可算是) make it `neutral-affirmative` from the author.
+ - The root abstract predicate (`identity-91`, `have-mod-91`, ...) of an asserted sentence also gets `(author :full-affirmative …)`, although it gets no temporal parent.
+-- Reported speech or thought: `(author :full-affirmative s9p)` for the speaker node, and each content event gets **both** `(author :full-affirmative X)` and `(s9p :full-affirmative X)`. The conceiver is the speaker's entity node, not the reporting verb; with no written speaker (被指) use the whole subject node of the first content event (the `and` if coordinated). The top content node (with `:quote`, even an abstract predicate) gets both `author` and conceiver triples.
++- Reported speech or thought: `(author :full-affirmative s9p)` for the speaker node. Each node carrying `:quote` (the top content node, even an abstract predicate, and a slogan's verb) gets both `(author :full-affirmative X)` and `(s9p :full-affirmative X)`; events nested inside it without their own `:quote` (the subject 报导 of 报导是真实的) get only the `author` triple. The conceiver is the speaker's entity node, not the reporting verb. With no written speaker (被指, 据说: an unverified claim) the conceiver is the whole subject node of the first content event (the `and` if coordinated), and the content events get **only** `(<subject> :full-affirmative X)`, no `author` triple; author still asserts the subject node and 指.
+ - Connectives (`but-91`, `and`, `consecutive`) get no modal triple.
+ - An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+   决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+   `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+   `(s3w :unspecified s3g)`.
+-- A conceiver that is not in the text is `null-conceiver`. A purpose the text presents as realized (founded to hold such articles, and it did) is `(author :full-affirmative <purpose>)`, not `unspecified` under the main event. An event nominal naming a usual procedure (一般的…程序) under a negated event is `(author :partial-affirmative <nominal>)`. Purpose and condition clauses may use the
+-  constants `purpose` and `have-condition` as parents of their events.
++- A conceiver that is not in the text is `null-conceiver`. A purpose the text presents as realized (founded to hold such articles, and it did) is `(author :full-affirmative <purpose>)`, not `unspecified` under the main event. An event nominal naming a usual procedure (一般的…程序) under a negated event is `(author :partial-affirmative <nominal>)`.
+ - In the sentence graph, write the strength of an event that is not `full-affirmative` from the author as
+-  `:modal-strength <value>` too (the scorers move it to the document level).
++  `:modal-strength <value>` too.
+ 
+ ### 5.3 Coreference (`:coref`)
+ 
+@@ -272,7 +270,7 @@
+ Every node of a sentence graph is aligned to the words that express it: `s1x: 4-4` (1-based word positions,
+ first and last, both included). A node with no word in the sentence (`person` for a zero pronoun, `and`
+ without a conjunction, `have-mod-91` without a copula, a `name` node) is `0-0`. A named entity's type
+-node is aligned to the name's words.
++node is aligned to the name's words. Align every sentence. A shortened repeat (周报) is aligned to its own word; in 母公司美国媒体公司, `公司 :mod 母` → 母公司 and `company` → the name words only; 外星人 before a name → the 外星人 word only.
+ 
+ 
+ 
+@@ -297,12 +295,11 @@
+ - Roles (3): 黑白印刷也成了该刊的特色 → `(成-01 :ARG0 (印刷-01 :manner (黑白) :aspect habitual) :ARG1 (特色 :poss… (刊 :mod (该))))`; temporal from previous sentence's main event.
+ 
+ - Aspect (4.1): 为充分运用… → `运用 :aspect activity`; 容纳…文章的版面 → `(版面 :ARG0-of (容纳-01 … :aspect process))`.
+-- Named person (2.2): 格内洛索·波普 → `(individual-person :name (name :op1 "格内洛索" :op2 "·" :op3 "波普"))`.
+ 
+ - Control (3): 网络版继续生存 → `(继续-01 :ARG0 s11n :ARG1 (生存-01 :ARG0 s11n :aspect state))`; temporal `(停止 :overlap 继续)`.
+ - 虽然…不过 (2.5): → `(but-91 :ARG1 (and :op1 宣称 :op2 (identity-91 :ARG1 标语 :ARG2 报导)) :ARG2 (identity-91 :ARG1 (目的 :purpose-of 报导) :ARG2 (博君一笑)))`; no modal triple on but-91/and.
+ - Quote (5.2): 宣称其报导都是真实的 → `(have-mod-91 :quote s12x …)`, `(author :full-affirmative have-mod-91) (s12n :full-affirmative have-mod-91)`, likewise each content 报导; slogan → `(identity-91 :aspect state)`.
+-- 被指 (5.1): 被指与X有暧昧关系，后来领养 → `(consecutive :op1 (有-03 :quote 指) :op2 (领养 :quote 指))`, `(指 :overlap 有) (有 :after 领养)`, conceiver = the `and` subject.
++- 被指 (5.1): 被指与X有暧昧关系，后来领养 → `(consecutive :op1 (有-03 :quote 指) :op2 (领养 :quote 指))`, `(指 :overlap 有) (有 :after 领养)`, modal `(author :full-affirmative <and-subject>) (author :full-affirmative 指) (<and-subject> :full-affirmative 有) (<and-subject> :full-affirmative 领养)`, no author triple on 有/领养.
+ - List (3): 题材有A、B等 → `(题材 :example (and :op1 A :op2 B :op3 (等)))`; 重复出现 → `:frequency (重复)`.
+ 
+ - Pronoun (2.4): 他们的报导…他们的标语 → `(报导-01 :aspect habitual)`, `(标语 :possessor s12n)`; next sentence 他们 → `(s12n :same-entity s13p)`.

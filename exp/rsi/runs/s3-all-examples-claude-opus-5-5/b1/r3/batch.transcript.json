@@ -1,0 +1,206 @@
+{
+ "model": "claude-opus-5-5",
+ "effort": "medium",
+ "max_tokens": 128000,
+ "thinking": {
+  "type": "adaptive"
+ },
+ "system": "see batch.prompt.md",
+ "tools": [
+  {
+   "name": "search_guidelines",
+   "description": "Look a rule up in the UMR guidelines (umr4nlp/umr-guidelines, guidelines.md).\n\nkeywords: terms to look for, e.g. \"aspect\", \"modal strength\", \"have-rel-role-92\", \":quant\",\n\"reentrancy\". Passages with more of the keywords come first, then those whose heading has\nthem, then those that mention them most.\nmax_results: how many passages to return (at most 10).\n\nReturns {\"sections\": [{\"heading\": the passage's place in the guidelines (\"Part 3. ... > Part\n3-3-1. Aspect\"), \"text\": the passage (a section, or a part of a long one)}], \"found\": how\nmany passages matched}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "propbank_lookup",
+   "description": "Look up a lemma and every alternate of it in PropBank (at most 20 per call).\n\nlanguage is \"en\" or \"zh\". Returns Markdown: per lemma, every roleset with its roles and all\nits examples (the sentence, then each argument; traces such as *T*-1 are PropBank's own),\nor \"not in PropBank\". Lemmas over the limit are not looked up: the last line names them\n(call again with them). There is no PropBank for another language (Uzbek): nothing.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "lemmas": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     }
+    },
+    "required": [
+     "lemmas",
+     "language"
+    ]
+   },
+   "eager_input_streaming": true
+  },
+  {
+   "name": "search_annotations",
+   "description": "Find how a case is annotated: gold UMR annotations of whole sentences.\n\nlanguage: \"zh\" (Chinese) or \"en\" (English).\nkeywords: words or pieces to look for, matched anywhere in a sentence or its annotation:\nwords of the text (e.g. \"发生\", \"wanted to\"), concepts (\"have-org-role-91\", \"identity-91\"),\nroles (\":ARG1-of\", \":manner\"), attribute values (\":aspect state\"). Sentences with more of the\nkeywords come first.\nmax_results: how many gold sentences to return (at most 10).\n\nReturns {\"gold\": [{\"doc\", \"sentence_number\", \"sentence\", \"annotation\"}], where annotation is\nthe sentence's whole annotation (words, sentence-level graph, alignment, document-level\nannotation); \"found\": how many gold sentences matched in all}.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "language": {
+      "type": "string",
+      "enum": [
+       "zh",
+       "en"
+      ]
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "how many to return, 1-10 (default 3)"
+     }
+    },
+    "required": [
+     "language",
+     "keywords"
+    ]
+   },
+   "eager_input_streaming": true
+  }
+ ],
+ "responses": [
+  {
+   "turn": 1,
+   "stop_reason": "tool_use",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 13618
+    },
+    "cache_creation_input_tokens": 13618,
+    "cache_read_input_tokens": 0,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "output_tokens": 203,
+    "output_tokens_details": {
+     "thinking_tokens": 81
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  },
+  {
+   "turn": 2,
+   "stop_reason": "end_turn",
+   "model": "claude-opus-5-5",
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4991
+    },
+    "cache_creation_input_tokens": 4991,
+    "cache_read_input_tokens": 13618,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "output_tokens": 4238,
+    "output_tokens_details": {
+     "thinking_tokens": 2148
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   },
+   "tool_choice": null
+  }
+ ],
+ "messages": [
+  {
+   "role": "user",
+   "content": "## Input\n\nLanguage: zh\nDocument: chinese_umr-0001, sentences 1-5 (5 sentences)\n\nThe document, one sentence per line: the sentence number, a tab, then its words separated by spaces.\n\n1\t《 世界 新闻 周报 》 是 一份 已经 停止 发行 的 美国 超市 小报 ， 以 报导 奇闻 轶事 、 都 会 传奇 、 恶搞 新闻 而 闻名 。\n2\t该 周报 综合 了 各式各样 奇怪 的 新闻 与 专栏 ， 其中 许多 内容 都 未经 一般 的 新闻 查证 程序 。\n3\t该 周报 也 曾经 短暂 的 拥有 过 一个 属 自己 的 电视 节目 。\n4\t目前 《 世界 新闻 周报 》 的 纸本 已经 停刊 ， 不过 仍 继续 发行 网络版 。\n5\t由于 其 荒诞不经 的 内容 ， 该 周报 被 称为 美国 历史 上 最富 创意 的 报纸 。\n"
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "CAQShgcKEAgTGAI4AUIIdGhpbmtpbmcSDOlZzNm962BbnK/6MhoMhit7+sBfBzKXj5QhIjAz/ExjjCDeBFMSojeAybjKCiw3vXsj4BtUgQFuvXNm/jndn+s+i6yA+9KWUF84OXIqowYwz9Ll16jXdmvtHBx3RTw1FUHHYi6sHSY6PxiKvqMaJFGQVt5ITIZbaQtmfLagsaczn4PkQ62lhBO563ExopYQeGIIreIzFZcwsBxs0Tie3KRLrSbzGoFAgfZPO1WYdWIfKgVHypmTBQY6bhNblxv/zQtgMh43oRPO5eDD2VjOXX0aaFK1WscebkJkp4h59wewVVtQutRC+L07NV9YwTL0qd05EG8ZfJizGvWVvg+Lf5qoxuPwj0V+ySYpzVdpvJip21SOW3EbztUKb0B3fNuBim2SJ98o0jnVe7A64ofgZpsFnrQ2KEUCmA0IRmAtcHSjSAUk3Omft6Mi4T6ez9DUSDGQUQoO9BPthQNEvciaseG53OFWRqepulClzcwXYpq54wbbDVv2bAEL+rzTKkCz1RiUB3x8vTbDQZqMZKN1wmD++lMqElEeJdAZlJ297WJIaQDKM2xdJ6L6/9DwTGJAaVMf//9oogZDbZe+YdOaSVlNp2gVtBW+v8FVESAYI8Tdy36NgGikSWXLCPk5FAX6hutNO9TfV1TXk5CG90Yc56tlyETXpQKtzfDOV0NdX53LWm3xhnuua3pJ6E8lvQxn21yONvUvPvuffptvkcwLlXZlTS2AVkaDzIVpKI4Ph8WFjpOQFFPx+BqQFj1G94UO7pGVAz/JFA1bOTYvqFG1pOuc2HVosYQHbkAX3OS3esMAPanlPa3obyCWZHXWxUsFjTs9yQycWEG4SNN7o8vdg0v7jj3SGgBB3Cn4+tHh7yMRIfQsPBhxiw2HZ0tkrjDA9hve5qzqAmsW4GEyqbgK8yG4F6llx5rr8Br+Te3IDyx/9/8wnUEU1hOkM/eXRbc67trZyOh/d1k97hit4lDStq/cq1wQ8a1ldjsgFJQNlfnDyipmy+FqadZtt0AkHhn6m/3GPTFvULAlu8hcj2iLhnQkWbFm/dgiOq/3vCIzuD64bvAL7/8zTlBHmcYxGqZp01coKBL/yU7Nd1GLC5JENb49rDChDz0/LUyjqF1LOv7gECwmuCQLhkeMml4jLsXydHTqHrCa4qgKlHauisJY7q0PuBgB",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "id": "toolu_01LvH2cncvMbj1rHC98UDQkz",
+     "input": {
+      "lemmas": [
+       "停止",
+       "发行",
+       "报导",
+       "闻名",
+       "综合",
+       "经",
+       "查证",
+       "拥有",
+       "属",
+       "停刊",
+       "继续",
+       "称为",
+       "富",
+       "恶搞"
+      ],
+      "language": "zh"
+     },
+     "name": "propbank_lookup",
+     "type": "tool_use",
+     "caller": {
+      "type": "direct"
+     }
+    }
+   ]
+  },
+  {
+   "role": "user",
+   "content": [
+    {
+     "type": "tool_result",
+     "tool_use_id": "toolu_01LvH2cncvMbj1rHC98UDQkz",
+     "content": "## 停止\n\n### 停止-01\n\n- ARG0: agent/cause\n- ARG1: thing stopped\n\nExample 1: 在 伊 入侵 科威特 之后 ， 中国 立即 停止 了 对 伊 的 军事 销售\n- ARG0: 中国\n- ARG1: 对 伊 的 军事 销售\n- ARGM-ADV: 立即\n- ARGM-TMP: 在 伊 入侵 科威特 之后\n- rel: 停止\n\nExample 2: *pro* 停止 *PRO* 实行 中央 计划 经济\n- ARG0: *pro*\n- ARG1: *PRO* 实行 中央 计划 经济\n- rel: 停止\n\nExample 3: 但 这 次 欧洲 统一 货币 的 尝试 因 第一 次 世界 大战 而 被 迫 *PRO* 停止\n- ARG1: *PRO*\n- rel: 停止\n\n## 发行\n\n### 发行-01\n\n- ARG0: issuer\n- ARG1: theme\n- ARG2: goal\n\nExample 1: 这 部分 资金 将 全部 来源于 国家 金融 机构 ， 不 对 社会 公众 发行 金融 债券 。\n- ARG1-PSR: 这 部分 资金\n- ARGM-ADV: 不\n- ARG2: 对 社会 公众\n- rel: 发行\n\nExample 2: 到 目前 为止 ， 中国 的 有关 部门 和 机构 在 美国 市场 共 发行 债券 四十七点二亿 美元\n- ARG0: 中国 的 有关 部门 和 机构\n- ARGM-LOC: 在 美国 市场\n- ARGM-ADV: 共\n- rel: 发行\n\nExample 3: 国家 开发 银行 日前 在 日本 资本 市场 成功 地 发行 了 三百亿 日元 武士 债券 。\n- ARG0: 国家 开发 银行\n- ARGM-TMP: 日前\n- ARGM-LOC: 在 日本 资本 市场\n- rel: 发行\n\nExample 4: 《 全集 》 中 的 三 卷 已 由 台湾 商务 印书馆 重印 *-1 ， 在 台北 、 香港 、 新加坡 、 吉隆坡 、 洛杉矶 发行 。\n- ARG1: 《 全集 》 中 的 三 卷\n- ARGM-ADV: 已\n- ARGM-LOC: 在 台北 、 香港 、 新加坡 、 吉隆坡 、 洛杉矶\n- rel: 发行\n\n## 报导\n\n### 报导-01\n\n- ARG0: reporter\n- ARG1: thing reported\n- ARG2: audience\n\nExample 1: *OP* *T*-1 报导 二十一 县 市 选情 的 队伍\n- ARG0: *T*-1\n- ARG1: 二十一 县 市 选情\n- rel: 报导\n\nExample 2: *pro* 报导 一 位 香港人 *PRO* 在 大陆 「 包 二奶 」\n- ARG0: *pro*\n- ARG1: 一 位 香港人\n- ARG1-PRD: *PRO* 在 大陆 「 包 二奶 」\n- rel: 报导\n\nExample 3: 你 不 报导\n- ARG0: 你\n- ARGM-ADV: 不\n- rel: 报导\n\nExample 4: 「 过去 大家 都 认为 *OP* 高尔夫 选手 *T*-2 最 成熟 、 稳定 的 阶段 在 三十 岁 以後 ， 伍兹 却 颠覆 这样 的 观念 ， 」 民生报 报导 *T*-1\n- ARG0: 民生报\n- ARG1: *T*-1\n- rel: 报导\n\n## 闻名\n\n### 闻名-01\n\n- ARG0: entity described\n- ARG1: range within which arg0 is well known\n\nExample 1: *OP* *T*-2 被 人们 称为 “ 世界 第八 奇迹 ” 的 秦 兵马俑 闻名 世界\n- ARG0: *OP* *T*-2 被 人们 称为 “ 世界 第八 奇迹 ” 的 秦 兵马俑\n- ARG1: 世界\n- rel: 闻名\n\nExample 2: *OP* *T*-2 以 *PRO* 生产 “ 康师傅 ” 方便面 而 闻名 中国 的 顶新 国际 公司\n- ARG0: *T*-2\n- ARG1: 中国\n- ARGM-MNR: 以 *PRO* 生产 “ 康师傅 ” 方便面\n- rel: 闻名\n\nExample 3: *OP* *T*-1 来自 美国 、 德国 、 日本 、 法国 、 英国 、 俄罗斯 、 加拿大 等 国家 和 台湾 、 香港 、 澳门 地区 的 许多 *OP* *T*-2 世界 闻名 的 出版社 参加 了 这 次 博览会 ， 如 英国 企鹅 图书 公司 、 蓝登 书屋 出版 公司 、 朗文 出版 公司 等\n- ARG0: *T*-2\n- ARG1: 世界\n- rel: 闻名\n\n## 综合\n\n### 综合-01\n\n- ARG0: agent/cause\n- ARG1: patient\n\nExample 1: 由于 *PRO* 几乎 综合 了 目前 国内 开发区 的 各 种 优势 ， 湄州湾 已 引起 *OP* *T*-1 越来越 多 的 海内外 客商 的 关注\n- ARG0: *PRO*\n- ARG1: 目前 国内 开发区 的 各 种 优势\n- ARGM-ADV: 几乎\n- rel: 综合\n\n## 经\n\n### 经-01\n\n- ARG0: entity described\n- ARG1: thing arg0 goes through\n\nExample 1: *OP* *T*-2 经 挑选 的 申请人 须 参加 初 次 面试\n- ARG0: *T*-2\n- ARG1: 挑选\n- rel: 经\n\nExample 2: 这些 法例 大部分 未 经 条例 草案 委员会 审议\n- ARG0: 这些 法例\n- ARG1: 条例 草案 委员会 审议\n- ARGM-ADV: 未\n- ARGM-ADV: 大部分\n- rel: 经\n\n## 查证\n\n### 查证-01\n\n- ARG0: agent\n- ARG1: thing that arg0 investigages\n\nExample 1: 但是 今后 刑事组 透过 私人 管道 查证\n- ARGM-DIS: 但是\n- ARGM-TMP: 今后\n- ARG0: 刑事组\n- rel: 查证\n\n## 拥有\n\n### 拥有-01\n\n- ARG0: entity described\n- ARG1: entity arg0 owns\n\nExample 1: 目前 厦门港 已 拥有 *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARG0: 厦门港\n- ARG1: *PRO* 至 日本 、 新加坡 、 韩国 、 美国 、 地中海 等 五 条 国际 集装箱 运输 干线\n- ARGM-ADV: 已\n- ARG0-TMP: 目前\n- rel: 拥有\n\nExample 2: 全 世界 共 拥有 电脑 四亿 台\n- ARG0: 全 世界\n- ARG1: 电脑\n- ARG1-QTY: 四亿 台\n- ARGM-ADV: 共\n- rel: 拥有\n\nExample 3: *OP* *T*-4 以 苏哈托 个人 名义 拥有 的 地产 有 １１．６ 公顷\n- ARG1: *T*-4\n- ARGM-MNR: 以 苏哈托 个人 名义\n- rel: 拥有\n\n## 属\n\n### 属-01\n\n- ARG0: entity predicated\n- ARG1: predicative\n\nExample 1: 西峡 盆地 中 大量 珍贵 恐龙蛋 化石 的 发现 ， 已 属 *PRO* 世界 罕见\n- ARG0: 西峡 盆地 中 大量 珍贵 恐龙蛋 化石 的 发现\n- ARG1: *PRO* 世界 罕见\n- ARGM-ADV: 已\n- rel: 属\n\nExample 2: *OP* *T*-1 今年 最 大 的 赛事 当 属 *OP* *T*-2 在 法国 进行 的 世界杯赛\n- ARG0: *OP* *T*-1 今年 最 大 的 赛事\n- ARG1: *OP* *T*-2 在 法国 进行 的 世界杯赛\n- ARGM-ADV: 当\n- rel: 属\n\n### 属-02\n\n- ARG0: entity described\n- ARG1: entity belonging to arg0\n\nExample 1: *OP* *pro* 为 唐家河 *OP* *T*-1 分 属 六 个 系 的 三十七 只 大 熊猫 建立 *T*-2 的 户籍 管理 档案\n- ARG0: 六 个 系\n- ARG1: *T*-1\n- ARGM-ADV: 分\n- rel: 属\n\nExample 2: 不论 *OP* *T*-1 塌下 的 斜坡 业权 谁 属 *-2 ， 他们 均 向 紧急 救援 队伍 即场 提供 土力 工程 的 专业 意见 和 指导\n- ARG0: *-2\n- ARG1-PSE: 业权\n- ARG1-PSR: *OP* *T*-1 塌下 的 斜坡\n- rel: 属\n\nExample 3: *OP* 国内 贸易部 所 属 *T*-1 中国 糖业 酒类 集团 公司\n- ARG0: 国内 贸易部\n- ARG1: *T*-1\n- rel: 属\n\nExample 4: *OP* *T*-2 国务院 侨办 所 属 中国 海外 交流 协会\n- ARG0: 国务院 侨办\n- ARG1: *T*-2\n- rel: 属\n\n## 停刊\n\n### 停刊-01\n\n- ARG0: thing (magazine) which stops circulation\n\nExample 1: 两 年 前 快报 停刊 後 ， TVBS 就 来 与 他 接触\n- ARG0: 快报\n- rel: 停刊\n\n## 继续\n\n### 继续-01\n\n- ARG0: cause, agent\n- ARG1: thing that continues\n\nExample 1: *pro* 扩大 与 发达 国家 及 广大 发展中 国家 的 合作 ， 扩大 对 外 开放 领域 ， 继续 保险业 、 零售 商业 的 *PRO* 利用 外资 试点\n- ARG0: *pro*\n- ARG1: 保险业 、 零售 商业 的 *PRO* 利用 外资 试点\n- rel: 继续\n\nExample 2: 相反 ， 随着 这些 国家 的 出口 成本 降低 ， 对 中国 出口 的 影响 仍 将 继续\n- ARG1: 对 中国 出口 的 影响\n- ARGM-MNR: 随着 这些 国家 的 出口 成本 降低\n- ARGM-ADV: 仍\n- ARGM-ADV: 将\n- rel: 继续\n\nExample 3: 国有 企业 改革 继续 推进 。\n- ARG1: 国有 企业 改革\n- ARG1-PRD: 推进\n- rel: 继续\n\n### 继续-02\n\n- ARG0: \n\nExample 1: *pro* 继续 是 *OP* *T*-1 重要 的 国际 新闻\n- rel: 继续\n\n## 称为\n\n### 称为-01\n\n- ARG0: name giver\n- ARG1: name receiver\n- ARG2: name\n\nExample 1: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话 ， 那么 文部 草原 应当 称为 *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARG1: 文部 草原\n- ARG2: *OP* 当代 藏族 牧民 *T*-1 过上 社会主义 新 生活 的 “ 乐园 ”\n- ARGM-CND: 如果 传说 中 的 “ 西天 ” 是 个 “ 极乐世界 ” 的话\n- rel: 称为\n\nExample 2: 防城港 、 钦州 、 北海 和 湛江 ， 被 人们 称为 西南 出海 大 通道 的 “ 龙头 ”\n- ARG0: 人们\n- ARG1: 防城港 、 钦州 、 北海 和 湛江\n- ARG2: 西南 出海 大 通道 的 “ 龙头 ”\n- rel: 称为\n\n## 富\n\n### 富-01\n\n- ARG0: theme\n- ARG1: thing possessed\n\nExample 1: 歌名 极 富 诗意\n- ARG0-: 歌名\n- ARG1-: 诗意\n- ARGM-ADV: 极\n- rel: 富\n\n### 富-02\n\n- ARG0: person\n\nExample 1: 富者 越 富\n- ARG0-: 富者\n- ARGM-ADV: 越\n- rel: 富\n\n### 富-03\n\n- (no roles)\n\n### 富-04\n\n- ARG0: agent/cause\n- ARG1: entity made rich by arg0\n\nExample 1: *pro* 富 了 国家 和 房地产商\n- ARG0-: *pro*\n- rel: 富\n\n## 恶搞\n\nNot in PropBank.",
+     "is_error": false
+    }
+   ]
+  },
+  {
+   "role": "assistant",
+   "content": [
+    {
+     "signature": "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",
+     "thinking": "",
+     "type": "thinking"
+    },
+    {
+     "text": "# ::snt 1\n# sentence level graph:\n(s1i / identity-91\n    :ARG1 (s1p / publication\n        :name (s1n / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\"))\n    :ARG2 (s1x / 小报\n        :quant 1\n        :unit (s1u / 份)\n        :ARG1-of (s1f / 发行-01\n            :ARG1-of (s1s / 停止-01\n                :mod (s1y / 已经)\n                :aspect state)\n            :aspect habitual)\n        :place (s1c / country\n            :name (s1n2 / name :op1 \"美国\"))\n        :mod (s1c2 / 超市)\n        :ARG1-of (s1w / 闻名-01\n            :reason (s1b / 报导-01\n                :ARG0 s1x\n                :ARG1 (s1a / and\n                    :op1 (s1a2 / and\n                        :op1 (s1q / 奇闻)\n                        :op2 (s1q2 / 轶事))\n                    :op2 (s1c3 / 传奇\n                        :mod (s1d / 都会))\n                    :op3 (s1x2 / 新闻\n                        :mod (s1e / 恶搞)))\n                :aspect habitual)\n            :aspect state))\n    :aspect state)\n\n# ::snt 2\n# sentence level graph:\n(s2a / and\n    :op1 (s2z / 综合-01\n        :ARG0 (s2x / 周报\n            :mod (s2g / 该))\n        :ARG1 (s2a2 / and\n            :op1 (s2n / 新闻\n                :mod (s2q / 奇怪)\n                :mod (s2g2 / 各式各样))\n            :op2 (s2l / 专栏\n                :mod s2q\n                :mod s2g2))\n        :aspect habitual)\n    :op2 (s2j / 经-01\n        :ARG0 (s2r / 内容\n            :quant (s2x2 / 许多)\n            :mod (s2q2 / 其中))\n        :ARG1 (s2c / 程序\n            :ARG0-of (s2i / identity-91\n                :ARG1 (s2c2 / 查证-01\n                    :ARG1 (s2n2 / 新闻)\n                    :aspect process)\n                :aspect state)\n            :mod (s2y / 一般))\n        :mod (s2d / 都)\n        :aspect process\n        :modal-strength full-negative))\n\n# ::snt 3\n# sentence level graph:\n(s3y / 拥有-01\n    :ARG0 (s3x / 周报\n        :mod (s3g / 该))\n    :ARG1 (s3p / 节目\n        :quant 1\n        :unit (s3u / 个)\n        :medium (s3t / 电视)\n        :ARG0-of (s3s / 属-02\n            :ARG1 s3x\n            :aspect state))\n    :mod (s3y2 / 也)\n    :temporal (s3c / 曾经)\n    :duration (s3d / 短暂)\n    :aspect state)\n\n# ::snt 4\n# sentence level graph:\n(s4b / but-91\n    :ARG1 (s4t / 停刊-01\n        :ARG0 (s4z / 纸本\n            :part-of (s4p / publication\n                :name (s4n / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\")))\n        :mod (s4y / 已经)\n        :temporal (s4m / 目前)\n        :aspect performance)\n    :ARG2 (s4j / 继续-01\n        :ARG1 (s4f / 发行-01\n            :ARG1 (s4w / 网络版)\n            :aspect habitual)\n        :mod (s4r / 仍)\n        :aspect activity))\n\n# ::snt 5\n# sentence level graph:\n(s5c / 称为-01\n    :ARG1 (s5x / 周报\n        :mod (s5g / 该))\n    :ARG2 (s5b / 报纸\n        :ARG1-of (s5h / have-degree-91\n            :ARG2 (s5f / 富-01\n                :ARG1 (s5c2 / 创意)\n                :aspect state)\n            :ARG3 (s5z / 最)\n            :temporal (s5s / 上\n                :op1 (s5l / 历史\n                    :place (s5c3 / country\n                        :name (s5n / name :op1 \"美国\"))))))\n    :reason (s5r / 内容\n        :mod (s5h2 / 荒诞不经)\n        :possessor s5x)\n    :aspect performance)\n\n# document level relations:\n(d / document\n    :temporal ((document-creation-time :before s1f)\n               (s1f :overlap s1s)\n               (s1f :overlap s1b)\n               (s1w :contained s1f)\n               (document-creation-time :before s2z)\n               (s2z :overlap s2j)\n               (s2j :overlap s2c2)\n               (document-creation-time :before s3y)\n               (s3y :overlap s3s)\n               (document-creation-time :depends-on s4t)\n               (s4t :overlap s4j)\n               (s4j :overlap s4f)\n               (document-creation-time :depends-on s5c)\n               (s5c :overlap s5f))\n    :modal ((root :modal author)\n            (author :full-affirmative s1i)\n            (author :full-affirmative s1f)\n            (author :full-affirmative s1s)\n            (author :full-affirmative s1w)\n            (author :full-affirmative s1b)\n            (author :full-affirmative s2z)\n            (author :full-negative s2j)\n            (author :full-affirmative s2i)\n            (author :full-affirmative s2c2)\n            (author :full-affirmative s3y)\n            (author :full-affirmative s3s)\n            (author :full-affirmative s4t)\n            (author :full-affirmative s4j)\n            (author :full-affirmative s4f)\n            (author :full-affirmative s5c)\n            (author :full-affirmative s5f))\n    :coref ((s1p :same-entity s2x)\n            (s2x :same-entity s3x)\n            (s3x :same-entity s4p)\n            (s4p :same-entity s5x)))",
+     "type": "text"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+The critique found one problem. In sentence 7 the annotator wrote the repeated newspaper entity in full under 标准, not under 改为. The cause is a contradiction in the re-entrancy rule: it said both "first in the graph" and "first in reading order". Those differ when a `have-reason-91 :ARG2` branch is written last in PENMAN but comes first in the text.
+
+I change the rule to use the sentence's word order only, whatever the PENMAN order. I also add a note to the existing 改为 example that 改为 holds the full node even though its branch is written last. Everything else stays, since all other checks matched gold.
+
+```json
+{"summary": "Resolve the contradictory re-entrancy rule: build a repeated entity in full at its first mention in the sentence's word order, even when that branch is written later in PENMAN (e.g. under have-reason-91 :ARG2); annotate the 改为 example accordingly.", "edits": [
+{"op": "replace", "old": "- Build a repeated entity in full (name, apposition, modifiers) at its first mention in the graph (first in reading order), and refer to it at later mentions in the same sentence by its bare variable (`:possessor s7n`).", "new": "- Build a repeated entity in full (name, apposition, modifiers) at the mention that comes **first in the sentence's word order**, even when that mention's branch is written later in the PENMAN graph (e.g. under `have-reason-91 :ARG2`, which follows the `:ARG1` branch). Every other mention, including ones in branches written earlier in the graph, is the bare variable (`:possessor s7n`)."},
+{"op": "replace", "old": "no `:ARG0`; later `(标准 :possessor s7n)`.", "new": "no `:ARG0`; later `(标准 :possessor s7n)`. 改为 holds the full node because its clause comes first in the text, although it is `have-reason-91 :ARG2` and the 标准 branch (under `:ARG1`) is written before it."}
+]}
+```

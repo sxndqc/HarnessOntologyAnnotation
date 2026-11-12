@@ -1,0 +1,44 @@
+I made seven targeted fixes from the critique and freed space by deleting redundant text, since the instruction was near its 30,000-character limit.
+
+**Fixes:**
+1. **Verbs before nouns (合成照片):** a verb with a roleset that modifies the noun it produces is now an `:ARG1-of` event. It gets an aspect plus temporal and modal triples, and it counts as the first modifier in the chaining rule.
+2. **Defective or wrong rolesets:** use `<word>-00` when the roleset has empty arguments or its examples show another meaning (注销-00, 背书-00).
+3. **在-phrases:** a 在-phrase fills the roleset's location argument when there is one (刊登-01 `:ARG1`), not `:place`.
+4. **Speaker as conceiver:** the speaker conceives a reporting verb only when it has reported content. With a headline `publication :name` or an article noun as object, the verb gets only an author triple.
+5. **`:quote` after 报导「…」:** `:quote` goes on 报导 itself (pointing to its own variable), not on the content events.
+6. **全/整/各 + noun:** split into the noun with `:mod (全)`.
+7. **Conjuncts of an argument-level `and`:** each takes the governing event as temporal parent. The "B's parent is A" rule is now limited to clause-level coordination.
+
+**Deleted to make room:**
+- the two-level overview lines in section 1;
+- the past/present/future-reference sentence;
+- a duplicate 量 note;
+- three redundant examples (属, superlative, 1980年代);
+- three checklist items that repeat existing rules.
+
+Short examples for each fix are appended to "## Examples".
+
+```json
+{"summary": "Noun-modifying verbs become ARG1-of events (合成照片); -00 for defective/mismatched rolesets; 在-phrase fills a roleset location arg; speaker conceives 报导 only with reported content; :quote on 报导 for 「」 content; 全世界 split; argument-level and conjuncts take the governing event as temporal parent. Trimmed redundant text and examples for space.", "edits": [
+{"op": "delete", "old": "A UMR has two levels."},
+{"op": "delete", "old": "- **Sentence level**: one PENMAN graph per sentence (concepts, roles, attributes)."},
+{"op": "delete", "old": "- **Document level**: temporal, modal and coreference relations across sentences."},
+{"op": "delete", "old": " Use `past-reference` / `present-reference` / `future-reference` only for vague times not tied to the moment of writing."},
+{"op": "delete", "old": " (Not 发行-01 under `量 :quant-of`: it has no aspect.)"},
+{"op": "delete", "old": "- 属 (3): 属自己的节目 → `(p / 节目 :ARG0-of (s / 属-02 :ARG1 x))`."},
+{"op": "delete", "old": "- Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`."},
+{"op": "delete", "old": "; 1980年代 → `(d / date-entity :era 1980)`"},
+{"op": "delete", "old": "- Every event has `:aspect`; negated events have `:polarity -`."},
+{"op": "delete", "old": "- Every event and time expression has a temporal parent; every event has a modal parent."},
+{"op": "delete", "old": "- No argument or `:possessor` the text does not express: no owner added to a name, no subject on a phrase-level `:purpose` verb."},
+{"op": "replace", "old": "复制人 → `人 :ARG1-of (复制-01 :aspect process)`.", "new": "复制人 → `人 :ARG1-of (复制-01 :aspect process)`. A verb with a roleset directly before the noun it produces (合成照片) is an event, never a bare `:mod`: `N :ARG1-of (合成-01 :aspect performance)` with temporal and modal triples; it is the first modifier event in the chaining rule (5.1)."},
+{"op": "insert_after", "anchor": "in PropBank is `<word>-00`.", "text": " So is a word whose roleset has empty arguments or whose examples show another meaning (注销 'printed a photo' → `注销-00`; `背书-00`)."},
+{"op": "insert_after", "anchor": "For 属-02 the thing owned is `:ARG0` and the owner `:ARG1`.", "text": " A 在-phrase fills the roleset's location argument if it has one (刊登-01 `:ARG1`), not `:place`."},
+{"op": "replace", "old": "A publication or person conceives its own reporting verbs (报导, 指, 注销, 宣称):", "new": "A publication or person conceives its own reporting verbs (报导, 指, 注销, 宣称) when they have reported content:"},
+{"op": "insert_after", "anchor": "no author triple on V.", "text": " If the object is a `publication :name` headline or an article noun (no reported content), write only `(author :full-affirmative V)` and no speaker triple."},
+{"op": "insert_after", "anchor": "never on the connective.", "text": " Exception: for a 「…」 clause right after 报导, put `:quote` on 报导-01 itself (its own variable), none on the content events."},
+{"op": "replace", "old": "- 一些/许多/几 → `:quant (一些)`, not `:mod`.", "new": "- 一些/许多/几 → `:quant (一些)`, not `:mod`. 全/整/各 + noun (全世界) → noun `:mod (全)`, not one concept."},
+{"op": "replace", "old": "In `(and :op1 A :op2 B)`, B's parent is A: `(A :overlap B)`, never document-creation-time.", "new": "In a clause-level `(and :op1 A :op2 B)`, B's parent is A: `(A :overlap B)`, never document-creation-time. When the `and` is an argument of an event, each conjunct takes that event as parent."},
+{"op": "append", "text": "\n- Noun-modifying verb (2.1): 合成握手照片 → `(照片 :ARG1-of (h / 合成-01 :aspect performance) :mod (w / 握手-01))`, `(注销 :overlap h)` `(h :overlap w)` `(author :full-affirmative h)`.\n- Roles (3): 在显著位置刊登 → `刊登-01 :ARG1 (位置 :ARG0-of 显著-01)`; 全世界 → `(世界 :mod (全))`.\n- Argument and (5.1): 点出荒谬与可笑 → `(点出 :overlap 荒谬)` `(点出 :overlap 可笑)`.\n- Report of a headline (5.2): 他们也报导了一篇「…」 → only `(author :full-affirmative 报导)`, no triple on 他们."}
+]}
+```

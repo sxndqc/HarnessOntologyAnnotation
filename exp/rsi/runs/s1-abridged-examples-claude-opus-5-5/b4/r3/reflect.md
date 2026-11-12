@@ -1,0 +1,40 @@
+I made seven targeted fixes, plus space-saving deletions to stay under the 30,000-character limit.
+
+1. **报导「…」 clauses.** For 报导, `:quote` now goes on the 报导 node itself, pointing to itself, and on none of the content events. Content of 指, 宣称 and 说 keeps per-event `:quote`.
+2. **支持/帮助/让 X V.** These now follow the CPB frame: X is the `:ARG0` of V, and the whole V-clause is `:ARG1`. 支持-01 has no `:ARG2`. An event that is a complement inside another content event (当 under 支持) gets no `:aspect` and no modal triple.
+3. **Shared subjects.** The control exception now also covers 有能力/有资格 + V. It also covers a 为了/为 purpose clause, whose `:ARG0` is the main-clause subject.
+4. **Clause-initial 为了 X，Y with a completed main event.** This becomes `have-reason-91` with no aspect, temporal parent or modal triple on it, and X is `performance`. The 也 node is kept even when a 为了 clause comes before it.
+5. **Repeated nouns.** The same-sentence re-entrancy rule is limited to named or specific referents. A bare kind noun repeated in another clause gets its own node.
+6. **have-example-91.** It gets no aspect, temporal parent or modal triple.
+7. **V+N modifiers and smaller items.**
+   - A specific V+N object is `performance` and `:overlap` its governing event.
+   - A V+N naming a kind is `process` with no temporal parent.
+   - `:before` is only for explicit 下来/出来 resultatives.
+   - A locative place argument keeps 上 in its concept (墙上).
+   - Coordinated adjectives inside an argument hang from the governing event.
+
+To make room, I deleted several old examples whose rules are already stated in the text, and added short examples for each new fix.
+
+```json
+{"summary": "报导「…」 :quote on the report node itself; 支持 X V CPB roles and no aspect/modal on nested complement; control exception extended to 有能力 V and 为了 clauses; clause-initial 为了 → have-reason-91 without aspect/modal, purpose performance, 也 kept; re-entrancy only for specific referents; have-example-91 bare; V+N kind vs specific aspect/temporal; 墙上 kept; adjective conjuncts hang from governing event; trimmed old examples.", "edits": [
+{"op": "replace", "old": "A 「…」 that is the direct object of a reporting verb (报导, 说, 称, 指) with no such noun is reported content: a full clause (events, arguments, aspect, temporal and modal triples), each event `:quote <report>`.", "new": "A 「…」 that is the direct object of a reporting verb (报导, 说, 称, 指) with no such noun is reported content: a full clause (events, arguments, temporal and modal triples). After 报导, `:quote` goes on the 报导 node itself (pointing to itself), none on the content events; after 指/宣称/说, each content event gets `:quote <report>`."},
+{"op": "replace", "old": "Every event of reported or claimed content (宣称, 指, 报导「…」, a slogan) carries `:quote <reporting event>`.", "new": "Every event of reported or claimed content (宣称, 指, a slogan) carries `:quote <reporting event>` (报导「…」: see 2.2)."},
+{"op": "replace", "old": "for change-of-state and amount verbs (成-01, 达到-01, 跌-01, 增至) the theme is `:ARG0` (成-01 `:ARG0` theme, `:ARG1` result). Look it up.", "new": "for change-of-state and amount verbs (成-01, 达到-01, 跌-01, 增至) the theme is `:ARG0` (成-01 `:ARG0` theme, `:ARG1` result). Look it up. 支持/帮助/让 X V: X is `:ARG0` of V and the V-clause is `:ARG1` (支持-01 has no `:ARG2`). An event that is the complement inside another content event (当 under 支持) gets no `:aspect` and no modal triple."},
+{"op": "replace", "old": "(它停止了它的发行 → 发行 `:ARG0` 它).", "new": "(它停止了它的发行 → 发行 `:ARG0` 它); likewise the subject of 有能力/有资格 + V is `:ARG0` of V, and the main-clause subject is `:ARG0` of a 为了/为 purpose clause."},
+{"op": "replace", "old": "*in order to* (为了)\n  → `:purpose`;", "new": "*in order to* (为了)\n  → `:purpose`, but a clause-initial 为了 X，Y with a completed main event → `(have-reason-91 :ARG1 Y :ARG2 X)`, with no `:aspect`, temporal parent or modal triple on have-reason-91, X `performance`;"},
+{"op": "replace", "old": "也 only as the sole adverb of a simple clause;", "new": "也 whenever it is the clause's only adverb (also after a 为了 clause);"},
+{"op": "replace", "old": "A purpose event (为/为了 X, `have-purpose-91 :ARG2`, `:purpose`) is `activity`, not `performance`, even when it is modally full-affirmative.", "new": "A purpose event (为/为了 X, `have-purpose-91 :ARG2`, `:purpose`) is `activity`, not `performance`, even when it is modally full-affirmative (except the clause-initial 为了 have-reason-91 case of 2.5)."},
+{"op": "replace", "old": "and refer to it at later exact repeats in the same sentence by its bare variable (`:possessor s7n`).", "new": "and refer to it at later exact repeats in the same sentence by its bare variable (`:possessor s7n`) — only for named or specific referents; a bare kind noun (外星人) repeated in another clause gets its own node."},
+{"op": "replace", "old": "如 + an example clause → root `(have-example-91 :ARG1 (implicit-predicate) :ARG2 <main event>)`.", "new": "如 + an example clause → root `(have-example-91 :ARG1 (implicit-predicate) :ARG2 <main event>)`; have-example-91 gets no `:aspect`, temporal parent or modal triple; anchor its `:ARG2` event as the main event."},
+{"op": "replace", "old": "(合成照片, 复制人) → `N :ARG1-of (V-01 :aspect performance/process)`;", "new": "→ `N :ARG1-of V-01`: a specific object (合成照片) → `:aspect performance`, `:overlap` its governing event; a kind (复制人) → `:aspect process`, no temporal parent;"},
+{"op": "replace", "old": "A resultative participle (遗留下来) comes before the event that uses it (`(运用 :before 遗留)`).", "new": "Only an explicit V+下来/出来 resultative (遗留下来) comes before the event that uses it (`(运用 :before 遗留)`)."},
+{"op": "replace", "old": "A frame such as 历史上 / 在…上 is `:temporal (上 :op1 (历史))` on the noun, not an `:ARG4` of `have-degree-91`.", "new": "A frame such as 历史上 / 在…上 is `:temporal (上 :op1 (历史))` on the noun, not an `:ARG4` of `have-degree-91`; but a locative noun that is a verb's place argument (贴到墙上) keeps 上: `(墙上)`."},
+{"op": "replace", "old": "In `and`-coordination the time phrase stays on the first conjunct only, and each `:opN` hangs from `:opN-1` with `:overlap`.", "new": "In `and`-coordination of clauses the time phrase stays on the first conjunct only, and each `:opN` hangs from `:opN-1` with `:overlap`; coordinated adjectives inside an argument each hang from the governing event (`(点出 :overlap 可笑)`)."},
+{"op": "delete", "old": "- Clause links (2.5): 因为 X，为 Y，于是 Z → `(have-reason-91 :ARG1 (have-purpose-91 :ARG1 创立 :ARG2 运用 :aspect state) :ARG2 改为 :aspect state)`; temporal `(创立 :overlap 运用) (创立 :before 改为)`."},
+{"op": "delete", "old": "- 改为 (3): 小报《…》将由黑白版面改为彩色版面 …不符合《…》标准 → `(改为-01 :ARG1 (版面 :part-of (s7n / newspaper :name … :ARG1-of (identity-91 :ARG2 (小报 …))) :mod (黑白)) :ARG2 (版面 :mod (彩色)))`, no `:ARG0`; later `(标准 :possessor s7n)`."},
+{"op": "delete", "old": "- 虽然…不过 (2.5): → `(but-91 :ARG1 (and :op1 宣称 :op2 (identity-91 :ARG1 标语 :ARG2 报导)) :ARG2 (identity-91 :ARG1 (目的 :purpose-of 报导) :ARG2 (博君一笑)))`; no modal triple on but-91/and."},
+{"op": "delete", "old": "- 被指 (5.1): 被指与X有暧昧关系，后来领养 → `(consecutive :op1 (有-03 :quote 指) :op2 (领养 :quote 指))`, `(指 :overlap 有) (有 :after 领养)`, conceiver = the `and` subject."},
+{"op": "delete", "old": "- 曾经 + 过 (4.1, 5.1): 也曾经短暂的拥有过一个节目 → `(拥有-01 :temporal (曾经) :aspect state)`, `(document-creation-time :before 拥有) (拥有 :overlap …)`; 曾经 has no temporal parent."},
+{"op": "append", "text": "\n- 报导「…」 (2.2, 3): 报导「外星人支持布什当总统」 → `(报导-01 :quote <itself> :ARG1 (支持-01 :ARG0 (外星人) :ARG1 (当-02 :ARG0 布什 :ARG1 (总统))))`; 当 no aspect/modal; a later 外星人 is a new node.\n- 为了 (2.5): 为了讽刺…，他们也…报导 → `(have-reason-91 :ARG1 (报导-01 :mod (也)) :ARG2 (讽刺-01 :ARG0 他们 :aspect performance))`; 有能力点出 → `点出 :ARG0 编辑`.\n- V+N (2.1): 合成照片 → `(注销 :overlap 合成)`; 复制人 → `复制-01 :aspect process`, no temporal parent; have-example-91 bare.\n"}
+]}
+```

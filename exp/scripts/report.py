@@ -238,6 +238,103 @@ def file_links(method, sub, label, d, root=RUNS):
     return H(" · ".join(out))
 
 
+RSI_RUNS = os.path.join(EXP, "rsi", "runs")
+TRAJ = [("s3-all-rules-claude-opus-5-5", "三个工具 · 规则型", 1, "circle"),
+        ("s3-all-examples-claude-opus-5-5", "三个工具 · 例子型", 2, "diamond"),
+        ("s1-abridged-rules-claude-opus-5-5", "无工具 · 规则型", 3, "circle"),
+        ("s1-abridged-examples-claude-opus-5-5", "无工具 · 例子型", 4, "diamond")]
+STEPS = [("v0", "起点"), ("after-b1", "batch 1 后"), ("after-b2", "batch 2 后"), ("after-b3", "batch 3 后"),
+         ("after-b4", "batch 4 后")]
+
+
+def rsi_cost(d):
+    """List-price cost of every call of a trajectory, by kind."""
+    import glob
+    tot = {}
+    for f in glob.glob(os.path.join(d, "**", "*.transcript.json"), recursive=True):
+        t = json.load(open(f, encoding="utf-8"))
+        c = sum(K.priced(CLAUDE, r["usage"])[0] + K.priced(CLAUDE, r["usage"])[1] for r in t["responses"])
+        k = ("critique" if f.endswith("critique.transcript.json") else "reflect" if f.endswith("reflect.transcript.json")
+             else "test" if os.sep + "test" + os.sep in f else "annotate")
+        tot[k] = tot.get(k, 0) + c
+    return tot
+
+
+def rsi_section(P):
+    TESTD = ["zh-0028", "zh-0032"]
+    P.append('<h2 id="rsi">第四步：RSI（改 instruction）</h2>')
+    P.append("<p>从 s3-all（缩略版 guideline + 三个工具）或 s1-abridged（只有缩略版 guideline，没有工具）出发，只改 instruction"
+             "（任务说明和缩略版 guideline；输出格式和工具说明不改）。训练文档 <code>chinese_umr-0001</code>（shared task 训练数据，"
+             "训练时 gold 搜索不返回它），每 5 句一个 batch，共 4 个 batch（第 1–20 句）：标注 → umrjudge 和 gold 对比 → critique"
+             "（看判错的单元，提修改意见，可以用三个工具核对）→ reflect（改 instruction，≤3 万字符，不抄测试文档）→ 重标这一批，"
+             "AnCast++ 综合分比之前最好的高才保留；每个 batch 反思 3 次。每个 batch 后用当时最好的版本标测试文档 zh-0028、zh-0032。"
+             "两种反思方式：<b>规则型</b>只写一般规则，不准记录细节（也不准抄训练文档）；<b>例子型</b>把出错的地方整理成具体例子记进 "
+             "instruction。模型都是 Claude Opus 5.5（API，effort medium）。代码 %s，说明见 exp/README.md。</p>"
+             % link("exp/rsi/rsi.py", "exp/rsi/rsi.py"))
+    data = {}
+    for traj, _, _, _ in TRAJ:
+        for tag, _ in STEPS:
+            p = os.path.join(RSI_RUNS, traj, "test", tag, "scores.json")
+            if os.path.exists(p):
+                data[(traj, tag)] = B.metrics(json.load(open(p, encoding="utf-8"))["docs"], TESTD)[0]
+    series = [(name, slot, mk) for _, name, slot, mk in TRAJ]
+    facets = []
+    for metric, key in (("Smatch F", "Smatch F"), ("AnCast++ 综合", "AnCast Comprehensive"), ("juːmæʧ F", "juːmæʧ F")):
+        facets.append((metric, {si: [(data.get((t[0], tag)) or {}).get(key) for tag, _ in STEPS] for si, t in enumerate(TRAJ)}))
+    P.append(C.line_facets("测试文档 zh-0028 + zh-0032 上的学习曲线", ["起点", "b1", "b2", "b3", "b4"], facets, series,
+                           ymin=35, ymax=65, step=5))
+    P.append('<p class="note">横轴是起点和每个 batch（b1–b4）结束后的版本；颜色区分四条轨迹，圆点 = 规则型、菱形 = 例子型。悬停在某一列上看四条轨迹的数值。'
+             "起点的 Smatch 在四条轨迹间有零点几的差别，是 Smatch 自身的随机性（同样的文件）。</p>")
+    rows = []
+    for traj, name, _, _ in TRAJ:
+        st = json.load(open(os.path.join(RSI_RUNS, traj, "state.json"), encoding="utf-8"))
+        vers = {"v0": 0}
+        vers.update({"after-b%d" % b["batch"]: b["version"] for b in st["batches"]})
+        for tag, label in STEPS:
+            x = data.get((traj, tag))
+            if not x:
+                continue
+            v = vers.get(tag, 0)
+            vp = "exp/rsi/runs/%s/versions/v%d.md" % (traj, v)
+            size = len(open(os.path.join(os.path.dirname(EXP), vp), encoding="utf-8").read())
+            rows.append([name, label, fmt(x["Smatch F"]), fmt(x["Smatch R"]), fmt(x["Smatch P"]),
+                         fmt(x.get("AnCast Comprehensive")), fmt(x.get("AnCast F")), fmt(x["juːmæʧ F"]),
+                         fmt(x["juːmæʧ R"]), fmt(x["juːmæʧ P"]), H(link(vp, "v%d（%d 字符）" % (v, size))),
+                         H(link("exp/rsi/runs/%s/test/%s/" % (traj, tag), "测试结果"))])
+    P.append(table(["轨迹", "版本", "Smatch F", "S R", "S P", "AnCast++ 综合", "AnCast 句子级 F", "juːmæʧ F", "J R", "J P",
+                    "instruction", "目录"], rows, title="每条轨迹、每个 batch 后的测试分数和 instruction"))
+    rows = []
+    for traj, name, _, _ in TRAJ:
+        st = json.load(open(os.path.join(RSI_RUNS, traj, "state.json"), encoding="utf-8"))
+        for b in st["batches"]:
+            refl = []
+            for r in b["reflections"]:
+                refl.append("–（没改成）" if r["score"] is None else "%.1f%s" % (r["score"], " ✓" if r.get("accepted") else ""))
+            rows.append([name, "batch %d（第 %d–%d 句）" % (b["batch"], b["first"], b["last"]), "%.1f" % b["start"]]
+                        + refl + ["%.1f" % b["end"], "v%d" % b["version"],
+                                  H(link("exp/rsi/runs/%s/b%d/" % (traj, b["batch"]), "critique、reflect、改动"))])
+    P.append(table(["轨迹", "batch", "开始", "反思 1", "反思 2", "反思 3", "结束", "版本", "记录"], rows,
+                   title="训练：每个 batch 上的 AnCast++ 综合分（✓ = 保留）",
+                   note="batch 上的分数是改过 instruction 之后在同一批句子上重标的，critique 看过这批句子的 gold，所以会涨得很高（到 80–100），"
+                        "主要是对这一批的拟合；真正看学到没有要看测试文档。instruction 在第 2–3 个 batch 就接近 3 万字符的上限，"
+                        "之后每次修改都要删掉一些东西才能加。"))
+    cols, delta = [], {}
+    for traj, name, _, _ in TRAJ:
+        cols += [("%s 起点" % name, traj, "test", "v0"), ("%s batch 4 后（差）" % name, traj, "test", "after-b4")]
+        delta["%s batch 4 后（差）" % name] = "%s 起点" % name
+    P.append(md_table(B.table(cols, TESTD, delta, root=RSI_RUNS), "测试文档上的全部分项：起点和 batch 4 后的差"))
+    rows = []
+    for traj, name, _, _ in TRAJ:
+        c = rsi_cost(os.path.join(RSI_RUNS, traj))
+        rows.append([name] + ["$%.2f" % c.get(k, 0) for k in ("annotate", "critique", "reflect", "test")]
+                    + ["$%.2f" % sum(c.values()), H(link("exp/rsi/runs/%s/" % traj, "目录"))])
+    P.append(table(["轨迹", "标注 batch", "critique", "reflect", "测试", "合计", "目录"], rows,
+                   title="每条轨迹的花费（按 Opus 5.5 价格算）",
+                   note="包括起点测试（和 s3-all、s1-abridged 是同样的请求，走的缓存，实际没花钱）。另外三条轨迹第一次跑时因为解析 bug 中途作废，"
+                        "那部分大约又花了 $25–30，不在表里。规则型 + 三个工具这条用的 reflect prompt 少了后来加的一句"
+                        "“（如果标注模型有工具）”，其余相同。"))
+
+
 def main():
     import subprocess
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=EXP, capture_output=True, text=True).stdout.strip()
@@ -249,7 +346,7 @@ def main():
     P.append("<nav>" + "".join('<a href="#%s">%s</a>' % (a, t) for a, t in [
         ("setup", "设定"), ("main", "主结果"), ("methods", "三种方法"), ("chat", "chat"), ("breakdown", "分项"),
         ("ablation", "一句句跑"), ("alltools", "三个工具"), ("usage", "工具与用量"), ("cost", "花费"),
-        ("files", "逐文件结果与链接"), ("archived", "已归档的旧结果"), ("caveats", "局限")]) + "</nav>")
+        ("rsi", "第四步：RSI"), ("files", "逐文件结果与链接"), ("archived", "已归档的旧结果"), ("caveats", "局限")]) + "</nav>")
 
     # ---------------------------------------------------------------- setup
     P.append('<h2 id="setup">设定</h2>')
@@ -541,6 +638,9 @@ def main():
     P.append('<p class="note">到目前为止 API 实际用掉的（按上面的价格算，所有跑过的 API 运行，包括已归档的）：Claude 约 $%.0f，'
              "gpt-6.1-sol 约 $%.0f，gpt-6-astra 约 $%.0f。</p>" % (spent.get(CLAUDE, 0), spent.get(SOL, 0),
                                                                 spent.get("gpt-6-astra-medium", 0)))
+
+    # ---------------------------------------------------------------- RSI
+    rsi_section(P)
 
     # ---------------------------------------------------------------- per-file results and links
     P.append('<h2 id="files">逐文件结果与文件链接</h2>')

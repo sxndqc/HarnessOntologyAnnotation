@@ -1,0 +1,36 @@
+The critique's largest losses were in temporal and coreference. Part of the temporal loss came from the instruction itself: it had a wrong example and a rule built on that example. These are the changes:
+
+1. **Temporal (5.1).**
+   - Rewrote the 目前/现在 rule. The time word is a graph node with no temporal parent of its own. The clause's main event is linked to document-creation-time with `:depends-on`, and the other events are chained from it with `:overlap`.
+   - Removed the conflicting mention of 现在 under the vague time words.
+   - Fixed the wrong example.
+   - Added a rule for copular-root sentences: anchor only the first inner event, hang the others from it, and anchor at most one event to document-creation-time.
+   - Strengthened the governing-event rule for events that modify nouns.
+2. **Coreference (5.3).** Added restraint: link only the same individual or the same single event. Do not link the same verb with different arguments, or the same head noun with different restrictors. No `:subset-of` inside one sentence.
+3. **Aspect.** Narrowed the "已经 + end verb = state" cue to relative clauses that describe an entity. As the main predicate it is `performance`.
+4. **Roles.**
+   - Editions and parts of a publication take `:part-of`.
+   - The sole participant of an intransitive Chinese verb missing from PropBank is `:ARG0`.
+   - Do not fill the subject of a later clause from an earlier clause.
+   - An event noun that names what the head noun is uses `identity-91`.
+5. **Concepts.**
+   - Keep compound verbs whole (称为-01).
+   - 历史上 is `:temporal (上 :op1 历史)`.
+   - `have-degree-91` gets no aspect.
+6. **Modal (5.2).** The root abstract predicate of an asserted sentence gets `(author :full-affirmative …)`.
+
+I added matching examples for each fix.
+
+```json
+{"summary": "Fix the 目前 temporal rule and its wrong example; add copular-root anchoring and governing-event rules; restrain coreference; narrow the 已经+end-verb state cue; add role rules (:part-of for editions, ARG0 for intransitive -00 verbs, no borrowed subjects, identity-91 for event-noun heads); keep compound verbs whole, 历史上 as :temporal, no aspect on have-degree-91; modal triple for root abstract predicate; update examples.", "edits": [
+{"op": "replace", "old": "- A relative time word such as 目前 or 现在 is a time node attached as `(document-creation-time :depends-on <node>)`. Do not attach it to `present-reference`. Then chain the events from it with `:overlap`.", "new": "- A relative time word such as 目前 or 现在 is a `:temporal` node in the graph but gets **no** temporal parent of its own. Link the main event of its clause to `document-creation-time` with `:depends-on` (`(document-creation-time :depends-on <main event>)`), then chain the other events from that main event with `:overlap`.\n- When the root is an abstract predicate (`identity-91`, `have-mod-91`), anchor to `document-creation-time` the first event inside it (usually a relative-clause event such as 发行) and hang every other event from that event: an end verb (停止) `:overlap`; a reputation or state holding within it (闻名) `:contained`; a co-occurring activity (报导) `:overlap`. Never anchor more than one event of a sentence to `document-creation-time`.\n- An event that modifies a noun hangs from the event whose argument that noun is (查证 inside 程序, the argument of 经 → `(经 :overlap 查证)`), not from the sentence's first event."},
+{"op": "replace", "old": "(*nowadays*, 现在) on `past-reference` / `present-reference` / `future-reference`.", "new": "(*nowadays*) on `past-reference` / `present-reference` / `future-reference` (for 目前/现在 see the rule below)."},
+{"op": "replace", "old": "已经 + 停止 or another end verb used to describe an entity is `state` (the resulting state).", "new": "已经 + 停止 or another end verb is `state` only inside a relative clause that describes an entity (已经停止发行的小报); as the main predicate, 已经 + an end verb (已经停刊) is `performance`."},
+{"op": "insert_after", "anchor": "- Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.", "text": "\n- Link two mentions only when they pick out the same individual or the same single event. Do not link two mentions of the same verb with different arguments, times or polarity (发行 of the print edition vs 发行 of the online edition). Do not link noun phrases with the same head but different restrictors (许多内容 vs 荒诞不经的内容). Never put a `:subset-of` triple inside one sentence. When in doubt, leave the link out; chains like 周报 / 该周报 / 《…周报》 are what gold annotates."},
+{"op": "insert_after", "anchor": "- Every event the author asserts: `(author :full-affirmative s1e)`.", "text": "\n- The root abstract predicate (`identity-91`, `have-mod-91`, ...) of an asserted sentence also gets `(author :full-affirmative …)`, although it gets no temporal parent."},
+{"op": "insert_after", "anchor": "- Do not add arguments (agents, possessors) that the text does not express or clearly imply.", "text": " Do not fill the subject of a later clause with an entity from an earlier clause (…，不过仍继续发行网络版: 发行 has no `:ARG0`).\n- An edition, version or part of a publication or organization (纸本, 网络版, 分部) takes `:part-of` its whole, not `:possessor`.\n- For an intransitive Chinese verb not in PropBank (停刊, 停业), the sole participant is `:ARG0`.\n- When an event noun names what the head noun is (查证程序: the procedure is the verification), use `(程序 :ARG0-of (identity-91 :ARG1 (查证-01)))`, not `:mod`."},
+{"op": "insert_after", "anchor": "in PropBank is `<word>-00`.", "text": " Keep compound verbs whole (称为 → `称为-01`, not `称-01`)."},
+{"op": "insert_after", "anchor": "not `:degree`.", "text": " `have-degree-91` gets no `:aspect`. A frame such as 历史上 / 在…上 is `:temporal (上 :op1 (历史))` on the noun, not an `:ARG4` of `have-degree-91`."},
+{"op": "replace", "old": "- Temporal chain (5.1): 目前…发行…网络版 → `(document-creation-time :depends-on s4x) (s4x :overlap s4x2) (s4x2 :overlap s4x6)`. The other events of a sentence hang from its main event: `(document-creation-time :before s1x3) (s1x3 :overlap s1x4)`.", "new": "- Temporal chain (5.1): 目前…停刊，不过仍继续发行网络版 → `(document-creation-time :depends-on s4x 停刊) (s4x :overlap s4x2 继续) (s4x2 :overlap s4x6 发行)`; 目前 has no temporal parent.\n- Copular root (5.1): 是…已经停止发行的小报，以报导…而闻名 → `(document-creation-time :before 发行) (发行 :overlap 停止) (闻名 :contained 发行) (发行 :overlap 报导)`; modal `(author :full-affirmative identity-91)`.\n- Coref (5.3): 发行 (print, stopped) vs 发行 (online edition, continuing) → no `:same-event`.\n- Aspect (4.1): main predicate 纸本已经停刊 → `(停刊-00 :ARG0 (纸本 :part-of (newspaper …)) :aspect performance)`.\n- Degree (2.3): 美国历史上最…的报纸 → `(报纸 :temporal (上 :op1 (历史 :place (country …))))`, `have-degree-91` without aspect; 称为 → `称为-01`."}
+]}
+```

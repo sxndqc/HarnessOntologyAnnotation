@@ -1,0 +1,1055 @@
+<!-- system -->
+You review UMR annotations made with an instruction, and say what in the instruction should change.
+<!-- user -->
+An annotator (a model) annotated the sentences below in Uniform Meaning Representation (UMR), following the instruction below. A judge (umrjudge) then compared its annotation with the expert gold annotation, check by check (concepts, senses, roles, attributes, named entities, reentrancy, and the document-level temporal, modal and coreference relations).
+
+Your task: find the error patterns that cost the most, explain why they happen given the instruction (a rule that is missing, unclear, wrong, or not followed), and say what to change in the instruction to fix them so that they do not recur on other documents. Order them by cost, most costly first. Say also what the annotator got right that the instruction should keep. For each problem give one or two concrete examples from these sentences: the words, what the annotation had, and the correct annotation fragment.
+
+You may use the tools to check the guidelines (search_guidelines), PropBank (propbank_lookup) and how other gold annotations do a case (search_annotations).
+
+# The instruction
+<instruction>
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+is under **Input** at the end, one sentence per line.
+
+**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+and document-level relation counts. Take the time this needs:
+
+- Read the guidelines below carefully before you start, and go back to them for every decision you are
+  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
+- Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+  example does.
+- Do not guess when you can check: use the three tools (see Tools): search the full guidelines with
+  `search_guidelines` whenever the guidelines above do not settle a case, look up every predicate in
+  PropBank with `propbank_lookup` before you choose its sense and numbered roles, and look up how the gold
+  data annotates a construction, a word or a relation with `search_annotations`. Call them as often as you
+  need: many calls are expected.
+- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+  the end check that the document-level relations cover every event and entity the guidelines ask for.
+
+## Guidelines
+
+# UMR guidelines, abridged
+
+A short version of the UMR 0.9 specification (`umr_guidelines.md` in this folder, umr4nlp/umr-guidelines),
+for annotating Chinese and English at Stage 1 (numbered PropBank roles). It keeps what an annotator needs for
+most sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics
+sections and most of the examples. Where the full guideline uses the older short names (`AUTH`, `DCT`,
+`FullAff`, `:modstr`, `:ref-person`, `Performance`), this version uses the names of the UMR release data
+(`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`, `performance`).
+
+## 1. What a UMR is
+
+A UMR has two levels.
+
+- **Sentence level**: one rooted, directed graph per sentence in PENMAN notation, adapted from AMR:
+  concepts (events, entities, abstract concepts), the relations between them (participant roles and
+  non-participant roles) and attributes (aspect, polarity, mode, quantity, person and number, degree).
+- **Document level**: three kinds of relations between the nodes of the sentence graphs, across sentences:
+  **temporal** dependencies, **modal** dependencies, and **coreference**.
+
+```
+He denied any wrongdoing.
+
+(s3d / deny-01
+    :ARG0 (s3p / person
+        :refer-person 3rd
+        :refer-number singular)
+    :ARG1 (s3d2 / do-02
+        :ARG0 s3p
+        :ARG1 (s3t / thing
+            :mod (s3a / any)
+            :ARG1-of (s3w / wrong-02))
+        :aspect process)
+    :aspect performance)
+
+(s3s0 / sentence
+    :temporal ((document-creation-time :before s3d)
+               (s3d :before s3d2))
+    :modal ((root :modal author)
+            (author :full-affirmative s3p)
+            (s3p :full-affirmative s3d)
+            (s3d :unspecified s3d2))
+    :coref ((s2p :same-entity s3p)))
+```
+
+**Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`, `s3d2`), all
+different within the document. A node that fills two roles is written once and then referred to by its
+variable (re-entrancy: `:ARG0 s3p` above).
+
+## 2. Concepts
+
+### 2.1 Events
+
+An event is a process or a state that is **predicated**, or a process used to **refer or modify**:
+
+- verbs used as predicates (`deny-01`, Chinese `拥有-01`);
+- event nominals with process meaning (*the meeting*, *the attack*, 会议, 比赛) — annotate them as events;
+- participles and relative-clause verbs (*the man who left*: `(p / person :ARG0-of (l / leave-11))`);
+- predicated states: adjectives and nouns in predicate position (*he is tall*, 他很高) — through the
+  abstract predicates of 2.3 when there is no lexical verb.
+
+Not events: entity nouns, property words used as plain modifiers (*a tall man*: `:mod (t / tall)`),
+auxiliaries and modal verbs (*will, can, must*; 会, 能, 可以, 应该 — they affect `:aspect` and modal
+strength, they are not nodes), light verbs (*make a decision* → `decide-01`; 进行访问 → `访问-01`),
+the copula (*be*, 是) — it becomes one of the abstract predicates.
+
+**Concept names.** An English event is its PropBank roleset (`deny-01`, `look-up-05`). A Chinese event is the
+Chinese word as written with its Chinese PropBank sense (`拥有-01`, `执行-01`); a Chinese predicate that is not
+in PropBank is `<word>-00`. Entities and modifiers are the word itself, lemmatized in English (`doctor`, `health`) and as
+written in Chinese (`宇航员`, `航天器`). Use English only for the abstract concepts below and for entity
+types (`person`, `thing`, `country`, `city`, `organization`, ...). Use an English entity type only for a node with `:name`, or for a pronoun. A common-noun mention, even one that refers back to a named entity (该周报, 这家公司), is the Chinese word itself (`周报`) with its `:mod (该)`. Coreference links it to the named mention.
+
+### 2.2 Named entities
+
+`(c / country :name (n / name :op1 "Russia"))`: an entity-type concept, **no `:wiki`**, and `:name` with one `:opN` per word of the name.
+Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: they are the first and last `:opN`. Types: `person`,
+`country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+`mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+`disease`, `product`, `spaceship`, ... (as in AMR).
+
+Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+`:decade`, `:century`. A decade (1980年代) is written `:era 1980`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+`(m / monetary-quantity :quant 500 :unit (d / dollar))`. Ordinals: `(o / ordinal-entity :value 2)`.
+Numbers are written as digits. In Chinese, a real measure word is a unit (三杯水 → `水 :quant 3 :unit 杯`);
+a numeral + classifier phrase is kept too, also with 一 (一份, 一个, 三本书 → `书 :quant 3 :unit (b / 本)`). A number that goes into `have-quant-91` is its `:ARG2`, and the classifier is `:unit` of have-quant-91, with no `:quant` on the unit. Check with `search_annotations` when unsure.
+
+### 2.3 Abstract predicates (non-verbal clauses)
+
+| construction | concept | roles |
+|---|---|---|
+| X is Y (identity, equation) | `identity-91` | `:ARG1` X, `:ARG2` Y |
+| X is Adj / X has property | `have-mod-91` | `:ARG1` theme, `:ARG2` property |
+| X is in/at place | `have-place-91` | `:ARG1` theme, `:ARG2` place |
+| X has Y (possession) | `have-91` | `:ARG1` possessor, `:ARG2` possessum |
+| Y belongs to X | `belong-91` | `:ARG1` possessum, `:ARG2` possessor |
+| there is X (in L) | `exist-91` | `:ARG1` location, `:ARG2` theme |
+| X is a member of category Y | `have-role-91` | `:ARG1` X, `:ARG3` category |
+| X holds title T in organization O | `have-org-role-92` | `:ARG1` X, `:ARG2` O, `:ARG3` T |
+| X is the R (kin, friend) of Z | `have-rel-role-92` | `:ARG1` X, `:ARG2` Z, `:ARG3` R |
+| X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |
+| cause, reason | `have-cause-91` / `:cause` | |
+
+Role nouns are reified the same way: *the president of Russia* →
+`(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+*his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+
+### 2.4 Pronouns and implicit participants
+
+A pronoun is `person` or `thing` with person and number: 他 / *he* → `(p / person :refer-person 3rd
+:refer-number singular)`; 我们 / *we* → `:refer-person 1st :refer-number plural`; 它 / *it* → `thing` with
+3rd singular. A plural noun gets `:refer-number plural`. A Chinese zero subject or object that is clearly
+recoverable may be added as such a node (aligned to no word) and linked by coreference.
+In Chinese documents, a named person, or a personal pronoun for one individual (他, 她), is `individual-person`, not `person`.
+
+### 2.5 Discourse relations (combining clauses)
+
+- coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`. Use them only for a contrast between two clauses of the same sentence. A sentence-initial 不过/但是 that contrasts with the previous sentence gets no node, and the sentence's main verb is the root;
+- concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+  manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+- *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; 以 X 而 Y (*known for X*) → Y `:reason` X. When such a clause describes a noun (e.g. the predicate noun of a 是 sentence), attach it inside that noun as `:ARG1-of`, not as a new conjunct; *in order to* (为了)
+  → `:purpose`; *although* (虽然, 尽管) → `:concession`.
+- When 因为/由于 … (于是/所以/而) or 为(了) … (于是) links whole clauses as the sentence's main structure, reify it. Reason: `have-reason-91` with `:ARG1` the result and `:ARG2` the cause. Purpose: `have-purpose-91` with `:ARG1` the main event and `:ARG2` the purpose. Both get `:aspect state` and `(author :full-affirmative X)`. If both occur, have-reason-91 is the root and has-purpose-91 is its `:ARG1`. The 因为 clause (`:ARG2`, printed last) usually comes first in the text: entities first named there get their full nodes there. Keep `:reason`/`:purpose` roles only for phrase-level modifiers.
+
+### 2.6 Multi-word expressions
+
+An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+is one concept). A discontinuous word (帮……忙) is one concept aligned to its span.
+
+## 3. Relations
+
+**Participant roles** (Stage 1): the numbered roles of the predicate's roleset, `:ARG0` (agent, causer,
+experiencer as initiator), `:ARG1` (patient, theme), `:ARG2`–`:ARG5` as the roleset defines them. Use the
+inverse `:ARGn-of` for a relative clause or a participant nominal: 卖菜的人 → `(p / person :ARG0-of (m /
+卖-01 :ARG1 (c / 菜)))`.
+
+**Non-participant roles** (closed list, the frequent ones): `:mod` (property, demonstrative, typifying
+modifier), `:possessor`, `:part` / `:part-of`, `:topic`, `:temporal` (time expression or event),
+`:place`, `:direction`, `:path`, `:goal`, `:source`, `:start`, `:manner`, `:instrument`, `:cause`,
+`:reason`, `:purpose`, `:condition`, `:concession`, `:duration`, `:frequency`, `:extent`, `:degree`,
+`:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
+`:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+
+Frequent choices:
+- A country or region modifying a noun (美国小报, *a US paper*) → `:place`, not `:mod`.
+- A channel or medium (电视, 网络, *TV*) → `:medium`.
+- A version, edition or part of a publication or thing (X的纸本) → `:part-of`, not `:possessor`, but only when X is written in the phrase. 网络版 alone gets no owner.
+- 其中 → `:mod (其中)` on the noun it introduces, not `:part`.
+- N1 + V + N2 where N2 (程序, 过程, 制度, 方式, 手续) is the procedure that V names: `N2 :ARG0-of (identity-91 :ARG1 V)`, and N1 is the object of V (`V :ARG1 N1`), with V `:aspect process`. Do not flatten N1 and V into `:mod`s of N2. Other modifiers (一般) stay `:mod` of N2.
+- Nouns run together without 、 (奇闻轶事) form their own inner `and`; 、 separates the outer conjuncts.
+- Aspectual and scalar adverbs 已经, 都, 也, 仍, 还 → a `:mod` node on the event they modify. Time adverbs 目前, 曾经, 现在, 当时 → `:temporal` on that event. Never drop them, and never move them onto a noun or onto the connective (`but-91`, `and`).
+- A modifier shared by coordinated nouns goes on each conjunct, as one node re-used by re-entrancy, not on the `and` node.
+- Add an implicit or re-entrant argument only when the text expresses it. Do not copy a subject or owner into another clause unless a word (自己, 其, a pronoun) refers to it.
+- V1V2的N (已经停止发行的小报): N is `:ARG1-of` the inner verb, and the inner verb is `:ARG1-of` the outer verb. Do not make N an argument of the outer verb.
+- Take numbered roles from the roleset you looked up, not from English habit: Chinese PropBank often makes the theme of an intransitive change verb `:ARG0` (跌-01, 达到-01). For 属-02 the thing owned is `:ARG0` and the owner `:ARG1`.
+- X版面的《Y》 / Y的X版面 (a layout, edition or part of a publication): the head is 版面 with `:mod` X and `:part-of` the publication. It is the argument of the verb, not a modifier of the name. A paper's 版面 (由黑白版面改为彩色版面) is always `版面 :part-of paper`, never `paper :part 版面`.
+- A clause after ， that says what the created or changed thing does (容纳…文章) is `:ARG0-of` that thing, `:aspect process`. It is not a `:purpose`, and it gives the thing no new role in the main verb.
+- An appositive common noun before a name (旗下的八卦小报《X》) → the named entity `:ARG1-of (identity-91 :ARG2 noun)`. Keep all of the noun's modifiers (旗下, 八卦) on it.
+- A ‑人 agent noun (创始人, 创办人) → `人 :ARG0-of (verb-00/01)`. The verb is an event with its own aspect, temporal triple and modal triple.
+- Keep a verb compound as written (改为-01 with `:ARG1` old, `:ARG2` new), not 改-01 with `:source`.
+- A verb + 量 measure of an entity's activity (发行量) → `量 :quant-of (发行-01 :ARG1 entity)`. The inner 发行-01 gets no `:aspect` and no modal triple; its only document-level triple is `(main :overlap 发行)`. 量 is `:ARG0` of 达到-01 and of 跌-01 (跌至). The value reached by 达到/跌至/增至 → `量 :ARG1-of (have-quant-91 :ARG2 N :unit 份)`, not a numbered argument of the verb.
+- An event noun that is an argument of a verb (印刷 in 黑白印刷成了特色) keeps its PropBank sense (印刷-01) and gets aspect (a paper's practice: `habitual`), a temporal parent and a modal triple. Its modifier (黑白) is `:manner`, not `:mod`.
+- An entity mentioned twice in one sentence: write its full node (name, appositive, modifiers) at its first mention in the text, and only the bare variable at the later mention, even if the later mention comes first in the graph.
+- A preposition before a time (在, 于, 至, 到, 从 + 年) gets no node: the date-entity itself is the `:temporal`. Only 上 of 历史上 is a node.
+
+Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
+
+## 4. Attributes
+
+### 4.1 Aspect (`:aspect`, on every event)
+
+Use the coarse values:
+
+| value | use for |
+|---|---|
+| `state` | states: non-verbal predicates (2.3), *be, have, know, want, like, believe*, 是, 有, 在, 知道, 喜欢, 认为 |
+| `habitual` | an event that happens usually or repeatedly (*he walks to work*, 经常, 每天) |
+| `activity` | an ongoing process with no evidence of an end (*is running*, 正在, 着; a present-tense process; most generic statements of what is done) |
+| `endeavor` | a process that ended without reaching its result (*worked on it for a week*, stop doing) |
+| `performance` | a process that ended and reached its result: completed past events (*denied*, *was arrested*, 了, 过) |
+| `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |
+
+- A typical or repeated activity of a person or institution (publishing 发行, broadcasting, selling, collecting stories 综合) is `habitual`. (Not 发行-01 under `量 :quant-of`: it has no aspect.) This holds even without a frequency word, and even with 了, when the clause describes what the entity does in general.
+- 已经 + a change-of-state verb used as a modifier (已经停止发行的小报) is `state`: it is the entity's resulting condition.
+- A passive naming or evaluation (被称为, 被誉为) is `performance`.
+- 未经 (*without having undergone*) → `经-01`, `:aspect process`, with no `:polarity -`. Its negation is only the modal triple `(author :full-negative 经-01)`.
+- A -91/-92 node that is the predicate of a clause (X 是 Y as the main or a conjoined clause, have-reason-91, have-purpose-91) gets `:aspect state` and `(author :full-affirmative X)`, and no temporal triple. A -91/-92 node inside a noun phrase gets no `:aspect`, no temporal triple and no modal triple: an appositive `:ARG1-of (identity-91 ...)`, have-org-role-91/have-rel-role-92 reifying a role noun, have-quant-91 under 量. Likewise `have-degree-91` gets no `:aspect`, no temporal triple and no modal triple. The property under its `:ARG2` (富-01) carries the aspect, the temporal triple and the modal triple.
+- Stative verbs (拥有, 有, 是, 在, 属) stay `state` even with 过, 曾经 or 了.
+- 已经 + a change-of-state verb as the main predicate (纸本已经停刊) is `performance`. `state` applies only to the 的-modifier form.
+- A purpose verb (为充分运用) is `activity`. A relative clause saying what a created thing does (容纳) is `process`. A participle of a completed earlier event (遗留下来的) is `performance`.
+
+Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+only when they are clear.
+
+### 4.2 Polarity, mode, degree, quantity
+
+- Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+  then negative (5.2).
+- `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+  `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+- A comparative or superlative (最, 更, *most*, *-er*) → `have-degree-91`. Its roles are `:ARG1` the entity, `:ARG2` the property, and `:ARG3` the degree (最/更, `most`/`more`).
+- An adjectival chengyu before 的 (荒诞不经的内容) is a `:mod`, not an event.
+- `:degree` is only for intensifiers and downtoners (*very, too*; 很, 非常, 太), as a concept:
+  `:degree (v / very)`.
+- `:quant` for numbers and quantifiers (`:quant 3`, `:quant (a / all)`).
+
+## 5. Document level
+
+The document-level annotation of sentence N is one graph `(sNs0 / sentence ...)` with up to three lists of
+`(parent :relation child)` triples. The triples of sentence N have at least one node of sentence N; the
+other end can be a node of an earlier sentence or a constant.
+
+### 5.1 Temporal (`:temporal`)
+
+A dependency structure: each event and each time expression gets **one reference time** as its parent, and
+the relation says where the **child** is relative to the **parent**: **In every triple `(A :rel B)`, A is the parent and B the child; every event and time node is the child of exactly one triple.**
+
+- `:before` (child before parent), `:after` (child after parent), `:overlap` (child and parent overlap),
+  `:contained` (child inside parent), `:contains`, `:depends-on` (between time nodes).
+- Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
+- Time expressions first: a date (absolute or relative) depends on `document-creation-time`, never on `root`: `(document-creation-time :before d)` for a past date, `:after` for a future one; a relative one (*today, yesterday*,
+  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague one
+  (*nowadays*, 现在, 目前) gets no triple of its own (it stays `:temporal` in the graph). The sentence's main event attaches directly: `(document-creation-time :depends-on s4e)`. The sentence's other events attach to the main event: `(s4e :overlap s4e2)`. Use `past-reference` / `present-reference` / `future-reference` only for vague times not tied to the moment of writing.
+- Then every event: (1) a date or period of its clause, if there is one, with `:overlap` (`(s1t :overlap s1e)`; never `:contained` here); else
+  (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+  `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+  present state, `:after` for a future event). Chinese has no tense: decide past, present or future from
+  context, 了, 过, 将, 会.
+- An event in a complement clause takes its matrix event as parent.
+- A purpose clause → `(main :overlap X)`. A reason or cause clause → `(main :before X)` when it happened first (the usual case), else `(main :overlap X)`. When they are reified as have-reason-91 / have-purpose-91 (2.5), the parent is the main event under `:ARG1`, and the -91 nodes get no temporal triple.
+- A participle describing an earlier state of a noun (遗留下来的, 留下的) → `(V :before participle)`, where V is the event whose argument contains the noun. A ‑人 agent noun's verb (创始人 → 创始-00) → `(main :overlap verb)`.
+- Annotate event–event relations only when they are clear.
+- Give no temporal parent to `identity-91` or to a plain `:mod` word with no sense. Every other node with a sense and an `:aspect` gets a parent, normally `(main-event :overlap X)`. This includes the property under have-degree-91 (富-01). An event inside a noun takes as parent the event whose argument contains it (未经…查证程序 → `(经-01 :overlap 查证-01)`), not the sentence's main event.
+- Anchor each sentence's main event to `document-creation-time`. Use `:before` when it is clearly past (了, 过, 曾经, 已经停止). Use `:depends-on` when it is a current state, or a naming or evaluation that still holds (目前…, 被称为, 被誉为). Do not anchor it to an event of an earlier sentence unless a word (然后, 之后, 同时, 也) marks that relation. A sentence that states the result or a feature of the event just narrated (也成了…特色) → `(previous-main-event :overlap X)`.
+- Within a sentence, anchor the dependent events (relative clauses, a second conjunct) to the sentence's main anchoring event, not each to `document-creation-time`. Example (main event 发行 s1f, dependents 停止 s1s and 报导 s1b): `(document-creation-time :before s1f)`, `(s1f :overlap s1s)`, `(s1f :overlap s1b)`. The main event is always the parent (first element).
+- 以 X 而闻名: the reputation state 闻名 is the parent of the entity's habitual event, `(闻名 :contained 发行)`. 闻名 itself gets no parent.
+
+### 5.2 Modal (`:modal`)
+
+A dependency structure of conceivers and events: `(conceiver :strength event)`, starting with
+`(root :modal author)` in every sentence that has events.
+
+- Strength = the conceiver's certainty that the event happens or holds: `full-affirmative` (plain
+  assertion, *will*), `partial-affirmative` (*probably, must, should*, 应该, 可能性大, 一定 as inference),
+  `neutral-affirmative` (*may, might, perhaps, can*, 可能, 也许, 或许, desire/hope), `neutral-negative`,
+  `partial-negative`, `full-negative` (negated: *not, never, deny*, 没, 不), `unspecified`.
+- Every event the author asserts: `(author :full-affirmative s1e)`.
+- Reported speech or thought: the author is certain of the speaker, the speaker of the content:
+  `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person
+  node, or an event used as conceiver).
+- An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+  决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+  `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+  `(s3w :unspecified s3g)`.
+- A conceiver that is not in the text is `null-conceiver`. Purpose and condition clauses may use the
+  constants `purpose` and `have-condition` as parents of their events.
+- In the sentence graph, write the strength of an event that is not `full-affirmative` from the author as
+  `:modal-strength <value>` too (the scorers move it to the document level).
+
+### 5.3 Coreference (`:coref`)
+
+- `(earlier :same-entity later)`: two mentions of the same entity — a pronoun and its antecedent, a repeated
+  name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+  link entity nodes, never `name` nodes.
+- `(earlier :same-event later)`: two mentions of the same event. Use it only when the participants are the same. *The paper stopped publishing* and *its print edition stopped* are different events.
+- `(a :subset-of b)`: the entity or event a is a subset or part of b.
+- Link the document's participant chains. Do not link a country or place name used only as a modifier (`:place` of a noun, the 美国 of 美国历史) to another such mention.
+- Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+
+## 6. Alignment
+
+Every node of a sentence graph is aligned to the words that express it: `s1x: 4-4` (1-based word positions,
+first and last, both included). A node with no word in the sentence (`person` for a zero pronoun, `and`
+without a conjunction, `have-mod-91` without a copula, a `name` node) is `0-0`. A named entity's type
+node is aligned to the name's words.
+
+## 7. Checklist
+
+- Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+- Every event has `:aspect`; negated events have `:polarity -`.
+- Every event and time expression has a temporal parent; every event has a modal parent.
+- Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+- For each entity mentioned twice in a sentence, find its first mention by word position; the full node goes there (even inside the `:ARG2` of have-reason-91), every other mention is the bare variable.
+- No argument or `:possessor` that the text does not express: no subject copied onto a purpose verb, and no owner added to a name.
+
+## Examples
+
+- Classifier (2.2): 一份小报 → `(x / 小报 :quant 1 :unit (u / 份))`.
+- Title marks (2.2): 《世界新闻周报》 → `:name (n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》")`.
+- but-91 (2.5): X，不过Y (within one sentence) → `(b / but-91 :ARG1 X :ARG2 Y)`. A sentence starting with 不过 → no but-91; root = main verb (跌-01).
+- 以…而闻名 (2.5): a tabloid known for its reports → `(x / 小报 :ARG1-of (k / 闻名-01 :reason (r / 报导-01 :ARG0 x)))`.
+- 由于 (2.5): 由于…内容 → `:reason (c / 内容 ...)`.
+- Roles (3): 美国小报 → `:place (c / country ...)`; 电视节目 → `(p / 节目 :medium (t / 电视))`; 都经过 → `(j / 经-01 :mod (d / 都))`.
+- Shared modifier (3): 奇怪的新闻与专栏 → `(a / and :op1 (n / 新闻 :mod (q / 奇怪)) :op2 (z / 专栏 :mod q))`.
+- 属 (3): 属自己的节目 → `(p / 节目 :ARG0-of (s / 属-02 :ARG1 x))`.
+- Aspect (4.1): 发行 (a paper's publishing) → `:aspect habitual`; 已经停止发行的 → 停止 `:aspect state`; 被称为 → `:aspect performance`.
+- Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`.
+- 历史上 (4.2): 美国历史上 → `:temporal (s / 上 :op1 (h / 历史 ...))`.
+- Temporal (5.1): 目前纸本停刊，网络版继续发行 → `(document-creation-time :depends-on s4e)` `(s4e :overlap s4e2)`; no triple for 目前; no temporal triple for `identity-91`.
+- Temporal (5.1): 富-01 under have-degree-91 → `(s5main :overlap s5f)`.
+- V1V2的N (3): 已经停止发行的小报 → `(x / 小报 :ARG1-of (f / 发行-01 :ARG1-of (t / 停止-01 :mod (y / 已经) :aspect state) :aspect habitual))`.
+- No invented owner (3): 发行网络版 → `(f / 发行-01 :ARG1 (w / 网络版))`.
+- Inner and (3): 奇闻轶事、传奇与新闻 → `(a / and :op1 (a2 / and :op1 奇闻 :op2 轶事) :op2 传奇 :op3 新闻)`.
+- Aspect (4.1): 曾经拥有过 → `:aspect state`; 纸本已经停刊 → `:aspect performance`; clause-level identity-91 → `:aspect state`; appositive identity-91, have-org-role-91, have-quant-91 → no aspect, no modal triple.
+
+- Procedure compound (3): 一般的新闻查证程序 → `(x / 程序 :ARG0-of (i / identity-91 :ARG1 (c / 查证-01 :ARG1 (n / 新闻) :aspect process)) :mod (y / 一般))`.
+- Entity type (2.1): 该周报 → `(z / 周报 :mod (g / 该))`, not `newspaper`.
+- have-degree-91 (4.1): no `:aspect` on it and no triples for it; only 富-01 gets `(s5main :overlap s5f)` and `(author :full-affirmative s5f)`.
+- Main event (5.1): 停止发行/拥有过 → `(document-creation-time :before e)`; 被称为 → `(document-creation-time :depends-on e)`; 以…而闻名 → `(闻名 :contained 发行)`.
+- 曾经 (3): 曾经拥有过 → `:temporal (c / 曾经)`.
+- 未经 (4.1): `(j / 经-01 :aspect process)` with no `:polarity`, plus the triple `(author :full-negative j)`.
+
+- Temporal (5.1): 创刊于1979年 → `(document-creation-time :before s6d)` `(s6d :overlap s6x)`; purpose 为运用 → `(创立 :overlap 运用)`; reason 因为…改为 → `(创立 :before 改为)`; 遗留下来的印刷机 used by 运用 → `(运用 :before 遗留)`; 也成了…特色 → `(prev-main :overlap 成)`.
+- Reified skeleton (2.5): 因为X，为Y，于是Z → `(h / have-reason-91 :ARG1 (h2 / have-purpose-91 :ARG1 Z :ARG2 Y :aspect state) :ARG2 X :aspect state)`.
+- Part and relative clause (3): 创立黑白版面的《Y》，容纳…文章 → `:ARG1 (b / 版面 :mod (h / 黑白) :part-of (n / newspaper ...) :ARG0-of (r / 容纳-01 :ARG1 ... :aspect process))`.
+- Appositive / agent noun (3): 旗下的八卦小报《X》 → `(n / newspaper :ARG1-of (i / identity-91 :ARG2 (x / 小报 :mod (q / 旗下) :mod (b / 八卦))))`; 创始人 → `(p / individual-person :ARG1-of (h / have-org-role-91 :ARG3 (r / 人 :ARG0-of (c / 创始-00 :aspect performance))))` (no aspect, no modal on h).
+- Quantity (3): 发行量达到120万份 → `(d / 达到-01 :ARG0 (l / 量 :quant-of (f / 发行-01 :ARG1 n) :ARG1-of (h / have-quant-91 :ARG2 1200000 :unit (u / 份))))`.
+- Event noun (3): 黑白印刷也成了特色 → `:ARG0 (y / 印刷-01 :manner (h / 黑白) :aspect habitual)` + `(成 :overlap y)` `(author :full-affirmative y)`; 1980年代 → `(d / date-entity :era 1980)`.
+
+- Preposition (3): 至2007年 → `:temporal (d / date-entity :year 2007)`, no 至 node.
+- First mention (3): 《Y》将由黑白版面改为… then Y的标准 → `改为-01 :ARG1 (b / 版面 :part-of (n / newspaper :name ... :ARG1-of (identity-91 ...)) :mod (h / 黑白))` … `(标准 :possessor n)`.
+- 量 (3): 该刊发行量 → `(f / 发行-01 :ARG1 (k / 刊 :mod (g / 该)))`, no aspect; only `(main :overlap f)`. 发行量跌至8万3千份 → `(d / 跌-01 :ARG0 (l / 量 ... :ARG1-of (h / have-quant-91 :ARG2 83000 :unit (u / 份))))`.
+
+</instruction>
+
+# The sentences
+11	2007 年 7 月 ， 母公司 美国 媒体 公司 停止 了 《 世界 新闻 周报 》 的 发行 ， 不过 周报 的 网络版 仍 继续 生存 。
+12	虽然 《 世界 新闻 周报 》 宣称 他们 的 报导 都是 真实 的 （ 他们 的 标语 ： 「 只 报导 事实 ： 世界 新闻 周报 ！ 」 ） ， 不过 大部分 的 报导 都 以 博君一笑 为 目的 。
+13	他们 经常 报导 的 题材 有 外星人 、 古代 航天员 、 时间 旅行 、 大脚 、 欧帕兹 等 ， 他们 甚至 创造 出 一些 在 他们 的 新闻 中 重复 出现 的 虚拟 人物 如 蝙蝠 男孩 、 外星人 P ' Lod 等 。
+14	其中 最大宗 可 算是 外星人 地球 活动 。
+15	美国 前 第一夫人 希拉里 · 克林顿 就 被 指 与 外星人 P ' Lod 有 暧昧 关系 ， 后来 还 领养 外星 宝宝 。
+
+# The annotator's annotation (as scored)
+<annotation>
+################################################################################
+# meta-info
+# :: snt11
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+Words: 2007 年 7 月 ， 母公司 美国 媒体 公司 停止 了 《 世界 新闻 周报 》 的 发行 ， 不过 周报 的 网络版 仍 继续 生存 。
+
+# sentence level graph:
+(s11b / but-91
+    :ARG1 (s11t / 停止-01
+        :ARG0 (s11c / company
+            :name (s11n / name
+                :op1 "美国"
+                :op2 "媒体"
+                :op3 "公司")
+            :ARG1-of (s11i / identity-91
+                :ARG2 (s11m / 母公司)))
+        :ARG1 (s11f / 发行-01
+            :ARG1 (s11z / newspaper
+                :name (s11n2 / name
+                    :op1 "《"
+                    :op2 "世界"
+                    :op3 "新闻"
+                    :op4 "周报"
+                    :op5 "》"))
+            :aspect habitual)
+        :temporal (s11d / date-entity
+            :year 2007
+            :month 7)
+        :aspect performance)
+    :ARG2 (s11j / 继续-01
+        :ARG1 (s11s / 生存-01
+            :ARG0 (s11w / 网络版
+                :part-of s11z)
+            :aspect activity)
+        :mod (s11r / 仍)
+        :aspect activity))
+
+
+# document level annotation:
+(s11s0 / sentence
+    :temporal ((document-creation-time :before s11d)
+               (s11d :overlap s11t)
+               (s11t :overlap s11f)
+               (s11t :overlap s11j)
+               (s11j :overlap s11s))
+    :modal ((root :modal author)
+            (author :full-affirmative s11t)
+            (author :full-affirmative s11f)
+            (author :full-affirmative s11j)
+            (author :full-affirmative s11s)))
+
+
+################################################################################
+# meta-info
+# :: snt12
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40
+Words: 虽然 《 世界 新闻 周报 》 宣称 他们 的 报导 都是 真实 的 （ 他们 的 标语 ： 「 只 报导 事实 ： 世界 新闻 周报 ！ 」 ） ， 不过 大部分 的 报导 都 以 博君一笑 为 目的 。
+
+# sentence level graph:
+(s12h / have-purpose-91
+    :ARG1 (s12r2 / 报导-01
+        :quant (s12d / 大部分)
+        :aspect habitual)
+    :ARG2 (s12x / 博君一笑-00
+        :aspect process)
+    :mod (s12d2 / 都)
+    :concession (s12c / 宣称-01
+        :ARG0 (s12z / newspaper
+            :name (s12n / name
+                :op1 "《"
+                :op2 "世界"
+                :op3 "新闻"
+                :op4 "周报"
+                :op5 "》"))
+        :ARG1 (s12t / 真实-01
+            :ARG0 (s12r / 报导-01
+                :ARG0 (s12p / person
+                    :refer-person 3rd
+                    :refer-number plural)
+                :aspect habitual)
+            :mod (s12d3 / 都)
+            :aspect state)
+        :medium (s12y / 标语
+            :possessor s12p
+            :ARG1-of (s12i / identity-91
+                :ARG2 (s12r3 / 报导-01
+                    :ARG0 s12z
+                    :ARG1 (s12s / 事实)
+                    :mod (s12o / 只)
+                    :aspect habitual)))
+        :aspect performance)
+    :aspect state)
+
+
+# document level annotation:
+(s12s0 / sentence
+    :temporal ((document-creation-time :before s12c)
+               (s12c :overlap s12t)
+               (s12t :overlap s12r)
+               (s12c :overlap s12r3)
+               (document-creation-time :before s12r2)
+               (s12r2 :overlap s12x))
+    :modal ((root :modal author)
+            (author :full-affirmative s12h)
+            (author :full-affirmative s12r2)
+            (author :full-affirmative s12x)
+            (author :full-affirmative s12c)
+            (author :full-affirmative s12z)
+            (s12z :full-affirmative s12t)
+            (author :full-affirmative s12r)
+            (author :full-affirmative s12r3))
+    :coref ((s11z :same-entity s12z)))
+
+
+################################################################################
+# meta-info
+# :: snt13
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+Words: 他们 经常 报导 的 题材 有 外星人 、 古代 航天员 、 时间 旅行 、 大脚 、 欧帕兹 等 ， 他们 甚至 创造 出 一些 在 他们 的 新闻 中 重复 出现 的 虚拟 人物 如 蝙蝠 男孩 、 外星人 P ' Lod 等 。
+
+# sentence level graph:
+(s13a / and
+    :op1 (s13y / 有-07
+        :ARG0 (s13t / 题材
+            :ARG1-of (s13b / 报导-01
+                :ARG0 (s13p / person
+                    :refer-person 3rd
+                    :refer-number plural)
+                :frequency (s13j / 经常)
+                :aspect habitual))
+        :ARG1 (s13a2 / and
+            :op1 (s13w / 外星人)
+            :op2 (s13h / 航天员
+                :mod (s13g / 古代))
+            :op3 (s13l / 旅行
+                :mod (s13s / 时间))
+            :op4 (s13f / 大脚)
+            :op5 (s13o / 欧帕兹)
+            :op6 (s13d / 等))
+        :aspect state)
+    :op2 (s13c / 创造-01
+        :ARG0 s13p
+        :ARG1 (s13r / 人物
+            :quant (s13q / 一些)
+            :mod (s13x / 虚拟)
+            :ARG1-of (s13e / 出现-01
+                :ARG0 (s13n / 新闻
+                    :possessor s13p)
+                :mod (s13c2 / 重复)
+                :aspect habitual)
+            :example (s13a3 / and
+                :op1 (s13m / person
+                    :name (s13n2 / name
+                        :op1 "蝙蝠"
+                        :op2 "男孩"))
+                :op2 (s13m2 / person
+                    :name (s13n3 / name
+                        :op1 "P"
+                        :op2 "'"
+                        :op3 "Lod")
+                    :ARG1-of (s13i / identity-91
+                        :ARG2 (s13w2 / 外星人)))
+                :op3 (s13d2 / 等)))
+        :mod (s13s2 / 甚至)
+        :aspect habitual))
+
+
+# document level annotation:
+(s13s0 / sentence
+    :temporal ((document-creation-time :before s13y)
+               (s13y :overlap s13b)
+               (s13y :overlap s13c)
+               (s13c :overlap s13e))
+    :modal ((root :modal author)
+            (author :full-affirmative s13y)
+            (author :full-affirmative s13b)
+            (author :full-affirmative s13c)
+            (author :full-affirmative s13e))
+    :coref ((s12p :same-entity s13p)))
+
+
+################################################################################
+# meta-info
+# :: snt14
+Index: 1 2 3 4 5 6 7 8
+Words: 其中 最大宗 可 算是 外星人 地球 活动 。
+
+# sentence level graph:
+(s14s / 算-01
+    :ARG0 (s14t / thing
+        :ARG1-of (s14h / have-degree-91
+            :ARG2 (s14d / 大宗)
+            :ARG3 (s14z / 最))
+        :mod (s14q / 其中))
+    :ARG1 (s14a / 活动-01
+        :ARG0 (s14w / 外星人)
+        :place (s14e / 地球)
+        :aspect habitual)
+    :modal-strength neutral-affirmative
+    :aspect state)
+
+
+# document level annotation:
+(s14s0 / sentence
+    :temporal ((document-creation-time :depends-on s14s)
+               (s14s :overlap s14a))
+    :modal ((root :modal author)
+            (author :neutral-affirmative s14s)
+            (author :full-affirmative s14a))
+    :coref ((s14t :subset-of s13t)))
+
+
+################################################################################
+# meta-info
+# :: snt15
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+Words: 美国 前 第一夫人 希拉里 · 克林顿 就 被 指 与 外星人 P ' Lod 有 暧昧 关系 ， 后来 还 领养 外星 宝宝 。
+
+# sentence level graph:
+(s15z / 指-02
+    :ARG1 (s15a / and
+        :op1 (s15y / 有-01
+            :ARG0 (s15p / individual-person
+                :name (s15n / name
+                    :op1 "希拉里"
+                    :op2 "克林顿")
+                :ARG1-of (s15h / have-org-role-92
+                    :ARG2 (s15c / country
+                        :name (s15n2 / name
+                            :op1 "美国"))
+                    :ARG3 (s15f / 第一夫人
+                        :mod (s15q / 前))))
+            :ARG1 (s15g / 关系
+                :mod (s15m / 暧昧))
+            :companion (s15w / person
+                :name (s15n3 / name
+                    :op1 "P"
+                    :op2 "'"
+                    :op3 "Lod")
+                :ARG1-of (s15i / identity-91
+                    :ARG2 (s15w2 / 外星人)))
+            :aspect state)
+        :op2 (s15l / 领养-01
+            :ARG0 s15p
+            :ARG1 (s15b / 宝宝
+                :mod (s15x / 外星))
+            :temporal (s15k / 后来)
+            :mod (s15h2 / 还)
+            :aspect performance))
+    :mod (s15j / 就)
+    :aspect performance)
+
+
+# document level annotation:
+(s15s0 / sentence
+    :temporal ((document-creation-time :before s15z)
+               (s15z :overlap s15y)
+               (s15y :after s15l))
+    :modal ((root :modal author)
+            (author :full-affirmative s15z)
+            (s15z :full-affirmative s15y)
+            (s15z :full-affirmative s15l))
+    :coref ((s13m2 :same-entity s15w)))
+
+
+
+</annotation>
+
+# The gold annotation
+<gold>
+################################################################################
+# meta-info
+# :: snt11
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+Words: 2007 年 7 月 ， 母公司 美国 媒体 公司 停止 了 《 世界 新闻 周报 》 的 发行 ， 不过 周报 的 网络版 仍 继续 生存 。
+
+# sentence level graph:
+(s11b / but-91
+    :ARG1 (s11x / 停止-01
+        :ARG0 (s11c / company
+            :name (s11n / name
+                :op1 "美国"
+                :op2 "媒体"
+                :op3 "公司")
+            :ARG1-of (s11i2 / identity-91
+                :ARG2 (s11x6 / 公司
+                    :mod (s11x7 / 母))))
+        :ARG1 (s11x8 / 发行-01
+            :ARG0 s11c
+            :ARG1 (s11n2 / newspaper
+                :name (s11n3 / name
+                    :op1 "《"
+                    :op2 "世界"
+                    :op3 "新闻"
+                    :op4 "周报"
+                    :op5 "》"))
+            :aspect process)
+        :temporal (s11d / date-entity
+            :year 2007
+            :month 7)
+        :aspect performance)
+    :ARG2 (s11x2 / 继续-01
+        :ARG0 (s11x4 / 网络版
+            :part-of (s11x5 / 周报))
+        :ARG1 (s11x3 / 生存-01
+            :ARG0 s11x4
+            :aspect state)
+        :temporal s11d
+        :aspect activity))
+
+
+# document level annotation:
+(s11s0 / sentence
+    :temporal ((document-creation-time :before s11d)
+               (s11d :overlap s11x)
+               (s11x :overlap s11x8)
+               (s11x :overlap s11x2)
+               (s11x2 :overlap s11x3))
+    :modal ((root :modal author)
+            (author :full-affirmative s11x8)
+            (author :full-affirmative s11x)
+            (author :full-affirmative s11x3)
+            (author :full-affirmative s11x2))
+    :coref ((s11n2 :same-entity s11x5)))
+
+
+################################################################################
+# meta-info
+# :: snt12
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40
+Words: 虽然 《 世界 新闻 周报 》 宣称 他们 的 报导 都是 真实 的 （ 他们 的 标语 ： 「 只 报导 事实 ： 世界 新闻 周报 ！ 」 ） ， 不过 大部分 的 报导 都 以 博君一笑 为 目的 。
+
+# sentence level graph:
+(s12b / but-91
+    :ARG1 (s12a / and
+        :op1 (s12x / 宣称-01
+            :ARG0 (s12n / newspaper
+                :name (s12n2 / name
+                    :op1 "《"
+                    :op2 "世界"
+                    :op3 "新闻"
+                    :op4 "周报"
+                    :op5 "》"))
+            :ARG1 (s12h / have-mod-91
+                :ARG1 (s12x4 / 报导-01
+                    :aspect habitual)
+                :ARG2 (s12x3 / 真实)
+                :mod (s12x2 / 都)
+                :aspect state
+                :quote s12x)
+            :aspect performance)
+        :op2 (s12i3 / identity-91
+            :ARG1 (s12x5 / 标语
+                :possessor s12n)
+            :ARG2 (s12x6 / 报导-01
+                :ARG0 s12n
+                :ARG1 (s12x8 / 事实)
+                :mod (s12x7 / 只)
+                :aspect habitual
+                :quote s12i3)
+            :aspect state))
+    :ARG2 (s12i2 / identity-91
+        :ARG1 (s12x9 / 目的
+            :purpose-of (s12x10 / 报导-01
+                :mod (s12x11 / 大部分)
+                :aspect habitual))
+        :ARG2 (s12x12 / 博君一笑)
+        :aspect state))
+
+
+# document level annotation:
+(s12s0 / sentence
+    :temporal ((document-creation-time :before s12x)
+               (s12x :overlap s12x4)
+               (s12x4 :overlap s12x6)
+               (s12x4 :overlap s12x10))
+    :modal ((root :modal author)
+            (author :full-affirmative s12x4)
+            (author :full-affirmative s12h)
+            (author :full-affirmative s12x)
+            (author :full-affirmative s12x6)
+            (author :full-affirmative s12i3)
+            (author :full-affirmative s12x10)
+            (author :full-affirmative s12i2)
+            (author :full-affirmative s12n)
+            (s12n :full-affirmative s12h)
+            (s12n :full-affirmative s12x6)
+            (s12n :full-affirmative s12x10))
+    :coref ((s11n2 :same-entity s12n)))
+
+
+################################################################################
+# meta-info
+# :: snt13
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+Words: 他们 经常 报导 的 题材 有 外星人 、 古代 航天员 、 时间 旅行 、 大脚 、 欧帕兹 等 ， 他们 甚至 创造 出 一些 在 他们 的 新闻 中 重复 出现 的 虚拟 人物 如 蝙蝠 男孩 、 外星人 P ' Lod 等 。
+
+# sentence level graph:
+(s13a / and
+    :op1 (s13x2 / 报导-01
+        :ARG0 (s13p / person
+            :refer-number plural
+            :refer-person 3rd)
+        :ARG1 (s13x4 / 题材
+            :example (s13a2 / and
+                :op1 (s13x5 / 外星人)
+                :op2 (s13x6 / 航天员
+                    :mod (s13x11 / 古代))
+                :op3 (s13x7 / 旅行
+                    :mod (s13x12 / 时间))
+                :op4 (s13x8 / 大脚)
+                :op5 (s13x9 / 欧帕兹)
+                :op6 (s13x10 / 等)))
+        :frequency (s13x3 / 经常)
+        :aspect habitual)
+    :op2 (s13x / 创造-01
+        :ARG0 s13p
+        :ARG1 (s13x13 / 人物
+            :mod (s13x14 / 虚拟)
+            :quant (s13x15 / 一些)
+            :ARG0-of (s13x16 / 出现-01
+                :ARG1 (s13x18 / 中
+                    :op1 (s13x19 / 新闻
+                        :possessor s13p))
+                :frequency (s13x17 / 重复)
+                :aspect habitual)
+            :example (s13a3 / and
+                :op1 (s13i2 / individual-person
+                    :name (s13n / name
+                        :op1 "蝙蝠"
+                        :op2 "男孩"))
+                :op2 (s13i3 / individual-person
+                    :name (s13n2 / name
+                        :op1 "外星人"
+                        :op2 "P"
+                        :op3 "'"
+                        :op4 "Lod"))
+                :op3 (s13x20 / 等)))
+        :aspect performance
+        :mod (s13x21 / 甚至)))
+
+
+# document level annotation:
+(s13s0 / sentence
+    :temporal ((document-creation-time :before s13x2)
+               (s13x2 :overlap s13x)
+               (s13x :overlap s13x6))
+    :modal ((root :modal author)
+            (author :full-affirmative s13x2)
+            (author :full-affirmative s13x16)
+            (author :full-affirmative s13x))
+    :coref ((s12n :same-entity s13p)))
+
+
+################################################################################
+# meta-info
+# :: snt14
+Index: 1 2 3 4 5 6 7 8
+Words: 其中 最大宗 可 算是 外星人 地球 活动 。
+
+# sentence level graph:
+(s14x / 算是-01
+    :ARG0 (s14i2 / implicit-argument
+        :ARG1-of (s14h / have-degree-91
+            :ARG1 (s14x3 / 大)
+            :ARG2 (s14x4 / 最)
+            :ARG5 (s14x5 / 其中))
+        :unit (s14x2 / 宗))
+    :ARG1 (s14x6 / 活动-01
+        :ARG0 (s14x7 / 外星人)
+        :place (s14p / planet
+            :name (s14n / name
+                :op1 "地球"))
+        :aspect activity)
+    :aspect state)
+
+
+# document level annotation:
+(s14s0 / sentence
+    :temporal ((document-creation-time :before s14x)
+               (s14x :overlap s14x6))
+    :modal ((root :modal author)
+            (author :full-affirmative s14x6)
+            (author :neutral-affirmative s14x)))
+
+
+################################################################################
+# meta-info
+# :: snt15
+Index: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+Words: 美国 前 第一夫人 希拉里 · 克林顿 就 被 指 与 外星人 P ' Lod 有 暧昧 关系 ， 后来 还 领养 外星 宝宝 。
+
+# sentence level graph:
+(s15x / 指-02
+    :ARG1 (s15c / consecutive
+        :op1 (s15x3 / 有-03
+            :ARG0 (s15a / and
+                :op1 (s15i2 / individual-person
+                    :name (s15n / name
+                        :op1 "希拉里"
+                        :op2 "·"
+                        :op3 "克林顿")
+                    :ARG1-of (s15h / have-rel-role-91
+                        :ARG3 (s15x6 / 第一夫人
+                            :mod (s15x7 / 前)
+                            :place (s15c2 / country
+                                :name (s15n2 / name
+                                    :op1 "美国")))))
+                :op2 (s15x11 / 外星人
+                    :name (s15n4 / name
+                        :op1 "P"
+                        :op2 "'"
+                        :op3 "Lod")))
+            :ARG1 (s15x4 / 关系
+                :mod (s15x5 / 暧昧))
+            :aspect state
+            :quote s15x)
+        :op2 (s15x2 / 领养-00
+            :ARG0 s15i2
+            :ARG1 (s15x9 / 宝宝
+                :mod (s15x10 / 外星))
+            :aspect performance
+            :quote s15x))
+    :aspect performance)
+
+
+# document level annotation:
+(s15s0 / sentence
+    :temporal ((document-creation-time :before s15x)
+               (s15x :overlap s15x3)
+               (s15x3 :after s15x2))
+    :modal ((root :modal author)
+            (s15a :full-affirmative s15x3)
+            (s15a :full-affirmative s15x2)
+            (author :full-affirmative s15x)
+            (author :full-affirmative s15a)))
+
+
+
+</gold>
+
+# umrjudge per check on these sentences (recall / precision / F1, percent)
+a_event_found: R 92 / P 92 / F 92
+a_event_concept: R 86 / P 86 / F 86
+a_entity_found: R 95 / P 93 / F 94
+a_entity_concept: R 82 / P 82 / F 82
+a_granularity: R 92 / P 92 / F 92
+b_event_sense: R 88 / P 88 / F 88
+c_aspect: R 72 / P 76 / F 74
+c_refer: R 100 / P 50 / F 67
+c_other_attributes: R 100 / P 100 / F 100
+d_core_args_event: R 68 / P 59 / F 63
+d_core_args_abstract: R 53 / P 53 / F 53
+d_peripheral_event: R 57 / P 36 / F 44
+d_peripheral_entity: R 61 / P 69 / F 65
+e_core_labels: R 88 / P 88 / F 88
+e_peripheral_labels: R 87 / P 87 / F 87
+f_name_tokens: R 62 / P 62 / F 62
+g_reentrancy: R 33 / P 67 / F 44
+h_temporal: R 59 / P 50 / F 54
+i_modal: R 70 / P 70 / F 70
+j_coref_chain: R 17 / P 11 / F 13
+j_coref_subset: R – / P 0 / F 0
+k_doc_format: R 100 / P 100 / F 100
+
+# The units umrjudge did not count as correct (check, verdict, unit: gold -> annotation, detail)
+a_entity_found | missing | s11x7: 母 -> - | no node in the prediction matches it
+a_entity_concept | wrong | s11x6: 公司 -> 母公司 | 公司 -> 母公司
+a_entity_concept | wrong | s11x5: 周报 -> 仍 | 周报 -> 仍
+a_granularity | missing | «公司» 公司: «公司» 公司 -> «美国媒体公司» company | inside a wider predicted node
+a_granularity | missing | «周报» 周报: «周报» 周报 -> «《世界新闻周报》» newspaper | inside a wider predicted node
+a_granularity | extra | «美国媒体公司» company: «公司» 公司 -> «美国媒体公司» company | wider than the gold node
+a_granularity | extra | «《世界新闻周报》» newspaper: «周报» 周报 -> «《世界新闻周报》» newspaper | wider than the gold node
+c_aspect | wrong | s11x8:aspect: process -> habitual | process -> habitual
+c_aspect | wrong | s11x3:aspect: state -> activity | state -> activity
+d_core_args_event | partial | s11x2: arg0 s11x4/网络版; arg1 s11x3/生存-01 -> arg1 s11x3/生存-01 | missing arg0 s11x4/网络版
+d_core_args_event | extra | s11x3: - -> arg0 s11x4/网络版 | extra arg0 s11x4/网络版
+d_peripheral_event | extra | s11x2: - -> mod s11x5/周报 | extra mod s11x5/周报
+d_peripheral_entity | missing | s11x6: mod s11x7/母 -> - | missing mod s11x7/母
+d_peripheral_entity | missing | s11x5: part s11x4/网络版 -> - | missing part s11x4/网络版
+g_reentrancy | missing | s11x2/继续-01 -temporal-> s11d/date-entity: s11x2/继续-01 -temporal-> s11d/date-entity -> - | the prediction has no such edge
+g_reentrancy | missing | s11x3/生存-01 -arg0-> s11x4/网络版: s11x3/生存-01 -arg0-> s11x4/网络版 -> - | the prediction has the edge but not as a reentrancy
+g_reentrancy | missing | s11x8/发行-01 -arg0-> s11c/company: s11x8/发行-01 -arg0-> s11c/company -> - | the prediction has no such edge
+g_reentrancy | extra | s11z/newspaper -part-> s11w/网络版: - -> s11z/newspaper -part-> s11w/网络版 | gold has no such reentrancy
+a_event_found | missing | s12b: but-91 -> - | no node in the prediction matches it
+a_event_found | missing | s12i2: identity-91 -> - | no node in the prediction matches it
+a_event_concept | wrong | s12h: have-mod -> have-purpose | have-mod -> have-purpose
+a_entity_concept | wrong | s12a: and -> 都 | and -> 都
+a_entity_concept | wrong | s12x9: 目的 -> person | 目的 -> person
+c_aspect | missing | s12i3:aspect: state -> - | the prediction has no :aspect
+c_refer | extra | s12x9:refer-number: - -> plural | gold has no :refer-number
+c_refer | extra | s12x9:refer-person: - -> 3rd | gold has no :refer-person
+d_core_args_event | partial | s12x: arg0 s12n/newspaper; arg1 s12h/have-mod-91 -> arg0 s12n/newspaper; arg1 s12x3/真实 | missing arg1 s12h/have-mod-91; extra arg1 s12x3/真实
+d_core_args_event | extra | s12x4: - -> arg0 s12x9/目的 | extra arg0 s12x9/目的
+d_core_args_abstract | wrong | s12h: arg1 s12x4/报导-01; arg2 s12x3/真实 -> arg1 s12x10/报导-01; arg2 s12x12/博君一笑 | missing arg1 s12x4/报导-01; missing arg2 s12x3/真实; extra arg1 s12x10/报导-01; extra arg2 s12x12/博君一笑
+d_peripheral_event | extra | s12x: - -> medium s12x5/标语 | extra medium s12x5/标语
+d_peripheral_event | wrong | s12x10: mod s12x11/大部分; purpose s12x9/目的 -> quant s12x11/大部分 | mod s12x11/大部分: predicted as quant; missing purpose s12x9/目的
+d_peripheral_entity | extra | s12x3: - -> mod s12a/and | extra mod s12a/and
+e_peripheral_labels | wrong | s12x10 -mod-> s12x11: mod -> quant | mod -> quant
+g_reentrancy | missing | s12h/have-mod-91 -quote-> s12x/宣称-01: s12h/have-mod-91 -quote-> s12x/宣称-01 -> - | the prediction has no such edge
+g_reentrancy | missing | s12x5/标语 -possessor-> s12n/newspaper: s12x5/标语 -possessor-> s12n/newspaper -> - | the prediction has no such edge
+g_reentrancy | missing | s12x6/报导-01 -quote-> s12i3/identity-91: s12x6/报导-01 -quote-> s12i3/identity-91 -> - | the prediction has no such edge
+g_reentrancy | extra | s12y/标语 -possessor-> s12p/person: - -> s12y/标语 -possessor-> s12p/person | gold has no such reentrancy
+a_event_found | extra | s13i: - -> identity-91 | matches no gold node
+a_entity_found | extra | s13w2: - -> 外星人 | matches no gold node
+a_entity_concept | wrong | s13x18: 中 -> 有 | 中 -> 有
+a_entity_concept | wrong | s13i2: individual-person -> person | individual-person -> person
+a_entity_concept | wrong | s13i3: individual-person -> person | individual-person -> person
+a_granularity | missing | «P» individual-person/individual-person/person: «P» individual-person/individual-person/person -> «P'Lod» person | inside a wider predicted node
+a_granularity | extra | «P'Lod» person: «P» individual-person/individual-person/person -> «P'Lod» person | wider than the gold node
+c_aspect | wrong | s13x:aspect: performance -> habitual | performance -> habitual
+d_core_args_event | wrong | s13x16: arg0 s13x13/人物; arg1 s13x18/中 -> arg0 s13x19/新闻; arg1 s13x13/人物 | arg0 s13x13/人物: predicted as arg1; missing arg1 s13x18/中; extra arg0 s13x19/新闻
+d_peripheral_event | wrong | s13x16: frequency s13x17/重复 -> mod s13x17/重复 | frequency s13x17/重复: predicted as mod
+d_peripheral_entity | missing | s13x4: example s13a2/and -> - | missing example s13a2/and
+e_core_labels | wrong | s13x16 -arg0-> s13x13: arg0 -> arg1 | arg0 -> arg1
+e_peripheral_labels | wrong | s13x16 -frequency-> s13x17: frequency -> mod | frequency -> mod
+f_name_tokens | wrong | s13i3: 外星人 p ' lod -> p ' lod | 外星人 p ' lod -> p ' lod
+a_event_concept | wrong | s14x: 算是 -> 算 | 算是 -> 算
+a_entity_found | missing | s14i2: implicit-argument -> - | no node in the prediction matches it
+a_entity_found | missing | s14p: planet -> - | no node in the prediction matches it
+a_entity_concept | wrong | s14x3: 大 -> 大宗 | 大 -> 大宗
+a_entity_concept | wrong | s14x2: 宗 -> thing | 宗 -> thing
+c_aspect | wrong | s14x6:aspect: activity -> habitual | activity -> habitual
+d_core_args_event | partial | s14x: arg0 s14i2/implicit-argument; arg1 s14x6/活动-01 -> arg0 s14x2/宗; arg1 s14x6/活动-01 | missing arg0 s14i2/implicit-argument; extra arg0 s14x2/宗
+d_core_args_abstract | wrong | s14h: arg1 s14i2/implicit-argument; arg1 s14x3/大; arg2 s14x4/最; arg5 s14x5/其中 -> arg1 s14x2/宗; arg2 s14x3/大; arg3 s14x4/最 | missing arg1 s14i2/implicit-argument; arg1 s14x3/大: predicted as arg2; arg2 s14x4/最: predicted as arg3; missing arg5 s14x5/其中; extra arg1 s14x2/宗
+d_peripheral_event | wrong | s14x6: place s14p/planet -> place s14n/name | missing place s14p/planet; extra place s14n/name
+d_peripheral_entity | extra | s14x2: - -> mod s14x5/其中 | extra mod s14x5/其中
+e_core_labels | wrong | s14h -arg1-> s14x3: arg1 -> arg2 | arg1 -> arg2
+e_core_labels | wrong | s14h -arg2-> s14x4: arg2 -> arg3 | arg2 -> arg3
+a_event_found | extra | s15i: - -> identity-91 | matches no gold node
+a_event_concept | wrong | s15h: have-rel-role -> have-org-role | have-rel-role -> have-org-role
+a_entity_found | extra | s15k: - -> 后来 | matches no gold node
+a_entity_found | extra | s15h2: - -> 还 | matches no gold node
+a_entity_found | extra | s15j: - -> 就 | matches no gold node
+a_entity_concept | wrong | s15c: consecutive -> person | consecutive -> person
+a_granularity | missing | «P» individual-person: «P» individual-person -> «P'Lod» person | inside a wider predicted node
+a_granularity | extra | «P'Lod» person: «P» individual-person -> «P'Lod» person | wider than the gold node
+b_event_sense | wrong | s15x3: 有-03 -> 有-01 | 有-03 -> 有-01
+b_event_sense | wrong | s15x2: 领养 -> 领养-01 | 领养 -> 领养-01
+d_core_args_event | wrong | s15x: arg1 s15c/consecutive -> arg1 s15a/and | missing arg1 s15c/consecutive; extra arg1 s15a/and
+d_core_args_event | partial | s15x3: arg0 s15a/and; arg1 s15x4/关系 -> arg0 s15i2/individual-person; arg1 s15x4/关系 | missing arg0 s15a/and; extra arg0 s15i2/individual-person
+d_core_args_abstract | partial | s15h: arg1 s15i2/individual-person; arg3 s15x6/第一夫人 -> arg1 s15i2/individual-person; arg2 s15c2/country; arg3 s15x6/第一夫人 | extra arg2 s15c2/country
+d_peripheral_event | extra | s15x: - -> mod s15j/就 (not in gold) | extra mod s15j/就 (not in gold)
+d_peripheral_event | extra | s15x2: - -> mod s15h2/还 (not in gold); temporal s15k/后来 (not in gold) | extra mod s15h2/还 (not in gold); extra temporal s15k/后来 (not in gold)
+d_peripheral_entity | partial | s15x6: mod s15x7/前; place s15c2/country -> mod s15x7/前 | missing place s15c2/country
+f_name_tokens | extra | s15c: - -> p ' lod | gold has no :name
+f_name_tokens | wrong | s15i2: 希拉里 · 克林顿 -> 希拉里 克林顿 | 希拉里 · 克林顿 -> 希拉里 克林顿
+f_name_tokens | missing | s15x11: p ' lod -> - | the prediction has no :name
+g_reentrancy | missing | s15x2/领养 -quote-> s15x/指-02: s15x2/领养 -quote-> s15x/指-02 -> - | the prediction has no such edge
+g_reentrancy | missing | s15x3/有-03 -quote-> s15x/指-02: s15x3/有-03 -quote-> s15x/指-02 -> - | the prediction has no such edge
+h_temporal | wrong | 报导-01 «报导» (snt12 s12x10 = pred s12r2): 报导-01 «报导» (snt12 s12x4 = pred s12r) :overlap 报导-01 «报导» (snt12 s12x10 = pred s12r2) -> document-creation-time :before 报导-01 «报导» (snt12 s12x10 = pred s12r2) | wrong parent and relation
+h_temporal | extra | 博君一笑 «博君一笑» (snt12 s12x12 = pred s12x): - -> 报导-01 «报导» (snt12 s12x10 = pred s12r2) :overlap 博君一笑 «博君一笑» (snt12 s12x12 = pred s12x) | gold gives this node no temporal parent
+h_temporal | extra | 真实 «真实» (snt12 s12x3 = pred s12t): - -> 宣称-01 «宣称» (snt12 s12x = pred s12c) :overlap 真实 «真实» (snt12 s12x3 = pred s12t) | gold gives this node no temporal parent
+h_temporal | wrong | 报导-01 «报导» (snt12 s12x4 = pred s12r): 宣称-01 «宣称» (snt12 s12x = pred s12c) :overlap 报导-01 «报导» (snt12 s12x4 = pred s12r) -> 真实 «真实» (snt12 s12x3 = pred s12t) :overlap 报导-01 «报导» (snt12 s12x4 = pred s12r) | right relation, wrong parent
+h_temporal | wrong | 报导-01 «报导» (snt12 s12x6 = pred s12r3): 报导-01 «报导» (snt12 s12x4 = pred s12r) :overlap 报导-01 «报导» (snt12 s12x6 = pred s12r3) -> 宣称-01 «宣称» (snt12 s12x = pred s12c) :overlap 报导-01 «报导» (snt12 s12x6 = pred s12r3) | right relation, wrong parent
+h_temporal | wrong | 创造-01 «创造» (snt13 s13x = pred s13c): 报导-01 «报导» (snt13 s13x2 = pred s13b) :overlap 创造-01 «创造» (snt13 s13x = pred s13c) -> 中 «中» (snt13 s13x18 = pred s13y) :overlap 创造-01 «创造» (snt13 s13x = pred s13c) | right relation, wrong parent
+h_temporal | extra | 出现-01 «出现» (snt13 s13x16 = pred s13e): - -> 创造-01 «创造» (snt13 s13x = pred s13c) :overlap 出现-01 «出现» (snt13 s13x16 = pred s13e) | gold gives this node no temporal parent
+h_temporal | extra | 中 «中» (snt13 s13x18 = pred s13y): - -> document-creation-time :before 中 «中» (snt13 s13x18 = pred s13y) | gold gives this node no temporal parent
+h_temporal | wrong | 报导-01 «报导» (snt13 s13x2 = pred s13b): document-creation-time :before 报导-01 «报导» (snt13 s13x2 = pred s13b) -> 中 «中» (snt13 s13x18 = pred s13y) :overlap 报导-01 «报导» (snt13 s13x2 = pred s13b) | wrong parent and relation
+h_temporal | missing | 航天员 «航天员» (snt13 s13x6 = pred s13h): 创造-01 «创造» (snt13 s13x = pred s13c) :overlap 航天员 «航天员» (snt13 s13x6 = pred s13h) -> - | the prediction gives this node no temporal parent
+h_temporal | wrong | 算是-01 «算是» (snt14 s14x = pred s14s): document-creation-time :before 算是-01 «算是» (snt14 s14x = pred s14s) -> document-creation-time :depends-on 算是-01 «算是» (snt14 s14x = pred s14s) | right parent, wrong relation
+i_modal | partial | have-mod-91 (snt12 s12h = pred s12h): author :full-affirmative have-mod-91 (snt12 s12h = pred s12h); newspaper (snt12 s12n = pred s12z) :full-affirmative have-mod-91 (snt12 s12h = pred s12h) -> author :full-affirmative have-mod-91 (snt12 s12h = pred s12h) | agrees on part of the relations
+i_modal | missing | identity-91 (snt12 s12i2): author :full-affirmative identity-91 (snt12 s12i2) -> - | the prediction has no node for it (its sentence graph lacks it)
+i_modal | missing | identity-91 (snt12 s12i3 = pred s12i): author :full-affirmative identity-91 (snt12 s12i3 = pred s12i) -> - | the prediction gives this node no modal parent
+i_modal | partial | 报导-01 «报导» (snt12 s12x10 = pred s12r2): author :full-affirmative 报导-01 «报导» (snt12 s12x10 = pred s12r2); newspaper (snt12 s12n = pred s12z) :full-affirmative 报导-01 «报导» (snt12 s12x10 = pred s12r2) -> author :full-affirmative 报导-01 «报导» (snt12 s12x10 = pred s12r2) | agrees on part of the relations
+i_modal | extra | 博君一笑 «博君一笑» (snt12 s12x12 = pred s12x): - -> author :full-affirmative 博君一笑 «博君一笑» (snt12 s12x12 = pred s12x) | gold gives this node no modal parent
+i_modal | extra | 真实 «真实» (snt12 s12x3 = pred s12t): - -> newspaper (snt12 s12n = pred s12z) :full-affirmative 真实 «真实» (snt12 s12x3 = pred s12t) | gold gives this node no modal parent
+i_modal | partial | 报导-01 «报导» (snt12 s12x6 = pred s12r3): author :full-affirmative 报导-01 «报导» (snt12 s12x6 = pred s12r3); newspaper (snt12 s12n = pred s12z) :full-affirmative 报导-01 «报导» (snt12 s12x6 = pred s12r3) -> author :full-affirmative 报导-01 «报导» (snt12 s12x6 = pred s12r3) | agrees on part of the relations
+i_modal | extra | 中 «中» (snt13 s13x18 = pred s13y): - -> author :full-affirmative 中 «中» (snt13 s13x18 = pred s13y) | gold gives this node no modal parent
+i_modal | missing | and (snt15 s15a = pred s15a): author :full-affirmative and (snt15 s15a = pred s15a) -> - | the prediction gives this node no modal parent
+i_modal | wrong | 领养 «领养» (snt15 s15x2 = pred s15l): and (snt15 s15a = pred s15a) :full-affirmative 领养 «领养» (snt15 s15x2 = pred s15l) -> 指-02 «指» (snt15 s15x = pred s15z) :full-affirmative 领养 «领养» (snt15 s15x2 = pred s15l) | right relation, wrong parent
+i_modal | wrong | 有-03 «有» (snt15 s15x3 = pred s15y): and (snt15 s15a = pred s15a) :full-affirmative 有-03 «有» (snt15 s15x3 = pred s15y) -> 指-02 «指» (snt15 s15x = pred s15z) :full-affirmative 有-03 «有» (snt15 s15x3 = pred s15y) | right relation, wrong parent
+j_coref_chain | partial | newspaper (snt11 s11n2 = pred s11z): 周报 «周报» (snt11 s11x5 = pred s11r); newspaper (snt12 s12n = pred s12z); person «P» (snt13 s13p = pred s13p) -> newspaper (snt12 s12n = pred s12z) | not linked to: 周报 «周报» (snt11 s11x5 = pred s11r); person «P» (snt13 s13p = pred s13p)
+j_coref_chain | missing | 周报 «周报» (snt11 s11x5 = pred s11r): newspaper (snt11 s11n2 = pred s11z); newspaper (snt12 s12n = pred s12z); person «P» (snt13 s13p = pred s13p) -> - | the prediction links it to nothing
+j_coref_chain | partial | newspaper (snt12 s12n = pred s12z): newspaper (snt11 s11n2 = pred s11z); 周报 «周报» (snt11 s11x5 = pred s11r); person «P» (snt13 s13p = pred s13p) -> newspaper (snt11 s11n2 = pred s11z) | not linked to: 周报 «周报» (snt11 s11x5 = pred s11r); person «P» (snt13 s13p = pred s13p)
+j_coref_chain | extra | 目的 «目的» (snt12 s12x9 = pred s12p): - -> person «P» (snt13 s13p = pred s13p) | gold links it to nothing
+j_coref_chain | extra | individual-person «P» (snt13 s13i3 = pred s13m2): - -> consecutive (snt15 s15c = pred s15w) | gold links it to nothing
+j_coref_chain | wrong | person «P» (snt13 s13p = pred s13p): newspaper (snt12 s12n = pred s12z); newspaper (snt11 s11n2 = pred s11z); 周报 «周报» (snt11 s11x5 = pred s11r) -> 目的 «目的» (snt12 s12x9 = pred s12p) | linked to another chain than gold's
+j_coref_chain | extra | consecutive (snt15 s15c = pred s15w): - -> individual-person «P» (snt13 s13i3 = pred s13m2) | gold links it to nothing
+j_coref_subset | extra | 宗 «最大宗» (snt14 s14x2 = pred s14t) :subset-of 题材 «题材» (snt13 s13x4 = pred s13t): - -> 宗 «最大宗» (snt14 s14x2 = pred s14t) :subset-of 题材 «题材» (snt13 s13x4 = pred s13t)
+
+# Your answer
+For each problem: the pattern, its cost (which checks, how many units), why it happens, and the change to the instruction.

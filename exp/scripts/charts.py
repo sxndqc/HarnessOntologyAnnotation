@@ -7,14 +7,17 @@ import json
 
 CSS = """
 .viz{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
- --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;background:var(--surface);border:1px solid rgba(11,11,11,.10);
+ --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;background:var(--surface);border:1px solid rgba(11,11,11,.10);
  border-radius:8px;padding:12px 14px;margin:.8rem 0;display:inline-block;max-width:100%;overflow-x:auto;vertical-align:top}
 .viz svg{display:block;font-family:system-ui,-apple-system,"Segoe UI","PingFang SC",sans-serif}
 .viz .t{fill:var(--ink);font-size:13px;font-weight:600} .viz .lab{fill:var(--ink2);font-size:12px}
 .viz .tick{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums} .viz .val{fill:var(--ink2);font-size:11px}
 .viz .grid{stroke:var(--grid);stroke-width:1} .viz .base{stroke:var(--axis);stroke-width:1}
 .viz .ref{stroke:var(--muted);stroke-width:1}
-.viz .b1{fill:var(--s1)} .viz .b2{fill:var(--s2)} .viz .b3{fill:var(--s3)}
+.viz .b1{fill:var(--s1)} .viz .b2{fill:var(--s2)} .viz .b3{fill:var(--s3)} .viz .b4{fill:var(--s4)}
+.viz .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;pointer-events:none}
+.viz .l1{stroke:var(--s1)} .viz .l2{stroke:var(--s2)} .viz .l3{stroke:var(--s3)} .viz .l4{stroke:var(--s4)}
+.viz .pt{stroke:var(--surface);stroke-width:2;pointer-events:none} .viz .col:hover{fill:var(--grid);opacity:.35}
 .viz .hit{fill:transparent;cursor:default} .viz .mk{pointer-events:none} .viz .hit:hover+.mk,.viz .hit:focus+.mk{opacity:.75}
 .viz .cell{fill:var(--cl)} .viz .hit:focus{outline:none}
 .viz .ring,.viz .dia{stroke:var(--surface);stroke-width:2;pointer-events:none} .viz .rk{fill:none;stroke:var(--ink2);stroke-width:1.5}
@@ -33,7 +36,7 @@ CSS = """
 @media (prefers-color-scheme: dark){
  .metricbar button{border-color:rgba(255,255,255,.2)} .metricbar button[aria-pressed="true"]{background:#3987e5;border-color:#3987e5}
  .viz .ring.s1,.viz .dia.s1,.viz .ring.s2,.viz .dia.s2,.viz .ring.s3,.viz .dia.s3{filter:brightness(1.35)}
- .viz{--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;
+ .viz{--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;
   border-color:rgba(255,255,255,.10)} .viz .cell{fill:var(--cd)}
  #viztip{background:#1a1a19;color:#f0efec;border-color:rgba(255,255,255,.12)} #viztip .h{color:#c3c2b7}}
 """
@@ -316,3 +319,56 @@ def facet_hbar(title, cats, facets, series, xmax=100, step=20, label_w=150, pane
             out.append('<line class="base" x1="%d" x2="%d" y1="%.1f" y2="%.1f"/>' % (x0, x0, yb, yb + band))
     out.append("</svg>")
     return '<div class="viz">%s</div>' % "".join(out)
+
+
+def line_facets(title, xs, facets, series, ymin=30, ymax=70, step=10, panel_w=230, panel_h=190, gap=36):
+    """Small multiples of line charts on one row, one per metric, sharing the x positions (xs: labels).
+    facets: [(metric, {series index: [value or None per x]})]; series: [(name, slot 1-4, marker)] with
+    marker "circle" or "diamond" (a second channel next to the color). Hovering a column shows every
+    series' value at that x."""
+    top, legend_h, head_h, left, bottom = 26, 22, 22, 34, 34
+    width = left + len(facets) * (panel_w + gap)
+    h = top + legend_h + head_h + panel_h + bottom
+    y0 = top + legend_h + head_h
+    sy = lambda v: y0 + panel_h * (1 - (v - ymin) / (ymax - ymin))
+    out = ['<svg width="%d" height="%d" role="img" aria-label="%s">' % (width, h, _e(title)),
+           '<text class="t" x="0" y="16">%s</text>' % _e(title)]
+    lx = 0
+    for name, slot, mk in series:
+        out.append('<line class="ln l%d" x1="%d" x2="%d" y1="%d" y2="%d"/>' % (slot, lx, lx + 16, top + 7, top + 7))
+        out.append(_marker(mk, slot, lx + 8, top + 7))
+        out.append('<text class="lab" x="%d" y="%d">%s</text>' % (lx + 22, top + 11, _e(name)))
+        lx += 34 + 7.5 * len(name) + (6 * sum(1 for ch in name if ord(ch) > 0x2e80))
+    for fi, (metric, vals) in enumerate(facets):
+        x0 = left + fi * (panel_w + gap)
+        sx = lambda i, x0=x0: x0 + 10 + (panel_w - 20) * i / max(1, len(xs) - 1)
+        out.append('<text class="t" x="%d" y="%d" style="font-size:12px">%s</text>' % (x0, top + legend_h + 12, _e(metric)))
+        v = ymin
+        while v <= ymax + 1e-9:
+            y = sy(v)
+            out.append('<line class="grid" x1="%d" x2="%d" y1="%.1f" y2="%.1f"/>' % (x0, x0 + panel_w, y, y))
+            out.append('<text class="tick" x="%d" y="%.1f" text-anchor="end" dominant-baseline="middle">%g</text>' % (x0 - 4, y, v))
+            v += step
+        for i, xl in enumerate(xs):
+            out.append('<text class="tick" x="%.1f" y="%d" text-anchor="middle">%s</text>' % (sx(i), y0 + panel_h + 16, _e(xl)))
+            colw = (panel_w - 20) / max(1, len(xs) - 1)
+            tipd = {"h": "%s · %s" % (metric, xl), "rows": [{"v": "–" if vals.get(si, [None] * len(xs))[i] is None else
+                                                           "%.1f" % vals[si][i], "n": series[si][0], "c": "--s%d" % series[si][1]}
+                                                          for si in range(len(series))]}
+            out.append('<rect class="hit col" tabindex="0" x="%.1f" y="%d" width="%.1f" height="%d" data-tip="%s"/>' % (
+                sx(i) - colw / 2, y0, colw, panel_h, _e(json.dumps(tipd, ensure_ascii=False))))
+        for si, (name, slot, mk) in enumerate(series):
+            pts = [(sx(i), sy(v)) for i, v in enumerate(vals.get(si, [])) if v is not None]
+            if len(pts) > 1:
+                out.append('<polyline class="ln l%d" points="%s"/>' % (slot, " ".join("%.1f,%.1f" % p for p in pts)))
+            for x, y in pts:
+                out.append(_marker(mk, slot, x, y))
+        out.append('<line class="base" x1="%d" x2="%d" y1="%d" y2="%d"/>' % (x0, x0 + panel_w, y0 + panel_h, y0 + panel_h))
+    out.append("</svg>")
+    return '<div class="viz">%s</div>' % "".join(out)
+
+
+def _marker(kind, slot, x, y):
+    if kind == "diamond":
+        return '<path class="pt b%d" d="M%.1f,%.1f l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z"/>' % (slot, x, y - 5.5)
+    return '<circle class="pt b%d" cx="%.1f" cy="%.1f" r="4.5"/>' % (slot, x, y)

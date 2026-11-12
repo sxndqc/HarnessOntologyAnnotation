@@ -1,0 +1,23 @@
+The critique's four problems all recur on other documents, so I fix each one where the instruction states the rule. Each fix also gets a short example.
+
+1. **改为 with a topic subject.**
+   - **Fix:** When X and Y of 由 X 改为 Y are parts or features of the subject (版面, 颜色, 名称), 改为 now has no `:ARG0`. The subject hangs from X by `:part-of`, and the old 改为 example is corrected.
+   - **Re-entrancy:** A new general rule says to build a repeated entity in full (name, apposition) at its first mention in the graph. Later mentions in the same sentence are a bare variable.
+   - **Why:** The instruction gave the topic-subject nowhere to go but `:ARG0`, which also broke its own ban on invented agents. This was the largest loss.
+2. **The verb inside V+量.** Section 2.2 wrongly required an aspect and a modal parent for the inner verb (发行 in 发行量). It now gets **no** `:aspect` and **no** modal triple, only the temporal `:overlap` link to its governing verb. The checklist gets the same exception.
+3. **Aspect of purpose events and relative clauses.**
+   - A purpose event (为/为了) is `activity`, even when it is full-affirmative.
+   - The habitual cue is narrowed to a publication's own recurring verbs used as predicates. A relative clause about what a newly founded thing was designed to do is `process`.
+4. **Named humans.** In Chinese documents a named person is `individual-person`. `person` stays for pronouns and unnamed people.
+
+```json
+{"summary": "Fix 由X改为Y with a topic subject (:part-of on X, no :ARG0) and the full-build-at-first-mention re-entrancy rule; V+量 inner verb gets no aspect/modal; purpose events are activity, habitual cue narrowed (relative clause of founded thing = process); named humans are individual-person in Chinese; update examples and checklist.", "edits": [
+{"op": "replace", "old": "- 由 X 改为/变为 Y: X is `:ARG1`, Y is `:ARG2`; no `:source`.", "new": "- 由 X 改为/变为 Y: X is `:ARG1`, Y is `:ARG2`; no `:source`. In `<Whole> 由 X 改为 Y`, when X and Y are parts or features of the subject (版面, 颜色, 名称), 改为 has **no** `:ARG0`: the subject is `:part-of` on X (`改为 :ARG1 (版面 :part-of <newspaper> :mod (黑白)) :ARG2 (版面 :mod (彩色))`).\n- Build a repeated entity in full (name, apposition, modifiers) at its first mention in the graph (first in reading order), and refer to it at later mentions in the same sentence by its bare variable (`:possessor s7n`)."},
+{"op": "replace", "old": "the inner V-01 is an event (aspect, temporal parent overlapping the governing verb, modal parent).", "new": "the inner V-01 gets **no** `:aspect` and **no** modal triple; it only gets the temporal triple `(<governing verb> :overlap V)`."},
+{"op": "replace", "old": "Aspect cues: recurring activities of a publication or institution (发行, 报导, 综合, 印刷) are `habitual`, even with 了.", "new": "Aspect cues: a publication's or institution's own recurring verbs (发行, 报导, 综合, 印刷) used as predicates are `habitual`, even with 了; this cue does not extend to other verbs. A relative clause describing what a newly founded thing was designed to do (容纳…文章的版面) is `process`. A purpose event (为/为了 X, `have-purpose-91 :ARG2`, `:purpose`) is `activity`, not `performance`, even when it is modally full-affirmative."},
+{"op": "insert_after", "anchor": "Do not corefer a repeated country name that is only such a modifier.", "text": " In Chinese documents a named human is `individual-person`, not `person` (`(individual-person :name (name :op1 \"格内洛索\" :op2 \"·\" :op3 \"波普\"))`); keep `person` for pronouns and unnamed people."},
+{"op": "replace", "old": "- Every event and time expression has a temporal parent; every event has a modal parent.", "new": "- Every event and time expression has a temporal parent; every event has a modal parent (except the inner verb of a V+量 compound, which has only a temporal parent)."},
+{"op": "replace", "old": "- 改为 (3): 由黑白版面改为彩色版面 → `改为 :ARG1 (版面 :mod (黑白)) :ARG2 (版面 :mod (彩色))`.", "new": "- 改为 (3): 小报《…》将由黑白版面改为彩色版面 …不符合《…》标准 → `(改为-01 :ARG1 (版面 :part-of (s7n / newspaper :name … :ARG1-of (identity-91 :ARG2 (小报 …))) :mod (黑白)) :ARG2 (版面 :mod (彩色)))`, no `:ARG0`; later `(标准 :possessor s7n)`."},
+{"op": "append", "text": "\n- Aspect (4.1): 为充分运用… → `运用 :aspect activity`; 容纳…文章的版面 → `(版面 :ARG0-of (容纳-01 … :aspect process))`.\n- V+量 (2.2): 发行量 → `(量 :quant-of (发行-01 :ARG1 …))` with no `:aspect` and no modal triple; only `(达到 :overlap 发行)`.\n- Named person (2.2): 格内洛索·波普 → `(individual-person :name (name :op1 \"格内洛索\" :op2 \"·\" :op3 \"波普\"))`."}
+]}
+```

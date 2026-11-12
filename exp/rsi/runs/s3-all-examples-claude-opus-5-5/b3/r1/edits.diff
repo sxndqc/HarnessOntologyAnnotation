@@ -1,0 +1,186 @@
+--- before
++++ after
+@@ -4,34 +4,19 @@
+ graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+ is under **Input** at the end, one sentence per line.
+ 
+-**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+-with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+-and document-level relation counts. Take the time this needs:
+-
+-- Read the guidelines below carefully before you start, and go back to them for every decision you are
+-  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+-  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
++**Make the annotation as correct as you can.** It is scored against an expert gold annotation, concept by concept and relation by relation:
++
++- Read the guidelines below first and return to them for every unsure decision.
+ - Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+   example does.
+-- Do not guess when you can check: use the three tools (see Tools): search the full guidelines with
+-  `search_guidelines` whenever the guidelines above do not settle a case, look up every predicate in
+-  PropBank with `propbank_lookup` before you choose its sense and numbered roles, and look up how the gold
+-  data annotates a construction, a word or a relation with `search_annotations`. Call them as often as you
+-  need: many calls are expected.
+-- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+-  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+-  the end check that the document-level relations cover every event and entity the guidelines ask for.
++- Do not guess when you can check: `search_guidelines` when the guidelines do not settle a case, `propbank_lookup` for every predicate (look up the compound first: 算是, 改为; use it if it exists), `search_annotations` for how gold annotates a construction. Many calls are expected.
++- Before the next sentence, recheck the graph: every meaningful word has a concept, every event an aspect, every role the right direction; at the end check the document-level relations.
+ 
+ ## Guidelines
+ 
+ # UMR guidelines, abridged
+ 
+-A short version of the UMR 0.9 specification (`umr_guidelines.md` in this folder, umr4nlp/umr-guidelines),
+-for annotating Chinese and English at Stage 1 (numbered PropBank roles). It keeps what an annotator needs for
+-most sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics
+-sections and most of the examples. Where the full guideline uses the older short names (`AUTH`, `DCT`,
+-`FullAff`, `:modstr`, `:ref-person`, `Performance`), this version uses the names of the UMR release data
+-(`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`, `performance`).
++Abridged UMR 0.9 guidelines for Chinese and English at Stage 1 (numbered PropBank roles), with the names of the UMR release data.
+ 
+ ## 1. What a UMR is
+ 
+@@ -98,7 +83,7 @@
+ ### 2.2 Named entities
+ 
+ `(c / country :name (n / name :op1 "Russia"))`: an entity-type concept, **no `:wiki`**, and `:name` with one `:opN` per word of the name.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: they are the first and last `:opN`. Types: `person`,
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: they are the first and last `:opN`. So is the middle dot (希拉里·克林顿 → `:op2 "·"`). A bare category noun before a foreign name (外星人 P'Lod) is the concept (`外星人 :name …`), not an appositive identity-91. 地球 → `planet :name`. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+ `mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+@@ -129,6 +114,7 @@
+ Role nouns are reified the same way: *the president of Russia* →
+ `(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
++X (都)是 Adj 的 → `have-mod-91 :ARG1 X :ARG2 (Adj)`; the Adj has no sense, aspect or triples. A parenthetical gloss N：「Y」 → `identity-91 :ARG1 N :ARG2 Y :aspect state`, joined by `and` to the neighbouring clause, never `:medium`. 第一夫人 → `have-rel-role-91 :ARG3 (第一夫人 :place country)`, not have-org-role.
+ 
+ ### 2.4 Pronouns and implicit participants
+ 
+@@ -136,17 +122,19 @@
+ :refer-number singular)`; 我们 / *we* → `:refer-person 1st :refer-number plural`; 它 / *it* → `thing` with
+ 3rd singular. A plural noun gets `:refer-number plural`. A Chinese zero subject or object that is clearly
+ recoverable may be added as such a node (aligned to no word) and linked by coreference.
+-In Chinese documents, a named person, or a personal pronoun for one individual (他, 她), is `individual-person`, not `person`.
++In Chinese documents, a named person, or a personal pronoun for one individual (他, 她), is `individual-person`, not `person`. 他们/它们 for an organisation or paper of the same sentence is that node's variable; in a later sentence it is a `person` node linked by `:same-entity`.
+ 
+ ### 2.5 Discourse relations (combining clauses)
+ 
+ - coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+-- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`. Use them only for a contrast between two clauses of the same sentence. A sentence-initial 不过/但是 that contrasts with the previous sentence gets no node, and the sentence's main verb is the root;
++- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`. Use them only for a contrast between two clauses of the same sentence. A sentence-initial 不过/但是 that contrasts with the previous sentence gets no node, and the sentence's main verb is the root; 虽然/尽管 X，不过/但是/却 Y in one sentence → `but-91 :ARG1 X :ARG2 Y`, no `:concession`;
+ - concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+ - *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; 以 X 而 Y (*known for X*) → Y `:reason` X. When such a clause describes a noun (e.g. the predicate noun of a 是 sentence), attach it inside that noun as `:ARG1-of`, not as a new conjunct; *in order to* (为了)
+-  → `:purpose`; *although* (虽然, 尽管) → `:concession`.
++  → `:purpose`; *although* (虽然, 尽管) without 不过/但是 → `:concession`.
+ - When 因为/由于 … (于是/所以/而) or 为(了) … (于是) links whole clauses as the sentence's main structure, reify it. Reason: `have-reason-91` with `:ARG1` the result and `:ARG2` the cause. Purpose: `have-purpose-91` with `:ARG1` the main event and `:ARG2` the purpose. Both get `:aspect state` and `(author :full-affirmative X)`. If both occur, have-reason-91 is the root and has-purpose-91 is its `:ARG1`. The 因为 clause (`:ARG2`, printed last) usually comes first in the text: entities first named there get their full nodes there. Keep `:reason`/`:purpose` roles only for phrase-level modifiers.
++- 以 X 为目的 → `identity-91 :ARG1 (目的 :purpose-of V) :ARG2 X :aspect state`, not have-purpose-91; X (博君一笑) has no sense.
++- 后来/然后/接着 joining clauses → `(consecutive :op1 … :op2 …)`; the connective and 还/就 there get no node.
+ 
+ ### 2.6 Multi-word expressions
+ 
+@@ -171,7 +159,11 @@
+ - A country or region modifying a noun (美国小报, *a US paper*) → `:place`, not `:mod`.
+ - A channel or medium (电视, 网络, *TV*) → `:medium`.
+ - A version, edition or part of a publication or thing (X的纸本) → `:part-of`, not `:possessor`, but only when X is written in the phrase. 网络版 alone gets no owner.
+-- 其中 → `:mod (其中)` on the noun it introduces, not `:part`.
++- 其中 → `:mod (其中)` on the noun it introduces, not `:part`; with a superlative (其中最大宗) it is `:ARG5` of have-degree-91, and the head is `implicit-argument :unit 宗`.
++- X 与/和/跟 Y 有关系 → `有-03 :ARG0 (and :op1 X :op2 Y)`, not `:companion`.
++- N 有 A、B…等 listing N's kinds → `N :example (and …)`, no 有 node.
++- 重复/经常 → `:frequency`; 大部分的 N → `:mod`; 母公司 → `公司 :mod 母`.
++- 出现-01: what appears is `:ARG0`, the 在…中 place `:ARG1 (中 :op1 …)`.
+ - N1 + V + N2 where N2 (程序, 过程, 制度, 方式, 手续) is the procedure that V names: `N2 :ARG0-of (identity-91 :ARG1 V)`, and N1 is the object of V (`V :ARG1 N1`), with V `:aspect process`. Do not flatten N1 and V into `:mod`s of N2. Other modifiers (一般) stay `:mod` of N2.
+ - Nouns run together without 、 (奇闻轶事) form their own inner `and`; 、 separates the outer conjuncts.
+ - Aspectual and scalar adverbs 已经, 都, 也, 仍, 还 → a `:mod` node on the event they modify. Time adverbs 目前, 曾经, 现在, 当时 → `:temporal` on that event. Never drop them, and never move them onto a noun or onto the connective (`but-91`, `and`).
+@@ -189,8 +181,7 @@
+ - An entity mentioned twice in one sentence: write its full node (name, appositive, modifiers) at its first mention in the text, and only the bare variable at the later mention, even if the later mention comes first in the graph.
+ - A preposition before a time (在, 于, 至, 到, 从 + 年) gets no node: the date-entity itself is the `:temporal`. Only 上 of 历史上 is a node.
+ 
+-Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+-UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
++Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The content node (of 宣称/指/说, or a slogan's content under identity-91) always gets `:quote <reporting event or identity node>`, and the speaker gets `(speaker :full-affirmative content)`.
+ 
+ ## 4. Attributes
+ 
+@@ -215,9 +206,9 @@
+ - Stative verbs (拥有, 有, 是, 在, 属) stay `state` even with 过, 曾经 or 了.
+ - 已经 + a change-of-state verb as the main predicate (纸本已经停刊) is `performance`. `state` applies only to the 的-modifier form.
+ - A purpose verb (为充分运用) is `activity`. A relative clause saying what a created thing does (容纳) is `process`. A participle of a completed earlier event (遗留下来的) is `performance`.
+-
+-Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+-only when they are clear.
++- Overriding the habitual rule: an event noun under 停止/开始/继续 (停止…的发行) is `process`, with the aspectual verb's agent re-entered as its ARG0; under 继续 the subject is ARG0 of both verbs. 生存, 存在 → `state`. Verb + result complement (创造出) → `performance`.
++
++
+ 
+ ### 4.2 Polarity, mode, degree, quantity
+ 
+@@ -292,7 +283,7 @@
+ - `(earlier :same-event later)`: two mentions of the same event. Use it only when the participants are the same. *The paper stopped publishing* and *its print edition stopped* are different events.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Link the document's participant chains. Do not link a country or place name used only as a modifier (`:place` of a noun, the 美国 of 美国历史) to another such mention.
+-- Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
++- Within one sentence, pronouns, zero arguments and 自己/其 are re-entrancies. A repeated noun (周报 after the named paper, 该刊) always gets its own node, even in the same sentence, linked by `:same-entity`. No `:subset-of` without a clearly stated set.
+ 
+ ## 6. Alignment
+ 
+@@ -305,6 +296,7 @@
+ 
+ - Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+ - Every event has `:aspect`; negated events have `:polarity -`.
++- Every named person in a Chinese document is `individual-person`. Plain concepts with no sense (真实, 博君一笑, 中) get no temporal or modal triple.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+ - For each entity mentioned twice in a sentence, find its first mention by word position; the full node goes there (even inside the `:ARG2` of have-reason-91), every other mention is the bare variable.
+@@ -316,25 +308,25 @@
+ - Title marks (2.2): 《世界新闻周报》 → `:name (n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》")`.
+ - but-91 (2.5): X，不过Y (within one sentence) → `(b / but-91 :ARG1 X :ARG2 Y)`. A sentence starting with 不过 → no but-91; root = main verb (跌-01).
+ - 以…而闻名 (2.5): a tabloid known for its reports → `(x / 小报 :ARG1-of (k / 闻名-01 :reason (r / 报导-01 :ARG0 x)))`.
+-- 由于 (2.5): 由于…内容 → `:reason (c / 内容 ...)`.
+-- Roles (3): 美国小报 → `:place (c / country ...)`; 电视节目 → `(p / 节目 :medium (t / 电视))`; 都经过 → `(j / 经-01 :mod (d / 都))`.
++
++
+ - Shared modifier (3): 奇怪的新闻与专栏 → `(a / and :op1 (n / 新闻 :mod (q / 奇怪)) :op2 (z / 专栏 :mod q))`.
+ - 属 (3): 属自己的节目 → `(p / 节目 :ARG0-of (s / 属-02 :ARG1 x))`.
+-- Aspect (4.1): 发行 (a paper's publishing) → `:aspect habitual`; 已经停止发行的 → 停止 `:aspect state`; 被称为 → `:aspect performance`.
++
+ - Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`.
+ - 历史上 (4.2): 美国历史上 → `:temporal (s / 上 :op1 (h / 历史 ...))`.
+ - Temporal (5.1): 目前纸本停刊，网络版继续发行 → `(document-creation-time :depends-on s4e)` `(s4e :overlap s4e2)`; no triple for 目前; no temporal triple for `identity-91`.
+-- Temporal (5.1): 富-01 under have-degree-91 → `(s5main :overlap s5f)`.
++
+ - V1V2的N (3): 已经停止发行的小报 → `(x / 小报 :ARG1-of (f / 发行-01 :ARG1-of (t / 停止-01 :mod (y / 已经) :aspect state) :aspect habitual))`.
+-- No invented owner (3): 发行网络版 → `(f / 发行-01 :ARG1 (w / 网络版))`.
+-- Inner and (3): 奇闻轶事、传奇与新闻 → `(a / and :op1 (a2 / and :op1 奇闻 :op2 轶事) :op2 传奇 :op3 新闻)`.
+-- Aspect (4.1): 曾经拥有过 → `:aspect state`; 纸本已经停刊 → `:aspect performance`; clause-level identity-91 → `:aspect state`; appositive identity-91, have-org-role-91, have-quant-91 → no aspect, no modal triple.
++
++
++
+ 
+ - Procedure compound (3): 一般的新闻查证程序 → `(x / 程序 :ARG0-of (i / identity-91 :ARG1 (c / 查证-01 :ARG1 (n / 新闻) :aspect process)) :mod (y / 一般))`.
+-- Entity type (2.1): 该周报 → `(z / 周报 :mod (g / 该))`, not `newspaper`.
+-- have-degree-91 (4.1): no `:aspect` on it and no triples for it; only 富-01 gets `(s5main :overlap s5f)` and `(author :full-affirmative s5f)`.
+-- Main event (5.1): 停止发行/拥有过 → `(document-creation-time :before e)`; 被称为 → `(document-creation-time :depends-on e)`; 以…而闻名 → `(闻名 :contained 发行)`.
+-- 曾经 (3): 曾经拥有过 → `:temporal (c / 曾经)`.
++
++
++
++
+ - 未经 (4.1): `(j / 经-01 :aspect process)` with no `:polarity`, plus the triple `(author :full-negative j)`.
+ 
+ - Temporal (5.1): 创刊于1979年 → `(document-creation-time :before s6d)` `(s6d :overlap s6x)`; purpose 为运用 → `(创立 :overlap 运用)`; reason 因为…改为 → `(创立 :before 改为)`; 遗留下来的印刷机 used by 运用 → `(运用 :before 遗留)`; 也成了…特色 → `(prev-main :overlap 成)`.
+@@ -344,6 +336,11 @@
+ - Quantity (3): 发行量达到120万份 → `(d / 达到-01 :ARG0 (l / 量 :quant-of (f / 发行-01 :ARG1 n) :ARG1-of (h / have-quant-91 :ARG2 1200000 :unit (u / 份))))`.
+ - Event noun (3): 黑白印刷也成了特色 → `:ARG0 (y / 印刷-01 :manner (h / 黑白) :aspect habitual)` + `(成 :overlap y)` `(author :full-affirmative y)`; 1980年代 → `(d / date-entity :era 1980)`.
+ 
+-- Preposition (3): 至2007年 → `:temporal (d / date-entity :year 2007)`, no 至 node.
++
+ - First mention (3): 《Y》将由黑白版面改为… then Y的标准 → `改为-01 :ARG1 (b / 版面 :part-of (n / newspaper :name ... :ARG1-of (identity-91 ...)) :mod (h / 黑白))` … `(标准 :possessor n)`.
+ - 量 (3): 该刊发行量 → `(f / 发行-01 :ARG1 (k / 刊 :mod (g / 该)))`, no aspect; only `(main :overlap f)`. 发行量跌至8万3千份 → `(d / 跌-01 :ARG0 (l / 量 ... :ARG1-of (h / have-quant-91 :ARG2 83000 :unit (u / 份))))`.
++
++- 虽然…不过 (2.5): 虽然他们宣称X（标语：Y），不过大部分报导以博君一笑为目的 → `(b / but-91 :ARG1 (a / and :op1 宣称 :op2 (i / identity-91 :ARG1 标语 :ARG2 Y)) :ARG2 (i2 / identity-91 :ARG1 (m / 目的 :purpose-of 报导) :ARG2 (g / 博君一笑)))`.
++- 是…的 (2.3): 都是真实的 → `(h / have-mod-91 :ARG2 (t / 真实) :mod (d / 都) :aspect state)`.
++- Name (2.2): 外星人P'Lod → `(x / 外星人 :name (n / name :op1 "P" :op2 "'" :op3 "Lod"))`.
++- 有关系 (3): 与P'Lod有暧昧关系，后来还领养 → `(c / consecutive :op1 (y / 有-03 :ARG0 (a / and :op1 h :op2 p) :ARG1 关系) :op2 领养-01)`.

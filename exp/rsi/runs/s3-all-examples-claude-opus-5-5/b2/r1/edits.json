@@ -1,0 +1,69 @@
+{
+ "summary": "Fix temporal labels (date/purpose -> overlap, reason -> before, earlier participle -> before), cross-sentence anchoring for result sentences, reify sentence-level reason/purpose as have-reason-91/have-purpose-91, 版面 :part-of and relative :ARG0-of clauses, appositive identity-91, individual-person and -人 agent nouns, 发行量 + have-quant-91 pattern, restrict but-91 to intra-sentence, :era for decades, :manner on event nouns, new aspect rules, checklist no-invented-args, examples.",
+ "edits": [
+  {
+   "op": "replace",
+   "old": "Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else",
+   "new": "Then every event: (1) a date or period of its clause, if there is one, with `:overlap` (`(s1t :overlap s1e)`; never `:contained` here); else"
+  },
+  {
+   "op": "replace",
+   "old": "- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.",
+   "new": "- An event in a complement clause takes its matrix event as parent.\n- A purpose clause → `(main :overlap X)`. A reason or cause clause → `(main :before X)` when it happened first (the usual case), else `(main :overlap X)`. When they are reified as have-reason-91 / have-purpose-91 (2.5), the parent is the main event under `:ARG1`, and the -91 nodes get no temporal triple.\n- A participle describing an earlier state of a noun (遗留下来的, 留下的) → `(V :before participle)`, where V is the event whose argument contains the noun. A ‑人 agent noun's verb (创始人 → 创始-00) → `(main :overlap verb)`."
+  },
+  {
+   "op": "replace",
+   "old": "Do not anchor it to an event of an earlier sentence unless a word (然后, 之后, 同时) marks that relation.",
+   "new": "Do not anchor it to an event of an earlier sentence unless a word (然后, 之后, 同时, 也) marks that relation. A sentence that states the result or a feature of the event just narrated (也成了…特色) → `(previous-main-event :overlap X)`."
+  },
+  {
+   "op": "replace",
+   "old": "- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`;",
+   "new": "- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`. Use them only for a contrast between two clauses of the same sentence. A sentence-initial 不过/但是 that contrasts with the previous sentence gets no node, and the sentence's main verb is the root;"
+  },
+  {
+   "op": "insert_after",
+   "anchor": "*although* (虽然, 尽管) → `:concession`.",
+   "text": "\n- When 因为/由于 … (于是/所以/而) or 为(了) … (于是) links whole clauses as the sentence's main structure, reify it. Reason: `have-reason-91` with `:ARG1` the result and `:ARG2` the cause. Purpose: `have-purpose-91` with `:ARG1` the main event and `:ARG2` the purpose. Both get `:aspect state` and `(author :full-affirmative X)`. If both occur, have-reason-91 is the root and has-purpose-91 is its `:ARG1`. Keep `:reason`/`:purpose` roles only for phrase-level modifiers."
+  },
+  {
+   "op": "replace",
+   "old": "`:decade`, `:century`.",
+   "new": "`:decade`, `:century`. A decade (1980年代) is written `:era 1980`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "a numeral + classifier phrase is kept too, also with 一 (一份, 一个, 三本书 → `书 :quant 3 :unit (b / 本)`).",
+   "text": " A number that goes into `have-quant-91` is its `:ARG2`, and the classifier is `:unit` of have-quant-91, with no `:quant` on the unit."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "may be added as such a node (aligned to no word) and linked by coreference.",
+   "text": "\nIn Chinese documents, a named person, or a personal pronoun for one individual (他, 她), is `individual-person`, not `person`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "- Check the PropBank argument order: for 属-02 the thing owned is `:ARG0` and the owner `:ARG1`.",
+   "text": "\n- X版面的《Y》 / Y的X版面 (a layout, edition or part of a publication): the head is 版面 with `:mod` X and `:part-of` the publication. It is the argument of the verb, not a modifier of the name.\n- A clause after ， that says what the created or changed thing does (容纳…文章) is `:ARG0-of` that thing, `:aspect process`. It is not a `:purpose`, and it gives the thing no new role in the main verb.\n- An appositive common noun before a name (旗下的八卦小报《X》) → the named entity `:ARG1-of (identity-91 :ARG2 noun)`. Keep all of the noun's modifiers (旗下, 八卦) on it.\n- A ‑人 agent noun (创始人, 创办人) → `人 :ARG0-of (verb-00/01)`. The verb is an event with its own aspect, temporal triple and modal triple.\n- Keep a verb compound as written (改为-01 with `:ARG1` old, `:ARG2` new), not 改-01 with `:source`.\n- A verb + 量 measure of an entity's activity (发行量) → `量 :quant-of (发行-01 :ARG1 entity)`. The inner 发行-01 gets `(main :overlap 发行)` but no modal triple. The value reached by 达到/跌至/增至 → `量 :ARG1-of (have-quant-91 :ARG2 N :unit 份)`, not a numbered argument of the verb.\n- A modifier of an event noun (黑白印刷) is `:manner`, not `:mod`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "- 已经 + a change-of-state verb as the main predicate (纸本已经停刊) is `performance`. `state` applies only to the 的-modifier form.",
+   "text": "\n- A purpose verb (为充分运用) is `activity`. A relative clause saying what a created thing does (容纳) is `process`. A participle of a completed earlier event (遗留下来的) is `performance`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "- Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.",
+   "text": "\n- No argument or `:possessor` that the text does not express: no subject copied onto a purpose verb, and no owner added to a name."
+  },
+  {
+   "op": "replace",
+   "old": "- but-91 (2.5): 不过… → `(b / but-91 :ARG1 ... :ARG2 ...)`.",
+   "new": "- but-91 (2.5): X，不过Y (within one sentence) → `(b / but-91 :ARG1 X :ARG2 Y)`. A sentence starting with 不过 → no but-91; root = main verb (跌-01)."
+  },
+  {
+   "op": "append",
+   "text": "\n- Temporal (5.1): 1980年代…创刊 → `(s6d :overlap s6x)`; purpose 为运用 → `(创立 :overlap 运用)`; reason 因为…改为 → `(创立 :before 改为)`; 遗留下来的印刷机 used by 运用 → `(运用 :before 遗留)`; 也成了…特色 → `(prev-main :overlap 成)`.\n- Reified skeleton (2.5): 因为X，为Y，于是Z → `(h / have-reason-91 :ARG1 (h2 / have-purpose-91 :ARG1 Z :ARG2 Y :aspect state) :ARG2 X :aspect state)`.\n- Part and relative clause (3): 创立黑白版面的《Y》，容纳…文章 → `:ARG1 (b / 版面 :mod (h / 黑白) :part-of (n / newspaper ...) :ARG0-of (r / 容纳-01 :ARG1 ... :aspect process))`.\n- Appositive / agent noun (3): 旗下的八卦小报《X》 → `(n / newspaper :ARG1-of (i / identity-91 :ARG2 (x / 小报 :mod (q / 旗下) :mod (b / 八卦))))`; 创始人 → `(p / individual-person :ARG1-of (h / have-org-role-91 :ARG3 (r / 人 :ARG0-of (c / 创始-00 :aspect performance))))`.\n- Quantity (3): 发行量达到120万份 → `(d / 达到-01 :ARG0 (l / 量 :quant-of (f / 发行-01 :ARG1 n) :ARG1-of (h / have-quant-91 :ARG2 1200000 :unit (u / 份))))`.\n- Manner (3): 黑白印刷 → `(y / 印刷 :manner (h / 黑白))`; 1980年代 → `(d / date-entity :era 1980)`."
+  }
+ ]
+}

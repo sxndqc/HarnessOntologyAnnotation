@@ -1,0 +1,436 @@
+<!-- system -->
+You improve the instruction of a UMR annotator by editing it.
+<!-- user -->
+You are improving the instruction an annotator (a model) follows to annotate whole documents in Uniform Meaning Representation (UMR). It is scored against expert gold annotations; the score that counts is AnCast++ (sentence graphs and document-level relations). Below are the current instruction, a critique of its annotation of a training batch, and what earlier edits did.
+
+Edit the instruction to fix the problems of the critique that will recur on other documents. Prefer few, high-value changes; keep what works; keep the instruction clear and consistent (fix a rule rather than adding a contradicting one). The output format (and the tools' descriptions, if the annotator has tools) are fixed and not part of the instruction: do not restate or change them. The instruction may be at most 30000 characters (now 21803). Never copy text of the test documents. Record examples: for each problem you fix, add a short concrete example from these sentences (the words and the correct annotation fragment, a line or two) to a section "## Examples" at the end of the instruction (create it if it is not there), next to the rule it illustrates; keep the examples short and drop or merge old ones when the instruction gets near its size limit.
+
+# The current instruction
+<instruction>
+# Skill: the UMR of a whole document
+
+You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+is under **Input** at the end, one sentence per line.
+
+**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+and document-level relation counts. Take the time this needs:
+
+- Read the guidelines below carefully before you start, and go back to them for every decision you are
+  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
+- Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+  example does.
+- Do not guess when you can check: use the three tools (see Tools): search the full guidelines with
+  `search_guidelines` whenever the guidelines above do not settle a case, look up every predicate in
+  PropBank with `propbank_lookup` before you choose its sense and numbered roles, and look up how the gold
+  data annotates a construction, a word or a relation with `search_annotations`. Call them as often as you
+  need: many calls are expected.
+- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+  the end check that the document-level relations cover every event and entity the guidelines ask for.
+
+## Guidelines
+
+# UMR guidelines, abridged
+
+A short version of the UMR 0.9 specification (`umr_guidelines.md` in this folder, umr4nlp/umr-guidelines),
+for annotating Chinese and English at Stage 1 (numbered PropBank roles). It keeps what an annotator needs for
+most sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics
+sections and most of the examples. Where the full guideline uses the older short names (`AUTH`, `DCT`,
+`FullAff`, `:modstr`, `:ref-person`, `Performance`), this version uses the names of the UMR release data
+(`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`, `performance`).
+
+## 1. What a UMR is
+
+A UMR has two levels.
+
+- **Sentence level**: one rooted, directed graph per sentence in PENMAN notation, adapted from AMR:
+  concepts (events, entities, abstract concepts), the relations between them (participant roles and
+  non-participant roles) and attributes (aspect, polarity, mode, quantity, person and number, degree).
+- **Document level**: three kinds of relations between the nodes of the sentence graphs, across sentences:
+  **temporal** dependencies, **modal** dependencies, and **coreference**.
+
+```
+He denied any wrongdoing.
+
+(s3d / deny-01
+    :ARG0 (s3p / person
+        :refer-person 3rd
+        :refer-number singular)
+    :ARG1 (s3d2 / do-02
+        :ARG0 s3p
+        :ARG1 (s3t / thing
+            :mod (s3a / any)
+            :ARG1-of (s3w / wrong-02))
+        :aspect process)
+    :aspect performance)
+
+(s3s0 / sentence
+    :temporal ((document-creation-time :before s3d)
+               (s3d :before s3d2))
+    :modal ((root :modal author)
+            (author :full-affirmative s3p)
+            (s3p :full-affirmative s3d)
+            (s3d :unspecified s3d2))
+    :coref ((s2p :same-entity s3p)))
+```
+
+**Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`, `s3d2`), all
+different within the document. A node that fills two roles is written once and then referred to by its
+variable (re-entrancy: `:ARG0 s3p` above).
+
+## 2. Concepts
+
+### 2.1 Events
+
+An event is a process or a state that is **predicated**, or a process used to **refer or modify**:
+
+- verbs used as predicates (`deny-01`, Chinese `拥有-01`);
+- event nominals with process meaning (*the meeting*, *the attack*, 会议, 比赛) — annotate them as events;
+- participles and relative-clause verbs (*the man who left*: `(p / person :ARG0-of (l / leave-11))`);
+- predicated states: adjectives and nouns in predicate position (*he is tall*, 他很高) — through the
+  abstract predicates of 2.3 when there is no lexical verb.
+
+Not events: entity nouns, property words used as plain modifiers (*a tall man*: `:mod (t / tall)`),
+auxiliaries and modal verbs (*will, can, must*; 会, 能, 可以, 应该 — they affect `:aspect` and modal
+strength, they are not nodes), light verbs (*make a decision* → `decide-01`; 进行访问 → `访问-01`),
+the copula (*be*, 是) — it becomes one of the abstract predicates.
+
+**Concept names.** An English event is its PropBank roleset (`deny-01`, `look-up-05`). A Chinese event is the
+Chinese word as written with its Chinese PropBank sense (`拥有-01`, `执行-01`); a Chinese predicate that is not
+in PropBank is `<word>-00`. Entities and modifiers are the word itself, lemmatized in English (`doctor`, `health`) and as
+written in Chinese (`宇航员`, `航天器`). Use English only for the abstract concepts below and for entity
+types (`person`, `thing`, `country`, `city`, `organization`, ...).
+
+### 2.2 Named entities
+
+`(c / country :name (n / name :op1 "Russia"))`: an entity-type concept, **no `:wiki`** (do not add `:wiki` in Chinese documents; the gold has none; ignore the following note on it)
+(the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: they are the first and last `:opN`. Types: `person`,
+`country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+`mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+`disease`, `product`, `spaceship`, ... (as in AMR).
+
+Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+`:decade`, `:century`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+`(m / monetary-quantity :quant 500 :unit (d / dollar))`. Ordinals: `(o / ordinal-entity :value 2)`.
+Numbers are written as digits. In Chinese, a real measure word is a unit (三杯水 → `水 :quant 3 :unit 杯`);
+a numeral + classifier phrase is kept too, also with 一 (一份, 一个, 三本书 → `书 :quant 3 :unit (b / 本)`). Check with `search_annotations` when unsure.
+
+### 2.3 Abstract predicates (non-verbal clauses)
+
+| construction | concept | roles |
+|---|---|---|
+| X is Y (identity, equation) | `identity-91` | `:ARG1` X, `:ARG2` Y |
+| X is Adj / X has property | `have-mod-91` | `:ARG1` theme, `:ARG2` property |
+| X is in/at place | `have-place-91` | `:ARG1` theme, `:ARG2` place |
+| X has Y (possession) | `have-91` | `:ARG1` possessor, `:ARG2` possessum |
+| Y belongs to X | `belong-91` | `:ARG1` possessum, `:ARG2` possessor |
+| there is X (in L) | `exist-91` | `:ARG1` location, `:ARG2` theme |
+| X is a member of category Y | `have-role-91` | `:ARG1` X, `:ARG3` category |
+| X holds title T in organization O | `have-org-role-92` | `:ARG1` X, `:ARG2` O, `:ARG3` T |
+| X is the R (kin, friend) of Z | `have-rel-role-92` | `:ARG1` X, `:ARG2` Z, `:ARG3` R |
+| X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |
+| cause, reason | `have-cause-91` / `:cause` | |
+
+Role nouns are reified the same way: *the president of Russia* →
+`(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+*his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+
+### 2.4 Pronouns and implicit participants
+
+A pronoun is `person` or `thing` with person and number: 他 / *he* → `(p / person :refer-person 3rd
+:refer-number singular)`; 我们 / *we* → `:refer-person 1st :refer-number plural`; 它 / *it* → `thing` with
+3rd singular. A plural noun gets `:refer-number plural`. A Chinese zero subject or object that is clearly
+recoverable may be added as such a node (aligned to no word) and linked by coreference.
+
+### 2.5 Discourse relations (combining clauses)
+
+- coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`. Both take `:ARG1` and `:ARG2`, never `:opN`;
+- concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+  manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+- *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; 以 X 而 Y (*known for X*) → Y `:reason` X. When such a clause describes a noun (e.g. the predicate noun of a 是 sentence), attach it inside that noun as `:ARG1-of`, not as a new conjunct; *in order to* (为了)
+  → `:purpose`; *although* (虽然, 尽管) → `:concession`.
+
+### 2.6 Multi-word expressions
+
+An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+is one concept). A discontinuous word (帮……忙) is one concept aligned to its span.
+
+## 3. Relations
+
+**Participant roles** (Stage 1): the numbered roles of the predicate's roleset, `:ARG0` (agent, causer,
+experiencer as initiator), `:ARG1` (patient, theme), `:ARG2`–`:ARG5` as the roleset defines them. Use the
+inverse `:ARGn-of` for a relative clause or a participant nominal: 卖菜的人 → `(p / person :ARG0-of (m /
+卖-01 :ARG1 (c / 菜)))`.
+
+**Non-participant roles** (closed list, the frequent ones): `:mod` (property, demonstrative, typifying
+modifier), `:possessor`, `:part` / `:part-of`, `:topic`, `:temporal` (time expression or event),
+`:place`, `:direction`, `:path`, `:goal`, `:source`, `:start`, `:manner`, `:instrument`, `:cause`,
+`:reason`, `:purpose`, `:condition`, `:concession`, `:duration`, `:frequency`, `:extent`, `:degree`,
+`:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
+`:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+
+Frequent choices:
+- A country or region modifying a noun (美国小报, *a US paper*) → `:place`, not `:mod`.
+- A channel or medium (电视, 网络, *TV*) → `:medium`.
+- A version, edition or part of a publication or thing (X的纸本) → `:part-of`, not `:possessor`, but only when X is written in the phrase. 网络版 alone gets no owner.
+- 其中 → `:mod (其中)` on the noun it introduces, not `:part`.
+- Nouns run together without 、 (奇闻轶事) form their own inner `and`; 、 separates the outer conjuncts.
+- Adverbs 已经, 都, 也, 仍, 还 → a `:mod` node on the event they modify. Time adverbs such as 目前 → `:temporal` on that event. Never drop them, and never move them onto a noun or onto the connective (`but-91`, `and`).
+- A modifier shared by coordinated nouns goes on each conjunct, as one node re-used by re-entrancy, not on the `and` node.
+- Add an implicit or re-entrant argument only when the text expresses it. Do not copy a subject or owner into another clause unless a word (自己, 其, a pronoun) refers to it.
+- V1V2的N (已经停止发行的小报): N is `:ARG1-of` the inner verb, and the inner verb is `:ARG1-of` the outer verb. Do not make N an argument of the outer verb.
+- Check the PropBank argument order: for 属-02 the thing owned is `:ARG0` and the owner `:ARG1`.
+
+Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
+
+## 4. Attributes
+
+### 4.1 Aspect (`:aspect`, on every event)
+
+Use the coarse values:
+
+| value | use for |
+|---|---|
+| `state` | states: non-verbal predicates (2.3), *be, have, know, want, like, believe*, 是, 有, 在, 知道, 喜欢, 认为 |
+| `habitual` | an event that happens usually or repeatedly (*he walks to work*, 经常, 每天) |
+| `activity` | an ongoing process with no evidence of an end (*is running*, 正在, 着; a present-tense process; most generic statements of what is done) |
+| `endeavor` | a process that ended without reaching its result (*worked on it for a week*, stop doing) |
+| `performance` | a process that ended and reached its result: completed past events (*denied*, *was arrested*, 了, 过) |
+| `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |
+
+- A typical or repeated activity of a person or institution (publishing 发行, broadcasting, selling, collecting stories 综合) is `habitual`. This holds even without a frequency word, and even with 了, when the clause describes what the entity does in general.
+- 已经 + a change-of-state verb used as a modifier (已经停止发行的小报) is `state`: it is the entity's resulting condition.
+- A passive naming or evaluation (被称为, 被誉为) is `performance`.
+- 未经 (*without having undergone*) is `process`.
+- `identity-91` and the other -91/-92 predicates are events too: give them `:aspect state` and a modal triple `(author :full-affirmative X)`. Only their temporal triple is left out.
+- Stative verbs (拥有, 有, 是, 在, 属) stay `state` even with 过, 曾经 or 了.
+- 已经 + a change-of-state verb as the main predicate (纸本已经停刊) is `performance`. `state` applies only to the 的-modifier form.
+
+Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+only when they are clear.
+
+### 4.2 Polarity, mode, degree, quantity
+
+- Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+  then negative (5.2).
+- `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+  `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+- A comparative or superlative (最, 更, *most*, *-er*) → `have-degree-91`. Its roles are `:ARG1` the entity, `:ARG2` the property, and `:ARG3` the degree (最/更, `most`/`more`).
+- An adjectival chengyu before 的 (荒诞不经的内容) is a `:mod`, not an event.
+- `:degree` is only for intensifiers and downtoners (*very, too*; 很, 非常, 太), as a concept:
+  `:degree (v / very)`.
+- `:quant` for numbers and quantifiers (`:quant 3`, `:quant (a / all)`).
+
+## 5. Document level
+
+The document-level annotation of sentence N is one graph `(sNs0 / sentence ...)` with up to three lists of
+`(parent :relation child)` triples. The triples of sentence N have at least one node of sentence N; the
+other end can be a node of an earlier sentence or a constant.
+
+### 5.1 Temporal (`:temporal`)
+
+A dependency structure: each event and each time expression gets **one reference time** as its parent, and
+the relation says where the **child** is relative to the **parent**: **In every triple `(A :rel B)`, A is the parent and B the child; every event and time node is the child of exactly one triple.**
+
+- `:before` (child before parent), `:after` (child after parent), `:overlap` (child and parent overlap),
+  `:contained` (child inside parent), `:contains`, `:depends-on` (between time nodes).
+- Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
+- Time expressions first: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
+  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague one
+  (*nowadays*, 现在, 目前) gets no triple of its own (it stays `:temporal` in the graph). The sentence's main event attaches directly: `(document-creation-time :depends-on s4e)`. The sentence's other events attach to the main event: `(s4e :overlap s4e2)`. Use `past-reference` / `present-reference` / `future-reference` only for vague times not tied to the moment of writing.
+- Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
+  (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+  `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+  present state, `:after` for a future event). Chinese has no tense: decide past, present or future from
+  context, 了, 过, 将, 会.
+- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.
+- Annotate event–event relations only when they are clear.
+- Give no temporal parent to `identity-91` or to a plain `:mod` word with no sense. Every other node with a sense and an `:aspect` gets a parent, normally `(main-event :overlap X)`. This includes an event inside a noun (查证-01) and the property under have-degree-91 (富-01).
+- Anchor each sentence's main event to `document-creation-time` (`:before` if past). Do not anchor it to an event of an earlier sentence unless a word (然后, 之后, 同时) marks that relation.
+- Within a sentence, anchor the dependent events (relative clauses, the 以…而 result, a second conjunct) to the sentence's main anchoring event, not each to `document-creation-time`. Example (main event 发行 s1f, dependents 停止 s1s and 报导 s1b): `(document-creation-time :before s1f)`, `(s1f :overlap s1s)`, `(s1f :overlap s1b)`. The main event is always the parent (first element).
+
+### 5.2 Modal (`:modal`)
+
+A dependency structure of conceivers and events: `(conceiver :strength event)`, starting with
+`(root :modal author)` in every sentence that has events.
+
+- Strength = the conceiver's certainty that the event happens or holds: `full-affirmative` (plain
+  assertion, *will*), `partial-affirmative` (*probably, must, should*, 应该, 可能性大, 一定 as inference),
+  `neutral-affirmative` (*may, might, perhaps, can*, 可能, 也许, 或许, desire/hope), `neutral-negative`,
+  `partial-negative`, `full-negative` (negated: *not, never, deny*, 没, 不), `unspecified`.
+- Every event the author asserts: `(author :full-affirmative s1e)`.
+- Reported speech or thought: the author is certain of the speaker, the speaker of the content:
+  `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person
+  node, or an event used as conceiver).
+- An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+  决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+  `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+  `(s3w :unspecified s3g)`.
+- A conceiver that is not in the text is `null-conceiver`. Purpose and condition clauses may use the
+  constants `purpose` and `have-condition` as parents of their events.
+- In the sentence graph, write the strength of an event that is not `full-affirmative` from the author as
+  `:modal-strength <value>` too (the scorers move it to the document level).
+
+### 5.3 Coreference (`:coref`)
+
+- `(earlier :same-entity later)`: two mentions of the same entity — a pronoun and its antecedent, a repeated
+  name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+  link entity nodes, never `name` nodes.
+- `(earlier :same-event later)`: two mentions of the same event. Use it only when the participants are the same. *The paper stopped publishing* and *its print edition stopped* are different events.
+- `(a :subset-of b)`: the entity or event a is a subset or part of b.
+- Link the document's participant chains. Do not link a country or place name used only as a modifier (`:place` of a noun, the 美国 of 美国历史) to another such mention.
+- Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+
+## 6. Alignment
+
+Every node of a sentence graph is aligned to the words that express it: `s1x: 4-4` (1-based word positions,
+first and last, both included). A node with no word in the sentence (`person` for a zero pronoun, `and`
+without a conjunction, `have-mod-91` without a copula, a `name` node) is `0-0`. A named entity's type
+node is aligned to the name's words.
+
+## 7. Checklist
+
+- Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+- Every event has `:aspect`; negated events have `:polarity -`.
+- Every event and time expression has a temporal parent; every event has a modal parent.
+- Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+
+## Examples
+
+- Classifier (2.2): 一份小报 → `(x / 小报 :quant 1 :unit (u / 份))`.
+- Title marks (2.2): 《世界新闻周报》 → `:name (n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》")`.
+- but-91 (2.5): 不过… → `(b / but-91 :ARG1 ... :ARG2 ...)`.
+- 以…而闻名 (2.5): a tabloid known for its reports → `(x / 小报 :ARG1-of (k / 闻名-01 :reason (r / 报导-01 :ARG0 x)))`.
+- 由于 (2.5): 由于…内容 → `:reason (c / 内容 ...)`.
+- Roles (3): 美国小报 → `:place (c / country ...)`; 电视节目 → `(p / 节目 :medium (t / 电视))`; 都经过 → `(j / 经-01 :mod (d / 都))`.
+- Shared modifier (3): 奇怪的新闻与专栏 → `(a / and :op1 (n / 新闻 :mod (q / 奇怪)) :op2 (z / 专栏 :mod q))`.
+- 属 (3): 属自己的节目 → `(p / 节目 :ARG0-of (s / 属-02 :ARG1 x))`.
+- Aspect (4.1): 发行 (a paper's publishing) → `:aspect habitual`; 已经停止发行的 → 停止 `:aspect state`; 被称为 → `:aspect performance`.
+- Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`.
+- 历史上 (4.2): 美国历史上 → `:temporal (s / 上 :op1 (h / 历史 ...))`.
+- Temporal (5.1): 目前纸本停刊，网络版继续发行 → `(document-creation-time :depends-on s4e)` `(s4e :overlap s4e2)`; no triple for 目前; no temporal triple for `identity-91`.
+- Temporal (5.1): 富-01 under have-degree-91 → `(s5main :overlap s5f)`.
+- V1V2的N (3): 已经停止发行的小报 → `(x / 小报 :ARG1-of (f / 发行-01 :ARG1-of (t / 停止-01 :mod (y / 已经) :aspect state) :aspect habitual))`.
+- No invented owner (3): 发行网络版 → `(f / 发行-01 :ARG1 (w / 网络版))`.
+- Inner and (3): 奇闻轶事、传奇与新闻 → `(a / and :op1 (a2 / and :op1 奇闻 :op2 轶事) :op2 传奇 :op3 新闻)`.
+- Aspect (4.1): 曾经拥有过 → `:aspect state`; 纸本已经停刊 → `:aspect performance`; identity-91 → `:aspect state`.
+
+</instruction>
+
+# The critique (training batch 1: chinese_umr-0001, sentences 1-5; AnCast++ comprehensive 88.6)
+<critique>
+# Review of the UMR annotation of the《世界新闻周报》 document: error patterns and instruction changes
+
+The annotation is close to gold. Senses, name tokens, re-entrancy, coreference chains and document format all score 100. The losses come from a few patterns, listed below with the most costly first.
+
+---
+
+## 1. The compound 新闻查证程序 was flattened into `:mod`s (about 8 units)
+
+**Cost:** a_event_concept, a_entity_found, a_granularity ×2, d_core_args_abstract ×2, d_core_args_event, d_peripheral_entity. The same node also caused one h_temporal error and one i_modal error.
+
+**Example (snt 2, 一般的新闻查证程序):**
+- The annotation had `(s2c2 / 程序 :mod (s2y / 一般) :mod (s2x2 / 新闻) :mod (s2c / 查证-01))`.
+- Gold has:
+  ```
+  (s2x12 / 程序
+      :ARG0-of (s2i2 / identity-91
+          :ARG1 (s2x13 / 查证-01 :ARG1 (s2x14 / 新闻) :aspect process))
+      :mod (s2x15 / 一般))
+  ```
+- In the document level, gold anchors 查证 to the event of its own clause, `(s2x8 :overlap s2x13)`. The annotation anchored it to the main event 综合 (s2z). Gold also gives 查证 the modal strength `author :partial-affirmative`; the annotation had full-affirmative.
+
+**Why it happens:** The instruction has no rule for a noun–verb–noun compound (N1 V N2), where N2 is a procedure, method or process and V is an event that names it. The rule "event inside a noun → `(main-event :overlap X)`" also sends the annotator to the sentence's main event, when the event that holds the noun is the right parent.
+
+**Change:** Add these rules to section 3 and section 5.1:
+- "In N1 + V + N2, when N2 (程序, 过程, 制度, 方式, 手续) is the procedure that V names: annotate `N2 :ARG0-of (identity-91 :ARG1 V)`. N1 is the object of V (`V :ARG1 N1`), not a `:mod` of N2. Example: 新闻查证程序 → `(程序 :ARG0-of (i / identity-91 :ARG1 (查 / 查证-01 :ARG1 (新闻))))`."
+- In 5.1, replace "normally `(main-event :overlap X)`" with: "an event inside a noun takes as parent the event whose argument contains it (未经…查证程序 → `(经-01 :overlap 查证-01)`), not the sentence's main event."
+
+## 2. The definite description 该周报 was typed as `newspaper` (3 units)
+
+**Cost:** a_entity_concept in snt 2, 3 and 5.
+
+**Example:** the annotation had `(s2p / newspaper :mod (s2g / 该))`; gold has `(s2x2 / 周报 :mod (s2x3 / 该))`. The same happens with s3p and s5p.
+
+**Why it happens:** The annotator applied the English entity type of the named mention《世界新闻周报》 to every later mention of it. The instruction says to use English "for entity types", but it does not say this applies only to named entities.
+
+**Change:** Add to section 2.1/2.2: "Use an English entity type (`newspaper`, `person`, `country`) only for a node with `:name`, or for a pronoun. A common-noun mention, even one that refers back to a named entity (该周报, 这家公司), is the Chinese word itself (`周报`) with its `:mod (该)`. Coreference links it to the named mention."
+
+## 3. Gold gives have-degree-91 no aspect, no temporal parent and no modal parent (3 units)
+
+**Cost:** c_aspect extra, h_temporal extra, i_modal extra.
+
+**Example (snt 5, 最富创意的报纸):**
+- The annotation had `(s5h / have-degree-91 ... :aspect state)` with the triples `(s5c :overlap s5h)` and `(author :full-affirmative s5h)`.
+- Gold has `(s5h / have-degree-91 :ARG2 (富-01 … :aspect state) :ARG3 (最))`, with no `:aspect` and no document-level triples. Only 富-01 gets `(s5x :overlap s5x5)` and `(author :full-affirmative s5x5)`.
+
+**Why it happens:** The instruction tells the annotator to give "identity-91 and the other -91/-92 predicates" `:aspect state` and a modal triple. That holds for identity-91, but gold treats have-degree-91 differently.
+
+**Change:** Add an exception: "have-degree-91 gets no `:aspect`, no temporal triple and no modal triple. The property under its `:ARG2` (富-01) carries the aspect, the temporal triple and the modal triple." Fix the superlative example in the instruction to match.
+
+## 4. The temporal relations of 闻名 and 称为 do not match gold (3 units)
+
+**Cost:** h_temporal: snt 1 extra + partial, snt 5 wrong.
+
+**Example, snt 1 (以…而闻名):**
+- The annotation had `(s1f :overlap s1w)`.
+- Gold has `(s1x7 :contained s1x3)`: the reputation state 闻名 is the parent, and the publishing event 发行 lies inside it.
+- The instruction's own example ("anchor … the 以…而 result … to the main anchoring event") led the annotator to the wrong triple.
+
+**Example, snt 5 (被称为):**
+- The annotation had `(document-creation-time :before s5c)`; gold has `(document-creation-time :depends-on s5x)`.
+- The instruction contradicts itself. Section 5.1 says both "The sentence's main event attaches directly: `(document-creation-time :depends-on …)`" and "Anchor each sentence's main event to document-creation-time (`:before` if past)". Gold uses `:before` for clearly past events (snt 1–3: 停止发行, 综合了, 曾经拥有过). It uses `:depends-on` for main events that are still current or that evaluate the entity (snt 4 with 目前, snt 5 with 被称为).
+
+**Change:**
+- Make the 5.1 rule explicit: "`:before` when the main event is clearly past (了, 过, 曾经, 已经停止). `:depends-on` when it is a current state, or a naming or evaluation that still holds (目前…, 被称为, 被誉为)."
+- Replace the 以…而 part of the dependents example with: "以 X 而闻名: the reputation state is the parent of the habitual event, `(闻名 :contained 发行)`. 闻名 itself gets no parent."
+
+## 5. 曾经 was annotated as `:mod` instead of `:temporal` (2 units)
+
+**Cost:** d_peripheral_event, e_peripheral_labels.
+
+**Example:** in 曾经…拥有过, the annotation had `:mod (s3c / 曾经)`; gold has `:temporal (s3x9 / 曾经)`.
+
+**Why it happens:** The instruction's adverb list puts 已经, 都, 也, 仍, 还 under `:mod` and names only 目前 under `:temporal`. 曾经 is not mentioned, so the annotator treated it like 已经.
+
+**Change:** Write: "Time adverbs 目前, 曾经, 现在, 当时 → `:temporal`. Aspectual and scalar adverbs 已经, 都, 也, 仍, 还 → `:mod`."
+
+## 6. 未经 was given `:polarity -` (1 unit)
+
+**Example:** the annotation had `(s2j / 经-01 :polarity - …)`. Gold has no `:polarity` on 经-01 and marks the negation only as `(author :full-negative s2x8)`.
+
+**Change:** Add to the 未经 rule: "未经 → `经-01`, `:aspect process`, no `:polarity -`. The negation is only the modal triple `(author :full-negative …)`." The annotator's full-negative triple was correct and should stay.
+
+---
+
+## What the instruction should keep
+
+These rules all reproduced gold exactly. Keep them as they are:
+- **Snt 1:** title-mark name tokens, the classifier `:quant 1 :unit 份`, `:place` for 美国, the V1V2的N chain (发行 `habitual` / 停止 `state` with `:mod 已经`), 以…而闻名 as `:reason`, and the inner `and` for 奇闻轶事.
+- **Snt 2:** the shared modifiers re-used across conjuncts.
+- **Snt 3:** the 属-02 argument order, `:medium 电视`, and `state` aspect for 拥有过.
+- **Snt 4:** but-91, 纸本 `:part-of` the newspaper, no owner on 网络版, and the 目前 sentence's document-level temporal triples.
+- **Snt 5:** 由于 → `:reason`, 历史上 → `:temporal (上 :op1 历史)`, and 被称为 → `performance`.
+- **Document level:** the coreference chain linked to the closest earlier mention, and the identity-91 handling (aspect `state`, modal triple, no temporal triple).
+</critique>
+
+# Earlier edits
+- batch 1, reflection 1 (11/11 edits applied): Fix classifier rule (keep 一份/一个 as :quant+:unit), title marks as name tokens, but-91 :ARG1/:ARG2, 由于→:reason, 以X而Y→:reason, non-core role rules (:place for countries, :medium, :part-of, adverbs as :mod, shared modifiers on conjuncts, no invented arguments, 属 argument order), habitual/state/performance aspect rules, have-degree-91 for superlatives and chengyu as :mod, temporal rules (no parent for  -> AnCast++ comp 82.1 on the batch, kept
+- batch 1, reflection 2 (11/11 edits applied): Temporal: parent-first and one-parent rule; every aspect-bearing event gets a parent; main event to DCT; vague present adverbs get no triple (main event depends-on DCT); corrected example. Aspect: -91 predicates are state plus modal; stative verbs stay state with 过; 已经 main predicate is performance. Implicit arguments: V1V2的N chain, :part-of only with written owner, no copied subjects, 其中 as :mod. -> AnCast++ comp 88.6 on the batch, kept
+
+# Your answer
+A short summary of what you change and why, then one JSON block (```json ... ```) of the form
+{"summary": "...", "edits": [...]}, where each edit is one of
+  {"op": "replace", "old": "<text that occurs exactly once>", "new": "<its replacement>"}
+  {"op": "insert_after", "anchor": "<text that occurs exactly once>", "text": "<text to insert after it>"}
+  {"op": "append", "text": "<text to add at the end>"}
+  {"op": "delete", "old": "<text that occurs exactly once>"}
+  {"op": "rewrite", "text": "<the whole new instruction>"}  (only to consolidate; then no other edit)
+Edits apply in order; one whose anchor is not found exactly once is skipped.

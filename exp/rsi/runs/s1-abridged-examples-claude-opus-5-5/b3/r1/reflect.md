@@ -1,0 +1,57 @@
+The critique's problems fall into eight groups. I fix each with a short rule, and stay under the size limit by dropping examples that only repeat an existing rule plus some preamble text.
+
+1. **Temporal**
+   - Reported content: the first content event is `:overlap` the reporting verb, and the other content events and later clauses hang from that first content event.
+   - A 仍/继续 clause that contrasts with a past event is `:overlap`, never `:after`.
+   - 后来 Y after X is written `(X :after Y)`.
+   - A sentence that judges or sums up the earlier text is anchored to `document-creation-time` itself. This narrows the "continues the episode" rule.
+2. **Clause structure**
+   - 虽然…不过/但是 is `but-91`; `:concession` is only for a lone 虽然.
+   - 以X为目的 is `identity-91` with a 目的 node, not `have-purpose-91`.
+   - A parenthetical "N：quote" is an `identity-91` joined to its clause by `and`.
+   - 后来/然后 between two clauses is `consecutive`, with no node for 后来.
+3. **Re-entrancy exception for control and aspectual verbs** (继续, 停止, 开始, 想, 打算). The "never re-use a participant" rule caused these errors, so I narrow it: the overt subject of such a verb is also the `:ARG0` of the embedded event.
+4. **Reported speech**
+   - `:quote <reporting event>` is now mandatory on the top node of quoted or claimed content.
+   - Each content event gets both `(author :full-affirmative X)` and `(<speaker> :full-affirmative X)`.
+   - When no speaker is written (被指), the passive subject is the conceiver.
+   - Connectives (`but-91`, `and`, `consecutive`) get no modal triple.
+5. **Lists and frames**
+   - 有/如 A、B 等 is `:example (and … (等))`, with 等 as the last `:opN` and 有 not an event.
+   - Nouns in such a list are entities.
+   - 重复/经常 is `:frequency`; 在N中 is `(中 :op1 N)`; 大部分 is `:mod`.
+6. **Names and role nouns**
+   - A common noun directly before a name is the concept with `:name`, with no `identity-91`.
+   - `planet` is added to the entity types.
+   - A compound such as 母公司 is split into head `:mod` modifier.
+   - 前 is `:mod` on the role noun; 第一夫人 uses `have-rel-role-91` with the country as `:place`.
+7. **Relationship verb and senses**
+   - X与Y有关系 is `有-03 :ARG0 (and X Y)`.
+   - 被指 is 指-02.
+   - The whole compound is looked up first (算是-01).
+8. **Aspect**
+   - An event nominal that is the object of 停止/开始 is `process`.
+   - 生存/存在 are `state`.
+   - An ongoing activity noun (活动) is `activity`.
+
+```json
+{"summary": "Add rules for reported-content temporal/modal/:quote, contrast overlap, summary sentences anchored to DCT, 虽然…不过 but-91, 以X为目的, parenthetical slogans, consecutive for 后来, control-verb re-entrancy exception, connectives without modal, 有/如…等 :example lists, :frequency, 有-03 relationships, 指-02/算是-01, title-before-name, planet, 母公司 split, 前 :mod, aspect of nominal under 停止 and 生存; trim redundant examples and preamble to fit.", "edits": [
+{"op": "delete", "old": "- Do not guess when you can check: the answer to almost every question is in the guidelines above and\n  their examples; look it up there rather than answer from memory.\n"},
+{"op": "delete", "old": " It keeps what an annotator needs for\nmost sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics\nsections and most of the examples."},
+{"op": "replace", "old": "Never re-use a participant from elsewhere in the sentence as an unexpressed agent or possessor: every re-entrancy needs a pronoun or an overt word.", "new": "Never re-use a participant from elsewhere in the sentence as an unexpressed agent or possessor: every re-entrancy needs a pronoun or an overt word. Exception: the overt subject of a control or aspectual verb (继续, 停止, 开始, 想, 打算) is also `:ARG0` of the embedded event or nominal (它停止了它的发行 → 发行 `:ARG0` 它)."},
+{"op": "replace", "old": "*although* (虽然, 尽管) → `:concession`.", "new": "*although* (虽然, 尽管) with no second connective → `:concession`; 虽然 X，不过/但是 Y → `(but-91 :ARG1 X :ARG2 Y)`. 后来/然后 linking two clauses → `(consecutive :op1 X :op2 Y)`, no node for 后来. 以 X 为目的 → `(identity-91 :ARG1 (目的 :purpose-of <event>) :ARG2 X)` (X a plain concept), not have-purpose-91. A parenthetical 'N：quote' → `(identity-91 :ARG1 N :ARG2 <content>)`, joined to its clause by `and`."},
+{"op": "replace", "old": "- A demonstrative + abbreviated noun keeps the word as its concept", "new": "- '<noun> 有 A、B…等' and 如 A、B 等 → `<noun> :example (and :op1 A :op2 B :op3 (等))`; 有 is no event; 等 is always the last `:opN`. Nouns in such lists are entities (时间旅行 → `(旅行 :mod (时间))`). 重复/经常 → `:frequency`; 在 N 中 → `(中 :op1 N)`; 大部分 → `:mod`.\n- X 与 Y 有关系 → `(有-03 :ARG0 (and :op1 X :op2 Y) :ARG1 (关系 …))`, no `:companion`. 被指 → `指-02`. Look up the whole compound first (算是-01, 称为-01).\n- A common noun directly before a name (外星人 P'Lod) is no apposition: `(外星人 :name (name …))`, no identity-91. 母公司 → `(公司 :mod (母))`. 前 → `:mod (前)` on the role noun; 第一夫人 → `have-rel-role-91 :ARG3 (第一夫人 :place (country …))`.\n- A demonstrative + abbreviated noun keeps the word as its concept"},
+{"op": "replace", "old": "`disease`, `product`, `spaceship`, ...", "new": "`disease`, `product`, `spaceship`, `planet` (地球), ..."},
+{"op": "replace", "old": "UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.", "new": "top node of reported or claimed content (宣称, 指, a slogan) **must** also carry `:quote <reporting event>`."},
+{"op": "replace", "old": "A negated event (未, 没) never gets `performance`;", "new": "An event nominal that is the object of 停止/开始 (它的发行) is `process` (no habitual). 生存, 存在 → `state`; an ongoing activity noun (活动) → `activity`. A negated event (未, 没) never gets `performance`;"},
+{"op": "replace", "old": "hangs its main event from that sentence's main event (`(s7x :overlap s8x)`), not from `document-creation-time`.", "new": "hangs its main event from that sentence's main event (`(s7x :overlap s8x)`); but a sentence that judges or sums up the earlier text (算是, 其中最…) is anchored to `document-creation-time` itself.\n- Reported content (宣称, 指, 说): its first event is `(<report> :overlap X)`; other content events and later clauses hang from X, not from the report. 后来 Y after X → `(X :after Y)`. A clause with 仍/继续 contrasting with a past event → `:overlap`, never `:after`."},
+{"op": "replace", "old": "- Reported speech or thought: the author is certain of the speaker, the speaker of the content:\n  `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person\n  node, or an event used as conceiver).", "new": "- Reported speech or thought: `(author :full-affirmative s9p)` for the speaker node, and each content event gets **both** `(author :full-affirmative X)` and `(s9p :full-affirmative X)`. The conceiver is the speaker's entity node, not the reporting verb; with no written speaker (被指) use the passive subject.\n- Connectives (`but-91`, `and`, `consecutive`) get no modal triple."},
+{"op": "delete", "old": "- Root copula (2.3): 是…小报 → `(identity-91 :ARG1 … :ARG2 … :aspect state)`.\n"},
+{"op": "delete", "old": "- Naming (5.1): 被称为… → `(document-creation-time :depends-on 称为)`.\n"},
+{"op": "delete", "old": "- Classifier (2.2): 一个节目 → `(节目 :quant 1 :unit (个))`.\n"},
+{"op": "delete", "old": "- Reason (2.5): 以报导…而闻名 → `(闻名-01 :reason (报导-01 ...))`.\n"},
+{"op": "delete", "old": "- V+量 (2.2): 发行量 → `(量 :quant-of (发行-01 :ARG1 …))` with no `:aspect` and no modal triple; only `(达到 :overlap 发行)`.\n"},
+{"op": "delete", "old": "- Lexical verb (2.3): 节目属周报 → `(属-02 :ARG0 节目 :ARG1 周报)`, not `belong-91`.\n"},
+{"op": "append", "text": "- Control (3): 网络版继续生存 → `(继续-01 :ARG0 s11n :ARG1 (生存-01 :ARG0 s11n :aspect state))`; temporal `(停止 :overlap 继续)`.\n- 虽然…不过 (2.5): → `(but-91 :ARG1 (and :op1 宣称 :op2 (identity-91 :ARG1 标语 :ARG2 报导)) :ARG2 (identity-91 :ARG1 (目的 :purpose-of 报导) :ARG2 (博君一笑)))`; no modal triple on but-91/and.\n- Quote (5.2): 宣称其报导都是真实的 → `(have-mod-91 :quote s12x …)`, `(author :full-affirmative 报导) (s12n :full-affirmative 报导)`.\n- 被指 (5.1): 被指与X有暧昧关系，后来领养 → `(consecutive :op1 (有-03 :quote 指) :op2 (领养 :quote 指))`, `(指 :overlap 有) (有 :after 领养)`, conceiver = passive subject.\n- List (3): 题材有A、B等 → `(题材 :example (and :op1 A :op2 B :op3 (等)))`; 重复出现 → `:frequency (重复)`."}
+]}
+```
