@@ -29,6 +29,12 @@ NAME = {"s1-abridged": "s1-abridged：缩略版 guideline", "s1-full": "s1-full�
         "s2-search": "s2-search：缩略版 + guideline 搜索", "s2-propbank": "s2-propbank：缩略版 + PropBank",
         "s2-gold": "s2-gold：缩略版 + gold 例子", "s3-all": "s3-all：缩略版 + 三个工具",
         "a1-sentence-propbank": "a1：PropBank，一句句跑", "a2-sentence-all": "a2：三个工具，一句句跑"}
+HEATNAME = {"juːmæʧ F": "juːmæʧ F", "Smatch F": "Smatch F", "b_event_sense": "b 谓词义项号",
+            "a_event_concept": "a 事件概念", "a_entity_concept": "a 实体概念", "d_core_args_event": "d 事件核心论元",
+            "d_core_args_abstract": "d 抽象事件核心论元", "e_core_labels": "e 核心角色标签",
+            "e_peripheral_labels": "e 非核心角色标签", "c_aspect": "c aspect", "c_refer": "c 人称/数（代词）",
+            "f_name_tokens": "f 名字的词", "g_reentrancy": "g 重入", "h_temporal": "h 文档级时间",
+            "i_modal": "i 文档级模态", "j_coref_chain": "j 共指链"}
 HEATCOL = {"s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank", "s2-gold": "+gold",
            "s3-all": "+三个工具", "a1-sentence-propbank": "a1", "a2-sentence-all": "a2"}
 SHORTNAME = {"s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
@@ -332,7 +338,9 @@ def main():
 
     # ---------------------------------------------------------------- breakdown
     P.append('<h2 id="breakdown">分项（umrjudge 每项检查、AnCast 各项）</h2>')
-    P.append("<p>每一行是一项检查的正确率（%）；“相对 abridged”的表是每个条件减去同一模型 s1-abridged 的分差。"
+    P.append("<p>umrjudge 的每项检查有三行：F1、召回 R（gold 一侧的单元：correct、partial、wrong、missing 的平均得分）和"
+             "精确 P（预测一侧：correct、partial、wrong、extra 的平均得分），百分制；中文两篇把单元合在一起算。"
+             "juːmæʧ、Smatch 也列出召回和精确。“相对 abridged”的表是每个条件减去同一模型 s1-abridged 的分差。"
              "同样的表也在 <code>exp/breakdown.md</code>。</p>")
     systems = [("Claude API", "api", CLAUDE), ("GPT API", "api", SOL)]
     keys = ["juːmæʧ F", "Smatch F", "b_event_sense", "a_event_concept", "a_entity_concept", "d_core_args_event",
@@ -349,7 +357,7 @@ def main():
                 x = m("api", sub, lab, ZH)
                 row.append(None if not x or x.get(k) is None or base.get(k) is None else x[k] - base[k])
             vals.append(row)
-        hm.append(C.heatmap("%s：相对 abridged 的变化（中文，分）" % title, [B.NAMES.get(k, k) for k in keys],
+        hm.append(C.heatmap("%s：相对 abridged 的变化（中文，分）" % title, [HEATNAME.get(k, k) for k in keys],
                             [HEATCOL[s] for s in cols], vals, vmax=20, label_w=190, cell=(60, 22)))
     P.append('<div class="vizrow">%s</div>' % "".join(hm))
     P.append('<p class="note">每格是这个条件减去同一模型 s1-abridged 的分差：蓝 = 更高，红 = 更低，灰 = 不变；±20 分以上颜色不再加深。'

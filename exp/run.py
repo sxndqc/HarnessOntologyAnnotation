@@ -10,6 +10,7 @@
     python3 exp/run.py harness-score <sub> [--label L]
         the same for harness/<sub>/answers/<label>/<doc>.txt (method 3; harness/claude_code.py runs it)
     python3 exp/run.py score <run dir>        score a run directory again
+    python3 exp/run.py rejudge <run dir>      umrjudge again only (the other scores kept)
     python3 exp/run.py verify-st              re-score the shared task's two systems (UMR 2.2 system-outputs)
                                               with this scoring, next to the overview paper's numbers
     python3 exp/run.py table                  results.md: every scored run in one table
@@ -299,9 +300,36 @@ def score_file(pred, name, extra=True):
     if extra:
         wg = written_gold(name)
         r["ancast"] = score.ancast(pred, wg)
-        s, _ = score.judge(pred, wg)
-        r["judge"] = {k: v.get("score") for k, v in s.items()}
+        r.update(judge_of(pred, wg))
     return r
+
+
+def judge_of(pred, written):
+    """umrjudge per check: "judge" its F1 (0-1), "judge_rp" what pools over files: gn / gc the gold-side
+    units and their credit (recall = gc / gn), pn / pc the prediction side (precision = pc / pn)."""
+    s, _ = score.judge(pred, written)
+    rp = {}
+    for k, v in s.items():
+        gn = v["correct"] + v["partial"] + v["wrong"] + v["missing"]
+        pn = v["correct"] + v["partial"] + v["wrong"] + v["extra"]
+        rp[k] = {"gn": gn, "gc": (v["recall"] or 0) * gn, "pn": pn, "pc": (v["precision"] or 0) * pn}
+    return {"judge": {k: v.get("score") for k, v in s.items()}, "judge_rp": rp}
+
+
+def rejudge_dir(out_dir):
+    """umrjudge again on a run directory's .umr files (the other scores are kept as they are)."""
+    p = os.path.join(out_dir, "scores.json")
+    out = json.load(open(p, encoding="utf-8"))
+    for name, r in out["docs"].items():
+        pred = os.path.join(out_dir, name + ".umr")
+        if os.path.exists(pred) and "ancast" in r:
+            r.update(judge_of(pred, written_gold(name)))
+    out["summary"] = summary(out["docs"])
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, indent=1)
+    with open(os.path.join(out_dir, "scores.md"), "w", encoding="utf-8") as f:
+        f.write(scores_md(out_dir, out))
+    print("rejudged", os.path.relpath(out_dir, EXP), flush=True)
 
 
 def score_dir(out_dir, extra=True):
@@ -316,9 +344,9 @@ def score_dir(out_dir, extra=True):
     with open(os.path.join(out_dir, "scores.md"), "w", encoding="utf-8") as f:
         f.write(scores_md(out_dir, out))
     for lang, s in out["summary"].items():
-        print("%s %s (%d/%d files): juːmæʧ %s, Smatch %s, AnCast F %s, judge %s, valid %d/%d" % (
+        print("%s %s (%d/%d files): juːmæʧ %s, Smatch %s, AnCast F %s, valid %d/%d" % (
             os.path.relpath(out_dir, EXP), lang, s["files"], s["test_files"], fmt(s["jumach_F"]), fmt(s["smatch_F"]),
-            fmt(s.get("ancast_F")), fmt(s.get("judge_mean")), s["valid"], s["files"]), flush=True)
+            fmt(s.get("ancast_F")), s["valid"], s["files"]), flush=True)
     return out
 
 
@@ -353,13 +381,18 @@ def summary(per):
             for m in METRICS:      # AnCast++: mean over the files that have a value
                 xs = [r["ancast"].get(m) for r in rs.values() if r.get("ancast") and r["ancast"].get(m) is not None]
                 s["ancast_" + m] = round(sum(xs) / len(xs), 1) if xs else None
-            checks = sorted({k for r in rs.values() for k in r.get("judge", {})})
-            s["judge"] = {}
+            # umrjudge: per check, recall and precision of the units pooled over the files, and their F1
+            checks = sorted({k for r in rs.values() for k in r.get("judge_rp", {})})
+            s["judge"], s["judge_R"], s["judge_P"] = {}, {}, {}
             for k in checks:
-                vals = [r["judge"][k] for r in rs.values() if r.get("judge", {}).get(k) is not None]
-                s["judge"][k] = round(100 * sum(vals) / len(vals), 1) if vals else None
-            vals = [v for v in s["judge"].values() if v is not None]
-            s["judge_mean"] = round(sum(vals) / len(vals), 1) if vals else None
+                t = [r["judge_rp"][k] for r in rs.values() if k in r.get("judge_rp", {})]
+                gn, gc = sum(x["gn"] for x in t), sum(x["gc"] for x in t)
+                pn, pc = sum(x["pn"] for x in t), sum(x["pc"] for x in t)
+                R = 100 * gc / gn if gn else None
+                P = 100 * pc / pn if pn else None
+                F = None if R is None and P is None else (P if R is None else R if P is None else
+                                                          (2 * R * P / (R + P) if R + P else 0.0))
+                s["judge_R"][k], s["judge_P"][k], s["judge"][k] = (None if x is None else round(x, 1) for x in (R, P, F))
         out[lang] = s
     return out
 
@@ -389,29 +422,30 @@ def scores_md(out_dir, out):
     lines = ["# %s" % rel, "",
              "Shared-task scoring: juːmæʧ (main metric, compare_umr.pl) and Smatch, against the official test gold "
              "of UMR 2.2; per language F1 of the counts summed over the files. AnCast++ (mean over files) and "
-             "umrjudge (mean of its checks) are extra. valid: validate.py --level 2.", "",
-             "| file | sents | juːmæʧ P | R | F | Smatch F | valid | AnCast F | Comp | judge |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+             "umrjudge (per check: recall and precision of its units pooled over the files) are extra. valid: "
+             "validate.py --level 2.", "",
+             "| file | sents | juːmæʧ P | R | F | Smatch F | valid | AnCast F | Comp |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for name, r in out["docs"].items():
         jp, jr, jf = (100 * x for x in score.prf(*r["jumach"])) if r["jumach"] else (None, None, None)
         sm = score.prf(r["smatch"][0], r["smatch"][2], r["smatch"][1])[2] * 100
-        jv = [v for v in r.get("judge", {}).values() if v is not None]
         v = r["valid"]
-        lines.append("| %s | %d | %s | %s | %s | %.1f | %s | %s | %s | %s |" % (
+        lines.append("| %s | %d | %s | %s | %s | %.1f | %s | %s | %s |" % (
             name, r["sents"], fmt(jp), fmt(jr), fmt(jf), sm,
             "–" if v is None else ("yes" if v["passed"] else "no (%d)" % v["n_errors"]),
-            fmt(r.get("ancast", {}).get("F")), fmt(r.get("ancast", {}).get("Comprehensive")),
-            fmt(100 * sum(jv) / len(jv) if jv else None)))
+            fmt(r.get("ancast", {}).get("F")), fmt(r.get("ancast", {}).get("Comprehensive"))))
     for lang, s in out["summary"].items():
-        lines.append("| **%s** (%d/%d files) | %d | %s | %s | %s | %s | %d/%d | %s | %s | %s |" % (
+        lines.append("| **%s** (%d/%d files) | %d | %s | %s | %s | %s | %d/%d | %s | %s |" % (
             lang, s["files"], s["test_files"], s["sents"], fmt(s["jumach_P"]), fmt(s["jumach_R"]), fmt(s["jumach_F"]),
-            fmt(s["smatch_F"]), s["valid"], s["files"], fmt(s.get("ancast_F")), fmt(s.get("ancast_Comprehensive")),
-            fmt(s.get("judge_mean"))))
+            fmt(s["smatch_F"]), s["valid"], s["files"], fmt(s.get("ancast_F")), fmt(s.get("ancast_Comprehensive"))))
     if any("judge" in s for s in out["summary"].values()):
         langs = [l for l, s in out["summary"].items() if "judge" in s]
-        lines += ["", "## umrjudge per check", "", "| check | " + " | ".join(langs) + " |", "|---|" + "---|" * len(langs)]
+        lines += ["", "## umrjudge per check (recall / precision / F1)", "",
+                  "| check | " + " | ".join("%s R | P | F" % l for l in langs) + " |", "|---|" + "---|---|---|" * len(langs)]
         for k in sorted({k for l in langs for k in out["summary"][l]["judge"]}):
-            lines.append("| %s | %s |" % (k, " | ".join(fmt(out["summary"][l]["judge"].get(k)) for l in langs)))
+            lines.append("| %s | %s |" % (k, " | ".join("%s | %s | %s" % (
+                fmt(out["summary"][l].get("judge_R", {}).get(k)), fmt(out["summary"][l].get("judge_P", {}).get(k)),
+                fmt(out["summary"][l]["judge"].get(k))) for l in langs)))
     return "\n".join(lines) + "\n"
 
 
@@ -456,22 +490,22 @@ def table():
     lines = ["# Results", "",
              "Generated by `python3 exp/run.py table`. The test set and scoring of the DMR 2026 UMR parsing shared task: "
              "juːmæʧ (main metric) and Smatch against the official test gold (UMR 2.2), F1 over counts summed over "
-             "a language's files; a missing file counts as empty. AnCast++ (mean over files) and umrjudge are extra. "
+             "a language's files; a missing file counts as empty. AnCast++ (mean over files) is extra; umrjudge per check is in each run's scores.md and in breakdown.md. "
              "`shared-task` rows are the two participating systems' released outputs scored the same way.", ""]
     for lang in LANGS:
         if not any(lang in s for *_, s in rows):
             continue
         n = [d for d in ALL_DOCS if d["lang"] == lang]
         lines += ["## %s (%d files, %d sentences)" % (lang, len(n), sum(d["sents"] for d in n)), "",
-                  "| method | sub-experiment | model | files | juːmæʧ F | P | R | Smatch F | valid | AnCast F | Comp | judge |",
-                  "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+                  "| method | sub-experiment | model | files | juːmæʧ F | P | R | Smatch F | valid | AnCast F | Comp |",
+                  "|---|---|---|---|---|---|---|---|---|---|---|"]
         for method, sub, label, s in rows:
             if lang in s:
                 x = s[lang]
-                lines.append("| %s | %s | %s | %d/%d | %s | %s | %s | %s | %d/%d | %s | %s | %s |" % (
+                lines.append("| %s | %s | %s | %d/%d | %s | %s | %s | %s | %d/%d | %s | %s |" % (
                     method, sub, label, x["files"], x["test_files"], fmt(x["jumach_F"]), fmt(x["jumach_P"]),
                     fmt(x["jumach_R"]), fmt(x["smatch_F"]), x["valid"], x["files"], fmt(x.get("ancast_F")),
-                    fmt(x.get("ancast_Comprehensive")), fmt(x.get("judge_mean"))))
+                    fmt(x.get("ancast_Comprehensive"))))
         lines.append("")
     with open(os.path.join(EXP, "results.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
@@ -481,7 +515,7 @@ def table():
 def main():
     global DOCS
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["api", "chat-prompts", "chat-score", "harness-score", "score", "verify-st", "table"])
+    ap.add_argument("command", choices=["api", "chat-prompts", "chat-score", "harness-score", "score", "rejudge", "verify-st", "table"])
     ap.add_argument("target", nargs="?")
     ap.add_argument("--model", default="claude-opus-5-5")
     ap.add_argument("--effort", default="high")
@@ -506,6 +540,8 @@ def main():
         answers_score(a.target, a.label or "claude-code", "harness")
     elif a.command == "score":
         score_dir(os.path.abspath(a.target))
+    elif a.command == "rejudge":
+        rejudge_dir(os.path.abspath(a.target))
     elif a.command == "verify-st":
         verify_st()
     else:
