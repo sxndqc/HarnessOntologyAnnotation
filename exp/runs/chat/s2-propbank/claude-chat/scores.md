@@ -1,4 +1,4 @@
-# runs/chat/s2-propbank/claude-ai
+# runs/chat/s2-propbank/claude-chat
 
 Shared-task scoring: juːmæʧ (main metric, compare_umr.pl) and Smatch, against the official test gold of UMR 2.2; per language F1 of the counts summed over the files. AnCast++ (mean over files) and umrjudge (per check: recall and precision of its units pooled over the files) are extra. valid: validate.py --level 2.
 

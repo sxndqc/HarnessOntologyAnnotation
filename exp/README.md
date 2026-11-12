@@ -106,10 +106,10 @@ python3 exp/run.py chat-prompts s1-abridged
 ```
 
 在 chat 窗口里粘贴 `prompts/<doc>.md` 的全文；有附件的子实验同时上传表里列的文件。回答太长被截断时让它继续，
-把各段原样接起来存成 `chat/<sub>/answers/<label>/<doc>.txt`（`<label>` 是 chat 模型，比如 `claude-ai`、`chatgpt`）（前后多出的说明文字没关系，代码块标记也会被去掉），然后：
+把各段原样接起来存成 `chat/<sub>/answers/<label>/<doc>.txt`（`<label>` 是 chat 模型，比如 `claude-chat`、`chatgpt`）（前后多出的说明文字没关系，代码块标记也会被去掉），然后：
 
 ```bash
-python3 exp/run.py chat-score s1-abridged --label claude-ai-opus     # → runs/chat/s1-abridged/claude-ai-opus/
+python3 exp/run.py chat-score s1-abridged --label claude-chat     # → runs/chat/s1-abridged/claude-chat/
 python3 exp/run.py table
 ```
 

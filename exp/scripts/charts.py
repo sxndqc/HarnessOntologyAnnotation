@@ -235,3 +235,84 @@ def heatmap(title, rows, cols, values, vmax=20, unit="", label_w=200, cell=(58, 
     out.append('<text class="tick" x="%d" y="%d">+%d%s 更高</text>' % (label_w + 20 * 11 + 4, ly + 9, vmax, unit))
     out.append("</svg>")
     return '<div class="viz">%s</div>' % "".join(out)
+
+
+def facet_hbar(title, cats, facets, series, xmax=100, step=20, label_w=150, panel_w=200, gap=22, fmt="%.1f",
+               refs=None):
+    """One chart, several metrics side by side sharing the category rows (small multiples on one axis
+    each, all 0..xmax so the panels compare). facets: [(metric name, {series index: [value per cat]},
+    {series index: [(recall, precision) or None per cat]} or None)]; series: [(name, slot)]; refs:
+    {facet index: [(label, value)]} drawn as hairlines. Bars are F1; a ring is recall, a diamond
+    precision. Every value is in the tooltip and in the table below the chart."""
+    bar, bgap, pad = 13, 2, 9
+    band = len(series) * bar + (len(series) - 1) * bgap + pad * 2
+    top = 26
+    any_marks = any(f[2] for f in facets)
+    legend_h, head_h = 22, (36 if refs else 22)
+    y0 = top + legend_h + head_h
+    width = label_w + len(facets) * (panel_w + gap)
+    h = y0 + band * len(cats) + 24
+    out = ['<svg width="%d" height="%d" role="img" aria-label="%s">' % (width, h, _e(title)),
+           '<text class="t" x="0" y="16">%s</text>' % _e(title)]
+    lx = 0
+    for name, slot in series:
+        out.append('<rect class="b%d" x="%d" y="%d" width="10" height="10" rx="2"/>' % (slot, lx, top + 2))
+        out.append('<text class="lab" x="%d" y="%d">%s</text>' % (lx + 14, top + 11, _e(name)))
+        lx += 24 + 7.5 * len(name) + (6 * sum(1 for ch in name if ord(ch) > 0x2e80))
+    if any_marks:
+        out.append('<text class="lab" x="%d" y="%d">条 = F1</text>' % (lx, top + 11))
+        lx += 56
+        out.append('<circle class="rk" cx="%d" cy="%d" r="4"/>' % (lx + 4, top + 7))
+        out.append('<text class="lab" x="%d" y="%d">召回 R</text>' % (lx + 12, top + 11))
+        lx += 62
+        out.append('<path class="rk" d="M%d,%d l4.5,4.5 l-4.5,4.5 l-4.5,-4.5 z"/>' % (lx + 4, top + 2.5))
+        out.append('<text class="lab" x="%d" y="%d">精确 P</text>' % (lx + 12, top + 11))
+    for ci, cat in enumerate(cats):
+        yb = y0 + ci * band
+        out.append('<text class="lab" x="%d" y="%.1f" text-anchor="end" dominant-baseline="middle">%s</text>' % (
+            label_w - 10, yb + band / 2, _e(cat)))
+    for fi, (metric, vals, marks) in enumerate(facets):
+        x0 = label_w + fi * (panel_w + gap)
+        sx = lambda v, x0=x0: x0 + panel_w * v / xmax
+        out.append('<text class="t" x="%d" y="%d" style="font-size:12px">%s</text>' % (x0, top + legend_h + 12, _e(metric)))
+        v = 0
+        while v <= xmax + 1e-9:
+            x = sx(v)
+            out.append('<line class="grid" x1="%.1f" x2="%.1f" y1="%d" y2="%d"/>' % (x, x, y0, y0 + band * len(cats)))
+            out.append('<text class="tick" x="%.1f" y="%d" text-anchor="middle">%g</text>' % (x, y0 + band * len(cats) + 14, v))
+            v += step
+        for lab, val in (refs or {}).get(fi, []):
+            x = sx(val)
+            out.append('<line class="ref" x1="%.1f" x2="%.1f" y1="%d" y2="%d"/>' % (x, x, y0 - 4, y0 + band * len(cats)))
+            out.append('<text class="tick" x="%.1f" y="%d" text-anchor="middle">%s</text>' % (x, y0 - 7, _e(lab)))
+        for ci, cat in enumerate(cats):
+            yb = y0 + ci * band
+            rows = []
+            for si, (name, slot) in enumerate(series):
+                val = vals.get(si, [None] * len(cats))[ci]
+                rp = (marks or {}).get(si, [None] * len(cats))[ci]
+                txt = "–" if val is None else fmt % val
+                if rp:
+                    txt += "（R %s · P %s）" % tuple("–" if x is None else fmt % x for x in rp)
+                rows.append({"v": txt, "n": name, "c": "--s%d" % slot})
+            tipd = {"h": "%s · %s" % (cat, metric), "rows": rows}
+            for si, (name, slot) in enumerate(series):
+                val = vals.get(si, [None] * len(cats))[ci]
+                y = yb + pad + si * (bar + bgap)
+                out.append('<rect class="hit" tabindex="0" x="%d" y="%.1f" width="%d" height="%d" data-tip="%s"/>' % (
+                    x0, y - bgap, panel_w, bar + 2 * bgap, _e(json.dumps(tipd, ensure_ascii=False))))
+                if val is None:
+                    out.append('<g class="mk"></g>')
+                    continue
+                out.append(_bar(x0, y, sx(val) - x0, bar, "b%d" % slot))
+                rp = (marks or {}).get(si, [None] * len(cats))[ci]
+                if rp:
+                    cy = y + bar / 2
+                    if rp[0] is not None:
+                        out.append('<circle class="ring s%d" cx="%.1f" cy="%.1f" r="4.5"/>' % (slot, sx(rp[0]), cy))
+                    if rp[1] is not None:
+                        out.append('<path class="dia s%d" d="M%.1f,%.1f l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z"/>' % (
+                            slot, sx(rp[1]), cy - 5.5))
+            out.append('<line class="base" x1="%d" x2="%d" y1="%.1f" y2="%.1f"/>' % (x0, x0, yb, yb + band))
+    out.append("</svg>")
+    return '<div class="viz">%s</div>' % "".join(out)

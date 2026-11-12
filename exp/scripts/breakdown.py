@@ -19,7 +19,7 @@ API_SUBS = SUBS + ["s3-all", "a1-sentence-propbank", "a2-sentence-all"]
 SHORT = {"s3-all": "+all three tools", "a1-sentence-propbank": "+PropBank by sentence",
          "a2-sentence-all": "+all three by sentence", "s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
          "s2-gold": "+gold"}
-ANCAST = ["Modal", "Temporal", "Coref", "Comprehensive"]
+ANCAST = ["F", "Modal", "Temporal", "Coref", "Comprehensive"]
 NAMES = {   # umrjudge checks (judges/umrjudge.yaml): what each one judges, in words
     "a_event_found": "a 事件节点有没有找到：gold 的事件/抽象事件节点能否配上（a_event_found）",
     "a_event_concept": "a 事件概念对不对：配上的事件节点，概念是否相同（a_event_concept）",
@@ -95,7 +95,7 @@ def load(method, sub, label, root=RUNS):
 
 ROWS = (["juːmæʧ F", "juːmæʧ R", "juːmæʧ P", "Smatch F", "Smatch R", "Smatch P"] + ["AnCast " + k for k in ANCAST]
         + [x for c in NAMES for x in (c, c + " R", c + " P")])
-LABEL = {"juːmæʧ R": "　└ 召回 R", "juːmæʧ P": "　└ 精确 P", "Smatch R": "　└ 召回 R", "Smatch P": "　└ 精确 P",
+LABEL = {"AnCast F": "AnCast++ 句子级 F", "juːmæʧ R": "　└ 召回 R", "juːmæʧ P": "　└ 精确 P", "Smatch R": "　└ 召回 R", "Smatch P": "　└ 精确 P",
          "AnCast Modal": "AnCast++ 文档级模态 F", "AnCast Temporal": "AnCast++ 文档级时间 F",
          "AnCast Coref": "AnCast++ 共指 F", "AnCast Comprehensive": "AnCast++ 综合 F"}
 LABEL.update({c: NAMES[c] + " F1" for c in NAMES})
@@ -185,7 +185,7 @@ def main():
         for s in SUBS:
             cols += [("API %s" % SHORT[s], "api", s, "claude-opus-5-5-v2"),
                      ("Claude Code %s" % SHORT[s], "harness", s, "claude-code"),
-                     ("claude.ai %s" % SHORT[s], "chat", s, "claude-ai")]
+                     ("claude.ai %s" % SHORT[s], "chat", s, "claude-chat")]
         for label in ("chatgpt-6-astra-high", "chatgpt"):
             cols += [("ChatGPT chat (%s) %s" % (label, SHORT[s]), "chat", s, label) for s in SUBS]
         lines += table(cols, ds) + [""]
