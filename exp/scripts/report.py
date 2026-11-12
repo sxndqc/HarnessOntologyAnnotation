@@ -189,10 +189,15 @@ code{background:#f2f2f2;padding:0 .25rem;border-radius:3px}
 ul{padding-left:1.3rem} li{margin:.2rem 0}
 details{margin:.6rem 0} summary{cursor:pointer;font-weight:600}
 nav a{margin-right:.8rem}
+pre.txt,pre.diff{white-space:pre-wrap;word-break:break-word;font-size:.8rem;line-height:1.45;background:#f7f7f5;
+ border:1px solid #e6e6e1;border-radius:6px;padding:.6rem .8rem;max-height:560px;overflow:auto}
+pre.diff .add{background:#e6f4ea;color:#0b5d1e;display:block} pre.diff .del{background:#fce8e6;color:#8a1c12;display:block}
+pre.diff .hunk{color:#6250d6;display:block} pre.diff .ctx{display:block} details details{margin-left:1rem} details.traj>summary{font-size:1rem}
 .tiles{display:flex;gap:12px;flex-wrap:wrap;margin:.6rem 0}
 .tile{border:1px solid rgba(11,11,11,.10);border-radius:8px;padding:10px 14px;min-width:220px}
 .tl{font-size:.82rem;color:#52514e} .tv{font-size:2rem;font-weight:600} .td{font-size:.82rem;color:#52514e}
-@media (prefers-color-scheme: dark){.tl,.td{color:#aaa} .tile{border-color:#333} body{background:#111;color:#e6e6e6} th{background:#222} th,td{border-color:#333}
+@media (prefers-color-scheme: dark){pre.txt,pre.diff{background:#1b1b1a;border-color:#333}
+ pre.diff .add{background:#12301c;color:#9ee0b0} pre.diff .del{background:#3a1715;color:#f3b0a9} .tl,.td{color:#aaa} .tile{border-color:#333} body{background:#111;color:#e6e6e6} th{background:#222} th,td{border-color:#333}
  tr.sep td{background:#181818;color:#999} code{background:#222} .note,.lead{color:#aaa} h2{border-color:#333}}
 """
 
@@ -258,6 +263,67 @@ def rsi_cost(d):
              else "test" if os.sep + "test" + os.sep in f else "annotate")
         tot[k] = tot.get(k, 0) + c
     return tot
+
+
+def pre(text, cls="txt"):
+    return '<pre class="%s">%s</pre>' % (cls, e(text))
+
+
+def diff_html(a, b, name_a, name_b):
+    """A unified diff, added lines green, removed lines red."""
+    import difflib
+    out = []
+    for line in difflib.unified_diff(a.splitlines(), b.splitlines(), name_a, name_b, n=2, lineterm=""):
+        cls = ("add" if line.startswith("+") and not line.startswith("+++") else
+               "del" if line.startswith("-") and not line.startswith("---") else "hunk" if line.startswith("@@") else "")
+        out.append('<span class="%s">%s</span>' % (cls or "ctx", e(line) or " "))
+    return '<pre class="diff">%s</pre>' % "".join(out) if out else "<p>（没有改动）</p>"
+
+
+def rsi_texts(P):
+    """Every trajectory's final instruction, its diff from the start, and every critique, reflection and edit."""
+    P.append("<h3>instruction 和每一步的记录</h3>")
+    P.append("<p>每条轨迹：最终 instruction 全文、它和起点 v0 的对比（绿 = 新增，红 = 删掉），以及每个 batch 每次反思的 critique、"
+             "reflect（说明和提出的修改）、哪些修改应用上了、这次修改的对比和重标后的分数。都默认折叠。</p>")
+    for traj, name, _, _ in TRAJ:
+        d = os.path.join(RSI_RUNS, traj)
+        st = json.load(open(os.path.join(d, "state.json"), encoding="utf-8"))
+        vdir = os.path.join(d, "versions")
+        last = max(int(f[1:-3]) for f in os.listdir(vdir) if re.match(r"^v\d+\.md$", f))
+        v0 = open(os.path.join(vdir, "v0.md"), encoding="utf-8").read()
+        vl = open(os.path.join(vdir, "v%d.md" % last), encoding="utf-8").read()
+        P.append('<details class="traj"><summary>%s：最终 instruction v%d（%d 字符，起点 %d 字符）和每一步</summary>'
+                 % (e(name), last, len(vl), len(v0)))
+        P.append("<details><summary>最终 instruction v%d 全文</summary>%s</details>" % (last, pre(vl)))
+        P.append("<details><summary>最终 v%d 和起点 v0 的对比</summary>%s</details>" % (last, diff_html(v0, vl, "v0", "v%d" % last)))
+        for b in st["batches"]:
+            P.append('<details><summary>batch %d（第 %d–%d 句）：开始 %.1f → 结束 %.1f，版本 v%d</summary>'
+                     % (b["batch"], b["first"], b["last"], b["start"], b["end"], b["version"]))
+            for r in b["reflections"]:
+                rd = os.path.join(d, "b%d" % b["batch"], "r%d" % r["reflection"])
+                res = ("没有修改应用上" if r["score"] is None else "重标 %.1f，%s" % (
+                    r["score"], "保留（v%d）" % r["version"] if r.get("accepted") else "没保留"))
+                P.append("<details><summary>反思 %d：%d/%d 处修改应用上，%s</summary>" % (
+                    r["reflection"], r["applied"], r["edits"], e(res)))
+                rd_ = lambda f: open(os.path.join(rd, f), encoding="utf-8").read() if os.path.exists(os.path.join(rd, f)) else ""
+                P.append("<details><summary>critique</summary>%s</details>" % pre(rd_("critique.md")))
+                P.append("<details><summary>reflect（说明和提出的修改）</summary>%s</details>" % pre(rd_("reflect.md")))
+                applied = json.loads(rd_("applied.json") or "[]")
+                rows = [[x["op"], "是" if x["applied"] else "否", x["why"],
+                         (x["edit"].get("old") or x["edit"].get("anchor") or "")[:200],
+                         (x["edit"].get("new") or x["edit"].get("text") or "")[:300]] for x in applied]
+                P.append(table(["操作", "应用", "没应用的原因", "原文 / 锚点（截断）", "新内容（截断）"], rows, title="修改清单"))
+                before = rd_("edits.diff")
+                P.append("<details><summary>这次修改的对比</summary>%s</details>" % (
+                    '<pre class="diff">%s</pre>' % "".join(
+                        '<span class="%s">%s</span>' % (
+                            "add" if l.startswith("+") and not l.startswith("+++") else
+                            "del" if l.startswith("-") and not l.startswith("---") else
+                            "hunk" if l.startswith("@@") else "ctx", e(l) or " ")
+                        for l in before.splitlines()) if before else "<p>（没有改动）</p>"))
+                P.append("</details>")
+            P.append("</details>")
+        P.append("</details>")
 
 
 def rsi_section(P):
@@ -333,6 +399,7 @@ def rsi_section(P):
                    note="包括起点测试（和 s3-all、s1-abridged 是同样的请求，走的缓存，实际没花钱）。另外三条轨迹第一次跑时因为解析 bug 中途作废，"
                         "那部分大约又花了 $25–30，不在表里。规则型 + 三个工具这条用的 reflect prompt 少了后来加的一句"
                         "“（如果标注模型有工具）”，其余相同。"))
+    rsi_texts(P)
 
 
 def main():
