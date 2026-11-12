@@ -1,0 +1,98 @@
+--- before
++++ after
+@@ -8,13 +8,7 @@
+ with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+ and document-level relation counts. Take the time this needs:
+ 
+-- Read the guidelines below carefully before you start, and go back to them for every decision you are
+-  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+-  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
+-- Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+-  example does.
+-- Do not guess when you can check: the answer to almost every question is in the guidelines above and
+-  their examples; look it up there rather than answer from memory.
++- Read the guidelines below first and look up every decision you are unsure of; annotate a construction an example shows the way the example does.
+ - Before you go on to the next sentence, check the graph against the guidelines once more: every word
+   that carries meaning has its concept, every event its aspect, every role the right direction; and at
+   the end check that the document-level relations cover every event and entity the guidelines ask for.
+@@ -23,12 +17,7 @@
+ 
+ # UMR guidelines, abridged
+ 
+-A short version of the UMR 0.9 specification (`umr_guidelines.md` in this folder, umr4nlp/umr-guidelines),
+-for annotating Chinese and English at Stage 1 (numbered PropBank roles). It keeps what an annotator needs for
+-most sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics
+-sections and most of the examples. Where the full guideline uses the older short names (`AUTH`, `DCT`,
+-`FullAff`, `:modstr`, `:ref-person`, `Performance`), this version uses the names of the UMR release data
+-(`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`, `performance`).
++UMR 0.9, abridged, for Chinese and English at Stage 1 (numbered PropBank roles), with the names of the UMR release data.
+ 
+ ## 1. What a UMR is
+ 
+@@ -67,7 +56,7 @@
+ 
+ **Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`, `s3d2`), all
+ different within the document. A node that fills two roles is written once and then referred to by its
+-variable (re-entrancy: `:ARG0 s3p` above).
++variable (re-entrancy: `:ARG0 s3p` above). Write the full node (name, appositive, `:part-of`) at the entity's first mention in word order, even inside a subordinate clause below the root; every later mention, also inside a relative clause, is a re-entrancy.
+ 
+ ## 2. Concepts
+ 
+@@ -160,7 +149,7 @@
+ 3. Choose the sense whose role descriptions match the participants in the sentence.
+ 4. Copy the role numbers from that sense, not from -01 and not from English habit.
+ 
+-The belonging/membership sense of a verb is often not -01, and in it the owner is often `:ARG0` and the thing that belongs is `:ARG1`. A relative clause *the Y that belongs to X* then is `(y / Y :ARG0-of (b / V-0n :ARG1 x))` or `:ARG1-of`, whichever the frame gives the head noun; the owner fills the frame's owner role. Many Chinese intransitive and change-of-state verbs have only `:ARG0` (the thing that ceases, changes or acts). Do not default the theme to `:ARG1` by English habit. In particular, for change, become, reach and fall verbs (成, 达到, 跌, 变 type), the theme is usually `:ARG0` and the result or point reached is `:ARG1`. Copy the numbers from the roleset's role list every time.
++The belonging/membership sense of a verb is often not -01, and in it the owner is often `:ARG0` and the thing that belongs is `:ARG1`. A relative clause *the Y that belongs to X* then is `(y / Y :ARG0-of (b / V-0n :ARG1 x))` or `:ARG1-of`, whichever the frame gives the head noun; the owner fills the frame's owner role. Many Chinese intransitive and change-of-state verbs have only `:ARG0` (the thing that ceases, changes or acts). Do not default the theme to `:ARG1` by English habit. In particular, for change, become, reach and fall verbs (成, 达到, 跌, 变 type), the theme is usually `:ARG0` and the result or point reached is `:ARG1`. Copy the numbers from the roleset's role list every time. If the roleset lists only `:ARG0`, the single participant is `:ARG0` even when it looks like a patient (it starts, ceases, is founded, appears).
+ 
+ ### 2.4 Pronouns and implicit participants
+ 
+@@ -171,7 +160,7 @@
+ ### 2.5 Discourse relations (combining clauses)
+ 
+ - coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+-- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`;
++- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`; a sentence-initial connective whose first conjunct is in an earlier sentence gets no node and no modal triple (the main verb is the root);
+ - concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+ - *if* (如果, 只要) → `:condition` on the main event; *because* (因为) → `:cause` (phrasal); 由于 and the frame 以…而 → `:reason` (phrasal); *in order to* (为了)
+@@ -204,10 +193,10 @@
+ - **Aspectual verb in a relative clause.** When a head noun is modified by an aspectual verb plus another verb (*the X that stopped/began doing Y*), the noun is an argument of the inner verb only: `(x / X :ARG1-of (p / V-01 :ARG1-of (s / stop-01)))`. It is not an argument of the aspectual verb as well. Check the aspectual verb's roleset.
+ - **Shared modifiers.** A modifier shared by coordinated nouns (*various A and B*) goes on each conjunct by re-entrancy, not on the `and` node. Do not add `:subset` there.
+ - **Describing clauses.** A clause that goes on describing the predicate noun of a copular sentence (*X is a Y, known for Z*) attaches under that noun, e.g. as `:ARG1-of`. It is not a separate top-level conjunct.
+-- **Trailing content clauses.** The same holds for a trailing clause without 为/为了 that tells what an object just created, named or described contains or does (…，容纳 Y). It attaches under that object as `:ARGn-of` with `:aspect process`. It is not `:purpose`, and it gets no re-entered subject.
++- **Trailing content clauses.** The same holds for a trailing clause without 为/为了 that tells what an object just created, named or described contains or does (…，容纳 Y). It attaches under that object (the creation verb's own argument, not its `:part-of` whole) as `:ARGn-of` with `:aspect process`. It is not `:purpose`, and it gets no re-entered subject.
+ - **Parts and media.** A physical edition or part of a publication is `:part-of` it, not `:possessor`. A medium noun (TV, 网络) modifying a program or product is `:medium`.
+ - **Heads.** In N1 的 N2, and in *change from A to B* (从 A 变为 B), the grammatical head common noun is the concept. A publication or organization name modifying it is `:part-of` (a part, section or edition of it) or `:possessor`, not the head.
+-- **Formats and parts as arguments.** When a format, layout or section noun (版面, edition, section) is what is created or changed for a publication, that noun is the argument and the publication is its `:part-of`. This holds even when the publication's name is the grammatical head after 的 (V了 A的《X》 → `:ARG1 (a / A :part-of x)`).
++- **Formats and parts as arguments.** When a format, layout or section noun (版面, edition, section) of a publication is an argument of any verb, that noun is the argument and the publication is its `:part-of`. Never write the inverse `:part` on the whole. This holds even when the publication's name is the grammatical head after 的 (V了 A的《X》 → `:ARG1 (a / A :part-of x)`).
+ - **Change from A to B.** In 从/由 A 变为/改为 B, A is the frame's 'thing changed' role (`:ARG1`), not `:source`; B is `:ARG2`.
+ - **Appositives.** An appositive descriptor before or after a name (its 旗下 tabloid 《X》) is `(x / <type> :name ... :ARG1-of (i / identity-91 :ARG2 (d / <descriptor> :mod ...)))`. Words like 旗下 stay a `:mod` node on the descriptor; do not turn them into a `:possessor` edge.
+ - **Role nouns with names.** A role, title or agent noun directly before or after a person's name is not an appositive `identity-91`. It is `(p / individual-person :name ... :ARG1-of (h / have-org-role-91 :ARG3 role))`, where role is e.g. `(r / 人 :ARG0-of (v / V-01))`. In Chinese documents write the role predicates as `have-org-role-91` / `have-rel-role-91`. Use appositive `identity-91` only for non-role descriptors (e.g. of a publication).
+@@ -281,7 +270,7 @@
+   - events inside noun-phrase modifiers.
+   Do not give these their own `document-creation-time` link.
+ - Past-time adverbs (*once, formerly*, 曾, 曾经) are not reference times: give them no triple and link their event directly, `(document-creation-time :before e)`.
+-- A naming or evaluation passive (被称为, 被誉为) whose result describes the present is linked as `(document-creation-time :depends-on e)`. Use this only for naming and evaluation. A narrative change (成了, became) that continues an earlier sentence's story takes that earlier event as its reference time (`:overlap` or `:after`).
++- A naming or evaluation passive (被称为, 被誉为) whose result describes the present is linked as `(document-creation-time :depends-on e)`. Use this only for naming and evaluation. A narrative change (成了, became) that continues an earlier sentence's story takes that earlier event as its reference time with `:overlap` (`:after` only with an explicit later-sequence word).
+ - An aspectual verb (*stop, begin, continue*) and the event it governs are `:overlap`, never `:before`/`:after`.
+ - Every event node must get exactly one temporal parent. Exceptions (also: `have-reason-91` and `have-purpose-91` get no temporal parent, but their argument events do):
+   - `identity-91` is left out of the temporal structure but still gets its modal parent. When a sentence's root is `identity-91`, choose as anchor the event inside the predicate noun that is most clearly placed in time, usually a completed past event (`(document-creation-time :before e)`). The triples are:
+@@ -317,7 +306,7 @@
+ - `(earlier :same-entity later)`: two mentions of the same entity — a pronoun and its antecedent, a repeated
+   name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+   link entity nodes, never `name` nodes.
+-- `(earlier :same-event later)`: two mentions of the very same event (the same act mentioned again). Do not link two different events that are merely related (e.g. a thing's founding and a later act by its founder).
++- `(earlier :same-event later)`: two mentions of the very same event (the same act mentioned again, same arguments in the same roles; not a retelling with another object or agent, or a part instead of the whole). Do not link two different events that are merely related (e.g. a thing's founding and a later act by its founder).
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Link every mention of the main discourse entities. Do not build chains for incidental place names or other entities that occur only as modifiers (`:place`, `:mod`) in different sentences.
+ - Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+@@ -333,7 +322,7 @@
+ 
+ - Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+ - Every event has `:aspect` (`have-degree-91` excepted); negated events have `:polarity -` (fused negation verbs excepted).
+-- Every Chinese predicate uses the sense and numbered roles of its own PropBank roleset.
++- Every Chinese predicate uses the sense and numbered roles of its own PropBank roleset (`:ARG1` only if the roleset has one).
+ - Before writing `:coref`, drop every pair where both mentions are only `:place`/`:mod` modifiers.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.

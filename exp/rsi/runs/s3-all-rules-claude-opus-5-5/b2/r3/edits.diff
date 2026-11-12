@@ -1,0 +1,43 @@
+--- before
++++ after
+@@ -70,7 +70,7 @@
+ 
+ **Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`, `s3d2`), all
+ different within the document. A node that fills two roles is written once and then referred to by its
+-variable (re-entrancy: `:ARG0 s3p` above). Write an entity's full node (name, apposition) at its first occurrence in reading order; later mentions are re-entrancies.
++variable (re-entrancy: `:ARG0 s3p` above). Write an entity's full node (name, apposition, all modifiers) at its first mention in the order of the words of the sentence (text order, not graph order), even when that mention sits deeper in the graph; every other mention is a bare variable.
+ 
+ ## 2. Concepts
+ 
+@@ -101,9 +101,9 @@
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+ Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A named human is `individual-person`. A middle dot inside a
+ transliterated foreign name is kept as its own `:opN "·"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91
+-:ARG3 <role>)`; a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
++:ARG3 <role>)` (the holder is always `:ARG1`, never `:ARG0`); separately, a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
+ e.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
+-modifiers>)` on the named entity. Decades (X年代) use `:era`. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
++modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. Decades (X年代) use `:era`. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+ `mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+@@ -212,7 +212,7 @@
+   `:possessor`).
+ - When a component, edition or section noun modifies a named work through 的 ([X] 版 的 《N》), the component noun is the head
+   and the work is its `:part-of`; modifiers of the component (colour, style) stay on it. A trailing relative clause on such an object attaches to the component noun.
+-- Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`. When X and Y are components (layout, edition, format) of the subject, the subject is `:part-of` on X, not its own argument and not an inverse `:part`.
++- Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`. When X and Y are components (layout, edition, format) of the subject, the subject is `:part-of` on X, not its own argument and not an inverse `:part`, even when it also fills a role elsewhere (that role is then a re-entrancy).
+ - A "verb + 量" quantity noun whose first part is a clear verb is split: `(q / 量 :quant-of (v / verb-01 :ARG1 <entity>))`, the
+   owner of the quantity being the verb's `:ARG1` (not `:possessor`). An amount it reaches or falls to is
+   `:ARG1-of (h / have-quant-91 :ARG2 <number> :unit <classifier>)` on the quantity noun, not a separate `thing` argument. Neither the inner verb nor `have-quant-91` gets `:aspect` or a modal link, and `have-quant-91` gets no temporal link. A measure noun (circulation, sales, price) at another time or value is not coreferent; corefer only its owner.
+@@ -234,8 +234,8 @@
+ 
+ Decide in this order before using the table:
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+-   reporting, compiling, broadcasting)? → `habitual`. Only verbs of publishing or reporting; the capacity or content of a
+-   publication (contains articles, has N pages) is not habitual (`process` or `state`). This holds whatever the tense, and also under an
++   printing, issuing, reporting, broadcasting)? → `habitual`, also for a process nominal naming such a practice (e.g. subject of
++   "is/became its feature"); this step precedes step 3. A verb of what a publication holds or carries (contains articles) is `process`. This holds whatever the tense, and also under an
+    aspectual verb (continue, stop).
+ 2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
+    An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.

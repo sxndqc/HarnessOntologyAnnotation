@@ -1,0 +1,48 @@
+**Summary of changes.** The edits target the critique's recurring, high-cost patterns:
+
+1. **Clause-level reason and purpose.** When a reason or purpose connective links two full clauses, it is now reified as `have-reason-91` or `have-purpose-91`. These get `:aspect state` and an author modal link, but no temporal parent. Phrasal modifiers keep `:cause`, `:reason` and `:purpose`.
+2. **Measure compounds and amounts.**
+   - A noun made of verb + 量/率/额 is split: the measure morpheme is the head, with `:quant-of` the verb event.
+   - An amount reached or fallen to goes on the measured noun through `have-quant-91 :ARG2 N :unit`.
+3. **Verb + complement tokens.** A token like V至 or V到 with no frame falls back to the bare verb's frame. A concept that is not a PropBank lemma is never used.
+4. **Chinese role numbering.** The warning now covers change, become, reach and fall verbs (theme `:ARG0`, result or end point `:ARG1`).
+5. **Re-entrancy and heads.**
+   - The shared-subject rule is narrowed: no re-entering into 为-purpose clauses or relative clauses.
+   - New rules cover the grammatical head in N1 的 N2 and V-from-A-to-B.
+   - An appositive descriptor of a name is `identity-91`.
+   - 旗下-type words stay a `:mod` node.
+6. **Entities.** Named humans are `individual-person`, the middle dot of a transliterated name is its own `:op`, and agent nouns are decomposed into person + event.
+7. **Temporal.**
+   - A past absolute date hangs from document-creation-time, and its event is `:overlap` the date.
+   - A purpose clause is `:overlap` its main event.
+   - Cause clauses and relative clauses about earlier events are `:before` their parent.
+   - The depends-on rule is limited to naming and evaluation passives; a narrative change continues the earlier sentence's event.
+   - A decade is written as `:era`.
+8. **Aspect, modal and coreference.**
+   - A purpose verb naming an ongoing use is `activity`.
+   - A manner word on an event nominal is `:manner`.
+   - A realized purpose is full-affirmative from the author.
+   - `:same-event` is used only for the very same event.
+
+```json
+{"summary": "Reify clause-level reason/purpose (have-reason-91/have-purpose-91); split verb+量/率/额 compounds and use have-quant-91 for amounts reached; bare-verb frame for V至/V到 tokens; widen Chinese ARG0-theme warning; narrow shared-subject re-entrancy, head-noun/appositive/旗下 rules; individual-person, middle-dot op, agent nouns; fix temporal rules for absolute dates, purpose, cause/earlier relatives, depends-on, decade; aspect/modal/coref details.", "edits": [
+{"op": "replace", "old": "*because* (因为) → `:cause`; 由于 and the frame 以…而 → `:reason`;", "new": "*because* (因为) → `:cause` (phrasal); 由于 and the frame 以…而 → `:reason` (phrasal);"},
+{"op": "insert_after", "anchor": "*although* (虽然, 尽管) → `:concession`.", "text": "\n- **Clause-linking reason and purpose (overrides the phrasal rules above).** When a reason connective (因为…于是/所以, 由于…, 所以) or a purpose connective (为/为了 + a clause) links two full clauses, reify it: `(h / have-reason-91 :ARG1 effect-event :ARG2 cause-event :aspect state)`, `(h2 / have-purpose-91 :ARG1 main-event :ARG2 purpose-event :aspect state)`. The reified node is the root, or sits above the main event. It gets `(author :full-affirmative h)` but no temporal parent (see 5.1). Keep `:cause` / `:reason` / `:purpose` only when the cause or purpose is a phrase, not a full clause."},
+{"op": "replace", "old": "Use a shorter form or `-00` only if the whole token has no frame.", "new": "Use a shorter form or `-00` only if the whole token has no frame. If a verb + complement token (V至, V到, V为, V成) has no frame, use the bare verb's frame; the endpoint fills that frame's end-point role (or comes through `have-quant-91`, 2.2). Never use a concept whose word is not a PropBank lemma unless it is `-00`."},
+{"op": "insert_after", "anchor": "Do not default the theme to `:ARG1` by English habit.", "text": " In particular, for change, become, reach and fall verbs (成, 达到, 跌, 变 type), the theme is usually `:ARG0` and the result or point reached is `:ARG1`. Copy the numbers from the roleset's role list every time."},
+{"op": "insert_after", "anchor": "(一个X → `X :quant 1 :unit 个`).", "text": "\n\n**Measure compounds.** A Chinese noun made of a verb + 量 / 率 / 额 (the quantity, rate or amount of V-ing) is split. The measure morpheme is the head, `(q / 量 :quant-of (e / V-01 :ARG1 ...))`. The verb is a real event (aspect, temporal `:overlap` with its governing verb, modal link), and its own arguments (the owner, etc.) attach to the verb, not as `:possessor`. **Amounts reached.** A number reached, fallen to or amounting to (达到 N, 跌至 N, 为 N) goes on the measured noun as `(q :ARG1-of (h / have-quant-91 :ARG2 N :unit (u / <classifier>)))`. Do not create a separate `thing :quant N`."},
+{"op": "insert_after", "anchor": "- Do not write `:wiki`.", "text": "\n- A named human is `individual-person`, not `person`. `person` stays for pronouns and unnamed people.\n- The middle dot `·` in a transliterated foreign name is its own `:op`."},
+{"op": "insert_after", "anchor": "*his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.", "text": "\nA compound agent noun (V + 人/者, e.g. a founder or initiator) is decomposed: `(p / 人 :ARG0-of (v / V-01 :aspect performance))`, placed where the role noun goes (e.g. under `:ARG3` of the role predicate)."},
+{"op": "replace", "old": "A subject shared through a control, serial or purpose/means frame (以 X 而 Y, *known for doing X*, *try to X*) counts as expressed: re-enter it as the subject of the embedded verb too.", "new": "A subject grammatically shared through a control or means frame (以 X 而 Y, *known for doing X*, *try to X*) counts as expressed: re-enter it as the subject of the embedded verb too. Do not re-enter the subject into 为/为了-purpose clauses or into relative clauses; leave those roles out unless a word fills them."},
+{"op": "insert_after", "anchor": "A medium noun (TV, 网络) modifying a program or product is `:medium`.", "text": "\n- **Heads.** In N1 的 N2, and in *change from A to B* (从 A 变为 B), the grammatical head common noun is the concept. A publication or organization name modifying it is `:part-of` (a part, section or edition of it) or `:possessor`, not the head.\n- **Appositives.** An appositive descriptor before or after a name (its 旗下 tabloid 《X》) is `(x / <type> :name ... :ARG1-of (i / identity-91 :ARG2 (d / <descriptor> :mod ...)))`. Words like 旗下 stay a `:mod` node on the descriptor; do not turn them into a `:possessor` edge."},
+{"op": "insert_after", "anchor": "`:decade`, `:century`.", "text": " A decade expression (X年代) is written with `:era`, not `:decade`."},
+{"op": "insert_after", "anchor": "- **Stative verbs keep `state`.**", "text": " (see below)\n- **Purpose verbs** naming an ongoing use are `activity`. A relative-clause verb giving what something is for or contains is `process`. A manner or property word on an event nominal is `:manner`, not `:mod`.\n- **Stative verbs, continued.**"},
+{"op": "replace", "old": "an absolute date (*1998*) depends on `root`;", "new": "a past absolute date (*1998*) is `(document-creation-time :before date)` (a future one `:after`);"},
+{"op": "replace", "old": "(1) to a time expression of its clause, if there is one (`(s1t :contained s1e)`);", "new": "(1) to a time expression of its clause, if there is one (`(s1t :overlap s1e)`);"},
+{"op": "replace", "old": "Use `:overlap` unless the order is explicit (`:before`/`:after`; a purpose is `:after` its main event).", "new": "Use `:overlap` unless the order is explicit (`:before`/`:after`). A purpose clause is `:overlap` its main event. A cause clause, and a relative clause describing an earlier event (left over, previously ...), is `:before` its parent, even when it is marked future (将) relative to its own time."},
+{"op": "replace", "old": "- A completed event whose result describes the present situation (a status reached, a name or evaluation given: a naming/evaluation passive, 已经 + a completed change) is linked as `(document-creation-time :depends-on e)`.", "new": "- A naming or evaluation passive (被称为, 被誉为) whose result describes the present is linked as `(document-creation-time :depends-on e)`. Use this only for naming and evaluation. A narrative change (成了, became) that continues an earlier sentence's story takes that earlier event as its reference time (`:overlap` or `:after`)."},
+{"op": "replace", "old": "- Every event node must get exactly one temporal parent. Two exceptions:", "new": "- Every event node must get exactly one temporal parent. Exceptions (also: `have-reason-91` and `have-purpose-91` get no temporal parent, but their argument events do):"},
+{"op": "replace", "old": "Purpose and condition clauses may use the\n  constants `purpose` and `have-condition` as parents of their events.", "new": "Purpose and condition clauses may use the\n  constants `purpose` and `have-condition` as parents of their events. A purpose event that the text shows is actually realized is `(author :full-affirmative e)`."},
+{"op": "replace", "old": "- `(earlier :same-event later)`: two mentions of the same event.", "new": "- `(earlier :same-event later)`: two mentions of the very same event (the same act mentioned again). Do not link two different events that are merely related (e.g. a thing's founding and a later act by its founder)."}
+]}
+```

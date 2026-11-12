@@ -1,0 +1,80 @@
+{
+ "summary": "Temporal: one anchor per sentence, other events hang off it with :overlap, every event gets a parent, no depends-on for vague present adverbs, copular identity left out. Classifiers become :quant+:unit (also 1); adverbs are nodes. No implicit arguments. Attachment rules for aspectual-verb relatives, shared modifiers, describing clauses, part-of and medium. Aspect rules for habitual, already+stop and naming passives. Prefer lexical frames over -91; 不过 is but-91; have-degree-91; 由于 is :reason; split coordinated compounds. No :wiki, title brackets as ops, place-name modifiers as :place. No coref chains for incidental place modifiers.",
+ "edits": [
+  {
+   "op": "replace",
+   "old": "Numbers are written as digits. In Chinese, a real measure word is a unit (三杯水 → `水 :quant 3 :unit 杯`);\nan ordinary classifier (个, 本, 只, 位) is dropped (三本书 → `书 :quant 3`).",
+   "new": "Numbers are written as digits. In Chinese, a numeral + classifier or measure word gives `:quant N` plus `:unit <classifier>` on the noun, for real measure words and ordinary classifiers (个, 本, 份, 位) alike, and also when the number is 1 (一个X → `X :quant 1 :unit 个`)."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "the copula (*be*, 是) — it becomes one of the abstract predicates.",
+   "text": "\n\nOnly modal auxiliaries are dropped. Adverbs are nodes:\n- aspectual and scope adverbs (*already, still, also, all*; 已经, 仍, 也, 都) are `:mod` on the event;\n- past-time adverbs (*once, formerly*; 曾, 曾经) are `:temporal`;\n- a partitive like 其中 (*among them*) is `:mod` on the noun;\n- a locative postposition after a time noun (X 时, X 中, X 以来) is a `:temporal` node with the time noun as `:op1`."
+  },
+  {
+   "op": "replace",
+   "old": "`(c / country :wiki \"Russia\" :name (n / name :op1 \"Russia\"))`: an entity-type concept, an optional `:wiki`\n(the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.",
+   "new": "`(c / country :name (n / name :op1 \"Russia\"))`: an entity-type concept and `:name` with one `:opN` per word of the name.\n\n- Do not write `:wiki`.\n- For a titled work in title brackets 《 》, the brackets are their own first and last `:op`s.\n- A country or place name modifying a common noun (X 的历史, an X company) is `:place`, not `:mod`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "| X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |",
+   "text": "\n| X is the most/more Adj (superlative, comparative) | `have-degree-91` | `:ARG1` X, `:ARG2` property, `:ARG3` degree word (`most`, `more`), `:ARG5` set compared to |"
+  },
+  {
+   "op": "insert_after",
+   "anchor": "*his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.",
+   "text": "\n\nUse an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is `属于-01` / `拥有-01`, not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`."
+  },
+  {
+   "op": "replace",
+   "old": "A Chinese zero subject or object that is clearly\nrecoverable may be added as such a node (aligned to no word) and linked by coreference.",
+   "new": "Do not add nodes for Chinese zero subjects or objects or for other unexpressed participants: leave the role out."
+  },
+  {
+   "op": "replace",
+   "old": "*but* (但是, 却, 然而) `but-91`;",
+   "new": "*but* (但是, 却, 然而, 不过) `but-91`;"
+  },
+  {
+   "op": "replace",
+   "old": "*because* (因为, 由于) → `:cause`;",
+   "new": "*because* (因为) → `:cause`; 由于 and the frame 以…而 → `:reason`;"
+  },
+  {
+   "op": "insert_after",
+   "anchor": "A discontinuous word (帮……忙) is one concept aligned to its span.",
+   "text": "\n\nA compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "`:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).",
+   "text": "\n\nAttachment rules:\n- **Unexpressed participants.** Do not fill a roleset slot with a participant the text does not express. Re-enter a node only when the text itself expresses that participant in that role.\n- **Aspectual verb in a relative clause.** When a head noun is modified by an aspectual verb plus another verb (*the X that stopped/began doing Y*), the noun is an argument of the inner verb only: `(x / X :ARG1-of (p / V-01 :ARG1-of (s / stop-01)))`. It is not an argument of the aspectual verb as well. Check the aspectual verb's roleset.\n- **Shared modifiers.** A modifier shared by coordinated nouns (*various A and B*) goes on each conjunct by re-entrancy, not on the `and` node. Do not add `:subset` there.\n- **Describing clauses.** A clause that goes on describing the predicate noun of a copular sentence (*X is a Y, known for Z*) attaches under that noun, e.g. as `:ARG1-of`. It is not a separate top-level conjunct.\n- **Parts and media.** A physical edition or part of a publication is `:part-of` it, not `:possessor`. A medium noun (TV, 网络) modifying a program or product is `:medium`."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them\nonly when they are clear.",
+   "text": "\n\nFurther aspect rules:\n- **Repeated activity of an institution or periodical** (publishing, broadcasting, reporting, what it regularly contains or covers) is `habitual`, even with 了 or other completion marking.\n- **already + stop/cease** (已经停止…) describing the current situation is `state`.\n- **A naming or evaluation passive** (*is called / is regarded as*, 被称为, 被誉为) is `performance`.\n- **A negated event with a nominal event object** (没有经过X) is `process`."
+  },
+  {
+   "op": "replace",
+   "old": "a vague one\n  (*nowadays*, 现在) on `past-reference` / `present-reference` / `future-reference`.",
+   "new": "a vague past or future one on `past-reference` / `future-reference`. A vague present adverb (*currently, nowadays*, 现在, 目前) gets no temporal triple of its own."
+  },
+  {
+   "op": "replace",
+   "old": "- Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else\n  (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)\n  `document-creation-time`",
+   "new": "- Then pick **one anchor per sentence**: the matrix (main) event. Only the anchor is linked to the outside: (1) to a time expression of its clause, if there is one (`(s1t :contained s1e)`); else (2) to an event of an earlier sentence that is a clear reference time (`(s2c :before s3a)`); else (3) to\n  `document-creation-time`"
+  },
+  {
+   "op": "replace",
+   "old": "- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.\n- Annotate event–event relations only when they are clear.",
+   "new": "- Every other event of the sentence takes the anchor, or the event or entity-modifying event it depends on, as its parent. Use `:overlap` unless the order is explicit (`:before`/`:after`; a purpose is `:after` its main event). This covers:\n  - subordinate, complement, coordinated and cause/reason clauses;\n  - relative-clause verbs and event nominals;\n  - negated events;\n  - events inside noun-phrase modifiers.\n  Do not give these their own `document-creation-time` link.\n- Every event node must get exactly one temporal parent. The only exception is a pure copular identity state (`identity-91`), which is left out of the temporal structure; it still gets its modal parent."
+  },
+  {
+   "op": "insert_after",
+   "anchor": "- `(a :subset-of b)`: the entity or event a is a subset or part of b.",
+   "text": "\n- Link every mention of the main discourse entities. Do not build chains for incidental place names or other entities that occur only as modifiers (`:place`, `:mod`) in different sentences."
+  }
+ ]
+}

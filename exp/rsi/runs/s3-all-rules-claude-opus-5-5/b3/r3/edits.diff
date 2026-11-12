@@ -1,0 +1,129 @@
+--- before
++++ after
+@@ -1,9 +1,7 @@
+ # Skill: the UMR of a whole document
+ 
+ You annotate a whole document (under **Input**, one sentence per line) in Uniform Meaning Representation (UMR):
+-every sentence's graph, then the document-level temporal, modal and coreference relations. It is compared node by
+-node and relation by relation with an expert gold annotation made by these guidelines; every concept, sense, role,
+-attribute and relation counts.
++every sentence's graph, then the document-level temporal, modal and coreference relations.
+ 
+ - Follow the guidelines and their examples. When they do not settle a case, use `search_guidelines`; look up every
+   predicate with `propbank_lookup` before choosing its sense and roles; check gold constructions with
+@@ -17,8 +15,6 @@
+ 
+ 
+ ## 1. What a UMR is
+-
+-A UMR has one graph per sentence (PENMAN, adapted from AMR) and document-level temporal, modal and coreference relations.
+ 
+ ```
+ He denied any wrongdoing.
+@@ -80,7 +76,7 @@
+ transliterated foreign name is kept as its own `:opN "·"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91
+ :ARG3 <role>)` (the holder is always `:ARG1`, never `:ARG0`); separately, a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
+ e.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
+-modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types as in AMR (`country`, `city`, `organization`, `company`, `planet`, `spaceship`, ...).
++modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. A periodical, tabloid or magazine name is `newspaper`, not `publication`.
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. A decade (X年代) is `:era`, never `:decade`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+@@ -173,8 +169,8 @@
+   concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and
+   what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object. Do not add relations the text does not state (e.g. a
+   `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
+-  `:mod` on the noun it modifies.
+-- Exception (control): the subject of an aspectual or control verb (继续, 停止, 开始) is its `:ARG0` and re-enters as `:ARG0` of its event complement, event nominals included. A time expression scoping over both clauses of a but-91/contrast attaches to both clause events.
++  `:mod` on the noun it modifies, unless a superlative follows (then `:ARG5`, see have-degree-91).
++- Exception (control): the subject of an aspectual or control verb (继续, 停止, 开始) is its `:ARG0` and re-enters as `:ARG0` of its event complement, event nominals included. A time expression over (or opening) a but-91/contrast attaches to both clause events; a still/continue second clause `:overlap`s the first, never `:after`.
+ - Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
+   the aspectual verb is attached to the inner verb by `:ARG1-of`; N is not also an argument of the aspectual verb.
+ - Read the roleset for every role. For Chinese belong-type rolesets (X belongs to Y), the gold convention is: the thing that
+@@ -200,9 +196,9 @@
+   only for plain intensifiers (very, too; 很, 非常, 太).
+ - When the degree word modifies a verb (*most rich in X*, 最富有X), that verb is the `:ARG2` of `have-degree-91` as an event
+   with its own `:aspect` (`(r / verb-01 :ARG1 X :aspect state)`), temporal parent and modal parent; the head noun is `:ARG1`.
+-  Do not use `:ARG5` and give `have-degree-91` itself no modal link.
++  Give `have-degree-91` itself no modal link. With no head noun (其中 最 Adj + classifier): `(i / implicit-argument :unit <classifier> :ARG1-of (h / have-degree-91 :ARG1 (a / Adj) :ARG2 (m / 最) :ARG5 (q / 其中)))`.
+ - A postposition phrase over a time-span noun (X 历史上, *in X's history*) is `:temporal (s / 上 :op1 (h / 历史))` on its head,
+-  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Check the roleset for a location argument (出现-type) before using `:place`.
++  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Appearance verbs (出现-type): the appearing entity is `:ARG0`, the 在 N 中 location `:ARG1` (gold convention).
+ - A property word or chengyu used attributively ("absurd content", X 的 Y with X a property) is a `:mod` concept,
+   not an event: it gets no aspect and no temporal or modal links.
+ 
+@@ -218,8 +214,8 @@
+ 2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
+    An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.
+    A lexical verb of ending with no event complement (close down, cease publication; 停刊, 倒闭), even with *already*, is `performance`.
+-   State verbs (have, own, belong, be, exist, survive; 有, 拥有, 是, 存在, 生存) stay `state` even with 过, 曾经 or a duration.
+-3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process`.
++   State verbs (have, own, belong, be, exist, survive; 有, 拥有, 是, 存在, 生存) stay `state` even with 过, 曾经, a duration, or under 继续/仍.
++3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process` (but an activity noun complementing a judging verb, 算/是-type, is `activity`).
+ 4. Is it a verb of naming or labelling (*is called X*, 被称为)? → `performance`.
+ 
+ Otherwise use the coarse values:
+@@ -247,8 +243,6 @@
+   reified as identity: `(p / procedure-noun :ARG0-of (i / identity-91 :ARG1 <event>))`, not `:mod`.
+ - `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+   `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+-- `:degree` for intensifiers and downtoners (*very, too, most*; 很, 非常, 太, 最) as a concept:
+-  `:degree (v / very)`.
+ - `:quant` for numbers and quantifiers (`:quant 3`, `:quant (a / all)`).
+ 
+ ## 5. Document level
+@@ -297,12 +291,8 @@
+   Copular and identity predicates get no temporal parent but do get a modal parent. An `identity-91` reifying an apposition inside a noun phrase gets no `:aspect` and no links at all. Only property words used as plain `:mod`
+   (no aspect) get no links.
+ - A process nominal that is an argument of a verb takes that verb as its temporal parent with `:overlap`; do not leave it without a parent.
+-- Then every event: (1) a time expression of its clause, if there is one (`(s1t :overlap s1e)`); else
+-  (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+-  `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+-  present state, `:after` for a future event). Chinese has no tense: decide past, present or future from
+-  context, 了, 过, 将, 会.
+-- An event in a complement clause takes its matrix event as parent. A purpose event `:overlap`s its main event (never
++- Then every event: (1) a time expression of its clause; else (2) a clear earlier reference event; else (3) `document-creation-time` (`:before` past, `:overlap` present state, `:after` future; Chinese: decide from context, 了, 过, 将, 会).
++- An event in a complement clause takes its matrix event as parent. Clauses restating or qualifying a report's content take the content's main event as parent, not the reporting verb. A purpose event `:overlap`s its main event (never
+   `:after`). A reason or cause event is before its result: `(result :before reason)`; a future marker inside a reason clause about
+   past events is future relative to that past, not after the main event.
+ - A relative-clause or participle event that describes an earlier completed event (left over, inherited, built) is before the
+@@ -319,9 +309,7 @@
+   `neutral-affirmative` (*may, might, perhaps, can*, 可能, 也许, 或许, desire/hope), `neutral-negative`,
+   `partial-negative`, `full-negative` (negated: *not, never, deny*, 没, 不), `unspecified`.
+ - Every event the author asserts: `(author :full-affirmative s1e)`.
+-- Reported speech or thought: the author is certain of the speaker, the speaker of the content:
+-  `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person
+-  node, or an event used as conceiver). Every event of the reported content, including an appended slogan or quotation and later clauses still reporting it, takes the speaker as modal parent; the content's top node carries `:quote <saying verb>`.
++- Reported speech or thought: `(author :full-affirmative s9p)` for the speaker; every predicate of the content (also an appended slogan and later clauses about that source's reports) gets both `(author :full-affirmative e)` and `(s9p :full-affirmative e)`; event nominals that are arguments inside the content get author only. The content's top node carries `:quote <saying verb>`. A passive reporting verb with no speaker (被指): the conceiver is the content's subject node, with `(author :full-affirmative <subject>)`; never the reporting event.
+ - An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+   决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+   `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+@@ -329,7 +317,7 @@
+ - A conceiver that is not in the text is `null-conceiver`. Purpose and condition clauses may use the
+   constants `purpose` and `have-condition` as parents of their events.
+ - In the sentence graph, write the strength of an event that is not `full-affirmative` from the author as
+-  `:modal-strength <value>` too (the scorers move it to the document level).
++  `:modal-strength <value>` too.
+ 
+ ### 5.3 Coreference (`:coref`)
+ 
+@@ -339,9 +327,9 @@
+ - `(earlier :same-event later)`: two mentions of the same event instance, with the same participants. Two
+   different events of similar meaning (e.g. two different kinds of stopping) are not linked.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+-- Coreference only the discourse entities the text tracks (participants, the topic entity). A name used only as a modifier
++- Coreference only the discourse entities the text tracks (participants, the topic entity); never generic or kind nouns, example-list members, or a name given only as an example, even if the word recurs. A name used only as a modifier
+   (a country name modifying a noun, a place in a `:place` role) is not linked across sentences.
+-- Within one sentence, a pronoun (also 他们/*they* for an organisation or publication) or a dropped argument re-uses its antecedent's variable, no own node; a possessive pronoun on an event nominal is omitted. An overt repeated name or noun (short name, bare head noun) gets its own node plus a `:same-entity` triple. A later sentence's pronoun links to the antecedent entity.
++- Within one sentence, a pronoun (also 他们/*they* for an organisation or publication) or a dropped argument re-uses its antecedent's variable, no own node; a possessive pronoun on an event nominal is omitted. An overt repeated name or noun (short name, bare head noun) gets its own node plus a `:same-entity` triple; but inside a slogan, gloss or parenthesis of that sentence it re-uses the variable. A later sentence's pronoun links to the antecedent entity.
+ 
+ ## 6. Alignment
+ 
+@@ -357,5 +345,5 @@
+ - Every event has `:aspect`; negated events have `:polarity -`.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Same-sentence pronouns are re-entrancies, repeated nouns own nodes + `:coref`; control subjects re-enter nominal complements; a time over both halves of but-91 attaches to both.
+-- No borrowed participants: every re-entrancy is licensed by the syntax of that clause.
+-
++
++

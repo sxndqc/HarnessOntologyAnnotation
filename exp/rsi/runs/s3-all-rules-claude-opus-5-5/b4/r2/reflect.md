@@ -1,0 +1,52 @@
+Summary of the changes, ordered by cost in the critique. To stay under the length limit, I cut some narrow rules from earlier batches and the redundant checklist lines.
+
+1. **Reported speech.** The modal rule is rewritten: the speaker is under the author, and each reporting or claiming verb hangs on the speaker. Content predicates get an author link only. `:quote` now goes on every event of the content, not just the top event.
+2. **Time phrases.**
+   - 时 / 的时候 after a clause or event noun gets no node; the event itself is `:temporal`.
+   - Year + 年 + event noun is one named event, with no date-entity.
+   - A date inside reported content gets no temporal parent; the content event hangs on the reporting verb.
+3. **Titles and ability nouns.**
+   - A quoted title is a publication name only after a bare classifier.
+   - When a common news/article noun is present, that noun is the head and an `identity-91` (state, author link) links it to the publication.
+   - Ability/right/chance noun + verb phrase becomes an `identity-91`; the event gets author `neutral-affirmative`.
+   - The "no aspect, no links" rule for apposition `identity-91` now covers only apposition on a named entity.
+4. **Compounds.** Any predicate stem (verb or adjective) before 人/者 is split, using `:ARG0-of` or `:ARG1-of` as fits. 全/各/该 + noun becomes `noun :mod 全`. The checklist now says to look up the roleset of every attributive adjective.
+5. **Clause-chaining adverbs.** 还, 甚至 and 也 that only mark a clause as additional or climactic within the same sentence get no node.
+6. **Concepts and means.**
+   - Write `-00` unless `propbank_lookup` returned that exact roleset.
+   - A V到 token is one concept.
+   - 靠/凭/通过 N gets no node; N is `:reason` of the main verb.
+7. **Discourse frames and purpose aspect.** Discourse frames take no aspect and no modal or temporal link. A purpose actually carried out in a past narrative takes the main event's aspect.
+8. **Noun-modifier roles.** An issue or matter of X, and a domain noun on a policy-type noun, are `:topic`.
+9. **Coordinated conjuncts.** Each later conjunct links to the previous one in a chain, not to the first.
+
+```json
+{"summary": "Reported speech modal structure (speaker under author, reporting verbs under speaker, content author-only, :quote on all content events); 时 phrases and year-event names; news noun + title head and ability identity-91; general predicate+人/者 split and prefix :mod; no nodes for clause-chaining 还/甚至/也; -00 rule, V到, 靠-type :reason; discourse frames without aspect/modal; :topic roles; chained conjuncts; reported dates. Removed narrow rules and redundant checklist lines to fit.", "edits": [
+{"op": "replace", "old": "- Reported speech or thought: `(author :full-affirmative s9p)` for the speaker; every predicate of the content (also an appended slogan and later clauses about that source's reports) gets both `(author :full-affirmative e)` and `(s9p :full-affirmative e)`; event nominals that are arguments inside the content get author only. The content's top node carries `:quote <saying verb>`.", "new": "- Reported speech or thought: `(author :full-affirmative src)` for the speaker; every reporting or claiming verb with that speaker as subject (each verb of a series of reports too) gets `(src :full-affirmative verb)`, not an author link; every predicate of the content gets `(author :full-affirmative e)` only."},
+{"op": "replace", "old": "The reported content's top event, and each of its conjuncts, always gets `:quote <reporting event>`", "new": "Every event of the reported content (top event, conjuncts, nested reason, manner and complement events) gets `:quote <reporting event>`"},
+{"op": "replace", "old": "`(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event> :aspect state)`", "new": "`(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event>)`"},
+{"op": "replace", "old": "`(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event> :aspect state)`", "new": "`(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event>)`"},
+{"op": "replace", "old": "Both frames get `(author :full-affirmative h)` and no temporal parent.", "new": "Discourse frames (these two, but-91, contrast-91) get no aspect and no modal or temporal link."},
+{"op": "replace", "old": "a purpose or intended action is `activity`;", "new": "a purpose or intended action is `activity` (one carried out in a past narrative takes the main event's aspect);"},
+{"op": "insert_after", "anchor": "Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`.", "text": " Not 时/的时候: after a clause or event noun it gets no node and the event itself is `:temporal`; year + 年 + event noun (+ 时) is one named `event` (2.2), no date-entity, no 时 node, no temporal link."},
+{"op": "replace", "old": "A 「」/“” article or headline title used with a classifier or next to an article/news noun is a name too:", "new": "A 「」/“” article or headline title after a bare classifier is a name too:"},
+{"op": "insert_after", "anchor": "nothing inside it is analysed.", "text": " With a common news/article noun, that noun is the head (`:quant`/`:unit`, `:part-of` the periodical) and is `:ARG1-of (i / identity-91 :ARG2 (p / publication :name …) :aspect state)`, author link."},
+{"op": "replace", "old": "An `identity-91` reifying an apposition inside a noun phrase gets no `:aspect` and no links at all.", "new": "An `identity-91` reifying an apposition on a named entity gets no `:aspect` and no links at all."},
+{"op": "insert_after", "anchor": "country `:place` and former `:mod` on the title.", "text": "\nAbility/right/chance noun + verb phrase: `noun :ARG1-of (i / identity-91 :ARG2 <event> :aspect state)`, author link, no temporal link; the event gets `(author :neutral-affirmative e)`."},
+{"op": "replace", "old": "separately, a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act, e.g. founding).", "new": "separately, any predicate stem (verb or adjective) + 人/者 is split: `(r / 者 :ARG0-of (v / stem-0N … :aspect state))` when the person does or has it (`performance` for a completed act), `:ARG1-of (v … :aspect process)` when it is done to them. 全/各/该 + noun → `noun :mod 全`."},
+{"op": "insert_after", "anchor": "Frequency adverbs (经常, 常常, 往往, 重复; *often, repeatedly*) are `:frequency`.", "text": " Exception: 还, 甚至 and 也 that only mark a clause as additional or climactic relative to another clause of the same sentence (later conjunct, second half of but-91, reported clause) get no node."},
+{"op": "replace", "old": "a Chinese predicate that is not\nin PropBank is `<word>-00`.", "new": "write `<word>-00` unless\n`propbank_lookup` returned that exact roleset. A verb + result complement token (V到) is one concept."},
+{"op": "insert_after", "anchor": "Discourse 就/便 outside a condition gets no node.", "text": "\n- 靠/凭/通过 N (relying on N) + main verb: no node for the 靠-type verb; N (or its event) is `:reason` of the main verb."},
+{"op": "insert_after", "anchor": "or an article of a publication → `:part-of` (not `:possessor`).", "text": " An issue or matter of X (X 的 问题) and a domain noun on a policy-type noun → `:topic`."},
+{"op": "insert_after", "anchor": "**Within a sentence, chain the events.**", "text": " Coordinated conjuncts form a chain: each later conjunct `:overlap`s (or follows) the previous conjunct, not the first."},
+{"op": "insert_after", "anchor": "a year or decade takes `:overlap`.", "text": " Exception: a date inside reported content gets no temporal parent; the content event takes the reporting verb as parent (`:before` for a past event claimed later)."},
+{"op": "replace", "old": "- Compounds split (prefix + noun, verb + 人/者); 「」 titles are unanalysed names.", "new": "- Every attributive adjective: check its roleset before writing `:mod`."},
+{"op": "delete", "old": "\n- Same-sentence pronouns are re-entrancies, repeated nouns own nodes + `:coref`; control subjects re-enter nominal complements; a time over both halves of but-91 attaches to both."},
+{"op": "delete", "old": " A Chinese zero subject or object that is clearly\nrecoverable may be added as such a node (aligned to no word) and linked by coreference."},
+{"op": "delete", "old": "- When a component, edition or section noun modifies a named work through 的 ([X] 版 的 《N》), the component noun is the head\n  and the work is its `:part-of`; modifiers of the component (colour, style) stay on it. A trailing relative clause on such an object attaches to the component noun.\n"},
+{"op": "delete", "old": " When X and Y are components (layout, edition, format) of the subject, the subject is `:part-of` on X, not its own argument and not an inverse `:part`, even when it also fills a role elsewhere (that role is then a re-entrancy)."},
+{"op": "delete", "old": "- **Fame in a defining sentence.** The fame state has no temporal parent; it is the parent of the habitual RC event `(fame :contained e)`, which keeps its own DCT link; the reason event `:overlap`s e.\n"},
+{"op": "delete", "old": "- Relative clause headed by an aspectual verb (\"N that has stopped V-ing\"): N is `:ARGn-of` the inner verb, which is `:ARG1-of` the aspectual verb; N is not its argument.\n"},
+{"op": "delete", "old": " With no head noun (其中 最 Adj + classifier): `(i / implicit-argument :unit <classifier> :ARG1-of (h / have-degree-91 :ARG1 (a / Adj) :ARG2 (m / 最) :ARG5 (q / 其中)))`."}
+]}
+```

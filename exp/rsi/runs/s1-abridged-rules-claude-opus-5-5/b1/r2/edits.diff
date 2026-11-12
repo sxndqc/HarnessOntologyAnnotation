@@ -1,0 +1,86 @@
+--- before
++++ after
+@@ -88,9 +88,9 @@
+ 
+ Only modal auxiliaries are dropped. Adverbs are nodes:
+ - aspectual and scope adverbs (*already, still, also, all*; 已经, 仍, 也, 都) are `:mod` on the event;
+-- past-time adverbs (*once, formerly*; 曾, 曾经) are `:temporal`;
++- past-time adverbs (*once, formerly*; 曾, 曾经) are `:temporal` (in the graph only; they get no temporal triple, see 5.1);
+ - a partitive like 其中 (*among them*) is `:mod` on the noun;
+-- a locative postposition after a time noun (X 时, X 中, X 以来) is a `:temporal` node with the time noun as `:op1`.
++- a locative postposition after a time or period noun (X 时, X 中, X 以来, X 上 as in *in the history of ...*) is a `:temporal` node for the postposition with the noun as `:op1`, attached to the word it scopes over (often the head noun).
+ 
+ **Concept names.** An English event is its PropBank roleset (`deny-01`, `look-up-05`). A Chinese event is the
+ Chinese word as written with its Chinese PropBank sense (`拥有-01`, `执行-01`); a Chinese predicate that is not
+@@ -137,7 +137,9 @@
+ `(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+ 
+-Use an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is `属于-01` / `拥有-01`, not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`.
++Use an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is `属于-01` / `拥有-01`, not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`. Its `:ARG2` is the property word itself. If the property is a verb with its own object (*rich in X, full of X*, 富X, 充满X), keep that verb as an event with its object (`(r / V-01 :ARG1 X :aspect state)`) and put it under `:ARG2`; do not drop the verb or put the object noun there. Use `:ARG5` only for an explicit comparison set (*among N, of all N*, 在…中); a scope like *in history* is a `:temporal` postposition node (2.1), not `:ARG5`.
++
++**Chinese role numbering.** For every Chinese predicate, look up its Chinese PropBank frames. Choose the sense whose role descriptions fit (the belonging/membership sense of a verb is often not -01), and use exactly the numbered roles that roleset defines. Many Chinese intransitive and change-of-state verbs have only `:ARG0` (the thing that ceases, changes or acts). Do not default the theme to `:ARG1` by English habit.
+ 
+ ### 2.4 Pronouns and implicit participants
+ 
+@@ -159,7 +161,7 @@
+ An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+ is one concept). A discontinuous word (帮……忙) is one concept aligned to its span.
+ 
+-A compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept.
++A compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept. When such a parallel-noun pair is one item of a longer list, nest it as its own `and` inside the outer `and`.
+ 
+ ## 3. Relations
+ 
+@@ -176,7 +178,7 @@
+ `:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+ 
+ Attachment rules:
+-- **Unexpressed participants.** Do not fill a roleset slot with a participant the text does not express. Re-enter a node only when the text itself expresses that participant in that role.
++- **Unexpressed participants.** Do not fill a roleset slot with a participant the text does not express. Re-enter a node only when the text itself expresses that participant in that role. A subject shared through a control, serial or purpose/means frame (以 X 而 Y, *known for doing X*, *try to X*) counts as expressed: re-enter it as the subject of the embedded verb too.
+ - **Aspectual verb in a relative clause.** When a head noun is modified by an aspectual verb plus another verb (*the X that stopped/began doing Y*), the noun is an argument of the inner verb only: `(x / X :ARG1-of (p / V-01 :ARG1-of (s / stop-01)))`. It is not an argument of the aspectual verb as well. Check the aspectual verb's roleset.
+ - **Shared modifiers.** A modifier shared by coordinated nouns (*various A and B*) goes on each conjunct by re-entrancy, not on the `and` node. Do not add `:subset` there.
+ - **Describing clauses.** A clause that goes on describing the predicate noun of a copular sentence (*X is a Y, known for Z*) attaches under that noun, e.g. as `:ARG1-of`. It is not a separate top-level conjunct.
+@@ -205,14 +207,15 @@
+ 
+ Further aspect rules:
+ - **Repeated activity of an institution or periodical** (publishing, broadcasting, reporting, what it regularly contains or covers) is `habitual`, even with 了 or other completion marking.
+-- **already + stop/cease** (已经停止…) describing the current situation is `state`.
++- **already + an aspectual stop verb governing another event** (已经停止 doing X) describing the current situation is `state`. A lexical termination verb with no governed event (a publication ceased, an organization dissolved) is `performance`, even with 已经.
++- **Abstract predicates:** `identity-91` gets `:aspect state`; `have-degree-91` gets no `:aspect` (the event under its `:ARG2` does).
+ - **A naming or evaluation passive** (*is called / is regarded as*, 被称为, 被誉为) is `performance`.
+ - **A negated event with a nominal event object** (没有经过X) is `process`.
+ 
+ ### 4.2 Polarity, mode, degree, quantity
+ 
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+-  then negative (5.2).
++  then negative (5.2). Exception: when the negation is fused into one verb word (未经 type), write no `:polarity -`; mark only `full-negative` at the document level.
+ - `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+   `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+ - `:degree` for intensifiers and downtoners (*very, too, most*; 很, 非常, 太, 最) as a concept:
+@@ -245,7 +248,12 @@
+   - negated events;
+   - events inside noun-phrase modifiers.
+   Do not give these their own `document-creation-time` link.
+-- Every event node must get exactly one temporal parent. The only exception is a pure copular identity state (`identity-91`), which is left out of the temporal structure; it still gets its modal parent.
++- Past-time adverbs (*once, formerly*, 曾, 曾经) are not reference times: give them no triple and link their event directly, `(document-creation-time :before e)`.
++- A completed event whose result describes the present situation (a status reached, a name or evaluation given: a naming/evaluation passive, 已经 + a completed change) is linked as `(document-creation-time :depends-on e)`.
++- An aspectual verb (*stop, begin, continue*) and the event it governs are `:overlap`, never `:before`/`:after`.
++- Every event node must get exactly one temporal parent. Two exceptions:
++  - `identity-91` is left out of the temporal structure but still gets its modal parent. When a sentence's root is `identity-91`, choose as anchor the event inside the predicate noun that is most clearly placed in time, usually a completed past event (`(document-creation-time :before e)`). Reputation or property states of that noun are `:contained` in the anchor, and the other events are `:overlap` under it.
++  - `have-degree-91` gets no temporal parent and no modal parent. The event under its `:ARG2` does get them.
+ 
+ ### 5.2 Modal (`:modal`)
+ 
+@@ -289,7 +297,9 @@
+ ## 7. Checklist
+ 
+ - Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+-- Every event has `:aspect`; negated events have `:polarity -`.
++- Every event has `:aspect` (`have-degree-91` excepted); negated events have `:polarity -` (fused negation verbs excepted).
++- Every Chinese predicate uses the sense and numbered roles of its own PropBank roleset.
++- Before writing `:coref`, drop every pair where both mentions are only `:place`/`:mod` modifiers.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+ 

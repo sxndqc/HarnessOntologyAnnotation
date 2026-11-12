@@ -1,0 +1,134 @@
+--- before
++++ after
+@@ -5,7 +5,7 @@
+ 
+ - Follow the guidelines and their examples. When they do not settle a case, use `search_guidelines`; look up every
+   predicate with `propbank_lookup` before choosing its sense and roles; check gold constructions with
+-  `search_annotations`. Many calls are expected.
++  `search_annotations`.
+ 
+ 
+ ## Guidelines
+@@ -73,7 +73,7 @@
+ Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A named human or character, fictional too, is `individual-person`. A bare category noun right before a name (no 的, no title) is the type concept, not an apposition. A middle dot inside a
+ transliterated foreign name is kept as its own `:opN "·"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91
+ :ARG3 <role>)` (the holder is always `:ARG1`, never `:ARG0`); separately, a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
+-e.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
++e.g. founding); a verb + 人 naming the patient (a V-ed person) is `(r / 人 :ARG1-of (v / verb-01 :aspect process))`. A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
+ modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. A periodical, tabloid or magazine name is `newspaper`, not `publication`.
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+@@ -122,7 +122,7 @@
+   → `:purpose`; *although* (虽然, 尽管) → `:concession`. With 但是/不过/却 later in the same sentence, 虽然/尽管 gives `but-91 :ARG1 <concessive clause(s)> :ARG2 <main clause>` instead.- Reified reason and purpose: when a reason marker is paired with a result marker (因为…于是/所以, 由于…而), or a clause has a
+   marked purpose clause (为了, 以, 以便), use `(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event>)` and
+   `(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event>)`, nesting have-purpose-91 inside have-reason-91
+-  when both occur. Discourse frames (these two, but-91, contrast-91) get no aspect and no modal or temporal link. Keep the `:reason`/`:purpose` roles for
++  when both occur. A fronted 为了 clause with no paired marker: gold uses `have-reason-91 :ARG1 <main event> :ARG2 <purpose event>` (confirm with `search_annotations`). Discourse frames (these two, but-91, contrast-91) get no aspect and no modal or temporal link. Keep the `:reason`/`:purpose` roles for
+   unpaired phrases inside one clause.
+ - A purpose stated as a noun (以 Y 为目的/目标) is `(i / identity-91 :ARG1 (m / 目的 :purpose-of <event>) :ARG2 Y)`; Y is a plain concept without aspect or links.
+ - A parenthetical or colon restatement (slogan, gloss) is its own `identity-91 :ARG1 <noun> :ARG2 <content>` clause joined to the previous clause by `and`, never `:medium`/`:mod`.
+@@ -151,17 +151,14 @@
+ 
+ ### 3.1 Attachment rules (frequent errors)
+ 
+-- Every adverb that carries meaning (*already, still, also, all/both*; 已经, 仍, 也, 都, 均) gets its own node,
++- Every adverb with real scope (*already, still, all/both*; 已经, 仍, 都, 均) gets its own node (甚至 and additive 还/也 that only link a clause to the previous clause or sentence get none),
+   attached as `:mod` to the predicate it scopes over, not to a noun. Time adverbs (曾经, 曾, *once, formerly*) are
+   `:temporal`, not `:mod`. Frequency adverbs (经常, 常常, 往往, 重复; *often, repeatedly*) are `:frequency`.
+ - A modifier that applies to each of several coordinated nouns is placed on each conjunct with the same variable
+   (re-entrancy), not once on the `and` node.
+ - Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
+   noun compound or a nominal event; in a compound "N1-verb N2", the role is filled by the compound's own noun.
+-  The same holds for dropped subjects and objects of finite clauses (in coordination, contrast or a chain of clauses): do not
+-  add a re-entrancy to an earlier mention; leave the argument out. This also holds for infinitive-like and
+-  trailing clauses (never fill their agent with an entity of the main clause) and for possessors: a word like 旗下 is a `:mod`
+-  concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and
++  But a dropped subject shared by coordinated clauses or a chain of actions of the same agent re-enters (as the role its roleset gives, usually `:ARG0`) in every conjunct; the main subject also re-enters as agent of a 为了 purpose clause and of the complement of an ability or control word. Dropped objects are left out, and a word like 旗下 is a `:mod` concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and
+   what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object. Do not add relations the text does not state (e.g. a
+   `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
+   `:mod` on the noun it modifies, unless a superlative follows (then `:ARG5`, see have-degree-91).
+@@ -175,6 +172,8 @@
+ - Role choice for noun modifiers: a country, city or place modifying a noun → `:place`; a channel or medium
+   (TV, radio, network, print) → `:medium`; an edition, section or component of a whole, or an article of a publication → `:part-of` (not `:possessor`).
+ - Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`.
++- Never `:poss` (not a role): content/section of a publication → `:part-of`; staff of an organisation, a country's policy → `:possessor`; the domain of a policy/problem noun → `:topic`.
++- 靠/通过 X (实现) Y: X's event is `:reason` of Y, no node for 靠/通过. 有能力 V: `(y / 有-06 :ARG0 S :ARG1 (n / 能力 :ARG1-of (i / identity-91 :ARG2 (v / V-01 :ARG0 S) :aspect state)))`, modal `(author :full-affirmative i)` `(author :neutral-affirmative v)`. Sentence-initial 如 (for example) → `(h / have-example-91 :ARG1 (implicit-predicate) :ARG2 <main event>)`. 全 + noun → noun `:mod 全`. V+到/在/上: if PropBank lists the compound, use it and read its role glosses. A roleset with no usable roles → `-00`.
+ - A "verb + 量" quantity noun whose first part is a clear verb is split: `(q / 量 :quant-of (v / verb-01 :ARG1 <entity>))`, the
+   owner of the quantity being the verb's `:ARG1` (not `:possessor`). An amount it reaches or falls to is
+   `:ARG1-of (h / have-quant-91 :ARG2 <number> :unit <classifier>)` on the quantity noun, not a separate `thing` argument. Neither the inner verb nor `have-quant-91` gets `:aspect` or a modal link, and `have-quant-91` gets no temporal link. A measure noun (circulation, sales, price) at another time or value is not coreferent; corefer only its owner.
+@@ -186,7 +185,7 @@
+   with its own `:aspect` (`(r / verb-01 :ARG1 X :aspect state)`), temporal parent and modal parent; the head noun is `:ARG1`.
+   Give `have-degree-91` itself no modal link.
+ - A postposition phrase over a time-span noun (X 历史上, *in X's history*) is `:temporal (s / 上 :op1 (h / 历史))` on its head,
+-  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Not 时/的时候: after a clause or event noun it gets no node and the event itself is `:temporal`; year + 年 + event noun (+ 时) is one named `event` (2.2), no date-entity, no 时 node, no temporal link. Appearance verbs (出现-type): the appearing entity is `:ARG0`, the 在 N 中 location `:ARG1` (gold convention).
++  with the country or place as `:place` of the history noun. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Not 时/的时候: after a clause or event noun it gets no node and the event itself is `:temporal`; year + 年 + event noun (+ 时) is one named `event` (2.2), no date-entity, no 时 node, no temporal link. Appearance verbs (出现-type): the appearing entity is `:ARG0`, the 在 N 中 location `:ARG1` (gold convention).
+ - An attributive modifier (X 的 Y) that has a PropBank roleset (check it) is an event: a property predicate `(y / Y :ARG0-of (x / X-01 :aspect state))` (the role its roleset gives the described entity), a producing verb `:ARG1-of … :aspect performance`; it `:overlap`s the clause event, author modal parent. An event nominal modifying a noun is `:mod` with `process` aspect. A word with no roleset (relational or distinguishing word, chengyu) is a `:mod` concept,
+   not an event: it gets no aspect and no temporal or modal links.
+ 
+@@ -197,8 +196,7 @@
+ Decide in this order before using the table:
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+    printing, issuing, reporting, broadcasting)? → `habitual`, also for a process nominal naming such a practice (but an event-nominal complement of an aspectual verb such as 停止 is `process`) (e.g. subject of
+-   "is/became its feature"); this step precedes step 3. A verb of what a publication holds or carries (contains articles) is `process`. This holds whatever the tense, and also under an
+-   aspectual verb (continue, stop).
++   "is/became its feature"); this step precedes step 3. A verb of what a publication holds or carries (contains articles) is `process`. Only a generic practice is habitual: one publishing/reporting act on a specific counted item (一篇), with 了, or tied to an occasion is `performance`. A purpose event in a past narrative takes the main event's aspect.
+ 2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
+    An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.
+    A lexical verb of ending with no event complement (close down, cease publication; 停刊, 倒闭), even with *already*, is `performance`.
+@@ -260,10 +258,10 @@
+   sentence's event. Link it to an earlier event only when the sentence explicitly continues from it (也/还 + 成/成为/变成, *also became*, *as a
+   result*, 于是), and then with `:overlap` unless the order is stated.
+ - **Within a sentence, chain the events.** Pick one anchor event (the main eventive predicate; in a coordination, the first conjunct's) and link
+-  the other events of the sentence to it: `:overlap` for simultaneous states, `:contained` for a state or event
++  the other events of the sentence to it (but in a coordinated chain of past actions link each conjunct to the previous conjunct with the order relation): `:overlap` for simultaneous states, `:contained` for a state or event
+   inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
+   earlier sentence's event. For the main event of a sentence describing the present situation, the gold data
+-  uses `(document-creation-time :depends-on e)`, not `:overlap`: a sentence about the current state (with currently/already, 目前/已经, or a present naming or labelling verb).
++  uses `(document-creation-time :depends-on e)`, not `:overlap`: a sentence about the current state (with currently/already, 目前/已经, or a present naming or labelling verb). A general evaluation of a subject narrated in the past, with no present marker, is `:before`.
+ - **Aspectual verbs.** When an aspectual verb (stop, continue, begin; 停止, 继续, 开始) takes an event complement, the aspectual verb
+   is the parent of the complement: `(aspectual :overlap inner)`. In a main clause the aspectual verb hangs on the sentence anchor like
+   any other clause predicate; in a contrast or coordination it `:overlap`s the first clause's anchor event. Only when the aspectual verb
+@@ -279,8 +277,7 @@
+ - An event in a complement clause takes its matrix event as parent. Clauses restating or qualifying a report's content take the content's main event as parent, not the reporting verb. A purpose event `:overlap`s its main event (never
+   `:after`). A reason or cause event is before its result: `(result :before reason)`; a future marker inside a reason clause about
+   past events is future relative to that past, not after the main event.
+-- A relative-clause or participle event that describes an earlier completed event (left over, inherited, built) is before the
+-  event whose argument it modifies: `(main :before rc-event)`.
++- A relative-clause or participle event is `(main :before rc-event)` only when anteriority is explicit (left over, inherited); otherwise an attributive participle `:overlap`s.
+ - An event nominal inside a decomposed quantity noun (see 3.1) `:overlap`s the verb of its clause.
+ 
+ ### 5.2 Modal (`:modal`)
+@@ -293,7 +290,7 @@
+   `neutral-affirmative` (*may, might, perhaps, can*, 可能, 也许, 或许, desire/hope), `neutral-negative`,
+   `partial-negative`, `full-negative` (negated: *not, never, deny*, 没, 不), `unspecified`.
+ - Every event the author asserts: `(author :full-affirmative s1e)`.
+-- Reported speech or thought: `(author :full-affirmative src)` for the speaker; every reporting or claiming verb with that speaker as subject (each verb of a series of reports too) gets `(src :full-affirmative verb)`, not an author link; every predicate of the content gets `(author :full-affirmative e)` only. A passive reporting verb with no speaker (被指): the conceiver is the content's subject node, with `(author :full-affirmative <subject>)`; never the reporting event.
++- Reported speech or thought: `(author :full-affirmative src)` for the speaker; every verb with that speaker as subject in the same coordination (reports and other acts) gets `(src :full-affirmative verb)`, not an author link; every predicate of the content gets `(author :full-affirmative e)` only. A passive reporting verb with no speaker (被指): the conceiver is the content's subject node, with `(author :full-affirmative <subject>)`; never the reporting event.
+ - An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+   决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+   `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+@@ -309,7 +306,7 @@
+   name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+   link entity nodes, never `name` nodes.
+ - `(earlier :same-event later)`: two mentions of the same event instance, with the same participants. Two
+-  different events of similar meaning (e.g. two different kinds of stopping) are not linked.
++  different events of similar meaning are not linked.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Coreference only the discourse entities the text tracks (participants, the topic entity); never generic or kind nouns, example-list members, or a name given only as an example, even if the word recurs. A name used only as a modifier
+   (a country name modifying a noun, a place in a `:place` role) is not linked across sentences.
+@@ -320,12 +317,10 @@
+ Every node of a sentence graph is aligned to the words that express it: `s1x: 4-4` (1-based word positions,
+ first and last, both included). A node with no word in the sentence (`person` for a zero pronoun, `and`
+ without a conjunction, `have-mod-91` without a copula, a `name` node) is `0-0`. A named entity's type
+-node is aligned to the name's words. When a word occurs more than once in a sentence (e.g. a common noun that also appears
+-inside a name), align each node to its own occurrence.
++node is aligned to the name's words. When a word occurs more than once in a sentence, align each node to its own occurrence.
+ 
+ ## 7. Checklist
+ 
+ - Balanced parentheses; unique `s<N>` variables; every event has `:aspect`, a temporal and a modal parent.
+-- Every attributive adjective: check its roleset before writing `:mod`.
+-
+-
++
++

@@ -1,0 +1,140 @@
+--- before
++++ after
+@@ -86,6 +86,12 @@
+ strength, they are not nodes), light verbs (*make a decision* → `decide-01`; 进行访问 → `访问-01`),
+ the copula (*be*, 是) — it becomes one of the abstract predicates.
+ 
++Only modal auxiliaries are dropped. Adverbs are nodes:
++- aspectual and scope adverbs (*already, still, also, all*; 已经, 仍, 也, 都) are `:mod` on the event;
++- past-time adverbs (*once, formerly*; 曾, 曾经) are `:temporal`;
++- a partitive like 其中 (*among them*) is `:mod` on the noun;
++- a locative postposition after a time noun (X 时, X 中, X 以来) is a `:temporal` node with the time noun as `:op1`.
++
+ **Concept names.** An English event is its PropBank roleset (`deny-01`, `look-up-05`). A Chinese event is the
+ Chinese word as written with its Chinese PropBank sense (`拥有-01`, `执行-01`); a Chinese predicate that is not
+ in PropBank is `<word>-00`. Entities and modifiers are the word itself, lemmatized in English (`doctor`, `health`) and as
+@@ -94,8 +100,11 @@
+ 
+ ### 2.2 Named entities
+ 
+-`(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+-(the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
++`(c / country :name (n / name :op1 "Russia"))`: an entity-type concept and `:name` with one `:opN` per word of the name.
++
++- Do not write `:wiki`.
++- For a titled work in title brackets 《 》, the brackets are their own first and last `:op`s.
++- A country or place name modifying a common noun (X 的历史, an X company) is `:place`, not `:mod`.
+ Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+@@ -105,8 +114,7 @@
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+ `(m / monetary-quantity :quant 500 :unit (d / dollar))`. Ordinals: `(o / ordinal-entity :value 2)`.
+-Numbers are written as digits. In Chinese, a real measure word is a unit (三杯水 → `水 :quant 3 :unit 杯`);
+-an ordinary classifier (个, 本, 只, 位) is dropped (三本书 → `书 :quant 3`).
++Numbers are written as digits. In Chinese, a numeral + classifier or measure word gives `:quant N` plus `:unit <classifier>` on the noun, for real measure words and ordinary classifiers (个, 本, 份, 位) alike, and also when the number is 1 (一个X → `X :quant 1 :unit 个`).
+ 
+ ### 2.3 Abstract predicates (non-verbal clauses)
+ 
+@@ -122,32 +130,36 @@
+ | X holds title T in organization O | `have-org-role-92` | `:ARG1` X, `:ARG2` O, `:ARG3` T |
+ | X is the R (kin, friend) of Z | `have-rel-role-92` | `:ARG1` X, `:ARG2` Z, `:ARG3` R |
+ | X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |
++| X is the most/more Adj (superlative, comparative) | `have-degree-91` | `:ARG1` X, `:ARG2` property, `:ARG3` degree word (`most`, `more`), `:ARG5` set compared to |
+ | cause, reason | `have-cause-91` / `:cause` | |
+ 
+ Role nouns are reified the same way: *the president of Russia* →
+ `(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+ 
++Use an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is `属于-01` / `拥有-01`, not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`.
++
+ ### 2.4 Pronouns and implicit participants
+ 
+ A pronoun is `person` or `thing` with person and number: 他 / *he* → `(p / person :refer-person 3rd
+ :refer-number singular)`; 我们 / *we* → `:refer-person 1st :refer-number plural`; 它 / *it* → `thing` with
+-3rd singular. A plural noun gets `:refer-number plural`. A Chinese zero subject or object that is clearly
+-recoverable may be added as such a node (aligned to no word) and linked by coreference.
++3rd singular. A plural noun gets `:refer-number plural`. Do not add nodes for Chinese zero subjects or objects or for other unexpressed participants: leave the role out.
+ 
+ ### 2.5 Discourse relations (combining clauses)
+ 
+ - coordination: `(a / and :op1 ... :op2 ...)`, `or`;
+-- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而) `but-91`;
++- contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `but-91`;
+ - concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+-- *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:cause`; *in order to* (为了)
++- *if* (如果, 只要) → `:condition` on the main event; *because* (因为) → `:cause`; 由于 and the frame 以…而 → `:reason`; *in order to* (为了)
+   → `:purpose`; *although* (虽然, 尽管) → `:concession`.
+ 
+ ### 2.6 Multi-word expressions
+ 
+ An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+ is one concept). A discontinuous word (帮……忙) is one concept aligned to its span.
++
++A compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept.
+ 
+ ## 3. Relations
+ 
+@@ -162,6 +174,13 @@
+ `:reason`, `:purpose`, `:condition`, `:concession`, `:duration`, `:frequency`, `:extent`, `:degree`,
+ `:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
+ `:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
++
++Attachment rules:
++- **Unexpressed participants.** Do not fill a roleset slot with a participant the text does not express. Re-enter a node only when the text itself expresses that participant in that role.
++- **Aspectual verb in a relative clause.** When a head noun is modified by an aspectual verb plus another verb (*the X that stopped/began doing Y*), the noun is an argument of the inner verb only: `(x / X :ARG1-of (p / V-01 :ARG1-of (s / stop-01)))`. It is not an argument of the aspectual verb as well. Check the aspectual verb's roleset.
++- **Shared modifiers.** A modifier shared by coordinated nouns (*various A and B*) goes on each conjunct by re-entrancy, not on the `and` node. Do not add `:subset` there.
++- **Describing clauses.** A clause that goes on describing the predicate noun of a copular sentence (*X is a Y, known for Z*) attaches under that noun, e.g. as `:ARG1-of`. It is not a separate top-level conjunct.
++- **Parts and media.** A physical edition or part of a publication is `:part-of` it, not `:possessor`. A medium noun (TV, 网络) modifying a program or product is `:medium`.
+ 
+ Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+ UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
+@@ -184,6 +203,12 @@
+ Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+ only when they are clear.
+ 
++Further aspect rules:
++- **Repeated activity of an institution or periodical** (publishing, broadcasting, reporting, what it regularly contains or covers) is `habitual`, even with 了 or other completion marking.
++- **already + stop/cease** (已经停止…) describing the current situation is `state`.
++- **A naming or evaluation passive** (*is called / is regarded as*, 被称为, 被誉为) is `performance`.
++- **A negated event with a nominal event object** (没有经过X) is `process`.
++
+ ### 4.2 Polarity, mode, degree, quantity
+ 
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+@@ -209,15 +234,18 @@
+   `:contained` (child inside parent), `:contains`, `:depends-on` (between time nodes).
+ - Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
+ - Time expressions first: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
+-  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague one
+-  (*nowadays*, 现在) on `past-reference` / `present-reference` / `future-reference`.
+-- Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
+-  (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
++  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague past or future one on `past-reference` / `future-reference`. A vague present adverb (*currently, nowadays*, 现在, 目前) gets no temporal triple of its own.
++- Then pick **one anchor per sentence**: the matrix (main) event. Only the anchor is linked to the outside: (1) to a time expression of its clause, if there is one (`(s1t :contained s1e)`); else (2) to an event of an earlier sentence that is a clear reference time (`(s2c :before s3a)`); else (3) to
+   `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+   present state, `:after` for a future event). Chinese has no tense: decide past, present or future from
+   context, 了, 过, 将, 会.
+-- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.
+-- Annotate event–event relations only when they are clear.
++- Every other event of the sentence takes the anchor, or the event or entity-modifying event it depends on, as its parent. Use `:overlap` unless the order is explicit (`:before`/`:after`; a purpose is `:after` its main event). This covers:
++  - subordinate, complement, coordinated and cause/reason clauses;
++  - relative-clause verbs and event nominals;
++  - negated events;
++  - events inside noun-phrase modifiers.
++  Do not give these their own `document-creation-time` link.
++- Every event node must get exactly one temporal parent. The only exception is a pure copular identity state (`identity-91`), which is left out of the temporal structure; it still gets its modal parent.
+ 
+ ### 5.2 Modal (`:modal`)
+ 
+@@ -248,6 +276,7 @@
+   link entity nodes, never `name` nodes.
+ - `(earlier :same-event later)`: two mentions of the same event.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
++- Link every mention of the main discourse entities. Do not build chains for incidental place names or other entities that occur only as modifiers (`:place`, `:mod`) in different sentences.
+ - Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+ 
+ ## 6. Alignment

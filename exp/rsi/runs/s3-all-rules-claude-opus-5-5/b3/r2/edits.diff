@@ -1,0 +1,140 @@
+--- before
++++ after
+@@ -8,25 +8,17 @@
+ - Follow the guidelines and their examples. When they do not settle a case, use `search_guidelines`; look up every
+   predicate with `propbank_lookup` before choosing its sense and roles; check gold constructions with
+   `search_annotations`. Many calls are expected.
+-- Before the next sentence, check the graph: every meaningful word has its concept, every event its aspect, every
+-  role the right direction; at the end check the document-level relations cover every event and entity.
++
+ 
+ ## Guidelines
+ 
+ # UMR guidelines, abridged
+ 
+-Abridged UMR 0.9 guidelines for Chinese and English at Stage 1 (numbered PropBank roles), with the names of the
+-UMR release data (`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`).
++
+ 
+ ## 1. What a UMR is
+ 
+-A UMR has two levels.
+-
+-- **Sentence level**: one rooted, directed graph per sentence in PENMAN notation, adapted from AMR:
+-  concepts (events, entities, abstract concepts), the relations between them (participant roles and
+-  non-participant roles) and attributes (aspect, polarity, mode, quantity, person and number, degree).
+-- **Document level**: three kinds of relations between the nodes of the sentence graphs, across sentences:
+-  **temporal** dependencies, **modal** dependencies, and **coreference**.
++A UMR has one graph per sentence (PENMAN, adapted from AMR) and document-level temporal, modal and coreference relations.
+ 
+ ```
+ He denied any wrongdoing.
+@@ -84,15 +76,11 @@
+ 
+ `(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A named human is `individual-person`. A middle dot inside a
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A named human or character, fictional too, is `individual-person`. A bare category noun right before a name (no 的, no title) is the type concept, not an apposition. A middle dot inside a
+ transliterated foreign name is kept as its own `:opN "·"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91
+ :ARG3 <role>)` (the holder is always `:ARG1`, never `:ARG0`); separately, a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
+ e.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
+-modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. Decades (X年代) use `:era`. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
+-`country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+-`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+-`mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+-`disease`, `product`, `spaceship`, ... (as in AMR).
++modifiers>)` on the named entity; modifiers written before the apposition noun (的-phrases, 旗下, property words) go on that noun, not on the entity. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types as in AMR (`country`, `city`, `organization`, `company`, `planet`, `spaceship`, ...).
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. A decade (X年代) is `:era`, never `:decade`. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+@@ -128,7 +116,7 @@
+ 
+ A pronoun is `person` or `thing` with person and number: 他 / *he* → `(p / person :refer-person 3rd
+ :refer-number singular)`; 我们 / *we* → `:refer-person 1st :refer-number plural`; 它 / *it* → `thing` with
+-3rd singular. A plural noun gets `:refer-number plural`. A Chinese zero subject or object that is clearly
++3rd singular. A plural noun gets `:refer-number plural`. An omitted head noun is `implicit-argument`, not `thing`. A Chinese zero subject or object that is clearly
+ recoverable may be added as such a node (aligned to no word) and linked by coreference.
+ 
+ ### 2.5 Discourse relations (combining clauses)
+@@ -140,14 +128,14 @@
+ - concession `:concession`, condition `:condition`, reason `:reason` (for 由于/因为 phrases giving the reason for a state, an action or a judgement), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+ - *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; *in order to* (为了)
+-  → `:purpose`; *although* (虽然, 尽管) → `:concession`.- Reified reason and purpose: when a reason marker is paired with a result marker (因为…于是/所以, 由于…而), or a clause has a
++  → `:purpose`; *although* (虽然, 尽管) → `:concession`. With 但是/不过/却 later in the same sentence, 虽然/尽管 gives `but-91 :ARG1 <concessive clause(s)> :ARG2 <main clause>` instead.- Reified reason and purpose: when a reason marker is paired with a result marker (因为…于是/所以, 由于…而), or a clause has a
+   marked purpose clause (为了, 以, 以便), use `(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event> :aspect state)` and
+   `(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event> :aspect state)`, nesting have-purpose-91 inside have-reason-91
+   when both occur. Both frames get `(author :full-affirmative h)` and no temporal parent. Keep the `:reason`/`:purpose` roles for
+   unpaired phrases inside one clause.
+ - A purpose stated as a noun (以 Y 为目的/目标) is `(i / identity-91 :ARG1 (m / 目的 :purpose-of <event>) :ARG2 Y)`; Y is a plain concept without aspect or links.
+ - A parenthetical or colon restatement (slogan, gloss) is its own `identity-91 :ARG1 <noun> :ARG2 <content>` clause joined to the previous clause by `and`, never `:medium`/`:mod`.
+-- 后来/*later, then* joining two predicates → `(c / consecutive :op1 … :op2 …)`, no node for 后来. Discourse 就/便 outside a condition gets no node.
++- 后来/*later, then* joining two predicates → `(c / consecutive :op1 … :op2 …)`, no node for 后来. nor for 还/也 right after it; a dropped subject of the later clause re-enters the first clause's subject. Discourse 就/便 outside a condition gets no node.
+ 
+ ### 2.6 Multi-word expressions
+ 
+@@ -168,14 +156,13 @@
+ `:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
+ `:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+ 
+-Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+-UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
++Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The reported content's top event, and each of its conjuncts, always gets `:quote <reporting event>` (also passive 被指/被称); a quoted slogan's content gets `:quote` on its framing node.
+ 
+ ### 3.1 Attachment rules (frequent errors)
+ 
+ - Every adverb that carries meaning (*already, still, also, all/both*; 已经, 仍, 也, 都, 均) gets its own node,
+   attached as `:mod` to the predicate it scopes over, not to a noun. Time adverbs (曾经, 曾, *once, formerly*) are
+-  `:temporal`, not `:mod`.
++  `:temporal`, not `:mod`. Frequency adverbs (经常, 常常, 往往, 重复; *often, repeatedly*) are `:frequency`.
+ - A modifier that applies to each of several coordinated nouns is placed on each conjunct with the same variable
+   (re-entrancy), not once on the `and` node.
+ - Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
+@@ -215,7 +202,7 @@
+   with its own `:aspect` (`(r / verb-01 :ARG1 X :aspect state)`), temporal parent and modal parent; the head noun is `:ARG1`.
+   Do not use `:ARG5` and give `have-degree-91` itself no modal link.
+ - A postposition phrase over a time-span noun (X 历史上, *in X's history*) is `:temporal (s / 上 :op1 (h / 历史))` on its head,
+-  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too.
++  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Check the roleset for a location argument (出现-type) before using `:place`.
+ - A property word or chengyu used attributively ("absurd content", X 的 Y with X a property) is a `:mod` concept,
+   not an event: it gets no aspect and no temporal or modal links.
+ 
+@@ -280,11 +267,10 @@
+ - Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
+ - **Which nodes get a temporal parent.** Only real eventive predicates and specific time expressions. Do NOT
+   give a temporal parent to:
+-  - copular or identity predicates (`identity-91`, `have-role-91` of a defining "A is a B" sentence);
++  - copular or identity predicates (`identity-91`, `have-mod-91`, `have-role-91` of a defining "A is a B" sentence), also inside reported content; their eventive argument takes the matrix verb as parent;
+   - fame or property states used as attributes inside a noun phrase (*famous X*; see the fame rule below);
+   - property modifiers;
+   - vague deictic time words (*now, currently, nowadays*, 现在, 目前, 当前).
+-- Precision counts as much as recall: when a link is not clear, leave it out.
+ - Time expressions: an absolute date in the past gets `(document-creation-time :before s1t)` (a future one `:after`);
+   only a relative deictic one (*today, yesterday*, 今天) gets `(document-creation-time :depends-on s1t)`.
+ - An event in the clause of a date or time expression gets `(date :overlap event)`; use `:contained` only when the time
+@@ -292,7 +278,7 @@
+ - Past narrative: the anchor event of each new sentence links to `document-creation-time :before`, not to the previous
+   sentence's event. Link it to an earlier event only when the sentence explicitly continues from it (也/还 + 成/成为/变成, *also became*, *as a
+   result*, 于是), and then with `:overlap` unless the order is stated.
+-- **Within a sentence, chain the events.** Pick one anchor event (usually the main eventive predicate) and link
++- **Within a sentence, chain the events.** Pick one anchor event (the main eventive predicate; in a coordination, the first conjunct's) and link
+   the other events of the sentence to it: `:overlap` for simultaneous states, `:contained` for a state or event
+   inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
+   earlier sentence's event. For the main event of a sentence describing the present situation, the gold data
+@@ -355,7 +341,7 @@
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Coreference only the discourse entities the text tracks (participants, the topic entity). A name used only as a modifier
+   (a country name modifying a noun, a place in a `:place` role) is not linked across sentences.
+-- Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
++- Within one sentence, a pronoun (also 他们/*they* for an organisation or publication) or a dropped argument re-uses its antecedent's variable, no own node; a possessive pronoun on an event nominal is omitted. An overt repeated name or noun (short name, bare head noun) gets its own node plus a `:same-entity` triple. A later sentence's pronoun links to the antecedent entity.
+ 
+ ## 6. Alignment
+ 
+@@ -370,6 +356,6 @@
+ - Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+ - Every event has `:aspect`; negated events have `:polarity -`.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+-- Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
++- Same-sentence pronouns are re-entrancies, repeated nouns own nodes + `:coref`; control subjects re-enter nominal complements; a time over both halves of but-91 attaches to both.
+ - No borrowed participants: every re-entrancy is licensed by the syntax of that clause.
+ 

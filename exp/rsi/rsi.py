@@ -155,6 +155,19 @@ def copies(new_text, protected, n=LEAK):
     return ""
 
 
+def parse_proposal(text):
+    """The JSON object after the last ```json of the answer, read by its own structure (its strings may
+    contain ``` from the instruction's code blocks, so the fence cannot mark its end)."""
+    i = text.rfind("```json")
+    j = text.find("{", i + 7 if i >= 0 else 0)
+    if j < 0:
+        return {"error": "no JSON object in the answer"}
+    try:
+        return json.JSONDecoder(strict=False).raw_decode(text[j:])[0]
+    except ValueError as e:
+        return {"error": "the JSON block does not parse: %s" % e}
+
+
 def strip_alignment(umr_text):
     return re.sub(r"# alignment:\n(?:[^\n]*\S[^\n]*\n)*", "", umr_text)
 
@@ -276,11 +289,7 @@ class Runner:
         r = llm.answer(self.a.model, REFLECT_SYSTEM, text, [], self.a.effort, CACHE)
         R.write_transcript(out_dir, "reflect", self.a.model, self.a.effort, REFLECT_SYSTEM, text, [], r)
         open(os.path.join(out_dir, "reflect.md"), "w", encoding="utf-8").write(r["text"])
-        m = re.findall(r"```json\s*(.*?)```", r["text"], re.S)
-        try:
-            prop = json.loads(m[-1]) if m else {}
-        except ValueError as e:
-            prop = {"error": "the JSON block does not parse: %s" % e}
+        prop = parse_proposal(r["text"])
         json.dump(prop, open(os.path.join(out_dir, "edits.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         return prop
 

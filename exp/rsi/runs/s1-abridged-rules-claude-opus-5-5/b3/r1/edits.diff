@@ -1,0 +1,154 @@
+--- before
++++ after
+@@ -4,14 +4,7 @@
+ graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+ is under **Input** at the end, one sentence per line.
+ 
+-**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+-with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+-and document-level relation counts. Take the time this needs:
+-
+-- Read the guidelines below first and look up every decision you are unsure of; annotate a construction an example shows the way the example does.
+-- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+-  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+-  the end check that the document-level relations cover every event and entity the guidelines ask for.
++**Make the annotation as correct as you can**: it is compared node by node and relation by relation with an expert gold annotation. Read the guidelines first, follow their examples, and check each graph (concepts, aspect, role direction) and the document-level relations before going on.
+ 
+ ## Guidelines
+ 
+@@ -29,34 +22,9 @@
+ - **Document level**: three kinds of relations between the nodes of the sentence graphs, across sentences:
+   **temporal** dependencies, **modal** dependencies, and **coreference**.
+ 
+-```
+-He denied any wrongdoing.
+-
+-(s3d / deny-01
+-    :ARG0 (s3p / person
+-        :refer-person 3rd
+-        :refer-number singular)
+-    :ARG1 (s3d2 / do-02
+-        :ARG0 s3p
+-        :ARG1 (s3t / thing
+-            :mod (s3a / any)
+-            :ARG1-of (s3w / wrong-02))
+-        :aspect process)
+-    :aspect performance)
+-
+-(s3s0 / sentence
+-    :temporal ((document-creation-time :before s3d)
+-               (s3d :before s3d2))
+-    :modal ((root :modal author)
+-            (author :full-affirmative s3p)
+-            (s3p :full-affirmative s3d)
+-            (s3d :unspecified s3d2))
+-    :coref ((s2p :same-entity s3p)))
+-```
+-
+-**Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`, `s3d2`), all
++**Variables.** Every node of sentence N has a variable starting with `s` + N (`s3d`, `s3p`), all
+ different within the document. A node that fills two roles is written once and then referred to by its
+-variable (re-entrancy: `:ARG0 s3p` above). Write the full node (name, appositive, `:part-of`) at the entity's first mention in word order, even inside a subordinate clause below the root; every later mention, also inside a relative clause, is a re-entrancy.
++variable (re-entrancy: `:ARG0 s3p` above). Write the full node (name, appositive, `:part-of`) at the entity's first mention in word order, even inside a subordinate clause below the root; every later pronoun or unexpressed mention, also inside a relative clause, is a re-entrancy (a repeat with its own noun: see 5.3).
+ 
+ ## 2. Concepts
+ 
+@@ -78,7 +46,8 @@
+ Only modal auxiliaries are dropped. Adverbs are nodes:
+ - aspectual and scope adverbs (*already, still, also, all*; 已经, 仍, 也, 都) are `:mod` on the event;
+ - past-time adverbs (*once, formerly*; 曾, 曾经) are `:temporal` (in the graph only; they get no temporal triple, see 5.1);
+-- a partitive like 其中 (*among them*) is `:mod` on the noun;
++- a partitive like 其中 (*among them*) is `:mod` on the noun, but in a superlative it is the `:ARG5` comparison set;
++- frequency adverbs (重复, 反复, 经常) are `:frequency`;
+ - a locative postposition after a time or period noun (X 时, X 中, X 以来, X 上 as in *in the history of ...*) is a `:temporal` node for the postposition with the noun as `:op1`, attached to the word it scopes over (often the head noun).
+ 
+ **Concept names.** An English event is its PropBank roleset (`deny-01`, `look-up-05`). A Chinese event is the
+@@ -101,11 +70,7 @@
+   - `book`, `program`, etc. for other kinds of work;
+   - `publication` only when the kind is unknown.
+ - A country or place name modifying a common noun (X 的历史, an X company) is `:place`, not `:mod`.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. Types: `person`,
+-`country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+-`company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+-`mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+-`disease`, `product`, `spaceship`, ... (as in AMR).
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. Types as in AMR (`country`, `city`, `organization`, `company`, ...). A celestial body is `planet`/`star` + `:name`. Any named being, also a fictional character or alien, is `individual-person`; a descriptor word written as part of the name is an `:op`.
+ 
+ Dates: `(d / date-entity :year 1998 :month 4 :day 3)`, also `:weekday`, `:season`, `:dayperiod`, `:era`,
+ `:decade`, `:century`. A decade expression (X年代) is written with `:era` and the year number only (`:era 1980`), not `:decade` and not the written string. Durations and amounts: `(t / temporal-quantity :quant 3 :unit (y / year))`,
+@@ -141,10 +106,10 @@
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+ A compound agent noun (V + 人/者, e.g. a founder or initiator) is decomposed: `(p / 人 :ARG0-of (v / V-01 :aspect performance))`, placed where the role noun goes (e.g. under `:ARG3` of the role predicate).
+ 
+-Use an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is that verb with its own fitting sense (see Chinese role numbering below), not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`. Its `:ARG2` is the property word itself. If the property is a verb with its own object (*rich in X, full of X*, 富X, 充满X), keep that verb as an event with its object (`(r / V-01 :ARG1 X :aspect state)`) and put it under `:ARG2`; do not drop the verb or put the object noun there. Use `:ARG5` only for an explicit comparison set (*among N, of all N*, 在…中); a scope like *in history* is a `:temporal` postposition node (2.1), not `:ARG5`.
++Use an abstract predicate only when there is no lexical predicate. A Chinese verb with its own PropBank frame keeps that frame and its roles. For example, a possession or belonging verb such as 属于 or 拥有 is that verb with its own fitting sense (see Chinese role numbering below), not `belong-91` / `have-91`. Do not use `:degree` on a property verb for a superlative; use `have-degree-91`. Its `:ARG2` is the property word itself. If the property is a verb with its own object (*rich in X, full of X*, 富X, 充满X), keep that verb as an event with its object (`(r / V-01 :ARG1 X :aspect state)`) and put it under `:ARG2`; do not drop the verb or put the object noun there. A superlative with no head noun (最大 + classifier) is `(i / implicit-argument :unit <classifier> :ARG1-of (h / have-degree-91 ...))`. Use `:ARG5` only for an explicit comparison set (*among N, of all N*, 在…中); a scope like *in history* is a `:temporal` postposition node (2.1), not `:ARG5`.
+ 
+ **Chinese role numbering (required lookup).** For every Chinese predicate:
+-1. Look it up as the whole segmented token. A two-character verb is not cut down to its first character. Use a shorter form or `-00` only if the whole token has no frame. If a verb + complement token (V至, V到, V为, V成) has no frame, use the bare verb's frame; the endpoint fills that frame's end-point role (or comes through `have-quant-91`, 2.2). Never use a concept whose word is not a PropBank lemma unless it is `-00`.
++1. Look it up as the whole segmented token. A two-character verb (also a V是 token like 算是) is not cut down to its first character. Use a shorter form or `-00` only if the whole token has no frame. If a verb + complement token (V至, V到, V为, V成) has no frame, use the bare verb's frame; the endpoint fills that frame's end-point role (or comes through `have-quant-91`, 2.2). Never use a concept whose word is not a PropBank lemma unless it is `-00`.
+ 2. List all of its senses with their role descriptions. Do not stop at -01.
+ 3. Choose the sense whose role descriptions match the participants in the sentence.
+ 4. Copy the role numbers from that sense, not from -01 and not from English habit.
+@@ -164,7 +129,11 @@
+ - concession `:concession`, condition `:condition`, cause `:cause` (或 `have-cause-91`), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+ - *if* (如果, 只要) → `:condition` on the main event; *because* (因为) → `:cause` (phrasal); 由于 and the frame 以…而 → `:reason` (phrasal); *in order to* (为了)
+-  → `:purpose`; *although* (虽然, 尽管) → `:concession`.
++  → `:purpose`; *although* (虽然, 尽管) → `:concession` only when the main clause has no adversative word; when it is answered by 但/但是/不过/却, use `(b / but-91 :ARG1 concessive :ARG2 main)` (a further clause added to the concessive part makes `:ARG1` an `and`).
++- A sequence adverb linking two clauses (后来, 然后, 接着) → `(c / consecutive :op1 first :op2 later)` (or `after`/`before`); the adverb and an additive 还 with it get no node. Focus particles 就, 便 get no node.
++- A clause in parentheses restating or exemplifying the previous one is a conjunct under `and`.
++- 以 X 为 目的/目标/宗旨 is copular: keep the noun, `(i / identity-91 :ARG1 (m / 目的 :purpose-of E) :ARG2 X :aspect state)`; a quantifier (大部分) is `:mod` on E.
++- N 有 A、B…等 where N is a topic, content or category noun listing its members: no 有/`have-91` node; N fills its outer role and takes `:example (a / and :op1 A ... :opk 等)`. 等 / *etc.* closing a list is always its last `:opN`, not `:mod`.
+ - **Clause-linking reason and purpose (overrides the phrasal rules above).** When a reason connective (因为…于是/所以, 由于…, 所以) or a purpose connective (为/为了 + a clause) links two full clauses, reify it: `(h / have-reason-91 :ARG1 effect-event :ARG2 cause-event :aspect state)`, `(h2 / have-purpose-91 :ARG1 main-event :ARG2 purpose-event :aspect state)`. The reified node is the root, or sits above the main event. It gets `(author :full-affirmative h)` but no temporal parent (see 5.1). Keep `:cause` / `:reason` / `:purpose` only when the cause or purpose is a phrase, not a full clause.
+ 
+ ### 2.6 Multi-word expressions
+@@ -172,7 +141,7 @@
+ An idiom, a phrasal verb or a fixed expression is one concept (`look-up-05`, `give-up-07`; a Chinese chengyu
+ is one concept). A discontinuous word (帮……忙) is one concept aligned to its span.
+ 
+-A compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept. When such a parallel-noun pair is one item of a longer list, nest it as its own `and` inside the outer `and`.
++A compound made of two coordinated nouns (AB where A and B are parallel nouns, e.g. a four-character N1N2 meaning *N1 and N2*) is split: `(a / and :op1 N1 :op2 N2)`. A true idiom stays one concept. A compound of a free head noun + modifier (母公司 type) is split: `head :mod modifier`. When such a parallel-noun pair is one item of a longer list, nest it as its own `and` inside the outer `and`.
+ 
+ ## 3. Relations
+ 
+@@ -199,7 +168,7 @@
+ - **Formats and parts as arguments.** When a format, layout or section noun (版面, edition, section) of a publication is an argument of any verb, that noun is the argument and the publication is its `:part-of`. Never write the inverse `:part` on the whole. This holds even when the publication's name is the grammatical head after 的 (V了 A的《X》 → `:ARG1 (a / A :part-of x)`).
+ - **Change from A to B.** In 从/由 A 变为/改为 B, A is the frame's 'thing changed' role (`:ARG1`), not `:source`; B is `:ARG2`.
+ - **Appositives.** An appositive descriptor before or after a name (its 旗下 tabloid 《X》) is `(x / <type> :name ... :ARG1-of (i / identity-91 :ARG2 (d / <descriptor> :mod ...)))`. Words like 旗下 stay a `:mod` node on the descriptor; do not turn them into a `:possessor` edge.
+-- **Role nouns with names.** A role, title or agent noun directly before or after a person's name is not an appositive `identity-91`. It is `(p / individual-person :name ... :ARG1-of (h / have-org-role-91 :ARG3 role))`, where role is e.g. `(r / 人 :ARG0-of (v / V-01))`. In Chinese documents write the role predicates as `have-org-role-91` / `have-rel-role-91`. Use appositive `identity-91` only for non-role descriptors (e.g. of a publication).
++- **Role nouns with names.** A role, title or agent noun directly before or after a person's name is not an appositive `identity-91`. It is `(p / individual-person :name ... :ARG1-of (h / have-org-role-91 :ARG3 role))`, where role is e.g. `(r / 人 :ARG0-of (v / V-01))`. In Chinese documents write the role predicates as `have-org-role-91` / `have-rel-role-91`; spouse and kin titles (夫人, wife) use `have-rel-role-91`, and a modifying country is `:place` on the role noun. Use appositive `identity-91` only for non-role descriptors (e.g. of a publication).
+ - **Nested abstract predicates.** An abstract predicate that only modifies a noun gets no `:aspect` and no temporal or modal triple. This covers role reifications, an appositive `identity-91` and `have-quant-91`.
+ 
+ Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
+@@ -220,8 +189,6 @@
+ | `performance` | a process that ended and reached its result: completed past events (*denied*, *was arrested*, 了, 过) |
+ | `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |
+ 
+-Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+-only when they are clear.
+ 
+ Further aspect rules:
+ - **Repeated activity of an institution or periodical** (publishing, broadcasting, reporting, what it regularly contains or covers) is `habitual`, even with 了 or other completion marking.
+@@ -229,7 +196,6 @@
+ - **Abstract predicates:** `identity-91` gets `:aspect state` only when it is the clause predicate (nested ones get none); `have-degree-91` gets no `:aspect` (the event under its `:ARG2` does).
+ - **A naming or evaluation passive** (*is called / is regarded as*, 被称为, 被誉为) is `performance`.
+ - **A negated event with a nominal event object** (没有经过X) is `process`.
+-- **Stative verbs keep `state`.** (see below)
+ - **Purpose verbs** naming an ongoing use are `activity`. A relative-clause verb giving what something is for or contains is `process`. A manner or property word on an event nominal is `:manner`, not `:mod`. Example: a periodical printed in some colour or format → `(y / 印刷-01 :manner (c / <colour word>) :aspect habitual)`.
+ - **Stative verbs, continued.** Possession, belonging, existence and knowing verbs stay `state` even with 了, 过, 曾经 or a duration modifier. These markers only place the state in time for the temporal triples.
+ 
+@@ -320,10 +286,7 @@
+ 
+ ## 7. Checklist
+ 
+-- Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+-- Every event has `:aspect` (`have-degree-91` excepted); negated events have `:polarity -` (fused negation verbs excepted).
+-- Every Chinese predicate uses the sense and numbered roles of its own PropBank roleset (`:ARG1` only if the roleset has one).
+-- Before writing `:coref`, drop every pair where both mentions are only `:place`/`:mod` modifiers.
+-- Every event and time expression has a temporal parent; every event has a modal parent.
+-- Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+-
++- Balanced parentheses; each variable defined once, starting with `s<N>`.
++- Every event has `:aspect`, a temporal and a modal parent (exceptions above); Chinese predicates use their own roleset's sense and roles.
++- No `:coref` pair of two mere `:place`/`:mod` modifiers or generic mentions.
++

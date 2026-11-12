@@ -1,0 +1,110 @@
+--- before
++++ after
+@@ -51,13 +51,11 @@
+ 
+ An event is a process or a state that is **predicated**, or a process used to **refer or modify**:
+ 
+-- verbs used as predicates (`deny-01`, Chinese `拥有-01`);
+-- event nominals with process meaning (*the meeting*, *the attack*, 会议, 比赛) — annotate them as events;
+-- participles and relative-clause verbs (*the man who left*: `(p / person :ARG0-of (l / leave-11))`);
++- predicate verbs, event nominals with process meaning (会议, 比赛), participles and relative-clause verbs;
+ - predicated states: adjectives and nouns in predicate position (*he is tall*, 他很高) — through the
+   abstract predicates of 2.3 when there is no lexical verb.
+ 
+-Not events: entity nouns, property words used as plain modifiers (*a tall man*: `:mod (t / tall)`),
++Not events: entity nouns, modifier words with no roleset (see 3.1),
+ auxiliaries and modal verbs (*will, can, must*; 会, 能, 可以, 应该 — they affect `:aspect` and modal
+ strength, they are not nodes), light verbs (*make a decision* → `decide-01`; 进行访问 → `访问-01`),
+ the copula (*be*, 是) — it becomes one of the abstract predicates.
+@@ -84,7 +82,7 @@
+ Numbers are written as digits. In Chinese, a numeral + measure word or classifier keeps the classifier as the unit,
+ ordinary classifiers included (个, 本, 只, 位, 份, 面): 三杯水 → `水 :quant 3 :unit 杯`, 一本书 → `书 :quant 1 :unit (s / 本)`.
+ A demonstrative + classifier (这个, 那份) also keeps the classifier as `:unit`.
+-The title marks of a work or publication name (《 and 》) are part of the name: `:op1 "《"`, then the words, then a last `:opN "》"`.
++The title marks of a work or publication name (《 and 》) are part of the name: `:op1 "《"`, then the words, then a last `:opN "》"`. A 「」/“” article or headline title used with a classifier or next to an article/news noun is a name too: `(p / publication :quant N :unit <classifier> :name (n / name :op1 "「" … :opN "」"))`, every word and mark an `:opN`; nothing inside it is analysed. A named event with a year in its name is `(e / event :name (n / name :op1 "<year>" :op2 "年" …))`, no links.
+ 
+ ### 2.3 Abstract predicates (non-verbal clauses)
+ 
+@@ -104,9 +102,7 @@
+ 
+ X 是 Adj (的) / X 都是 Adj: `have-mod-91 :ARG1 X :ARG2 Adj` (adverb as `:mod` of have-mod-91), never an `Adj-01` event. A title held through marriage (first lady) is `have-rel-role-91 :ARG3 <title>`, country `:place` and former `:mod` on the title.
+ 
+-Role nouns are reified the same way: *the president of Russia* →
+-`(p / person :ARG1-of (h / have-org-role-91 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+-*his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
++
+ 
+ ### 2.4 Pronouns and implicit participants
+ 
+@@ -164,26 +160,22 @@
+ - Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
+   noun compound or a nominal event; in a compound "N1-verb N2", the role is filled by the compound's own noun.
+   The same holds for dropped subjects and objects of finite clauses (in coordination, contrast or a chain of clauses): do not
+-  add a re-entrancy to an earlier mention; leave the argument out. This also holds for purpose clauses, infinitive-like and
++  add a re-entrancy to an earlier mention; leave the argument out. This also holds for infinitive-like and
+   trailing clauses (never fill their agent with an entity of the main clause) and for possessors: a word like 旗下 is a `:mod`
+   concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and
+   what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object. Do not add relations the text does not state (e.g. a
+   `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
+   `:mod` on the noun it modifies, unless a superlative follows (then `:ARG5`, see have-degree-91).
+ - Exception (control): the subject of an aspectual or control verb (继续, 停止, 开始) is its `:ARG0` and re-enters as `:ARG0` of its event complement, event nominals included. A time expression over (or opening) a but-91/contrast attaches to both clause events; a still/continue second clause `:overlap`s the first, never `:after`.
+-- Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
+-  the aspectual verb is attached to the inner verb by `:ARG1-of`; N is not also an argument of the aspectual verb.
++- Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARGn-of` the inner verb, which is `:ARG1-of` the aspectual verb; N is not its argument.
+ - Read the roleset for every role. For Chinese belong-type rolesets (X belongs to Y), the gold convention is: the thing that
+   belongs = `:ARG0`, the owner = `:ARG1`, even where the PropBank role glosses seem to say the reverse. So "N that belongs to X"
+   is `(n / N :ARG0-of (b / belong-verb :ARG1 X))`. Never assume possessum = `:ARG1`.
+-- Coordination with mixed separators: if the first two items are joined without 、 and the rest with 、, the first pair is its
+-  own nested `and` inside the outer `and`.
+ - "Known/famous for X" (…而闻名, 以…著称): the famous entity is the `:ARG1` of the fame predicate, attached as
+   `:ARG1-of` on that noun, and the X clause is `:reason` of it, with that noun as its agent. When such a clause
+   follows "A is a B", attach it inside the B noun, not as a separate conjunct.
+ - Role choice for noun modifiers: a country, city or place modifying a noun → `:place`; a channel or medium
+-  (TV, radio, network, print) → `:medium`; an edition, section or component of a whole → `:part-of` (not
+-  `:possessor`).
++  (TV, radio, network, print) → `:medium`; an edition, section or component of a whole, or an article of a publication → `:part-of` (not `:possessor`).
+ - When a component, edition or section noun modifies a named work through 的 ([X] 版 的 《N》), the component noun is the head
+   and the work is its `:part-of`; modifiers of the component (colour, style) stay on it. A trailing relative clause on such an object attaches to the component noun.
+ - Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`. When X and Y are components (layout, edition, format) of the subject, the subject is `:part-of` on X, not its own argument and not an inverse `:part`, even when it also fills a role elsewhere (that role is then a re-entrancy).
+@@ -199,7 +191,7 @@
+   Give `have-degree-91` itself no modal link. With no head noun (其中 最 Adj + classifier): `(i / implicit-argument :unit <classifier> :ARG1-of (h / have-degree-91 :ARG1 (a / Adj) :ARG2 (m / 最) :ARG5 (q / 其中)))`.
+ - A postposition phrase over a time-span noun (X 历史上, *in X's history*) is `:temporal (s / 上 :op1 (h / 历史))` on its head,
+   with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too. Every location postposition likewise: 在 N 中/上/里 → `(z / 中 :op1 N)`. Appearance verbs (出现-type): the appearing entity is `:ARG0`, the 在 N 中 location `:ARG1` (gold convention).
+-- A property word or chengyu used attributively ("absurd content", X 的 Y with X a property) is a `:mod` concept,
++- An attributive modifier (X 的 Y) that has a PropBank roleset (check it) is an event: a property predicate `(y / Y :ARG0-of (x / X-01 :aspect state))` (the role its roleset gives the described entity), a producing verb `:ARG1-of … :aspect performance`; it `:overlap`s the clause event, author modal parent. An event nominal modifying a noun is `:mod` with `process` aspect. A word with no roleset (relational or distinguishing word, chengyu) is a `:mod` concept,
+   not an event: it gets no aspect and no temporal or modal links.
+ 
+ ## 4. Attributes
+@@ -236,8 +228,7 @@
+ 
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+   then negative (5.2). A negator fused into a verb (未经-type verbs: "without having undergone") gives no
+-  `:polarity`. The verb is `full-negative` in the modal layer. Events nested under it do not inherit the
+-  negation: an event nested under the fused-negation verb gets `partial-affirmative`, with `author` as its modal parent (not the negated verb). The concept of a fused-negation verb is the
++  `:polarity`; the verb is `full-negative` (modal) and an event nested under it gets `(author :partial-affirmative e)`. The concept of a fused-negation verb is the
+   un-negated verb with its own PropBank sense and roles (未经 → the 经-type verb's sense, with `:ARG0`/`:ARG1`), never `<negated word>-00`;
+   its aspect follows that verb (`process` for 经/经过-type verbs). A compound "[process noun] + procedure/method/system noun" is
+   reified as identity: `(p / procedure-noun :ARG0-of (i / identity-91 :ARG1 <event>))`, not `:mod`.
+@@ -283,9 +274,7 @@
+   is inside a relative clause is the inner event the anchor (e.g. `(document-creation-time :before inner)` for a past habit), with the
+   aspectual verb `:overlap`ping it. Never use `:before`/`:after` between two clauses that both describe the present situation. Never
+   give a second event of the sentence its own link to `document-creation-time`, except the relative-clause anchor just described.
+-- **"Famous for X" in a defining sentence.** The fame state gets no temporal parent of its own; it is the parent of the habitual
+-  relative-clause event: `(fame :contained habitual-event)`, and that event also keeps its own `document-creation-time` link. The reason
+-  event (X) hangs on the habitual event with `:overlap`, not on the fame state.
++- **Fame in a defining sentence.** The fame state has no temporal parent; it is the parent of the habitual RC event `(fame :contained e)`, which keeps its own DCT link; the reason event `:overlap`s e.
+ - Every node that carries `:aspect` gets a modal parent (normally `author :full-affirmative`). A relative-clause verb with an aspect
+   ("N that belongs to X") also gets a temporal parent: `:overlap` with the event whose argument N is, or with the clause anchor.
+   Copular and identity predicates get no temporal parent but do get a modal parent. An `identity-91` reifying an apposition inside a noun phrase gets no `:aspect` and no links at all. Only property words used as plain `:mod`
+@@ -341,9 +330,8 @@
+ 
+ ## 7. Checklist
+ 
+-- Parentheses balanced; every variable defined once; all variables start with `s<N>`.
+-- Every event has `:aspect`; negated events have `:polarity -`.
+-- Every event and time expression has a temporal parent; every event has a modal parent.
++- Balanced parentheses; unique `s<N>` variables; every event has `:aspect`, a temporal and a modal parent.
++- Compounds split (prefix + noun, verb + 人/者); 「」 titles are unanalysed names.
+ - Same-sentence pronouns are re-entrancies, repeated nouns own nodes + `:coref`; control subjects re-enter nominal complements; a time over both halves of but-91 attaches to both.
+ 
+ 

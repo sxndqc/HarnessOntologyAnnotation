@@ -5,7 +5,7 @@ Shared-task scoring: juːmæʧ (main metric, compare_umr.pl) and Smatch, against
 | file | sents | juːmæʧ P | R | F | Smatch F | valid | AnCast F | Comp |
 |---|---|---|---|---|---|---|---|---|
 | zh-0028 | 12 | 48.2 | 54.4 | 51.1 | 59.7 | yes | 43.0 | 44.7 |
-| zh-0032 | 6 | 48.9 | 45.2 | 47.0 | 54.2 | yes | 38.9 | 36.4 |
+| zh-0032 | 6 | 48.9 | 45.2 | 47.0 | 53.2 | yes | 38.9 | 36.4 |
 | **zh** (2/15 files) | 18 | 48.6 | 3.6 | 6.7 | 7.5 | 2/2 | 40.9 | 40.5 |
 
 ## umrjudge per check (recall / precision / F1)

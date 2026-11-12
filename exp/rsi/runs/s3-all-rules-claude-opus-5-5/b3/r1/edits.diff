@@ -1,0 +1,140 @@
+--- before
++++ after
+@@ -1,37 +1,22 @@
+ # Skill: the UMR of a whole document
+ 
+-You annotate a whole document in Uniform Meaning Representation (UMR): every sentence's sentence-level
+-graph, then all the document-level relations (temporal, modal, coreference) of the document. The document
+-is under **Input** at the end, one sentence per line.
+-
+-**Make the annotation as correct as you can.** It is compared, node by node and relation by relation,
+-with an expert gold annotation made by these guidelines, so every concept, sense, role, attribute value
+-and document-level relation counts. Take the time this needs:
+-
+-- Read the guidelines below carefully before you start, and go back to them for every decision you are
+-  not sure of: the concept and its sense, the numbered and non-core roles, abstract concepts and named
+-  entities, aspect, modal strength, polarity, and the temporal, modal and coreference relations.
+-- Follow the examples: when a sentence has a construction an example shows, annotate it the way the
+-  example does.
+-- Do not guess when you can check: use the three tools (see Tools): search the full guidelines with
+-  `search_guidelines` whenever the guidelines above do not settle a case, look up every predicate in
+-  PropBank with `propbank_lookup` before you choose its sense and numbered roles, and look up how the gold
+-  data annotates a construction, a word or a relation with `search_annotations`. Call them as often as you
+-  need: many calls are expected.
+-- Before you go on to the next sentence, check the graph against the guidelines once more: every word
+-  that carries meaning has its concept, every event its aspect, every role the right direction; and at
+-  the end check that the document-level relations cover every event and entity the guidelines ask for.
++You annotate a whole document (under **Input**, one sentence per line) in Uniform Meaning Representation (UMR):
++every sentence's graph, then the document-level temporal, modal and coreference relations. It is compared node by
++node and relation by relation with an expert gold annotation made by these guidelines; every concept, sense, role,
++attribute and relation counts.
++
++- Follow the guidelines and their examples. When they do not settle a case, use `search_guidelines`; look up every
++  predicate with `propbank_lookup` before choosing its sense and roles; check gold constructions with
++  `search_annotations`. Many calls are expected.
++- Before the next sentence, check the graph: every meaningful word has its concept, every event its aspect, every
++  role the right direction; at the end check the document-level relations cover every event and entity.
+ 
+ ## Guidelines
+ 
+ # UMR guidelines, abridged
+ 
+-A short version of the UMR 0.9 specification (`umr_guidelines.md` in this folder, umr4nlp/umr-guidelines),
+-for annotating Chinese and English at Stage 1 (numbered PropBank roles). It keeps what an annotator needs for
+-most sentences and leaves out the typological material, the fine-grained lattices, the field-linguistics
+-sections and most of the examples. Where the full guideline uses the older short names (`AUTH`, `DCT`,
+-`FullAff`, `:modstr`, `:ref-person`, `Performance`), this version uses the names of the UMR release data
+-(`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`, `performance`).
++Abridged UMR 0.9 guidelines for Chinese and English at Stage 1 (numbered PropBank roles), with the names of the
++UMR release data (`author`, `document-creation-time`, `full-affirmative`, `:modal-strength`, `:refer-person`).
+ 
+ ## 1. What a UMR is
+ 
+@@ -133,6 +118,8 @@
+ | X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |
+ | cause, reason | `have-cause-91` / `:cause` | |
+ 
++X 是 Adj (的) / X 都是 Adj: `have-mod-91 :ARG1 X :ARG2 Adj` (adverb as `:mod` of have-mod-91), never an `Adj-01` event. A title held through marriage (first lady) is `have-rel-role-91 :ARG3 <title>`, country `:place` and former `:mod` on the title.
++
+ Role nouns are reified the same way: *the president of Russia* →
+ `(p / person :ARG1-of (h / have-org-role-91 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+@@ -146,7 +133,7 @@
+ 
+ ### 2.5 Discourse relations (combining clauses)
+ 
+-- coordination: `(a / and :op1 ... :op2 ...)`, `or`;
++- coordination: `(a / and :op1 ... :op2 ...)`, `or`; 等/*etc.* closing a list is its last `:opN`. "N 有 A、B…等" listing examples of N → `:example (and …)` on N, no 有 node; "A 与 B 有 <relation noun>" → `有-03 :ARG0 (and A B) :ARG1 <noun>`, never `:companion`;
+ - contrast: `(c / contrast-91 :ARG1 ... :ARG2 ...)`; *but* (但是, 却, 然而, 不过) `(b / but-91 :ARG1 ... :ARG2 ...)`.
+   These frames take `:ARG1`/`:ARG2`, never `:op1`/`:op2`. A connective opening a sentence (不过, 但是, 然而, 因此) that relates it to an earlier sentence gets no frame; annotate the clause alone. A time word or adverbial of a clause attaches to that
+   clause's event, never to the discourse frame;
+@@ -158,6 +145,9 @@
+   `(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event> :aspect state)`, nesting have-purpose-91 inside have-reason-91
+   when both occur. Both frames get `(author :full-affirmative h)` and no temporal parent. Keep the `:reason`/`:purpose` roles for
+   unpaired phrases inside one clause.
++- A purpose stated as a noun (以 Y 为目的/目标) is `(i / identity-91 :ARG1 (m / 目的 :purpose-of <event>) :ARG2 Y)`; Y is a plain concept without aspect or links.
++- A parenthetical or colon restatement (slogan, gloss) is its own `identity-91 :ARG1 <noun> :ARG2 <content>` clause joined to the previous clause by `and`, never `:medium`/`:mod`.
++- 后来/*later, then* joining two predicates → `(c / consecutive :op1 … :op2 …)`, no node for 后来. Discourse 就/便 outside a condition gets no node.
+ 
+ ### 2.6 Multi-word expressions
+ 
+@@ -197,6 +187,7 @@
+   what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object. Do not add relations the text does not state (e.g. a
+   `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
+   `:mod` on the noun it modifies.
++- Exception (control): the subject of an aspectual or control verb (继续, 停止, 开始) is its `:ARG0` and re-enters as `:ARG0` of its event complement, event nominals included. A time expression scoping over both clauses of a but-91/contrast attaches to both clause events.
+ - Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
+   the aspectual verb is attached to the inner verb by `:ARG1-of`; N is not also an argument of the aspectual verb.
+ - Read the roleset for every role. For Chinese belong-type rolesets (X belongs to Y), the gold convention is: the thing that
+@@ -234,13 +225,13 @@
+ 
+ Decide in this order before using the table:
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+-   printing, issuing, reporting, broadcasting)? → `habitual`, also for a process nominal naming such a practice (e.g. subject of
++   printing, issuing, reporting, broadcasting)? → `habitual`, also for a process nominal naming such a practice (but an event-nominal complement of an aspectual verb such as 停止 is `process`) (e.g. subject of
+    "is/became its feature"); this step precedes step 3. A verb of what a publication holds or carries (contains articles) is `process`. This holds whatever the tense, and also under an
+    aspectual verb (continue, stop).
+ 2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
+    An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.
+    A lexical verb of ending with no event complement (close down, cease publication; 停刊, 倒闭), even with *already*, is `performance`.
+-   State verbs (have, own, belong, be; 有, 拥有, 是) stay `state` even with 过, 曾经 or a duration.
++   State verbs (have, own, belong, be, exist, survive; 有, 拥有, 是, 存在, 生存) stay `state` even with 过, 曾经 or a duration.
+ 3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process`.
+ 4. Is it a verb of naming or labelling (*is called X*, 被称为)? → `performance`.
+ 
+@@ -255,10 +246,7 @@
+ | `performance` | a process that ended and reached its result: completed past events (*denied*, *was arrested*, 了, 过) |
+ | `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |
+ 
+-Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+-only when they are clear.
+-
+-Also: a purpose or intended action is `activity`; a completed past event in a participle or relative clause
++Also: a completed past speech act (claim, announce; 宣称) is `performance`; a purpose or intended action is `activity`; a completed past event in a participle or relative clause
+ (left over, inherited) is `performance`, not `state`.
+ 
+ ### 4.2 Polarity, mode, degree, quantity
+@@ -334,7 +322,6 @@
+ - A relative-clause or participle event that describes an earlier completed event (left over, inherited, built) is before the
+   event whose argument it modifies: `(main :before rc-event)`.
+ - An event nominal inside a decomposed quantity noun (see 3.1) `:overlap`s the verb of its clause.
+-- Annotate event–event relations only when they are clear.
+ 
+ ### 5.2 Modal (`:modal`)
+ 
+@@ -348,7 +335,7 @@
+ - Every event the author asserts: `(author :full-affirmative s1e)`.
+ - Reported speech or thought: the author is certain of the speaker, the speaker of the content:
+   `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person
+-  node, or an event used as conceiver).
++  node, or an event used as conceiver). Every event of the reported content, including an appended slogan or quotation and later clauses still reporting it, takes the speaker as modal parent; the content's top node carries `:quote <saying verb>`.
+ - An event under a modal or complement-taking predicate (*want, try, plan, decide, hope*, 想, 希望, 打算,
+   决定, 需要): the predicate is asserted by the author, the complement has the predicate as parent with
+   `unspecified` (or the strength the predicate implies): `(author :full-affirmative s3w)`
+@@ -384,6 +371,5 @@
+ - Every event has `:aspect`; negated events have `:polarity -`.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+-- Channel nouns (TV, radio, network) modifying a noun are `:medium`; places are `:place`; no `:wiki` in Chinese.
+ - No borrowed participants: every re-entrancy is licensed by the syntax of that clause.
+ 
