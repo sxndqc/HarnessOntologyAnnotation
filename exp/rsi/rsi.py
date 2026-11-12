@@ -2,9 +2,11 @@
 
     python3 exp/rsi/rsi.py --variant rules      # A: the reflection may write general rules only
     python3 exp/rsi/rsi.py --variant examples   # B: the reflection records concrete examples
+    python3 exp/rsi/rsi.py --start s1-abridged --variant rules   # start without tools
 
-Start: the s3-all condition (abridged guidelines + search_guidelines, propbank_lookup, search_annotations),
-whole-document annotation. Its instruction (everything of api/s3-all's system prompt before "## Output
+Start (--start): s3-all (default: abridged guidelines + search_guidelines, propbank_lookup, search_annotations)
+or s1-abridged (the abridged guidelines, no tool), whole-document annotation. The annotator has the start's
+tools; the critique may always use all three tools (to check the guidelines, PropBank and gold cases). Its instruction (everything of api/s3-all's system prompt before "## Output
 format": the task, what to aim for, the abridged guidelines) is what the RSI may change; the output format
 and the tools' descriptions stay fixed.
 
@@ -26,7 +28,7 @@ steps 2-4 three times per batch (--reflections), starting each time from the bes
 batch. After each batch the best version annotates the test documents (zh-0028, zh-0032), scored like
 every other run. Model and effort as given (default claude-opus-5-5, medium); answers cached as in run.py.
 
-Everything is written under rsi/runs/<variant>-<model>/: versions/v<k>.md (each accepted instruction),
+Everything is written under rsi/runs/<start>-<variant>-<model>/: versions/v<k>.md (each accepted instruction),
 b<n>/r<m>/ (critique and reflection with their prompts and transcripts, the edits proposed and applied,
 the candidate instruction and its diff, the batch annotation and its scores), b<n>/r0/ (the batch
 annotated by the version the batch started with), test/after-b<n>/ (test documents), log.md, state.json.
@@ -114,7 +116,7 @@ REFLECT_SYSTEM = "You improve the instruction of a UMR annotator by editing it."
 
 REFLECT = """You are improving the instruction an annotator (a model) follows to annotate whole documents in Uniform Meaning Representation (UMR). It is scored against expert gold annotations; the score that counts is AnCast++ (sentence graphs and document-level relations). Below are the current instruction, a critique of its annotation of a training batch, and what earlier edits did.
 
-Edit the instruction to fix the problems of the critique that will recur on other documents. Prefer few, high-value changes; keep what works; keep the instruction clear and consistent (fix a rule rather than adding a contradicting one). The output format and the tools' descriptions are fixed and not part of the instruction: do not restate or change them. The instruction may be at most {max_chars} characters (now {size}). Never copy text of the test documents. {variant}
+Edit the instruction to fix the problems of the critique that will recur on other documents. Prefer few, high-value changes; keep what works; keep the instruction clear and consistent (fix a rule rather than adding a contradicting one). The output format (and the tools' descriptions, if the annotator has tools) are fixed and not part of the instruction: do not restate or change them. The instruction may be at most {max_chars} characters (now {size}). Never copy text of the test documents. {variant}
 
 # The current instruction
 <instruction>
@@ -160,10 +162,11 @@ def strip_alignment(umr_text):
 class Runner:
     def __init__(self, a):
         self.a = a
-        self.out = os.path.join(EXP, "rsi", "runs", "%s-%s" % (a.variant, a.model))
+        self.out = os.path.join(EXP, "rsi", "runs", "%s-%s-%s" % (a.start, a.variant, a.model))
         os.makedirs(self.out, exist_ok=True)
-        reg = registry.load(os.path.join(EXP, "api", "s3-all", "registry.yaml"))
+        reg = registry.load(os.path.join(EXP, "api", a.start, "registry.yaml"))
         self.skill = reg["skills"]["annotate"]
+        self.tools = self.skill.get("tools") or []          # the annotator's tools
         import tools.search as search
         self.search = search
         self.test_texts = R.test_texts()
@@ -198,8 +201,8 @@ class Runner:
         _, user = self.render(doc, doc_id)
         system = instruction + self.tail
         self.skip(training)
-        r = llm.answer(self.a.model, system, user, ALL_TOOLS, self.a.effort, CACHE)
-        R.write_transcript(out_dir, name, self.a.model, self.a.effort, system, user, ALL_TOOLS, r)
+        r = llm.answer(self.a.model, system, user, self.tools, self.a.effort, CACHE)
+        R.write_transcript(out_dir, name, self.a.model, self.a.effort, system, user, self.tools, r)
         umr, report = umrdoc.parse_answer(doc, r["text"])
         open(os.path.join(out_dir, name + ".raw.txt"), "w", encoding="utf-8").write(r["text"])
         path = os.path.join(out_dir, name + ".umr")
@@ -340,11 +343,11 @@ class Runner:
         vdir = os.path.join(self.out, "versions")
         os.makedirs(vdir, exist_ok=True)
         open(os.path.join(vdir, "v0.md"), "w", encoding="utf-8").write(best)
-        state = {"variant": a.variant, "model": a.model, "effort": a.effort, "train_doc": a.train_doc,
+        state = {"start": a.start, "variant": a.variant, "model": a.model, "effort": a.effort, "train_doc": a.train_doc,
                  "batches": [], "tests": {}}
         history = []
-        self.log("start: %s, %s (%s), %d batches x %d reflections, instruction %d characters" % (
-            a.variant, a.model, a.effort, a.batches, a.reflections, len(best)))
+        self.log("start: %s from %s (annotator tools: %s), %s (%s), %d batches x %d reflections, instruction %d characters" % (
+            a.variant, a.start, ", ".join(self.tools) or "none", a.model, a.effort, a.batches, a.reflections, len(best)))
         state["tests"]["before"] = self.test(best, "v0")
         for n in range(1, a.batches + 1):
             doc, first, last, gold = self.batch(n)
@@ -399,6 +402,7 @@ class Runner:
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--variant", choices=sorted(VARIANT), required=True)
+    ap.add_argument("--start", choices=["s3-all", "s1-abridged"], default="s3-all")
     ap.add_argument("--model", default="claude-opus-5-5")
     ap.add_argument("--effort", default="medium")
     ap.add_argument("--train-doc", default="chinese_umr-0001")

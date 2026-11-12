@@ -1,0 +1,42 @@
+**Summary of changes.** I made targeted edits for the critique points that will recur on other documents.
+
+1. **Temporal rules that contradicted the gold data.**
+   - A past absolute date now gets `document-creation-time :before`, and a future one gets `:after`. Only deictic dates keep `:depends-on`.
+   - An event in a clause with a date overlaps the date.
+   - Purpose clauses overlap their main event, and reasons come before their results.
+   - Completed relative-clause events come before the event that uses them.
+   - The anchor of each new past-narrative sentence links to `document-creation-time`, not to the previous sentence.
+   - Event nominals inside quantity nouns get a temporal parent.
+2. **Paired reason/result markers and marked purposes.** These are reified as `have-reason-91` and `have-purpose-91`, each with `state` aspect and an author modal link.
+3. **Borrowed arguments.** The rule now also covers purpose clauses, trailing clauses and possessors (旗下 becomes `:mod`). A trailing clause that describes a newly introduced object is a relative clause on that object.
+4. **Structures.**
+   - A component noun is the head, with the work as its `:part-of`.
+   - In 由X改为Y, X is `:ARG1` and Y is `:ARG2`.
+   - A process+量 noun is decomposed, with `have-quant-91` for the amount.
+5. **Names.**
+   - Named humans are `individual-person`.
+   - Organisational roles use `have-org-role-91`.
+   - An appositive noun phrase in front of a name becomes `identity-91`.
+   - "·" is kept as a name op.
+   - A role noun built from verb+人/者 is `人 :ARG0-of verb`.
+6. **Aspect and modifier details.**
+   - A purpose verb is `activity`, and a completed event in a relative clause is `performance`.
+   - `habitual` is limited to publishing and reporting verbs.
+   - A modifier saying how a process nominal is done is `:manner`.
+   - Decades use `:era`.
+
+```json
+{"summary": "Fix temporal conventions (past dates DCT :before, date :overlap event, purpose :overlap, reason before result, RC completed event before, narrative anchors to DCT); reify paired reason/purpose as have-reason-91/have-purpose-91; widen no-borrowing rule; component-noun head, 由X改为Y roles, 量 decomposition; individual-person, have-org-role-91, appositive identity-91, middle dot op; aspect/modifier details.", "edits": [
+{"op": "replace", "old": "- Time expressions: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,\n  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`.", "new": "- Time expressions: an absolute date in the past gets `(document-creation-time :before s1t)` (a future one `:after`);\n  only a relative deictic one (*today, yesterday*, 今天) gets `(document-creation-time :depends-on s1t)`.\n- An event in the clause of a date or time expression gets `(date :overlap event)`; use `:contained` only when the time\n  expression is clearly a long span and the event a point inside it.\n- Past narrative: the anchor event of each new sentence links to `document-creation-time :before`, not to the previous\n  sentence's event. Link it to an earlier event only when the sentence explicitly continues from it (*also became*, *as a\n  result*, 于是), and then with `:overlap` unless the order is stated."},
+{"op": "replace", "old": "(`(s1t :contained s1e)`)", "new": "(`(s1t :overlap s1e)`)"},
+{"op": "replace", "old": "- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.", "new": "- An event in a complement clause takes its matrix event as parent. A purpose event `:overlap`s its main event (never\n  `:after`). A reason or cause event is before its result: `(result :before reason)`; a future marker inside a reason clause about\n  past events is future relative to that past, not after the main event.\n- A relative-clause or participle event that describes an earlier completed event (left over, inherited, built) is before the\n  event whose argument it modifies: `(main :before rc-event)`.\n- An event nominal inside a decomposed quantity noun (see 3.1) `:overlap`s the verb of its clause."},
+{"op": "insert_after", "anchor": "→ `:purpose`; *although* (虽然, 尽管) → `:concession`.", "text": "- Reified reason and purpose: when a reason marker is paired with a result marker (因为…于是/所以, 由于…而), or a clause has a\n  marked purpose clause (为了, 以, 以便), use `(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event> :aspect state)` and\n  `(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event> :aspect state)`, nesting have-purpose-91 inside have-reason-91\n  when both occur. Both frames get `(author :full-affirmative h)` and no temporal parent. Keep the `:reason`/`:purpose` roles for\n  unpaired phrases inside one clause."},
+{"op": "replace", "old": "add a re-entrancy to an earlier mention; leave the argument out.", "new": "add a re-entrancy to an earlier mention; leave the argument out. This also holds for purpose clauses, infinitive-like and\n  trailing clauses (never fill their agent with an entity of the main clause) and for possessors: a word like 旗下 is a `:mod`\n  concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and\n  what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object."},
+{"op": "insert_after", "anchor": "  `:possessor`).", "text": "\n- When a component, edition or section noun modifies a named work through 的 ([X] 版 的 《N》), the component noun is the head\n  and the work is its `:part-of`; modifiers of the component (colour, style) stay on it.\n- Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`.\n- A \"verb + 量\" quantity noun whose first part is a clear verb is split: `(q / 量 :quant-of (v / verb-01 :ARG1 <entity>))`, the\n  owner of the quantity being the verb's `:ARG1` (not `:possessor`). An amount it reaches or falls to is\n  `:ARG1-of (h / have-quant-91 :ARG2 <number> :unit <classifier>)` on the quantity noun, not a separate `thing` argument.\n- A modifier that says how a process nominal is done (colour, style, method) is `:manner`, not `:mod`."},
+{"op": "replace", "old": "| X holds title T in organization O | `have-org-role-92` |", "new": "| X holds title T in organization O | `have-org-role-91` |"},
+{"op": "replace", "old": "`(p / person :ARG1-of (h / have-org-role-92 :ARG2", "new": "`(p / person :ARG1-of (h / have-org-role-91 :ARG2"},
+{"op": "insert_after", "anchor": "In Chinese documents write **no** `:wiki` at all.", "text": " A named human is `individual-person`. A middle dot inside a\ntransliterated foreign name is kept as its own `:opN \"·\"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91\n:ARG3 <role>)`; a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,\ne.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its\nmodifiers>)` on the named entity. Decades (X年代) use `:era`."},
+{"op": "replace", "old": "1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,\n   reporting, compiling, broadcasting)? → `habitual`.", "new": "1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,\n   reporting, compiling, broadcasting)? → `habitual`. Only verbs of publishing or reporting; the capacity or content of a\n   publication (contains articles, has N pages) is not habitual (`process` or `state`)."},
+{"op": "insert_after", "anchor": "Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them\nonly when they are clear.", "text": "\n\nAlso: a purpose or intended action is `activity`; a completed past event in a participle or relative clause\n(left over, inherited) is `performance`, not `state`."}
+]}
+```

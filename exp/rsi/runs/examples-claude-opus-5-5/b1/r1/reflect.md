@@ -1,0 +1,46 @@
+## Summary of changes
+
+These fixes target the critique's costliest problems that will recur on other documents. Each rule is fixed in place so that no rule contradicts another.
+
+1. **Aspect (4.1)**
+   - An institution's characteristic, repeated activities (发行, 综合) are `habitual`, even with 了.
+   - 已经 + change-of-state verb used as a modifier is `state`.
+   - Passive naming (被称为) is `performance`.
+   - An event-nominal–like 未经 is `process`.
+2. **Temporal (5.1)**
+   - Copular/identity predicates and modifier-like properties get no temporal parent.
+   - Dependent events of a sentence are chained to its main anchoring event.
+   - A vague time word like 目前 gets no triple of its own. This replaces the old `present-reference` rule for vague time words.
+3. **Non-core roles (3, 2.5)**
+   - 由于/因为 → `:reason`.
+   - 以X而Y → Y `:reason` X.
+   - A country modifying a noun → `:place`; a medium (电视, 网络) → `:medium`; a version or part of a publication → `:part-of`.
+   - Adverbs (已经, 都, 也, 仍) → `:mod` on the event they modify.
+4. **Classifiers (2.2):** the wrong "classifier is dropped" rule is replaced. Numeral + classifier is now `:quant N :unit (classifier)`.
+5. **Names (2.2):** the title marks 《 》 are name tokens.
+6. **Degree (4.2):** superlatives and comparatives → `have-degree-91`; `:degree` is kept only for intensifiers. An adjectival chengyu before 的 is a `:mod`, not an event.
+7. **Connectives (2.5):** `but-91` takes `:ARG1`/`:ARG2`, not `:opN`.
+8. **Structure (3)**
+   - A shared modifier goes on each conjunct, not on the `and` node.
+   - No implicit re-entrant arguments are added.
+   - Check PropBank argument order (属-02).
+9. **Coreference (5.3):** `:same-event` only when the participants are the same.
+
+Examples from the batch are added in a new "## Examples" section.
+
+```json
+{"summary": "Fix aspect (habitual institutional activities, 已经+stop state, 被称为 performance), temporal (no parent for identity/modifier states, chain to main event, no triple for vague time words), non-core roles (:reason for 由于/以而, :place for countries, :medium, :part-of, adverbs as :mod on event), classifier rule (keep :quant 1 :unit 份), title marks as name tokens, superlative have-degree-91, chengyu :mod, but-91 ARG1/ARG2, shared modifiers on conjuncts, no invented arguments, same-event only with same participants; add Examples section.", "edits": [
+{"op": "replace", "old": "an ordinary classifier (个, 本, 只, 位) is dropped (三本书 → `书 :quant 3`).", "new": "an ordinary classifier is kept as the unit too: a numeral + classifier phrase (一份, 一个, 三本) → `:quant N :unit (x / <classifier>)` (三本书 → `书 :quant 3 :unit (b / 本)`; 一份小报 → `小报 :quant 1 :unit (f / 份)`)."},
+{"op": "insert_after", "anchor": "Chinese names are split into words, not characters: 欧洲议会 → `:op1 \"欧洲\" :op2 \"议会\"`.", "text": " The title marks 《 》 around a publication's name are name tokens: include them as the first and last `:opN`."},
+{"op": "replace", "old": "*but* (但是, 却, 然而) `but-91`;", "new": "*but* (但是, 却, 然而, 不过) `but-91` — `but-91` and `contrast-91` take `:ARG1` and `:ARG2`, never `:opN`;"},
+{"op": "replace", "old": "*because* (因为, 由于) → `:cause`;", "new": "*because* (因为, 由于) → `:reason`; 以 X 而 Y (*known for X*) → Y `:reason` X;"},
+{"op": "insert_after", "anchor": "A discontinuous word (帮……忙) is one concept aligned to its span.", "text": " An adjectival chengyu modifying a noun (荒诞不经的内容) is a `:mod` concept, not an event (no aspect, no temporal or modal triples)."},
+{"op": "insert_after", "anchor": "`:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).", "text": "\n\nFrequent choices:\n- A country or region modifying a noun (美国小报) → `:place (c / country ...)`, not `:mod`.\n- The channel or medium (电视节目, 网络) → `:medium`.\n- A version or part of a publication or object (X的纸本) → `:part-of`, not `:possessor`.\n- Adverbs 已经, 都, 也, 仍, 还 are kept as `:mod` nodes on the event they modify. Never drop them, and never move them onto a noun or a discourse connective. A time word like 目前 likewise goes on the event it modifies.\n- A relative clause or a 以…而 clause describing a noun attaches inside that noun (`:ARGn-of`), not as a new `and` conjunct.\n- A modifier shared by coordinated nouns goes on each conjunct, not on the `and` node.\n- Add a re-entrant or implicit argument only when the text expresses it.\n- Always check the PropBank argument order: for 属-02 the thing that belongs is ARG0 and the owner is ARG1."},
+{"op": "insert_after", "anchor": "| `process` | an event nominal, or a process whose type cannot be told (*the meeting*, 探索 as a noun) |", "text": "\n\n- Characteristic or repeated activities of a person or institution (publishing 发行, broadcasting, selling, compiling content 综合) are `habitual` even without a frequency word, and even with 了 when the clause describes what the entity does in general.\n- 已经 + a change-of-state verb used as a modifier (已经停止发行的小报) is `state`: it describes a current condition.\n- A passive act of naming or evaluation (被称为, 被誉为) is `performance`.\n- 未经 (*without having undergone*) is `process`."},
+{"op": "replace", "old": "(*nowadays*, 现在) on `past-reference` / `present-reference` / `future-reference`.", "new": "(*nowadays*, 现在, 目前) is a `:temporal` modifier of its event in the graph. It gets no triple of its own: anchor the event instead (e.g. to `document-creation-time`)."},
+{"op": "insert_after", "anchor": "- Annotate event–event relations only when they are clear.", "text": "\n- Do not give a temporal parent to a copular/identity predicate (`identity-91`) or to a property used as a modifier.\n- Within a sentence, anchor the main event to `document-creation-time`, and anchor the dependent events (relative clauses, 以…而 reasons, related states) to that main event, not each to `document-creation-time`."},
+{"op": "replace", "old": "- `:degree` for intensifiers and downtoners (*very, too, most*; 很, 非常, 太, 最) as a concept:", "new": "- A comparative or superlative (最, 更, *most*, *-er*) → `have-degree-91` (`:ARG1` the entity, `:ARG2` the property, `:ARG3` 最/更 or `most`/`more`).\n- `:degree` only for intensifiers and downtoners (*very, too*; 很, 非常, 太) as a concept:"},
+{"op": "replace", "old": "- `(earlier :same-event later)`: two mentions of the same event.", "new": "- `(earlier :same-event later)`: two mentions of the same event — only when the participants are the same. Stopping a whole paper and stopping only its print edition are different events."},
+{"op": "append", "text": "\n\n## Examples\n\n- Classifier (2.2): 一份小报 → `(x / 小报 :quant 1 :unit (f / 份))`.\n- Title marks (2.2): 《世界新闻周报》 → `:name (n / name :op1 \"《\" :op2 \"世界\" :op3 \"新闻\" :op4 \"周报\" :op5 \"》\")`.\n- Aspect (4.1):\n  - 发行 for a newspaper → `:aspect habitual`.\n  - 已经停止发行的 (modifier) → `停止-01 :aspect state :mod (y / 已经)`.\n  - 被称为 → `:aspect performance`.\n- Roles (3):\n  - 美国小报 → `小报 :place (c / country ...)`.\n  - 电视节目 → `节目 :medium (t / 电视)`.\n  - 周报的纸本 → `纸本 :part-of 周报`.\n- 以…而闻名 (2.5, 3): 以报导…而闻名的小报 → `小报 :ARG1-of (w / 闻名-01 :reason (b / 报导-01 :ARG0 小报 ...))`.\n- Reason (2.5): 由于…内容 → `:reason (n / 内容 ...)`.\n- but-91 (2.5): 不过 → `(b / but-91 :ARG1 ... :ARG2 ...)`.\n- Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`.\n- Chengyu (2.6): 荒诞不经的内容 → `内容 :mod (h / 荒诞不经)`.\n- Belong-type verb (3): 属自己的节目 → `节目 :ARG0-of (s / 属-02 :ARG1 周报)`.\n- Temporal (5.1): main event 发行 → `(document-creation-time :before s1x3)` `(s1x3 :overlap s1x4)` `(s1x7 :contained s1x3)`. No triple for `identity-91`."}
+]}
+```

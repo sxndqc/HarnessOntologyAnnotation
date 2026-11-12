@@ -83,12 +83,12 @@ SkillParseUMR 的 skill 执行结构（`registry.yaml` + skill 目录里的 `ski
 
 ## 第四步：RSI（改 instruction）
 
-`rsi/rsi.py`：从 s3-all（缩略版 guideline + 三个工具）出发，只改 instruction（输出格式和工具说明不改）。训练文档是 shared task
+`rsi/rsi.py`：从 s3-all（缩略版 guideline + 三个工具）或 s1-abridged（只有缩略版 guideline，没有工具；`--start s1-abridged`）出发，两个起点对比，只改 instruction（输出格式和工具说明不改；critique 两边都能用三个工具查 guideline、PropBank 和 gold）。训练文档是 shared task
 训练数据的 `chinese_umr-0001`（训练时 `search_annotations` 不返回它的句子），每 5 句一个 batch：标注 → umrjudge 和 gold 对比 →
 critique（看判错的单元，提修改意见）→ reflect（改 instruction，≤3 万字符，不抄测试文档）→ 重标这一批，AnCast++ 综合分比之前最好的高
 才保留；每个 batch 反思 3 次，跑 4 个 batch；每个 batch 后用当时最好的版本标测试文档 zh-0028、zh-0032。两种反思方式：
 `--variant rules`（只写一般规则，不准记录细节，也不准抄训练文档）和 `--variant examples`（把出错的地方整理成具体例子记进 instruction）。
-结果在 `rsi/runs/<variant>-<model>/`：`versions/`（每个保留的版本）、`b<n>/r<m>/`（critique、reflect、改动、diff、重标和分数）、
+结果在 `rsi/runs/<start>-<variant>-<model>/`：`versions/`（每个保留的版本）、`b<n>/r<m>/`（critique、reflect、改动、diff、重标和分数）、
 `test/`、`log.md`、`state.json`。
 
 ```bash

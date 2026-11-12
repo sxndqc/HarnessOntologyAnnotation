@@ -1,0 +1,101 @@
+--- before
++++ after
+@@ -99,7 +99,7 @@
+ 
+ `(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. Types: `person`,
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+ `mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+@@ -176,11 +176,22 @@
+ ### 3.1 Attachment rules (frequent errors)
+ 
+ - Every adverb that carries meaning (*already, still, also, all/both*; 已经, 仍, 也, 都, 均) gets its own node,
+-  attached as `:mod` to the predicate it scopes over, not to a noun.
++  attached as `:mod` to the predicate it scopes over, not to a noun. Time adverbs (曾经, 曾, *once, formerly*) are
++  `:temporal`, not `:mod`.
+ - A modifier that applies to each of several coordinated nouns is placed on each conjunct with the same variable
+   (re-entrancy), not once on the `and` node.
+ - Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
+   noun compound or a nominal event; in a compound "N1-verb N2", the role is filled by the compound's own noun.
++  The same holds for dropped subjects and objects of finite clauses (in coordination, contrast or a chain of clauses): do not
++  add a re-entrancy to an earlier mention; leave the argument out. Do not add relations the text does not state (e.g. a
++  `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
++  `:mod` on the noun it modifies.
++- Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
++  the aspectual verb is attached to the inner verb by `:ARG1-of`; N is not also an argument of the aspectual verb.
++- Read the roleset for every role: possession verbs differ (some belong-type rolesets have the owned thing as `:ARG0` and the
++  owner as `:ARG1`); never assume possessum = `:ARG1`.
++- Coordination with mixed separators: if the first two items are joined without 、 and the rest with 、, the first pair is its
++  own nested `and` inside the outer `and`.
+ - "Known/famous for X" (…而闻名, 以…著称): the famous entity is the `:ARG1` of the fame predicate, attached as
+   `:ARG1-of` on that noun, and the X clause is `:reason` of it, with that noun as its agent. When such a clause
+   follows "A is a B", attach it inside the B noun, not as a separate conjunct.
+@@ -190,6 +201,11 @@
+ - Comparatives and superlatives use `have-degree-91`: *the most P X* → `(x / X :ARG1-of (h / have-degree-91
+   :ARG2 (p / P) :ARG3 (m / most)))` (Chinese: `:ARG3 (m / 最)`); *more P than Y* adds `:ARG4 Y`. Use `:degree`
+   only for plain intensifiers (very, too; 很, 非常, 太).
++- When the degree word modifies a verb (*most rich in X*, 最富有X), that verb is the `:ARG2` of `have-degree-91` as an event
++  with its own `:aspect` (`(r / verb-01 :ARG1 X :aspect state)`), temporal parent and modal parent; the head noun is `:ARG1`.
++  Do not use `:ARG5` and give `have-degree-91` itself no modal link.
++- A postposition phrase over a time-span noun (X 历史上, *in X's history*) is `:temporal (s / 上 :op1 (h / 历史))` on its head,
++  with the country or place as `:place` of the history noun. The place rule holds for abstract nouns too.
+ - A property word or chengyu used attributively ("absurd content", X 的 Y with X a property) is a `:mod` concept,
+   not an event: it gets no aspect and no temporal or modal links.
+ 
+@@ -201,7 +217,9 @@
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+    reporting, compiling, broadcasting)? → `habitual`. This holds whatever the tense, and also under an
+    aspectual verb (continue, stop).
+-2. Does a completive or aspectual predicate (*has already stopped, has ended*) describe a present condition? → `state`.
++2. Does an aspectual verb taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
++   A lexical verb of ending with no event complement (close down, cease publication; 停刊, 倒闭), even with *already*, is `performance`.
++   State verbs (have, own, belong, be; 有, 拥有, 是) stay `state` even with 过, 曾经 or a duration.
+ 3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process`.
+ 4. Is it a verb of naming or labelling (*is called X*, 被称为)? → `performance`.
+ 
+@@ -224,7 +242,10 @@
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+   then negative (5.2). A negator fused into a verb (未经-type verbs: "without having undergone") gives no
+   `:polarity`. The verb is `full-negative` in the modal layer. Events nested under it do not inherit the
+-  negation; check the gold data for their strength.
++  negation: an event nested under the fused-negation verb gets `partial-affirmative`. The concept of a fused-negation verb is the
++  un-negated verb with its own PropBank sense and roles (未经 → the 经-type verb's sense, with `:ARG0`/`:ARG1`), never `<negated word>-00`;
++  its aspect follows that verb (`process` for 经/经过-type verbs). A compound "[process noun] + procedure/method/system noun" is
++  reified as identity: `(p / procedure-noun :ARG0-of (i / identity-91 :ARG1 <event>))`, not `:mod`.
+ - `:mode imperative` (commands, 请, 别), `:mode interrogative` (questions; the questioned argument is
+   `amr-unknown`, a yes/no question gets `:polarity amr-unknown`), `:mode expressive` (interjections).
+ - `:degree` for intensifiers and downtoners (*very, too, most*; 很, 非常, 太, 最) as a concept:
+@@ -258,7 +279,12 @@
+   the other events of the sentence to it: `:overlap` for simultaneous states, `:contained` for a state or event
+   inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
+   earlier sentence's event. For the main event of a sentence describing the present situation, the gold data
+-  often uses `(document-creation-time :depends-on e)`; check with `search_annotations`.
++  uses `(document-creation-time :depends-on e)`, not `:overlap`: a sentence about the current state (with currently/already, 目前/已经, or a present naming or labelling verb).
++- **Aspectual verbs.** When an aspectual verb (stop, continue, begin; 停止, 继续, 开始) takes an event, the inner event is the anchor
++  (e.g. `(document-creation-time :before inner)` for a past habit); the aspectual verb `:overlap`s the inner event, and states or
++  reasons that hang on it (a fame state, its reason) link to it with `:contained` / `:overlap`. Never give a second event of the
++  sentence its own link to `document-creation-time`.
++- A process nominal that is an argument of a verb takes that verb as its temporal parent with `:overlap`; do not leave it without a parent.
+ - Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
+   (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+   `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+@@ -297,6 +323,8 @@
+ - `(earlier :same-event later)`: two mentions of the same event instance, with the same participants. Two
+   different events of similar meaning (e.g. two different kinds of stopping) are not linked.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
++- Coreference only the discourse entities the text tracks (participants, the topic entity). A name used only as a modifier
++  (a country name modifying a noun, a place in a `:place` role) is not linked across sentences.
+ - Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+ 
+ ## 6. Alignment
+@@ -312,4 +340,6 @@
+ - Every event has `:aspect`; negated events have `:polarity -`.
+ - Every event and time expression has a temporal parent; every event has a modal parent.
+ - Coreference across sentences is in `:coref`; within a sentence it is a re-entrancy.
+-
++- Channel nouns (TV, radio, network) modifying a noun are `:medium`; places are `:place`; no `:wiki` in Chinese.
++- No borrowed participants: every re-entrancy is licensed by the syntax of that clause.
++

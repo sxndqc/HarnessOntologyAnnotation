@@ -1,0 +1,78 @@
+--- before
++++ after
+@@ -97,9 +97,9 @@
+ 
+ ### 2.2 Named entities
+ 
+-`(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
++`(c / country :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki` (English data only)
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: include them as the first and last `:opN`. Types: `person`,
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. The title marks 《 》 around a publication's name are name tokens: include them as the first and last `:opN`. The Chinese release data has no `:wiki`: never add `:wiki` to a Chinese named entity. A newspaper, weekly or tabloid (报, 周报, 日报, 小报) is `newspaper`; a magazine is `magazine`; use `publication` only when the kind is unknown. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+ `mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+@@ -202,7 +202,7 @@
+ - 已经 + a change-of-state verb used as a modifier (已经停止发行的小报) is `state`: it describes a current condition.
+ - A passive act of naming or evaluation (被称为, 被誉为) is `performance`.
+ - 未经 (*without having undergone*) → `经-01 :aspect process`, with **no** `:polarity` in the graph. The negation is only the modal triple `(author :full-negative 经)`. An event nominal in its object (查证) gets `(author :partial-affirmative x)`.
+-- `identity-91` and the other abstract predicates take `:aspect state` and a modal triple. Only the temporal triple is left out.
++- An abstract predicate that is the predicate of a clause (the copula 是 → root `identity-91`) takes `:aspect state` and a modal triple; only its temporal triple is left out. An abstract predicate that only reifies a noun modifier gets **no** `:aspect`, no modal triple and no temporal triple. Examples: `identity-91` under `:ARG0-of` of a noun (查证程序); `have-degree-91` for a superlative or comparative modifier (最富创意的报纸).
+ 
+ Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+ only when they are clear.
+@@ -243,11 +243,12 @@
+ - An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.
+ - Annotate event–event relations only when they are clear.
+ - Do not give a temporal parent to a copular/identity predicate (`identity-91`) or to a property used as a modifier.
+-- Each sentence's main (root-most) event anchors to `document-creation-time`. Never anchor it to an event of an earlier sentence unless the text explicitly sequences them (然后, after that).
++- Each sentence's main (root-most) event anchors to `document-creation-time`. Never anchor it to an event of an earlier sentence unless the text explicitly sequences them (然后, after that). A main event that is a completed change whose result holds now anchors as `(document-creation-time :depends-on e)`. This covers 目前……已经 V (已经停刊) and a current label (被称为, 被誉为). A plain past event keeps `:before`.
+ - Every other event in the sentence takes an event of the **same sentence** as its parent, never `document-creation-time` and never an earlier sentence:
+   - a modifier state (已经停止) → `(main :overlap x)`;
+   - the second conjunct of `and`/`but-91` → `(first :overlap second)`;
+-  - a 闻名-type state whose reason is the main event → `(state :contained main)`;
++  - a 闻名-type state whose reason is the main event → `(state :contained main)`. This is the one allowed exception to one parent per event: the main event also keeps its document-creation-time triple;
++  - in 以 X 而闻名, the reason event X takes the clause's main event as parent: `(main :overlap X)`, not `(闻名 :overlap X)`;
+   - relative clauses and complements → their governing event.
+ 
+ ### 5.2 Modal (`:modal`)
+@@ -260,6 +261,7 @@
+   `neutral-affirmative` (*may, might, perhaps, can*, 可能, 也许, 或许, desire/hope), `neutral-negative`,
+   `partial-negative`, `full-negative` (negated: *not, never, deny*, 没, 不), `unspecified`.
+ - Every event the author asserts: `(author :full-affirmative s1e)`.
++- Discourse connective nodes (`and`, `or`, `but-91`, `contrast-91`) get no modal triple; only their conjuncts do. Embedded abstract predicates that reify a noun modifier get none either (4.1).
+ - Reported speech or thought: the author is certain of the speaker, the speaker of the content:
+   `(author :full-affirmative s9p)` `(s9p :full-affirmative s9s3)`, where `s9p` is the speaker (a person
+   node, or an event used as conceiver).
+@@ -277,6 +279,7 @@
+ - `(earlier :same-entity later)`: two mentions of the same entity — a pronoun and its antecedent, a repeated
+   name, a definite description. Link each mention to its closest earlier mention, earlier one first;
+   link entity nodes, never `name` nodes.
++- Link the document's discourse participants: names, pronouns, 该/其 descriptions. Do not link repeated mentions of a country or place that only serves as a modifier (`:place` of a noun, `历史 :place 美国`).
+ - `(earlier :same-event later)`: two mentions of the same event — only when the participants are the same. Stopping a whole paper and stopping only its print edition are different events. A repeated habitual verb with a different object (publishing the paper vs. publishing its online edition) is not `:same-event`. Never use `:same-entity` between events.
+ - `(a :subset-of b)`: the entity or event a is a subset or part of b.
+ - Within one sentence, coreference is a re-entrancy in the graph (one variable), not a `:coref` triple.
+@@ -298,7 +301,7 @@
+ ## Examples
+ 
+ - Classifier (2.2): 一份小报 → `(x / 小报 :quant 1 :unit (f / 份))`.
+-- Title marks (2.2): 《世界新闻周报》 → `:name (n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》")`.
++- Title marks and type (2.2): 《世界新闻周报》 → `(x / newspaper :name (n / name :op1 "《" :op2 "世界" :op3 "新闻" :op4 "周报" :op5 "》"))`, no `:wiki`.
+ - Aspect (4.1):
+   - 发行 for a newspaper → `:aspect habitual`.
+   - 已经停止发行的小报 → `(x / 小报 :ARG1-of (f / 发行-01 :ARG1-of (t / 停止-01 :mod (y / 已经) :aspect state) :aspect habitual))`.
+@@ -312,7 +315,7 @@
+   - 其中 → `内容 :mod (q / 其中)`.
+   - 曾经 → `:temporal (c / 曾经)`.
+   - 美国历史上最… → `报纸 :temporal (s / 上 :op1 (h / 历史 :place (c / country ...)))`.
+-  - 新闻查证程序 → `程序 :ARG0-of (i / identity-91 :ARG1 (c / 查证-01 ...))`.
++  - 新闻查证程序 → `程序 :ARG0-of (i / identity-91 :ARG1 (c / 查证-01 ...))`, with no `:aspect` and no modal triple on `i`. Likewise 最富创意的报纸 gets none on its `have-degree-91`.
+   - 不过仍继续发行网络版 → `(j / 继续-01 :ARG1 (f / 发行-01 :ARG1 (w / 网络版)))`, with no added ARG0.
+ - 以…而闻名 (2.5, 3): 以报导…而闻名的小报 → `小报 :ARG1-of (w / 闻名-01 :reason (b / 报导-01 :ARG0 小报 ...))`.
+ - Reason (2.5): 由于…内容 → `:reason (n / 内容 ...)`.
+@@ -320,4 +323,4 @@
+ - Superlative (4.2): 最富创意的报纸 → `(x / 报纸 :ARG1-of (h / have-degree-91 :ARG2 (f / 富-01 :ARG1 (c / 创意)) :ARG3 (z / 最)))`.
+ - Chengyu (2.6): 荒诞不经的内容 → `内容 :mod (h / 荒诞不经)`.
+ - Belong-type verb (3): 属自己的节目 → `节目 :ARG0-of (s / 属-02 :ARG1 周报)`.
+-- Temporal (5.1): main event 发行 → `(document-creation-time :before s1x3)` `(s1x3 :overlap s1x4)` `(s1x7 :contained s1x3)`. No temporal triple for `identity-91`, but it gets `:aspect state` and `(author :full-affirmative i)`. The but-91 second conjunct: `(s4x :overlap s4x2)`. Main event of a later sentence: `(document-creation-time :before s2x)`, not anchored to sentence 1.
++- Temporal (5.1): main event 发行 → `(document-creation-time :before s1x3)` `(s1x3 :overlap s1x4)` `(s1x7 :contained s1x3)`. No temporal triple for a root (copula 是) `identity-91`, but it gets `:aspect state` and `(author :full-affirmative i)`. 以报导…而闻名: `(s1x3 :overlap s1x8)`, where 发行 is the parent of 报导. 目前已经停刊 / 被称为 as main event → `(document-creation-time :depends-on s4x)`. No modal triple for `and` or `but-91`. The but-91 second conjunct: `(s4x :overlap s4x2)`. Main event of a later sentence: `(document-creation-time :before s2x)`, not anchored to sentence 1.

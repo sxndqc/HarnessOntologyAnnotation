@@ -1,0 +1,126 @@
+--- before
++++ after
+@@ -99,7 +99,11 @@
+ 
+ `(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+ (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
+-Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
++Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. In Chinese documents write **no** `:wiki` at all. A named human is `individual-person`. A middle dot inside a
++transliterated foreign name is kept as its own `:opN "·"`. A title or role noun before a name is `:ARG1-of (h / have-org-role-91
++:ARG3 <role>)`; a role noun built from a verb + 人/者 is `(r / 人 :ARG0-of (v / verb-0N ...))` (`performance` for a completed act,
++e.g. founding). A descriptive noun phrase in apposition to a name is `:ARG1-of (i / identity-91 :ARG2 <head noun with all its
++modifiers>)` on the named entity. Decades (X年代) use `:era`. A periodical, tabloid or magazine name is `newspaper`, not `publication`. Types: `person`,
+ `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
+ `company`, `government-organization`, `political-party`, `university`, `newspaper`, `publication`, `river`,
+ `mountain`, `building`, `airport`, `road`, `event`, `war`, `conference`, `festival`, `award`, `law`,
+@@ -124,13 +128,13 @@
+ | Y belongs to X | `belong-91` | `:ARG1` possessum, `:ARG2` possessor |
+ | there is X (in L) | `exist-91` | `:ARG1` location, `:ARG2` theme |
+ | X is a member of category Y | `have-role-91` | `:ARG1` X, `:ARG3` category |
+-| X holds title T in organization O | `have-org-role-92` | `:ARG1` X, `:ARG2` O, `:ARG3` T |
++| X holds title T in organization O | `have-org-role-91` | `:ARG1` X, `:ARG2` O, `:ARG3` T |
+ | X is the R (kin, friend) of Z | `have-rel-role-92` | `:ARG1` X, `:ARG2` Z, `:ARG3` R |
+ | X has quantity Q | `have-quant-91` | `:ARG1` X, `:ARG2` Q |
+ | cause, reason | `have-cause-91` / `:cause` | |
+ 
+ Role nouns are reified the same way: *the president of Russia* →
+-`(p / person :ARG1-of (h / have-org-role-92 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
++`(p / person :ARG1-of (h / have-org-role-91 :ARG2 (c / country ...) :ARG3 (p2 / president)))`;
+ *his wife* → `(p / person :ARG1-of (h / have-rel-role-92 :ARG2 p2 :ARG3 (w / wife)))`.
+ 
+ ### 2.4 Pronouns and implicit participants
+@@ -149,7 +153,11 @@
+ - concession `:concession`, condition `:condition`, reason `:reason` (for 由于/因为 phrases giving the reason for a state, an action or a judgement), purpose `:purpose`,
+   manner `:manner`, temporal sequence `:temporal (b / before :op1 ...)` / `after` / `consecutive`;
+ - *if* (如果, 只要) → `:condition` on the main event; *because* (因为, 由于) → `:reason`; *in order to* (为了)
+-  → `:purpose`; *although* (虽然, 尽管) → `:concession`.
++  → `:purpose`; *although* (虽然, 尽管) → `:concession`.- Reified reason and purpose: when a reason marker is paired with a result marker (因为…于是/所以, 由于…而), or a clause has a
++  marked purpose clause (为了, 以, 以便), use `(h / have-reason-91 :ARG1 <result event> :ARG2 <cause event> :aspect state)` and
++  `(h2 / have-purpose-91 :ARG1 <main event> :ARG2 <purpose event> :aspect state)`, nesting have-purpose-91 inside have-reason-91
++  when both occur. Both frames get `(author :full-affirmative h)` and no temporal parent. Keep the `:reason`/`:purpose` roles for
++  unpaired phrases inside one clause.
+ 
+ ### 2.6 Multi-word expressions
+ 
+@@ -183,7 +191,10 @@
+ - Fill only the arguments the syntax provides. Do not borrow a participant from elsewhere in the sentence for a
+   noun compound or a nominal event; in a compound "N1-verb N2", the role is filled by the compound's own noun.
+   The same holds for dropped subjects and objects of finite clauses (in coordination, contrast or a chain of clauses): do not
+-  add a re-entrancy to an earlier mention; leave the argument out. Do not add relations the text does not state (e.g. a
++  add a re-entrancy to an earlier mention; leave the argument out. This also holds for purpose clauses, infinitive-like and
++  trailing clauses (never fill their agent with an entity of the main clause) and for possessors: a word like 旗下 is a `:mod`
++  concept, not a `:possessor` taken from elsewhere. A trailing clause that describes the object just introduced (a new entity and
++  what it holds or does) is a relative clause: attach its event with `:ARGn-of` on that object. Do not add relations the text does not state (e.g. a
+   `:part-of` the words do not express). Use only roles of the closed list; a partitive word (其中, *among them, of which*) is a
+   `:mod` on the noun it modifies.
+ - Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
+@@ -199,6 +210,13 @@
+ - Role choice for noun modifiers: a country, city or place modifying a noun → `:place`; a channel or medium
+   (TV, radio, network, print) → `:medium`; an edition, section or component of a whole → `:part-of` (not
+   `:possessor`).
++- When a component, edition or section noun modifies a named work through 的 ([X] 版 的 《N》), the component noun is the head
++  and the work is its `:part-of`; modifiers of the component (colour, style) stay on it.
++- Change verbs with 由 X 改为/变为 Y: the original X is `:ARG1` and the result Y is `:ARG2`; never `:source`.
++- A "verb + 量" quantity noun whose first part is a clear verb is split: `(q / 量 :quant-of (v / verb-01 :ARG1 <entity>))`, the
++  owner of the quantity being the verb's `:ARG1` (not `:possessor`). An amount it reaches or falls to is
++  `:ARG1-of (h / have-quant-91 :ARG2 <number> :unit <classifier>)` on the quantity noun, not a separate `thing` argument.
++- A modifier that says how a process nominal is done (colour, style, method) is `:manner`, not `:mod`.
+ - Comparatives and superlatives use `have-degree-91`: *the most P X* → `(x / X :ARG1-of (h / have-degree-91
+   :ARG2 (p / P) :ARG3 (m / most)))` (Chinese: `:ARG3 (m / 最)`); *more P than Y* adds `:ARG4 Y`. Use `:degree`
+   only for plain intensifiers (very, too; 很, 非常, 太).
+@@ -216,7 +234,8 @@
+ 
+ Decide in this order before using the table:
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+-   reporting, compiling, broadcasting)? → `habitual`. This holds whatever the tense, and also under an
++   reporting, compiling, broadcasting)? → `habitual`. Only verbs of publishing or reporting; the capacity or content of a
++   publication (contains articles, has N pages) is not habitual (`process` or `state`). This holds whatever the tense, and also under an
+    aspectual verb (continue, stop).
+ 2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
+    An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.
+@@ -238,6 +257,9 @@
+ 
+ Finer values (`inceptive`, `directed-activity`, `semelfactive`, ...) exist in the full guideline; use them
+ only when they are clear.
++
++Also: a purpose or intended action is `activity`; a completed past event in a participle or relative clause
++(left over, inherited) is `performance`, not `state`.
+ 
+ ### 4.2 Polarity, mode, degree, quantity
+ 
+@@ -275,8 +297,13 @@
+   - property modifiers;
+   - vague deictic time words (*now, currently, nowadays*, 现在, 目前, 当前).
+ - Precision counts as much as recall: when a link is not clear, leave it out.
+-- Time expressions: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
+-  今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`.
++- Time expressions: an absolute date in the past gets `(document-creation-time :before s1t)` (a future one `:after`);
++  only a relative deictic one (*today, yesterday*, 今天) gets `(document-creation-time :depends-on s1t)`.
++- An event in the clause of a date or time expression gets `(date :overlap event)`; use `:contained` only when the time
++  expression is clearly a long span and the event a point inside it.
++- Past narrative: the anchor event of each new sentence links to `document-creation-time :before`, not to the previous
++  sentence's event. Link it to an earlier event only when the sentence explicitly continues from it (*also became*, *as a
++  result*, 于是), and then with `:overlap` unless the order is stated.
+ - **Within a sentence, chain the events.** Pick one anchor event (usually the main eventive predicate) and link
+   the other events of the sentence to it: `:overlap` for simultaneous states, `:contained` for a state or event
+   inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
+@@ -296,12 +323,17 @@
+   Copular and identity predicates get no temporal parent but do get a modal parent. Only property words used as plain `:mod`
+   (no aspect) get no links.
+ - A process nominal that is an argument of a verb takes that verb as its temporal parent with `:overlap`; do not leave it without a parent.
+-- Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
++- Then every event: (1) a time expression of its clause, if there is one (`(s1t :overlap s1e)`); else
+   (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+   `document-creation-time` (`(document-creation-time :before s3d)` for a past event, `:overlap` for a
+   present state, `:after` for a future event). Chinese has no tense: decide past, present or future from
+   context, 了, 过, 将, 会.
+-- An event in a complement clause takes its matrix event as parent; a purpose is `:after` its main event.
++- An event in a complement clause takes its matrix event as parent. A purpose event `:overlap`s its main event (never
++  `:after`). A reason or cause event is before its result: `(result :before reason)`; a future marker inside a reason clause about
++  past events is future relative to that past, not after the main event.
++- A relative-clause or participle event that describes an earlier completed event (left over, inherited, built) is before the
++  event whose argument it modifies: `(main :before rc-event)`.
++- An event nominal inside a decomposed quantity noun (see 3.1) `:overlap`s the verb of its clause.
+ - Annotate event–event relations only when they are clear.
+ 
+ ### 5.2 Modal (`:modal`)

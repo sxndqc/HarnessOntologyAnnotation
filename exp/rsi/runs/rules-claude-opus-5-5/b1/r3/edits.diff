@@ -1,0 +1,76 @@
+--- before
++++ after
+@@ -188,8 +188,9 @@
+   `:mod` on the noun it modifies.
+ - Relative clause headed by an aspectual verb ("N that has stopped V-ing"): N is `:ARG1-of` (or `:ARG0-of`) the inner verb, and
+   the aspectual verb is attached to the inner verb by `:ARG1-of`; N is not also an argument of the aspectual verb.
+-- Read the roleset for every role: possession verbs differ (some belong-type rolesets have the owned thing as `:ARG0` and the
+-  owner as `:ARG1`); never assume possessum = `:ARG1`.
++- Read the roleset for every role. For Chinese belong-type rolesets (X belongs to Y), the gold convention is: the thing that
++  belongs = `:ARG0`, the owner = `:ARG1`, even where the PropBank role glosses seem to say the reverse. So "N that belongs to X"
++  is `(n / N :ARG0-of (b / belong-verb :ARG1 X))`. Never assume possessum = `:ARG1`.
+ - Coordination with mixed separators: if the first two items are joined without 、 and the rest with 、, the first pair is its
+   own nested `and` inside the outer `and`.
+ - "Known/famous for X" (…而闻名, 以…著称): the famous entity is the `:ARG1` of the fame predicate, attached as
+@@ -217,7 +218,8 @@
+ 1. Is the event a routine or recurring practice of its subject (an organisation or periodical publishing,
+    reporting, compiling, broadcasting)? → `habitual`. This holds whatever the tense, and also under an
+    aspectual verb (continue, stop).
+-2. Does an aspectual verb taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
++2. Does an aspectual verb of stopping or completion taking an event complement (*has already stopped doing X*) describe a present condition? → `state`.
++   An aspectual verb of continuation or ongoing action in the present (*continues to do X*, 继续) is `activity`.
+    A lexical verb of ending with no event complement (close down, cease publication; 停刊, 倒闭), even with *already*, is `performance`.
+    State verbs (have, own, belong, be; 有, 拥有, 是) stay `state` even with 过, 曾经 or a duration.
+ 3. Is the event a process noun, including the object of a light or experiential verb (经, 经过, 进行, undergo)? → `process`.
+@@ -242,7 +244,7 @@
+ - Negation: `:polarity -` on the negated concept (没, 不, 未, *not, never*); the event's modal strength is
+   then negative (5.2). A negator fused into a verb (未经-type verbs: "without having undergone") gives no
+   `:polarity`. The verb is `full-negative` in the modal layer. Events nested under it do not inherit the
+-  negation: an event nested under the fused-negation verb gets `partial-affirmative`. The concept of a fused-negation verb is the
++  negation: an event nested under the fused-negation verb gets `partial-affirmative`, with `author` as its modal parent (not the negated verb). The concept of a fused-negation verb is the
+   un-negated verb with its own PropBank sense and roles (未经 → the 经-type verb's sense, with `:ARG0`/`:ARG1`), never `<negated word>-00`;
+   its aspect follows that verb (`process` for 经/经过-type verbs). A compound "[process noun] + procedure/method/system noun" is
+   reified as identity: `(p / procedure-noun :ARG0-of (i / identity-91 :ARG1 <event>))`, not `:mod`.
+@@ -269,7 +271,7 @@
+ - **Which nodes get a temporal parent.** Only real eventive predicates and specific time expressions. Do NOT
+   give a temporal parent to:
+   - copular or identity predicates (`identity-91`, `have-role-91` of a defining "A is a B" sentence);
+-  - states used as attributes inside a noun phrase (*famous X*, a relative-clause state);
++  - fame or property states used as attributes inside a noun phrase (*famous X*; see the fame rule below);
+   - property modifiers;
+   - vague deictic time words (*now, currently, nowadays*, 现在, 目前, 当前).
+ - Precision counts as much as recall: when a link is not clear, leave it out.
+@@ -280,10 +282,19 @@
+   inside its span, `:before`/`:after` for sequence. Only the anchor links to `document-creation-time` or to an
+   earlier sentence's event. For the main event of a sentence describing the present situation, the gold data
+   uses `(document-creation-time :depends-on e)`, not `:overlap`: a sentence about the current state (with currently/already, 目前/已经, or a present naming or labelling verb).
+-- **Aspectual verbs.** When an aspectual verb (stop, continue, begin; 停止, 继续, 开始) takes an event, the inner event is the anchor
+-  (e.g. `(document-creation-time :before inner)` for a past habit); the aspectual verb `:overlap`s the inner event, and states or
+-  reasons that hang on it (a fame state, its reason) link to it with `:contained` / `:overlap`. Never give a second event of the
+-  sentence its own link to `document-creation-time`.
++- **Aspectual verbs.** When an aspectual verb (stop, continue, begin; 停止, 继续, 开始) takes an event complement, the aspectual verb
++  is the parent of the complement: `(aspectual :overlap inner)`. In a main clause the aspectual verb hangs on the sentence anchor like
++  any other clause predicate; in a contrast or coordination it `:overlap`s the first clause's anchor event. Only when the aspectual verb
++  is inside a relative clause is the inner event the anchor (e.g. `(document-creation-time :before inner)` for a past habit), with the
++  aspectual verb `:overlap`ping it. Never use `:before`/`:after` between two clauses that both describe the present situation. Never
++  give a second event of the sentence its own link to `document-creation-time`, except the relative-clause anchor just described.
++- **"Famous for X" in a defining sentence.** The fame state gets no temporal parent of its own; it is the parent of the habitual
++  relative-clause event: `(fame :contained habitual-event)`, and that event also keeps its own `document-creation-time` link. The reason
++  event (X) hangs on the habitual event with `:overlap`, not on the fame state.
++- Every node that carries `:aspect` gets a modal parent (normally `author :full-affirmative`). A relative-clause verb with an aspect
++  ("N that belongs to X") also gets a temporal parent: `:overlap` with the event whose argument N is, or with the clause anchor.
++  Copular and identity predicates get no temporal parent but do get a modal parent. Only property words used as plain `:mod`
++  (no aspect) get no links.
+ - A process nominal that is an argument of a verb takes that verb as its temporal parent with `:overlap`; do not leave it without a parent.
+ - Then every event: (1) a time expression of its clause, if there is one (`(s1t :contained s1e)`); else
+   (2) an event before it that is a clear reference time (`(s2c :before s3a)`); else (3)
+@@ -332,7 +343,8 @@
+ Every node of a sentence graph is aligned to the words that express it: `s1x: 4-4` (1-based word positions,
+ first and last, both included). A node with no word in the sentence (`person` for a zero pronoun, `and`
+ without a conjunction, `have-mod-91` without a copula, a `name` node) is `0-0`. A named entity's type
+-node is aligned to the name's words.
++node is aligned to the name's words. When a word occurs more than once in a sentence (e.g. a common noun that also appears
++inside a name), align each node to its own occurrence.
+ 
+ ## 7. Checklist
+ 
