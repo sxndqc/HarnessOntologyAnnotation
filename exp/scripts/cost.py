@@ -22,7 +22,7 @@ import json
 import os
 
 EXP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RUNS = os.path.join(EXP, "runs", "api")
+RUNS = os.path.join(EXP, "runs", "api")     # the current runs; ../obsolete/exp/runs (gpt-6-astra, old prompts) is not estimated
 PRICES = {  # per million tokens: input, cache write, cache read, output
     "claude-opus-5-5-v2": ("claude-opus-5-5", 4.0, 5.0, 0.20, 20.0),
     "gpt-6.1-sol-medium": ("gpt-6.1-sol", 2.0, 2.0, 0.10, 10.0),

@@ -8,8 +8,8 @@
 
 - `sections/`：正文（intro、related、method（AnnoForge）、experiments、results、conclusion、limitations）和附录。
 - `tables/`、`figures/curves.pdf`、`figures/judge.pdf`、`figures/ops.pdf`、`tables/numbers.tex`（正文用的数字宏）：
-  由 `analysis/annoforge.py make` 从 `data/annoforge/` 生成，不要手改。`figures/overview.tex` 是手写的 TikZ 总图。
-- `data/annoforge/`：从实验仓库抽出来的小文件（各条件分数、逐句分数、每轮的反思与操作、每个版本的结构和大小、SOTA 重打分、成本）。
+  由 `analysis/annoforge.py make` 从 `obsolete/data/annoforge/` 生成，不要手改。`figures/overview.tex` 是手写的 TikZ 总图。
+- `obsolete/`：不再是现行结果的旧数据。`obsolete/data/annoforge/` 是 2026 年 10 月 AnnoForge 实验的数据快照（从实验仓库抽出来的小文件：各条件分数、逐句分数、每轮的反思与操作、每个版本的结构和大小、SOTA 重打分、成本），论文的表和图由它生成；`obsolete/exp/runs/` 是 `exp/` 里被取代的旧运行。见 `obsolete/README.md`。
 - `analysis/annoforge.py`：`extract --src ../SkillParseUMR` 抽数据，`make` 出表、图、宏和统计检验。
 - `notes/new_references.md`、`notes/new_references.bib`：这次新增的 46 条参考文献及核实记录（已并入 `references.bib`）；
   `notes/references_verification.md`：之前的核实记录。

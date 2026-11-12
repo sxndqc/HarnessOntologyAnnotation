@@ -13,6 +13,7 @@ import os
 
 EXP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS = os.path.join(EXP, "runs")
+OBSOLETE = os.path.join(os.path.dirname(EXP), "obsolete", "exp", "runs")   # superseded runs (obsolete/README.md)
 SUBS = ["s1-abridged", "s1-full", "s2-search", "s2-propbank", "s2-gold"]
 API_SUBS = SUBS + ["s3-all", "a1-sentence-propbank", "a2-sentence-all"]
 SHORT = {"s3-all": "+all three tools", "a1-sentence-propbank": "+PropBank by sentence",
@@ -87,8 +88,8 @@ def metrics(scores, docs):
     return m, have
 
 
-def load(method, sub, label):
-    p = os.path.join(RUNS, method, sub, label, "scores.json")
+def load(method, sub, label, root=RUNS):
+    p = os.path.join(root, method, sub, label, "scores.json")
     return json.load(open(p, encoding="utf-8"))["docs"] if os.path.exists(p) else None
 
 
@@ -106,12 +107,12 @@ def fmt(x):
     return "–" if x is None else "%.1f" % x
 
 
-def table(cols, docs, delta_of=None):
+def table(cols, docs, delta_of=None, root=RUNS):
     """cols: [(header, method, sub, label)]; delta_of: {header: header of its baseline}."""
     data = {}
     heads = []
     for h, method, sub, label in cols:
-        s = load(method, sub, label)
+        s = load(method, sub, label, root)
         if s is None:
             continue
         m, have = metrics(s, docs)
@@ -176,8 +177,9 @@ def main():
             cols += [("%s whole document" % n, m, "s2-propbank", l), ("%s by sentence" % n, m, "a1-sentence-propbank", l)]
             delta["%s by sentence" % n] = "%s whole document" % n
         lines += table(cols, ds, delta) + [""]
-        lines += ["### API, the other GPT model: gpt-6-astra (effort medium)", ""]
-        lines += table([("gpt-6-astra %s" % SHORT[s], "api", s, "gpt-6-astra-medium") for s in SUBS], ds) + [""]
+        lines += ["### Archived (obsolete/exp/runs): gpt-6-astra (effort medium), the GPT model used before gpt-6.1-sol", ""]
+        lines += table([("gpt-6-astra %s" % SHORT[s], "api", s, "gpt-6-astra-medium") for s in SUBS], ds,
+                       root=OBSOLETE) + [""]
         lines += ["### Claude: API, Claude Code, chat (claude.ai); ChatGPT chat as far as there are answers", ""]
         cols = []
         for s in SUBS:

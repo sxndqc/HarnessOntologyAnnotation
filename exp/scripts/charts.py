@@ -17,6 +17,13 @@ CSS = """
 .viz .b1{fill:var(--s1)} .viz .b2{fill:var(--s2)} .viz .b3{fill:var(--s3)}
 .viz .hit{fill:transparent;cursor:default} .viz .mk{pointer-events:none} .viz .hit:hover+.mk,.viz .hit:focus+.mk{opacity:.75}
 .viz .cell{fill:var(--cl)} .viz .hit:focus{outline:none}
+.viz .ring,.viz .dia{stroke:var(--surface);stroke-width:2;pointer-events:none} .viz .rk{fill:none;stroke:var(--ink2);stroke-width:1.5}
+.viz .ring.s1,.viz .dia.s1{fill:var(--s1);filter:brightness(.72)} .viz .ring.s2,.viz .dia.s2{fill:var(--s2);filter:brightness(.72)}
+.viz .ring.s3,.viz .dia.s3{fill:var(--s3);filter:brightness(.72)}
+.metricbar{display:flex;gap:6px;margin:.6rem 0} .metricbar button{font:inherit;font-size:.85rem;padding:3px 10px;border-radius:6px;
+ border:1px solid rgba(11,11,11,.15);background:transparent;color:inherit;cursor:pointer}
+.metricbar button[aria-pressed="true"]{background:#2a78d6;color:#fff;border-color:#2a78d6}
+[data-metric-view][hidden]{display:none}
 .vizrow{display:flex;flex-wrap:wrap;gap:12px}
 #viztip{position:fixed;pointer-events:none;z-index:10;background:var(--surface,#fcfcfb);color:#0b0b0b;
  border:1px solid rgba(11,11,11,.12);border-radius:6px;padding:6px 8px;font-size:12px;display:none;
@@ -24,6 +31,8 @@ CSS = """
 #viztip .h{color:#52514e;margin-bottom:3px} #viztip .r{display:flex;align-items:center;gap:6px}
 #viztip .k{width:12px;height:2px} #viztip b{font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme: dark){
+ .metricbar button{border-color:rgba(255,255,255,.2)} .metricbar button[aria-pressed="true"]{background:#3987e5;border-color:#3987e5}
+ .viz .ring.s1,.viz .dia.s1,.viz .ring.s2,.viz .dia.s2,.viz .ring.s3,.viz .dia.s3{filter:brightness(1.35)}
  .viz{--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;
   border-color:rgba(255,255,255,.10)} .viz .cell{fill:var(--cd)}
  #viztip{background:#1a1a19;color:#f0efec;border-color:rgba(255,255,255,.12)} #viztip .h{color:#c3c2b7}}
@@ -39,6 +48,12 @@ function show(el,x,y){var d=JSON.parse(el.getAttribute('data-tip'));tip.textCont
   var s=document.createElement('span');s.textContent=r.n;row.appendChild(s);tip.appendChild(row);});
  tip.style.display='block';var w=tip.offsetWidth,hh=tip.offsetHeight;
  tip.style.left=Math.min(x+14,innerWidth-w-8)+'px';tip.style.top=Math.max(8,y-hh-10)+'px';}
+document.querySelectorAll('.metricbar').forEach(function(bar){
+ var group=bar.getAttribute('data-group');
+ bar.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){
+  bar.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+  document.querySelectorAll('[data-metric-group="'+group+'"]').forEach(function(v){
+   v.hidden=v.getAttribute('data-metric-view')!==b.getAttribute('data-metric');});});});});
 document.querySelectorAll('.viz [data-tip]').forEach(function(el){
  el.addEventListener('pointermove',function(e){show(el,e.clientX,e.clientY);});
  el.addEventListener('pointerleave',function(){tip.style.display='none';});
@@ -61,13 +76,15 @@ def _bar(x0, y, w, h, cls):
 
 
 def grouped_hbar(title, cats, series, xmax, unit="", step=10, refs=(), label_w=210, width=640, fmt="%.1f",
-                 note_best=True):
+                 note_best=True, marks=None):
     """cats: [category]; series: [(name, slot 1-3, [value or None per category])]; refs: [(label, value)]
     drawn as solid hairlines. The best value of each series is labelled at its bar tip; every value is in
-    the tooltip and in the table below the chart."""
-    bar, gap, pad = 11, 2, 10
+    the tooltip and in the table below the chart. marks: per series [(recall, precision) or None per
+    category], drawn on the bar's row as a ring (recall) and a diamond (precision) in the series color;
+    the bar is then the F1."""
+    bar, gap, pad = (13 if marks else 11), 2, 10
     band = len(series) * bar + (len(series) - 1) * gap + pad * 2
-    top, legend_h = 26, 22
+    top, legend_h = 26, (38 if marks and refs else 22)
     plot_w = width - label_w - 40
     h = top + legend_h + band * len(cats) + 26
     sx = lambda v: label_w + plot_w * v / xmax
@@ -78,6 +95,14 @@ def grouped_hbar(title, cats, series, xmax, unit="", step=10, refs=(), label_w=2
         out.append('<rect class="b%d" x="%d" y="%d" width="10" height="10" rx="2"/>' % (slot, lx, top + 2))
         out.append('<text class="lab" x="%d" y="%d">%s</text>' % (lx + 14, top + 11, _e(name)))
         lx += 24 + 7.5 * len(name) + (6 * sum(1 for ch in name if ord(ch) > 0x2e80))
+    if marks:                      # legend of the two markers, in neutral ink: shape only
+        out.append('<text class="lab" x="%d" y="%d">条 = F1</text>' % (lx, top + 11))
+        lx += 56
+        out.append('<circle class="rk" cx="%d" cy="%d" r="4"/>' % (lx + 4, top + 7))
+        out.append('<text class="lab" x="%d" y="%d">召回 R</text>' % (lx + 12, top + 11))
+        lx += 62
+        out.append('<path class="rk" d="M%d,%d l4.5,4.5 l-4.5,4.5 l-4.5,-4.5 z"/>' % (lx + 4, top + 2.5))
+        out.append('<text class="lab" x="%d" y="%d">精确 P</text>' % (lx + 12, top + 11))
     y0 = top + legend_h
     v = 0
     while v <= xmax + 1e-9:          # hairline grid + ticks
@@ -98,17 +123,34 @@ def grouped_hbar(title, cats, series, xmax, unit="", step=10, refs=(), label_w=2
         for si, (name, slot, vals) in enumerate(series):
             val = vals[ci]
             y = yb + pad + si * (bar + gap)
-            tipd = {"h": cat, "rows": [{"v": ("–" if vv[2][ci] is None else (fmt % vv[2][ci]) + unit), "n": vv[0],
-                                        "c": "--s%d" % vv[1]} for vv in series]}
+            tipd = {"h": cat, "rows": [{"v": ("–" if vv[2][ci] is None else (fmt % vv[2][ci]) + unit), "n": vv[0]
+                                        + (" F1" if marks else ""), "c": "--s%d" % vv[1]} for vv in series]}
+            if marks:
+                for k, vv in enumerate(series):
+                    rp = marks[k][ci]
+                    if rp:
+                        tipd["rows"].append({"v": "R %s · P %s" % tuple("–" if x is None else fmt % x for x in rp),
+                                             "n": vv[0], "c": "--s%d" % vv[1]})
             out.append('<rect class="hit" tabindex="0" x="%d" y="%.1f" width="%d" height="%d" data-tip="%s"/>' % (
                 label_w, y - gap, plot_w + 30, bar + 2 * gap, _e(json.dumps(tipd, ensure_ascii=False))))
             if val is None:
                 out.append('<g class="mk"></g>')
                 continue
             out.append(_bar(label_w, y, sx(val) - label_w, bar, "b%d" % slot))
+            rp = marks[si][ci] if marks else None
+            ends = [sx(val)]
+            if rp:
+                cy = y + bar / 2
+                if rp[0] is not None:
+                    out.append('<circle class="ring s%d" cx="%.1f" cy="%.1f" r="4.5"/>' % (slot, sx(rp[0]), cy))
+                    ends.append(sx(rp[0]) + 6)
+                if rp[1] is not None:
+                    x = sx(rp[1])
+                    out.append('<path class="dia s%d" d="M%.1f,%.1f l5.5,5.5 l-5.5,5.5 l-5.5,-5.5 z"/>' % (slot, x, cy - 5.5))
+                    ends.append(x + 7)
             if note_best and val == best[si]:
                 out.append('<text class="val" x="%.1f" y="%.1f" dominant-baseline="middle">%s%s</text>' % (
-                    sx(val) + 4, y + bar / 2, fmt % val, unit))
+                    max(ends) + 4, y + bar / 2, fmt % val, unit))
         out.append('<line class="base" x1="%d" x2="%d" y1="%.1f" y2="%.1f"/>' % (label_w, label_w, yb, yb + band))
     out.append("</svg>")
     return '<div class="viz">%s</div>' % "".join(out)

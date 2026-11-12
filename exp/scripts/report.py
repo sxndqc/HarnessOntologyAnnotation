@@ -29,7 +29,7 @@ NAME = {"s1-abridged": "s1-abridged：缩略版 guideline", "s1-full": "s1-full�
         "s2-search": "s2-search：缩略版 + guideline 搜索", "s2-propbank": "s2-propbank：缩略版 + PropBank",
         "s2-gold": "s2-gold：缩略版 + gold 例子", "s3-all": "s3-all：缩略版 + 三个工具",
         "a1-sentence-propbank": "a1：PropBank，一句句跑", "a2-sentence-all": "a2：三个工具，一句句跑"}
-HEATNAME = {"juːmæʧ F": "juːmæʧ F", "Smatch F": "Smatch F", "b_event_sense": "b 谓词义项号",
+HEATNAME = {"juːmæʧ F": "juːmæʧ", "Smatch F": "Smatch", "b_event_sense": "b 谓词义项号",
             "a_event_concept": "a 事件概念", "a_entity_concept": "a 实体概念", "d_core_args_event": "d 事件核心论元",
             "d_core_args_abstract": "d 抽象事件核心论元", "e_core_labels": "e 核心角色标签",
             "e_peripheral_labels": "e 非核心角色标签", "c_aspect": "c aspect", "c_refer": "c 人称/数（代词）",
@@ -40,7 +40,7 @@ HEATCOL = {"s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank"
 SHORTNAME = {"s1-abridged": "abridged", "s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank",
              "s2-gold": "+gold", "s3-all": "+三个工具", "a1-sentence-propbank": "a1 一句句·PropBank",
              "a2-sentence-all": "a2 一句句·三个工具"}
-CLAUDE, SOL, ASTRA = "claude-opus-5-5-v2", "gpt-6.1-sol-medium", "gpt-6-astra-medium"
+CLAUDE, SOL = "claude-opus-5-5-v2", "gpt-6.1-sol-medium"
 
 
 def e(x):
@@ -53,8 +53,11 @@ def fmt(x, signed=False):
     return ("%+.1f" % x) if signed else ("%.1f" % x)
 
 
-def m(method, sub, label, docs):
-    s = B.load(method, sub, label)
+OBS = B.OBSOLETE    # ../obsolete/exp/runs: the old-prompt Claude runs and gpt-6-astra
+
+
+def m(method, sub, label, docs, root=RUNS):
+    s = B.load(method, sub, label, root)
     if s is None:
         return None
     r, have = B.metrics(s, docs)
@@ -123,9 +126,8 @@ def trace_stats(method, sub, label, docs):
     return out
 
 
-def _measured_as(sub, lab, key):
-    """K.measured for a run whose label is not in K.PRICES (the old-prompt Claude runs), priced as key."""
-    d = os.path.join(RUNS, "api", sub, lab)
+def _measured_as(d, key):
+    """{doc: (input $, output $)} of the run directory d, priced as the model key."""
     out = {}
     for f in os.listdir(d):
         if f.endswith(".trace.json"):
@@ -149,7 +151,7 @@ def v1_autoaligned():
     for sub in SUBS:
         J = [0, 0, 0]
         for d in ZH:
-            raw = open(os.path.join(RUNS, "api", sub, "claude-opus-5-5", d + ".raw.txt"), encoding="utf-8").read()
+            raw = open(os.path.join(OBS, "api", sub, "claude-opus-5-5", d + ".raw.txt"), encoding="utf-8").read()
             noal = re.sub(r"# alignment:\n(?:[^\n#(]*\n)*", "", raw)
             umr, _ = umrdoc.parse_answer(R.doc_of(d), noal)
             p = os.path.join(out_dir, "%s.%s.umr" % (sub, d))
@@ -190,7 +192,7 @@ def main():
              "从仓库里的分数和记录生成。测试数据和打分方式与 DMR 2026 UMR parsing shared task 一致（UMR 2.2 官方测试集和 gold）。</p>" % e(commit))
     P.append("<nav>" + "".join('<a href="#%s">%s</a>' % (a, t) for a, t in [
         ("summary", "要点"), ("setup", "设定"), ("main", "主表"), ("methods", "三种方法"), ("chat", "chat"),
-        ("prompt", "prompt 版本"), ("breakdown", "分项"), ("ablation", "一句句跑"), ("alltools", "三个工具"),
+        ("archived", "已归档的旧结果"), ("breakdown", "分项"), ("ablation", "一句句跑"), ("alltools", "三个工具"),
         ("usage", "工具与用量"), ("cost", "花费"), ("caveats", "局限"), ("files", "文件")]) + "</nav>")
 
     # ---------------------------------------------------------------- summary
@@ -231,7 +233,7 @@ def main():
     P.append(table(["方法", "模型 / 标签", "说明"], [
         ["API", "claude-opus-5-5（标签 claude-opus-5-5-v2）", "effort medium，adaptive thinking；不开拒答回退，每个回答都出自这个模型"],
         ["API", "gpt-6.1-sol（gpt-6.1-sol-medium）", "OpenAI Responses API，reasoning effort medium，同样的 prompt、工具和循环"],
-        ["API", "gpt-6-astra（gpt-6-astra-medium）", "同上，先跑的另一个 GPT 模型，作参考"],
+        ["API（已归档）", "gpt-6-astra（gpt-6-astra-medium）", "先跑的另一个 GPT 模型，5 个条件；后来改用 gpt-6.1-sol，结果移到 obsolete/，见“已归档的旧结果”"],
         ["Claude Code", "claude-opus-5-5（claude-code）", "订阅；每篇一个工作目录（TASK.md + guideline 文件 + 工具命令），只能读本目录、运行工具、写 answer.txt"],
         ["chat", "claude.ai（claude-ai）", "人工把 prompt 贴进 chat 窗口，附件代替工具"],
         ["chat", "ChatGPT（chatgpt、chatgpt-6-astra-high）", "同上"]]))
@@ -253,42 +255,47 @@ def main():
     cats = [SHORTNAME[s] for s in B.API_SUBS]
     ch = []
     for lang, ds in (("中文（zh-0028 + zh-0032）", ZH), ("英文（en-0008）", EN)):
-        series = []
+        series, marks = [], []
         for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL)):
-            series.append((name, slot, [(m("api", s, lab, ds) or {}).get("juːmæʧ F") for s in B.API_SUBS]))
+            xs = [m("api", s, lab, ds) or {} for s in B.API_SUBS]
+            series.append((name, slot, [x.get("juːmæʧ F") for x in xs]))
+            marks.append([(x["juːmæʧ R"], x["juːmæʧ P"]) if x else None for x in xs])
         refs = [("Orange %.1f" % m("shared-task", "", "orange", ds)["juːmæʧ F"], m("shared-task", "", "orange", ds)["juːmæʧ F"])]
-        ch.append(C.grouped_hbar("juːmæʧ F，%s" % lang, cats, series, 70, refs=refs, label_w=140, width=530))
+        ch.append(C.grouped_hbar("juːmæʧ，%s" % lang, cats, series, 70, refs=refs, label_w=140, width=540, marks=marks))
     P.append('<div class="vizrow">%s</div>' % "".join(ch))
-    P.append('<p class="note">每个条件两根条：Claude Opus 5.5（蓝）和 GPT-6.1 Sol（橙），effort 都是 medium。竖线是参赛队伍 Orange 在同样文件上的分数。'
-             "条尾的数字只标每个模型最高的一项，其余在悬停提示和下表里。</p>")
+    P.append('<p class="note">每个条件两根条：Claude Opus 5.5（蓝）和 GPT-6.1 Sol（橙），effort 都是 medium。条的长度是 F1，'
+             "同一行上的圆点是召回 R、菱形是精确 P（颜色同模型）。竖线是参赛队伍 Orange 在同样文件上的 F1。"
+             "条尾的数字只标每个模型 F1 最高的一项，其余在悬停提示和下表里。</p>")
     rows = []
+    cell = lambda x: [fmt(x and x["juːmæʧ F"]), fmt(x and x["juːmæʧ R"]), fmt(x and x["juːmæʧ P"]),
+                      fmt(x and x["Smatch F"]), fmt(x and x["Smatch R"]), fmt(x and x["Smatch P"])]
     for sub in B.API_SUBS:
         r = [NAME[sub]]
         for docs in (ZH, EN):
-            for lab in (CLAUDE, SOL, ASTRA):
-                x = m("api", sub, lab, docs)
-                r += [fmt(x and x["juːmæʧ F"]), fmt(x and x["Smatch F"])]
+            for lab in (CLAUDE, SOL):
+                r += cell(m("api", sub, lab, docs))
         rows.append(r)
     for sysname in ("orange", "sema"):
         r = ["对照：参赛队伍 %s" % sysname.capitalize()]
         for docs in (ZH, EN):
-            x = m("shared-task", "", sysname, docs)
-            r += [fmt(x and x["juːmæʧ F"]), fmt(x and x["Smatch F"]), "", "", "", ""]
+            r += cell(m("shared-task", "", sysname, docs)) + [""] * 6
         rows.append(r)
-    head = ["条件", "中文 Claude J", "S", "中文 GPT-sol J", "S", "中文 GPT-astra J", "S",
-            "英文 Claude J", "S", "英文 GPT-sol J", "S", "英文 GPT-astra J", "S"]
-    P.append(table(head, rows, best=[1, 3, 5],
-                   note="J = juːmæʧ F，S = Smatch F。中文 = zh-0028 + zh-0032，英文 = en-0008。粗体：这一行中文三个模型里 juːmæʧ 最高的。"
-                        "参赛队伍的英文列放在 Claude 的位置上，只作对照。"))
+    head = ["条件"] + ["%s %s %s" % (lg, md, k) for lg in ("中文", "英文") for md in ("Claude", "GPT")
+                       for k in ("J F", "J R", "J P", "S F", "S R", "S P")]
+    P.append(table(head, rows, best=[1, 7],
+                   note="J = juːmæʧ，S = Smatch；F = F1，R = 召回，P = 精确。中文 = zh-0028 + zh-0032（计数加总），英文 = en-0008。"
+                        "粗体：这一行中文两个模型里 juːmæʧ F1 较高的。参赛队伍的列放在 Claude 的位置上，只作对照。"))
 
     # ---------------------------------------------------------------- methods
     P.append('<h2 id="methods">Claude 的三种方法：API、Claude Code、chat（juːmæʧ F）</h2>')
-    series = []
+    series, marks = [], []
     for name, slot, method, lab in (("API", 1, "api", CLAUDE), ("Claude Code", 2, "harness", "claude-code"),
                                     ("claude.ai chat", 3, "chat", "claude-ai")):
-        series.append((name, slot, [(m(method, s, lab, ZH) or {}).get("juːmæʧ F") for s in SUBS]))
-    P.append(C.grouped_hbar("juːmæʧ F，中文两篇，同一个模型（Claude Opus 5.5）的三种用法", [SHORTNAME[s] for s in SUBS], series, 60,
-                            label_w=110, width=560))
+        xs = [m(method, s, lab, ZH) or {} for s in SUBS]
+        series.append((name, slot, [x.get("juːmæʧ F") for x in xs]))
+        marks.append([(x["juːmæʧ R"], x["juːmæʧ P"]) if x else None for x in xs])
+    P.append(C.grouped_hbar("juːmæʧ，中文两篇，同一个模型（Claude Opus 5.5）的三种用法", [SHORTNAME[s] for s in SUBS], series, 60,
+                            label_w=110, width=600, marks=marks))
     P.append('<p class="note">没有条的格子是没跑（chat 只做了 abridged；chat 的 +PropBank 只有 zh-0032 一篇，不在两篇合计里）。</p>')
     rows = []
     for sub in SUBS:
@@ -325,7 +332,23 @@ def main():
                    note="格式检查是 umrtools validate.py --level 2；没通过的都是图里有环，gold 在同样的句子也有环，照常计分。"))
 
     # ---------------------------------------------------------------- prompt
-    P.append('<h2 id="prompt">prompt 的两个版本（Claude API，中文，juːmæʧ F）</h2>')
+    P.append('<h2 id="archived">已归档的旧结果（<code>obsolete/exp/runs/</code>）</h2>')
+    P.append("<p>被后来的结果取代、移到仓库根目录 <code>obsolete/</code> 的运行，见 <code>obsolete/README.md</code>"
+             "（那里也放着 2026 年 10 月 AnnoForge 实验的数据快照 <code>obsolete/data/annoforge/</code>）。</p>")
+    P.append("<h3>gpt-6-astra（effort medium），现在的 prompt：后来改用 gpt-6.1-sol</h3>")
+    rows = []
+    for sub in SUBS:
+        r = [NAME[sub]]
+        for docs in (ZH, EN):
+            x = m("api", sub, "gpt-6-astra-medium", docs, OBS)
+            r += [fmt(x and x["juːmæʧ F"]), fmt(x and x["juːmæʧ R"]), fmt(x and x["juːmæʧ P"]), fmt(x and x["Smatch F"])]
+        rows.append(r)
+    P.append(table(["条件", "中文 J F", "J R", "J P", "S F", "英文 J F", "J R", "J P", "S F"], rows))
+    for lang, ds in (("中文（zh-0028 + zh-0032）", ZH), ("英文（en-0008）", EN)):
+        P.append("<details><summary>%s：gpt-6-astra 的分项</summary>" % lang)
+        P.append(md_table(B.table([("gpt-6-astra %s" % B.SHORT[s], "api", s, "gpt-6-astra-medium") for s in SUBS], ds,
+                                  root=OBS)) + "</details>")
+    P.append("<h3>prompt 的第一版（Claude API，中文，juːmæʧ F）</h3>")
     v1 = v1_autoaligned()
     rows = []
     for sub in SUBS:
@@ -346,22 +369,32 @@ def main():
     keys = ["juːmæʧ F", "Smatch F", "b_event_sense", "a_event_concept", "a_entity_concept", "d_core_args_event",
             "d_core_args_abstract", "e_core_labels", "e_peripheral_labels", "c_aspect", "c_refer", "f_name_tokens",
             "g_reentrancy", "h_temporal", "i_modal", "j_coref_chain"]
-    hm = []
-    for title, lab in (("Claude Opus 5.5", CLAUDE), ("GPT-6.1 Sol", SOL)):
-        base = m("api", "s1-abridged", lab, ZH)
-        cols = B.API_SUBS[1:]
-        vals = []
-        for k in keys:
-            row = []
-            for sub in cols:
-                x = m("api", sub, lab, ZH)
-                row.append(None if not x or x.get(k) is None or base.get(k) is None else x[k] - base[k])
-            vals.append(row)
-        hm.append(C.heatmap("%s：相对 abridged 的变化（中文，分）" % title, [HEATNAME.get(k, k) for k in keys],
-                            [HEATCOL[s] for s in cols], vals, vmax=20, label_w=190, cell=(60, 22)))
-    P.append('<div class="vizrow">%s</div>' % "".join(hm))
-    P.append('<p class="note">每格是这个条件减去同一模型 s1-abridged 的分差：蓝 = 更高，红 = 更低，灰 = 不变；±20 分以上颜色不再加深。'
-             "a1 = PropBank 一句句跑，a2 = 三个工具一句句跑。精确数值见悬停提示和下面的表。</p>")
+    def key_of(k, metric):
+        if metric == "F":
+            return k
+        return k[:-2] + " " + metric if k in ("juːmæʧ F", "Smatch F") else k + " " + metric
+    P.append('<div class="metricbar" data-group="heat" role="group" aria-label="热力图显示哪一个指标">'
+             '<button data-metric="F" aria-pressed="true">F1</button><button data-metric="R" aria-pressed="false">召回 R</button>'
+             '<button data-metric="P" aria-pressed="false">精确 P</button></div>')
+    for metric, mname in (("F", "F1"), ("R", "召回 R"), ("P", "精确 P")):
+        hm = []
+        for title, lab in (("Claude Opus 5.5", CLAUDE), ("GPT-6.1 Sol", SOL)):
+            base = m("api", "s1-abridged", lab, ZH)
+            cols = B.API_SUBS[1:]
+            vals = []
+            for k in keys:
+                kk = key_of(k, metric)
+                row = []
+                for sub in cols:
+                    x = m("api", sub, lab, ZH)
+                    row.append(None if not x or x.get(kk) is None or base.get(kk) is None else x[kk] - base[kk])
+                vals.append(row)
+            hm.append(C.heatmap("%s：%s 相对 abridged 的变化（中文，分）" % (title, mname), [HEATNAME.get(k, k) for k in keys],
+                                [HEATCOL[s] for s in cols], vals, vmax=20, label_w=190, cell=(60, 22)))
+        P.append('<div class="vizrow" data-metric-group="heat" data-metric-view="%s"%s>%s</div>' % (
+            metric, "" if metric == "F" else " hidden", "".join(hm)))
+    P.append('<p class="note">用上面的按钮切换 F1、召回、精确。每格是这个条件减去同一模型 s1-abridged 的分差：蓝 = 更高，红 = 更低，'
+             "灰 = 不变；±20 分以上颜色不再加深。a1 = PropBank 一句句跑，a2 = 三个工具一句句跑。精确数值见悬停提示和下面的表。</p>")
     for lang, ds in (("中文（zh-0028 + zh-0032）", ZH), ("英文（en-0008）", EN)):
         P.append("<h3>%s：每个条件的绝对分数</h3>" % lang)
         cols = [("%s %s" % (n, B.SHORT[s]), mm, s, l) for n, mm, l in systems for s in B.API_SUBS]
@@ -383,8 +416,7 @@ def main():
         for lab in ("chatgpt-6-astra-high", "chatgpt"):
             cols += [("ChatGPT chat (%s) %s" % (lab, B.SHORT[s]), "chat", s, lab) for s in SUBS]
         P.append(md_table(B.table(cols, ds)) + "</details>")
-        P.append("<details><summary>%s：gpt-6-astra 的分项</summary>" % lang)
-        P.append(md_table(B.table([("gpt-6-astra %s" % B.SHORT[s], "api", s, ASTRA) for s in SUBS], ds)) + "</details>")
+
 
     # ---------------------------------------------------------------- ablation
     P.append('<h2 id="ablation">一句句跑对整篇一次标：a1（PropBank）对 s2-propbank，a2（三个工具）对 s3-all</h2>')
@@ -392,9 +424,12 @@ def main():
     pairs = ["s2-propbank", "a1-sentence-propbank", "s3-all", "a2-sentence-all"]
     ch = []
     for lang, ds in (("中文", ZH), ("英文", EN)):
-        series = [(name, slot, [(m("api", s, lab, ds) or {}).get("juːmæʧ F") for s in pairs])
-                  for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL))]
-        ch.append(C.grouped_hbar("juːmæʧ F，%s" % lang, cats, series, 70, label_w=130, width=520))
+        series, marks = [], []
+        for name, slot, lab in (("Claude Opus 5.5", 1, CLAUDE), ("GPT-6.1 Sol", 2, SOL)):
+            xs = [m("api", s, lab, ds) or {} for s in pairs]
+            series.append((name, slot, [x.get("juːmæʧ F") for x in xs]))
+            marks.append([(x["juːmæʧ R"], x["juːmæʧ P"]) if x else None for x in xs])
+        ch.append(C.grouped_hbar("juːmæʧ，%s" % lang, cats, series, 70, label_w=130, width=540, marks=marks))
     P.append('<div class="vizrow">%s</div>' % "".join(ch))
     for lang, ds in (("中文", ZH), ("英文", EN)):
         cols, delta = [], {}
@@ -440,7 +475,7 @@ def main():
     rows = []
     for sub in B.API_SUBS:
         for title, method, lab in (("Claude API", "api", CLAUDE), ("GPT-sol API", "api", SOL),
-                                   ("GPT-astra API", "api", ASTRA), ("Claude Code", "harness", "claude-code")):
+                                   ("Claude Code", "harness", "claude-code")):
             st = trace_stats(method, sub, lab, DOCS)
             if not any(st):
                 continue
@@ -475,18 +510,19 @@ def main():
                         "输出侧按词数放大；输入侧在 s1-abridged、s1-full 按文件数（主要是每篇都一样的 guideline），一句句跑的按句数，其余按词数。"
                         "只有 3 篇，误差大约 ±50%%；英文 en-0000 有 2,120 个词，整篇一次标可能碰到输出上限。价格（每百万 token）："
                         "claude-opus-5-5 输入 $4、写缓存 $5、读缓存 $0.20、输出 $20；gpt-6.1-sol 输入 $2、读缓存 $0.10、输出 $10；"
-                        "gpt-6-astra 输入 $10、读缓存 $1、输出 $50（OpenAI 价格页，2026 年 11 月）。gpt-6-astra 只跑过前 5 个条件，"
-                        "全量约 $%.0f。Claude Code 和 chat 走订阅，不在这里。" % tot[ASTRA]))
+                        "gpt-6-astra 输入 $10、读缓存 $1、输出 $50（OpenAI 价格页，2026 年 11 月；gpt-6-astra 已归档，不估算）。"
+                        "Claude Code 和 chat 走订阅，不在这里。"))
     spent = {}
-    for sub in os.listdir(os.path.join(RUNS, "api")):
-        for lab in os.listdir(os.path.join(RUNS, "api", sub)):
-            key = CLAUDE if lab.startswith("claude") else lab
-            if key not in K.PRICES:
-                continue
-            for d, (i, o) in K.measured(sub, lab).items() if lab in K.PRICES else _measured_as(sub, lab, key).items():
-                spent[key] = spent.get(key, 0) + i + o
-    P.append('<p class="note">到目前为止 API 实际用掉的（按上面的价格算，所有跑过的 API 运行）：Claude 约 $%.0f，gpt-6.1-sol 约 $%.0f，'
-             "gpt-6-astra 约 $%.0f。</p>" % (spent.get(CLAUDE, 0), spent.get(SOL, 0), spent.get(ASTRA, 0)))
+    for root in (RUNS, OBS):
+        for sub in os.listdir(os.path.join(root, "api")):
+            for lab in os.listdir(os.path.join(root, "api", sub)):
+                key = CLAUDE if lab.startswith("claude") else lab
+                if key not in K.PRICES:
+                    continue
+                for d, (i, o) in _measured_as(os.path.join(root, "api", sub, lab), key).items():
+                    spent[key] = spent.get(key, 0) + i + o
+    P.append('<p class="note">到目前为止 API 实际用掉的（按上面的价格算，所有跑过的 API 运行，包括已归档的）：Claude 约 $%.0f，gpt-6.1-sol 约 $%.0f，'
+             "gpt-6-astra 约 $%.0f。</p>" % (spent.get(CLAUDE, 0), spent.get(SOL, 0), spent.get("gpt-6-astra-medium", 0)))
 
     # ---------------------------------------------------------------- caveats
     P.append('<h2 id="caveats">局限和下一步</h2><ul>'

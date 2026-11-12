@@ -1,7 +1,8 @@
 """Write <doc>.prompt.md and <doc>.transcript.json for API runs made before run.py wrote them, from the
 answer cache (.cache/answers/), without asking the API again and without scoring again.
 
-    python3 exp/scripts/export_api_transcripts.py claude-opus-5-5 --rev 6fa791b   # prompts as at that commit
+    python3 exp/scripts/export_api_transcripts.py claude-opus-5-5 --rev 6fa791b --runs ../obsolete/exp/runs
+                                                   # prompts as at that commit; the run is archived in obsolete/exp/runs
     python3 exp/scripts/export_api_transcripts.py claude-opus-5-5-v2
 
 For every runs/api/<sub>/<label>/<doc>.trace.json: the prompt is rendered from api/<sub>/ as at --rev
@@ -31,11 +32,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("label")
     ap.add_argument("--rev", default="")
+    ap.add_argument("--runs", default="runs", help="where the runs are, relative to exp/ (runs, or ../obsolete/exp/runs)")
     a = ap.parse_args()
     import tools.search as search
     R.skip_test(search)
     for sub in R.SUBS:
-        out_dir = os.path.join(R.RUNS, "api", sub, a.label)
+        out_dir = os.path.join(EXP, a.runs, "api", sub, a.label)
         if not os.path.isdir(out_dir):
             continue
         reg = registry.load(os.path.join(EXP, "api", sub, "registry.yaml"))

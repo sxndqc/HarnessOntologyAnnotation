@@ -1,7 +1,7 @@
 """Data, tables, figures and number macros of the AnnoForge paper.
 
-    python3 analysis/annoforge.py extract --src ../SkillParseUMR    # snapshot -> data/annoforge/
-    python3 analysis/annoforge.py make                               # data/annoforge/ -> tables/, figures/
+    python3 analysis/annoforge.py extract --src ../SkillParseUMR    # snapshot -> obsolete/data/annoforge/
+    python3 analysis/annoforge.py make                               # obsolete/data/annoforge/ -> tables/, figures/
 
 extract reads experiment/annoforge of a SkillParseUMR checkout (runs/, harness/, results/) and writes small
 JSON files; make needs only those files (Overleaf does not run Python: commit what make writes).
@@ -17,7 +17,7 @@ from collections import Counter, defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-DATA = os.path.join(ROOT, "data", "annoforge")
+DATA = os.path.join(ROOT, "obsolete", "data", "annoforge")   # the October 2026 snapshot, archived
 TABLES = os.path.join(ROOT, "tables")
 FIGURES = os.path.join(ROOT, "figures")
 BENCHES = ["umr-zh", "umr-en", "timeml"]
