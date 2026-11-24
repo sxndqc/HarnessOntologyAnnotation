@@ -151,12 +151,19 @@ def main():
     st = os.path.join(C.PKG, "data", "gold_st22")
     zh31 = [d for d in C.DOCS if d["lang"] == "zh" and d["doc"] not in ("zh-0026", "zh-0036")]
     test = [d for d in C.DOCS if d.get("test")]
-    groups = [("zh31", "中文 31 篇（对 data/gold）", zh31, lambda d: C.gold_path(d), "orig")]
-    groups.append(("test", "测试集 30 篇（对 UMR 2.2 test-gold）", test, lambda d: os.path.join(st, d["doc"] + ".umr"), None))
-    for l in dict.fromkeys(d["lang"] for d in test):
-        ds = [d for d in test if d["lang"] == l]
-        groups.append(("test-" + l, "测试集 %s（%d 篇，对 UMR 2.2 test-gold）" % (l, len(ds)), ds,
-                       lambda d: os.path.join(st, d["doc"] + ".umr"), None))
+    if os.path.isdir(st):               # the second round: the Chinese documents of the first round, and the test set
+        groups = [("zh31", "中文 31 篇（对 data/gold）", zh31, lambda d: C.gold_path(d), "orig")]
+        groups.append(("test", "测试集 30 篇（对 UMR 2.2 test-gold）", test, lambda d: os.path.join(st, d["doc"] + ".umr"), None))
+        for l in dict.fromkeys(d["lang"] for d in test):
+            ds = [d for d in test if d["lang"] == l]
+            groups.append(("test-" + l, "测试集 %s（%d 篇，对 UMR 2.2 test-gold）" % (l, len(ds)), ds,
+                           lambda d: os.path.join(st, d["doc"] + ".umr"), None))
+    else:                               # any other workspace: every document against data/gold, then by language
+        groups = [("all", "全部 %d 篇（对 data/gold）" % len(C.DOCS), list(C.DOCS), lambda d: C.gold_path(d), "orig")]
+        langs = list(dict.fromkeys(d["lang"] for d in C.DOCS))
+        for l in langs if len(langs) > 1 else []:
+            ds = [d for d in C.DOCS if d["lang"] == l]
+            groups.append(("all-" + l, "%s（%d 篇，对 data/gold）" % (l, len(ds)), ds, lambda d: C.gold_path(d), "orig"))
     scores = json.load(open(os.path.join(C.ANALYSIS, "scores.json"), encoding="utf-8"))
     tasks = {}
     for _, _, ds, gold_of, _ in groups:

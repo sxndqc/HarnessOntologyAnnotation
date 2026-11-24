@@ -53,7 +53,8 @@ def main():
         for k, rd in systems:
             pred = os.path.join(rd, d["doc"] + ".umr")
             if os.path.exists(pred):
-                tasks.append((d["doc"], d["lang"], k, "st", pred, os.path.join(ST, d["doc"] + ".umr")))
+                st = os.path.join(ST, d["doc"] + ".umr")      # no shared-task gold for the document: the gold under review
+                tasks.append((d["doc"], d["lang"], k, "st", pred, st if os.path.exists(st) else C.gold_path(d)))
                 if C.official_path(d) and "/" in k:
                     tasks.append((d["doc"], d["lang"], k, "own", pred, C.gold_path(d)))
                 if C.revised_path(d) and "/" in k:
@@ -81,7 +82,7 @@ def main():
     L = ["# juːmæʧ（shared task 的主指标）", "",
          "打分器：ufal/umrtools `compare_umr.pl`。一种语言的分数是把该语言各文件的 correct / gold / predicted 计数加起来再算 F1。"
          "gold 是 shared task 的测试 gold（UMR 2.2 test-gold）。orange、sema 是两支参赛队伍公开的系统输出，用同一套打分重算，用来和概述论文对照。", "",
-         "## 按语言（对 UMR 2.2 test-gold）", "", "| 系统 | " + " | ".join("%s (%d)" % (l, sum(d["lang"] == l for d in docs)) for l in langs) + " | 全部 30 个文件 |",
+         "## 按语言（对 UMR 2.2 test-gold）", "", "| 系统 | " + " | ".join("%s (%d)" % (l, sum(d["lang"] == l for d in docs)) for l in langs) + " | 全部 %d 个文件 |" % len(docs),
          "|---|" + "---|" * (len(langs) + 1)]
     for k in keys:
         cells = []
