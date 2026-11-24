@@ -35,9 +35,13 @@
 - zh-0026、zh-0036 和所有非中文文件用 UMR 2.2 test-gold；捷克语 3 个文件修了 4 处 `/` 后缺空格（`data/gold_spacing_fixes.json`）。
 - `data/gold_text_repairs.json` 记录了 gold 文件里审阅工具读不了、显示时做了修补的几处。
 
-## 没有放进来的东西
+## resources
 
-`resources/`（完整版和精简版 guideline、PropBank、UMR 2.2 训练数据，约 510 MB）没有放进仓库。`tools/` 下的三个查询工具和 `pipeline/run_codex.py` 需要它；打分和统计脚本不需要。
+- `resources/guidelines/`：完整版和精简版 guideline。
+- `resources/propbank/`：中文、英文的 PropBank 词表（JSON）。
+- `resources/training/training-clean/`：shared task 的 clean 训练数据（UMR 2.2），许可见 `resources/training/README.txt`。
+
+没有放进来的：dirty 训练数据（约 244 MB，在 UMR 2.2 发布包里，http://hdl.handle.net/11234/1-6132）和 `search_annotations` 工具的搜索缓存（`.records-*.jsonl`，运行时自动重建）。运行时 `search_annotations` 用的是 clean 和 dirty 两部分；要复现带工具的设定，需要把 dirty 数据放回 `resources/training/training-dirty/`。
 
 ## 重新生成
 
