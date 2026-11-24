@@ -18,7 +18,7 @@ import re
 
 MAX_RESULTS = 10
 MAX_TEXT = 6000                 # characters of one returned annotation or section
-CHUNK = 3000                    # a guideline section longer than this is returned in passages
+CHUNK = 8000                    # a guideline section longer than this is returned in passages
 LANGS = {"zh": "zh", "chinese": "zh", "中文": "zh", "汉语": "zh", "en": "en", "english": "en", "英文": "en", "英语": "en",
          "uz": "uz", "uzbek": "uz", "o'zbek": "uz", "oʻzbek": "uz", "o'zbekcha": "uz",
          "arp": "arp", "arapaho": "arp", "nv": "nv", "navajo": "nv", "la": "la", "latin": "la",
@@ -96,13 +96,14 @@ def search_guidelines(keywords: list[str], max_results: int = 3) -> dict:
         return {"sections": [], "error": "give at least one keyword"}
     n = _count(max_results, 3)
     found = []
-    for path, text in _guideline_sections():
+    for path, text, low in _guideline_sections():
         hits = _hits(path + "\n" + text, words)
         if hits[0]:
             in_head = _hits(path, words)[0]
-            found.append(((hits[0], in_head, hits[1] * 1000 // max(1, len(text))), len(text), path, text))
-    found.sort(key=lambda x: (-x[0][0], -x[0][1], -x[0][2], x[1]))
-    return {"sections": [{"heading": p, "text": _clip(t)} for _, _, p, t in found[:n]], "found": len(found)}
+            found.append(((hits[0], in_head, hits[1] * 1000 // max(1, len(text))), len(text), path, text, low))
+    # the table of contents and the alphabetical index come after every passage that states a rule
+    found.sort(key=lambda x: (x[4], -x[0][0], -x[0][1], -x[0][2], x[1]))
+    return {"sections": [{"heading": p, "text": t} for _, _, p, t, _ in found[:n]], "found": len(found)}
 
 
 # ------------------------------------------------------------------ helpers
@@ -232,36 +233,111 @@ def _umr_records(path, doc):
     return out
 
 
+LOW = ("Table of Contents", "Alphabetical Index")   # sections that name every term and state no rule: ranked last
+
+
+def _units(lines):
+    """The pieces a section may be cut between: paragraphs, with a fenced example kept whole together with the
+    'Example ...' line right above it."""
+    units, cur, fence = [], [], False
+    for line in lines:
+        if line.strip().startswith("```"):
+            fence = not fence
+            cur.append(line)
+            continue
+        if not line.strip() and not fence:
+            if cur:
+                units.append(cur)
+                cur = []
+        else:
+            cur.append(line)
+    if cur:
+        units.append(cur)
+    out, label = [], False
+    for u in units:
+        if label:                                   # an example's number stays with the example
+            out[-1] = out[-1] + [""] + u
+        else:
+            out.append(u)
+        label = all(re.match(r"^(Example\b.*|\(?\d+[a-z]?\)?\.?|)$", x.strip()) for x in out[-1])
+    return ["\n".join(u) for u in out]
+
+
+def _cut_long(unit, CHUNK):
+    """A single piece longer than CHUNK (a table, a list, an example without blank lines) cut at lines; the
+    pieces of a table each repeat its two header lines, the pieces of a fenced example are each fenced."""
+    if len(unit) <= CHUNK:
+        return [unit]
+    lines = unit.split("\n")
+    head = []
+    if len(lines) > 2 and lines[0].lstrip().startswith("|") and re.match(r"^\s*\|[\s:|-]+\|\s*$", lines[1]):
+        head, lines = lines[:2], lines[2:]
+    fenced = not head and lines[0].strip().startswith("```") and lines[-1].strip().startswith("```")
+    if fenced:
+        lines = lines[1:-1]
+    room = CHUNK - sum(len(h) + 1 for h in head) - (8 if fenced else 0)
+    parts, cur, size = [], [], 0
+    for line in lines:
+        # a list is cut before a top-level item, a table before any row, anything else before any line
+        start = bool(head) or fenced or not line.startswith((" ", "\t"))
+        if cur and size + len(line) + 1 > room and (start or size > room * 1.5):
+            parts.append(cur)
+            cur, size = [], 0
+        cur.append(line)
+        size += len(line) + 1
+    if cur:
+        parts.append(cur)
+    return ["\n".join(["```"] + head + part + ["```"] if fenced else head + part) for part in parts]
+
+
 def _guideline_sections():
+    """[(heading path, text, low)] of the guidelines: one passage per section, a section longer than CHUNK cut
+    into passages between paragraphs (never inside a fenced example, unless the example alone is longer).
+    low marks the table of contents and the alphabetical index."""
     key = "guidelines"
     if key not in _cache:
-        text = _read("guidelines/umr_guidelines.md")
+        text = _read(os.environ.get("UMR_GUIDELINES", "guidelines-revised/umr_guidelines.md"))
         sections, path, body = [], [], []
-        title = ""
 
         def close():
-            # a long section is cut at paragraphs into passages of about CHUNK characters
-            text = "\n".join(body).strip()
-            if not text:
+            if not body:
                 return
-            head = " > ".join(path) or title
-            parts, cur = [], ""
-            for para in re.split(r"\n\s*\n", text):
-                if cur and len(cur) + len(para) > CHUNK:
+            head_line, rest = (body[0], body[1:]) if path else ("", body)
+            if not "\n".join(rest).strip():
+                return                              # a heading with nothing under it but its subsections
+            head = " > ".join(x for x in path[1:] if x) or path[0]     # without the document's title
+            room = CHUNK - len(head_line) - 2
+            pieces = [p for unit in _units(rest) for p in _cut_long(unit, room)]
+            total = sum(len(p) + 2 for p in pieces)
+            # passages of about the same length (no short tail), none over CHUNK
+            want = -(-total // room)
+            parts = None
+            while parts is None or len(parts) > want:
+                target = min(room, total / want * 1.08) if parts is None else room
+                parts, cur = [], ""
+                for piece in pieces:
+                    if cur and len(cur) + len(piece) + 2 > target:
+                        parts.append(cur)
+                        cur = ""
+                    cur = cur + "\n\n" + piece if cur else piece
+                if cur:
                     parts.append(cur)
-                    cur = ""
-                cur = cur + "\n\n" + para if cur else para
-            if cur:
-                parts.append(cur)
+                if target == room:
+                    break
+            low = any(x in head for x in LOW)
             for k, part in enumerate(parts):
-                sections.append((head + (" (%d/%d)" % (k + 1, len(parts)) if len(parts) > 1 else ""), part))
+                name = head + (" (%d/%d)" % (k + 1, len(parts)) if len(parts) > 1 else "")
+                sections.append((name, (head_line + "\n\n" if head_line else "") + part, low))
+        fence = False
         for line in text.split("\n"):
-            m = re.match(r"^(#{1,6})\s+(.*?)\s*#*\s*$", line)
+            if line.strip().startswith("```"):
+                fence = not fence
+            m = None if fence else re.match(r"^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$", line)
             if m:
                 close()
                 level = len(m.group(1))
-                path = path[:level - 1] + [m.group(2)]
-                body = [line]
+                path = (path + [""] * level)[:level - 1] + [m.group(2)]
+                body = [line.strip()]
             else:
                 body.append(line)
         close()

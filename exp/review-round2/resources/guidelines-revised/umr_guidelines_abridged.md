@@ -70,7 +70,7 @@ types (`person`, `thing`, `country`, `city`, `organization`, ...).
 
 ### 2.2 Named entities
 
-`(c / country :wiki "Russia" :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
+`(c / country :name (n / name :op1 "Russia"))`: an entity-type concept, an optional `:wiki`
 (the Wikipedia title, or `-` when there is none), and `:name` with one `:opN` per word of the name.
 Chinese names are split into words, not characters: 欧洲议会 → `:op1 "欧洲" :op2 "议会"`. Types: `person`,
 `country`, `city`, `province`, `state`, `nationality`, `ethnic-group`, `language`, `organization`,
@@ -133,11 +133,11 @@ inverse `:ARGn-of` for a relative clause or a participant nominal: 卖菜的人 
 卖-01 :ARG1 (c / 菜)))`.
 
 **Non-participant roles** (closed list, the frequent ones): `:mod` (property, demonstrative, typifying
-modifier), `:possessor`, `:part` / `:part-of`, `:topic`, `:temporal` (time expression or event),
-`:place`, `:direction`, `:path`, `:goal`, `:source`, `:start`, `:manner`, `:instrument`, `:cause`,
-`:reason`, `:purpose`, `:condition`, `:concession`, `:duration`, `:frequency`, `:extent`, `:degree`,
+modifier), `:possessor`, `:part-of` (the part is the parent: `(s / string :part-of (g / guitar))`) and `:part` (the whole is the parent), `:topic`, `:temporal` (time expression or event),
+`:place`, `:direction`, `:path`, `:goal`, `:source`, `:start`, `:manner`, `:instrument`, `:cause` (what brings the event about),
+`:reason` (the motive or justification given for it), `:purpose`, `:condition`, `:concession`, `:duration`, `:frequency`, `:extent` (how far or how much, a measure), `:degree` (intensifier or downtoner),
 `:quant`, `:unit`, `:ord`, `:range`, `:age`, `:medium`, `:companion`, `:beneficiary`, `:example`,
-`:subset-of`, `:name`, `:wiki`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
+`:subset-of`, `:name`, `:opN`, `:vocative`, `:polite`, `:other-role` (when none fits).
 
 Reported speech and thought: the reported event is the `:ARG1` of the reporting verb, as in AMR. The
 UMR release data also marks it with `:quote <reporting event>` when the content is a quotation.
@@ -182,7 +182,7 @@ A dependency structure: each event and each time expression gets **one reference
 the relation says where the **child** is relative to the **parent**:
 
 - `:before` (child before parent), `:after` (child after parent), `:overlap` (child and parent overlap),
-  `:contained` (child inside parent), `:contains`, `:depends-on` (between time nodes).
+  `:contained` (child inside parent; `:contains` is not used), `:depends-on` (between time nodes).
 - Constants: `document-creation-time`, `past-reference`, `present-reference`, `future-reference`, `root`.
 - Time expressions first: an absolute date (*1998*) depends on `root`; a relative one (*today, yesterday*,
   今天) depends on `document-creation-time` — `(document-creation-time :depends-on s1t)`; a vague one
