@@ -22,12 +22,13 @@
 - `analysis/SUMMARY.md`：总结。`error-patterns.md`：错误类型，末尾是需要决定的规则清单。
 - `analysis/gold-errors.md`、`points.md`：gold 错误统计；各系统在比较点上的正确率、一致度、voting。
 - `analysis/scores.md`、`scores-by-language.md`、`jumach.md`、`pairwise.md`：AnCast++、juːmæʧ、两两分数。`scores-codex.*` 是 Codex 交回时自己算的分数。
+- `analysis/judge.md`、`judge.json`：umrjudge（`exp/judges/umrjudge.py`）在这一轮输出上的分项，每个设定取各次运行的平均；不含节点粒度、`:wiki`、重入三项。
 - `analysis/breakdown.html`、`breakdown.md`：分项 F1 在各设定下的变化（热力图和表）。分项由 `pipeline/breakdown.py` 计算，和 `exp/scripts/breakdown.py`（umrjudge）不是同一个打分器。
 - `review/umr-gold-review.html`：审阅页面（单文件，浏览器直接打开；逐句看各标注，接受或拒绝每条修改方案，导出修订版 gold）。
 - `review/items/`：审阅条目，每个比较点一条，格式见 `review/REVIEWER.md`。`reports/`、`points/`、`proposals/` 由 `pipeline/items.py build` 从条目生成。
 - `data/gold/`：审阅所针对的 gold。`data/gold_revised/`：应用 high、mid 修改方案后的 gold。`data/gold_st22/`：UMR 2.2 test-gold。`data/gold_official/`：13 篇旧中文测试文件的发布版 gold。
 - `runs/`：系统输出（`.umr`）和每次运行的 meta、trace。
-- `pipeline/`、`lib/`、`tools/`、`vendor/`：打分、统计、审阅用的脚本；`vendor/umrancast` 改了一行（共指召回的除零）。
+- `pipeline/`、`lib/`、`tools/`、`vendor/`：打分、统计、审阅用的脚本；`vendor/umrancast` 改了一行（共指召回的除零），`ancast/resources/` 两个词表文件取自 PyPI 的 ancast 0.1.1。
 
 ## gold 的版本
 
@@ -41,7 +42,7 @@
 - `resources/propbank/`：中文、英文的 PropBank 词表（JSON）。
 - `resources/training/training-clean/`：shared task 的 clean 训练数据（UMR 2.2），许可见 `resources/training/README.txt`。
 
-没有放进来的：dirty 训练数据（约 244 MB，在 UMR 2.2 发布包里，http://hdl.handle.net/11234/1-6132）和 `search_annotations` 工具的搜索缓存（`.records-*.jsonl`，运行时自动重建）。运行时 `search_annotations` 用的是 clean 和 dirty 两部分；要复现带工具的设定，需要把 dirty 数据放回 `resources/training/training-dirty/`。
+只用 clean 训练数据：`search_annotations` 现在只读 `training-clean`（中文 557 句、英语 180 句、捷克语 103 句、Arapaho 53 句、Navajo 5 句；意大利语、拉丁语没有 clean 训练数据，搜索不返回结果）。这一轮已有的带工具的运行（s3、a2）当时搜的是 clean 和 dirty 两部分，dirty 数据没有放进来，也不再使用。搜索缓存（`.records-*.jsonl`）运行时自动重建。
 
 ## 重新生成
 
@@ -52,5 +53,6 @@ python3 pipeline/score.py                # AnCast++（需要 penman 等，见 re
 python3 pipeline/jumach.py               # juːmæʧ（需要 perl）
 python3 pipeline/points.py && python3 pipeline/errors.py
 python3 pipeline/breakdown.py && python3 pipeline/breakdown_chart.py
+python3 pipeline/judge.py                # umrjudge 分项，各设定多次运行取平均 -> analysis/judge.md
 python3 review/build.py                  # 审阅页面
 ```

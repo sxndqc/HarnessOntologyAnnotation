@@ -33,7 +33,7 @@ HEATNAME = {"juːmæʧ F": "juːmæʧ", "Smatch F": "Smatch", "b_event_sense": "
             "a_event_concept": "a 事件概念", "a_entity_concept": "a 实体概念", "d_core_args_event": "d 事件核心论元",
             "d_core_args_abstract": "d 抽象事件核心论元", "e_core_labels": "e 核心角色标签",
             "e_peripheral_labels": "e 非核心角色标签", "c_aspect": "c aspect", "c_refer": "c 人称/数（代词）",
-            "f_name_tokens": "f 名字的词", "g_reentrancy": "g 重入", "h_temporal": "h 文档级时间",
+            "f_name_tokens": "f 名字的词", "h_temporal": "h 文档级时间",
             "i_modal": "i 文档级模态", "j_coref_chain": "j 共指链"}
 HEATCOL = {"s1-full": "full", "s2-search": "+search", "s2-propbank": "+PropBank", "s2-gold": "+gold",
            "s3-all": "+三个工具", "a1-sentence-propbank": "a1", "a2-sentence-all": "a2"}
@@ -558,7 +558,7 @@ def main():
     systems = [("Claude API", "api", CLAUDE), ("GPT API", "api", SOL)]
     keys = ["Smatch F", "juːmæʧ F", "b_event_sense", "a_event_concept", "a_entity_concept", "d_core_args_event",
             "d_core_args_abstract", "e_core_labels", "e_peripheral_labels", "c_aspect", "c_refer", "f_name_tokens",
-            "g_reentrancy", "h_temporal", "i_modal", "j_coref_chain"]
+            "h_temporal", "i_modal", "j_coref_chain"]
 
     def key_of(k, metric):
         if metric == "F":
