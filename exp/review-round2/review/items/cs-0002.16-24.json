@@ -1,0 +1,3747 @@
+[
+ {
+  "sent": 16,
+  "n": 1,
+  "topic": "义项编号体系（本段）",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "Vallex 三位框架号",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "按训练数据先例带三位号，多数与 gold 一致",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "无词典，多默认 -001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "Vallex 三位框架号",
+  "text": "cs-0002 不是 PUD 文件，gold 带捷克文框架号。s3、a2 能查训练数据先例，编号大多与 gold 相同（本句 podařit-se-001、snížit-001、mít-008）；s0、s1f 没有工具，常一律写 -001（本句 s0 的 zavést-001、mít-001），碰巧对上的也有。按规则对不上的判 minor，之后只在 lemma 或编号与 gold 不同时逐条写。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 2,
+  "topic": "名词 refer-number（全篇习惯）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "名词标 :refer-number",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number singular"
+   },
+   {
+    "label": "普通名词不标 refer-number",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "名词标 :refer-number",
+  "text": "捷克文 gold 和训练数据给名词都标 refer-number（本句 měna、hodnota、inflace）。s0、s1f 只给代词标，普通名词全篇基本不标；这一习惯只在这里写一次，后面各句不再逐条写。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 3,
+  "topic": "「Zavedením」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "zavést-003（动词，带 aspect performance 与 refer-number）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ zavést-003"
+   },
+   {
+    "label": "zavedení（名词）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ zavedení"
+   },
+   {
+    "label": "zavést-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ zavést-001"
+   }
+  ],
+  "best": "zavedení（名词）",
+  "text": "捷克文训练数据把动名词 zavedení 写成名词概念 zavedení（带 refer-number、ARG0/ARG1，不带 aspect；如「Se zavedením pozůstalostní penze se počítá」「výhrady k zavedení školného」）。gold 还原成动词 zavést-003 却又带 refer-number，两种写法混在一起；意思不错，判 minor。s0 的 zavést-001 编号也不对。",
+  "fix": {
+   "title": "Zavedením：zavést-003 → zavedení（名词）",
+   "conf": "low",
+   "why": "训练数据的动名词 zavedení 一律作名词概念 zavedení，不带 aspect；gold 写成动词又带 refer-number，前后不一。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s16z1",
+     "concept": "zavedení"
+    },
+    {
+     "op": "del_attr",
+     "var": "s16z1",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s16z1",
+     "attr": "modal-strength"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 4,
+  "topic": "有没有 podařit-se 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "podařit-se-001 为根，:ARG1 snížit-001",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ podařit-se-001"
+   },
+   {
+    "label": "没有 podařit-se，根是 snížit-001",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "podařit-se-001 为根，:ARG1 snížit-001",
+  "text": "「se jim podařilo snížit」是 podařit-se（成功做到）带不定式补语，训练数据 podařit-se-001 的 ARG1 是做成的事。s1f/r1 漏掉主谓词，丢了「成功」的意思。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 5,
+  "topic": "podařit-se 上「jim」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "podařit-se :ARG0 jim",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "podařit-se :ARG2 jim",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 s"
+   },
+   {
+    "label": "（没有 podařit-se 节点）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "podařit-se :ARG0 jim",
+  "text": "训练数据 podařit-se-001 的与格成功者是 ARG0（「Podaří se Bystroňovi repete?」Bystroň 为 ARG0），做成的事是 ARG1。s1f/r2 用 ARG2 没有依据。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 6,
+  "topic": "zavedení 与主事件的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "podařit-se :instrument zavedení",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":instrument (s"
+   },
+   {
+    "label": ":manner zavedení",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":means zavést",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":means (s"
+   }
+  ],
+  "best": "podařit-se :instrument zavedení",
+  "text": "工具格「Zavedením nové měny」表示手段（靠引入新货币），gold 和训练数据都用 :instrument。:manner 意思偏了；:means 不在 UMR 角色表里。s1f/r1 挂在 snížit 上是因为它没有 podařit-se 节点，不另算。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 7,
+  "topic": "zavedení 的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zavedení/zavést :ARG0 他们（共用）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "zavedení 没有 ARG0",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "zavedení/zavést :ARG0 他们（共用）",
+  "text": "引入新货币的就是成功降低通胀的「他们」，训练数据的 zavedení 也带 ARG0（无显性施事时写 entity）。s1f/r2 漏了这条再入边。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 8,
+  "topic": "同位语「nové měny – realu」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity-91 :ARG1 měna :ARG2 real",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "měna :mod real",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ real"
+   },
+   {
+    "label": "měna :name \"realu\"",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"realu\""
+   }
+  ],
+  "best": "identity-91 :ARG1 měna :ARG2 real",
+  "text": "捷克文训练数据的同位语一律用 identity-91（ARG1 前项、ARG2 后项，如「distributor tohoto pořadu, společnost Viacom」）。:mod 把同位语降成修饰语；:name 把普通名词 real 当专名，还用了属格形式 realu。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 9,
+  "topic": "货币名的 lemma",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "reál",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ reál"
+   },
+   {
+    "label": "real",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ real"
+   },
+   {
+    "label": "（作 :name \"realu\"，无 lemma 节点）",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "real",
+  "text": "巴西货币在捷克文里是 real（属格 realu）；reál 是另一个词（旧西班牙银币等），作这里的 lemma 不对。这是 lemma 拼写问题，不影响结构。",
+  "fix": {
+   "title": "货币名 lemma：reál → real",
+   "conf": "low",
+   "why": "句中词形 realu 的原形是 real（巴西货币单位），reál 是另一个词。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s16r1",
+     "concept": "real"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 10,
+  "topic": "「má hodnotu」的 mít 义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "mít-008",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ mít-008"
+   },
+   {
+    "label": "mít-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ mít-001"
+   },
+   {
+    "label": "mít-029",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ mít-029"
+   },
+   {
+    "label": "没有 mít，用 have-degree-91",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open",
+    "grep": "/ have-degree-91"
+   }
+  ],
+  "best": "mít-008",
+  "text": "训练数据「nemají žádnou peněžní hodnotu」用 mít-008（ARG0 拥有者，ARG1 hodnota）。-001、-029 是编号不对，按义项编号体系判 minor。s1f 的结构在下一条比。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 11,
+  "topic": "「stejnou hodnotu jako dolar」的比较",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "stejný :comparison (mít-008 :ARG0 dolar :ARG1 hodnota)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "stejný :comparison dolar",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":comparison (s"
+   },
+   {
+    "label": "stejný :compared-to dolar",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":compared-to (s"
+   },
+   {
+    "label": "stejný :ARG2 (hodnota :poss dolar)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "have-degree-91 :ARG2 hodnota :ARG3 stejný :ARG4 dolar",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ have-degree-91"
+   }
+  ],
+  "best": "stejný :comparison (mít-008 :ARG0 dolar :ARG1 hodnota)",
+  "text": "捷克文训练数据的「stejný … jako X」把 jako 后面省略的谓词补出来挂在 :comparison 下（「zhruba stejné úrovni jako dnes」：stejný :comparison (pohybovat-se-001 …)），gold 和 a2 照此写。直接 :comparison dolar 是简化；:compared-to 不在角色表；have-degree-91 把「相同」当程度也不贴切。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 12,
+  "topic": "「zhruba」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "stejný :degree zhruba",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "stejný :extent zhruba",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent (s"
+   }
+  ],
+  "best": "stejný :extent zhruba",
+  "text": "训练数据里 zhruba 几乎一律是 :extent（「zhruba 70 let」「zhruba stejné úrovni jako dnes」都是 stejný/数字 :extent zhruba），只见到一例 :degree。:degree 意思也能接受，判 minor。",
+  "fix": {
+   "title": "zhruba：:degree → :extent",
+   "conf": "low",
+   "why": "捷克文训练数据把 zhruba 标为 :extent，包括同样的「zhruba stejné … jako」结构；也有个别 :degree，故给 low。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s16s1",
+     "r": "degree",
+     "t": "s16z2",
+     "r2": "extent"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 13,
+  "topic": "「americký dolar」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "dolar :mod americký",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ americký"
+   },
+   {
+    "label": "dolar :mod (country :name \"Amerika\")",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"Amerika\""
+   }
+  ],
+  "best": "dolar :mod americký",
+  "text": "形容词 americký 按训练数据写成形容词 lemma 作 :mod；s0/r1 改写成国家命名实体，名字 Amerika 也不是原文的词。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 14,
+  "topic": "snížit 的起点、终点角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":ARG2 54 %（z）、:ARG3 4 %（na）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":ARG3 54 %、:ARG4 4 %",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG4 (s"
+   }
+  ],
+  "best": ":ARG2 54 %（z）、:ARG3 4 %（na）",
+  "text": "训练数据 snížit-001：「z Ba-3」是 ARG2，「na B-3」是 ARG3（wsj 评级下调多例）。s0、s1f 照英文 lower-01 的 ARG3/ARG4 排号，在捷克文框架里两个角色都错。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 15,
+  "topic": "「54 procent」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "percentage-entity :value 54",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ percentage-entity"
+   },
+   {
+    "label": "procento :mod 54",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ procento"
+   }
+  ],
+  "best": null,
+  "text": "guideline 用 percentage-entity；捷克文训练数据对写成词的「N procent」多用 procento :mod N（带 refer-number），对「%」符号才用 percentage-entity。两种都有依据。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 16,
+  "topic": "代词「jim」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person 3rd plural",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   },
+   {
+    "label": "entity 3rd plural",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ entity"
+   },
+   {
+    "label": "oni",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ oni"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.4 把代词写成 person/thing 加人称、数；捷克文训练数据的代词多写 entity 加人称、数（「jejich」→ entity 3rd plural）。两种都行；s0/r2 写代词词形 oni，不合两种约定。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 17,
+  "topic": "「jim」与第 15 句两人的链接对象",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "链到 Ricupero 和 date-entity červenec（s15c2）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "链到 Ricupero 和 Cardoso（第 15 句）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "链到第 5 句的 Rubens Ricupero 和 kandidát",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有跨句链接（只写了句内 měna = real）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "链到 Ricupero 和 Cardoso（第 15 句）",
+  "text": "「他们」是上一句的 Ricupero 和 Cardoso。gold 第二条 subset-of 的对象 s15c2 是第 15 句的 date-entity（v červenci），显然是变量写错，应为 Cardoso 的 s15c1。s0/r2 链到更早的提及，不是最近的；s0/r1 没有链接，句内的 same-entity 也应是再入。",
+  "fix": {
+   "title": "jim 的 subset-of 对象：s15c2（七月）→ s15c1（Cardoso）",
+   "conf": "high",
+   "why": "s15c2 是第 15 句的 date-entity「v červenci」，不是人；「jim」指 Ricupero 和 Cardoso，Cardoso 是 s15c1。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s16e1",
+      "subset-of",
+      "s15c2"
+     ],
+     "to": [
+      "s16e1",
+      "subset-of",
+      "s15c1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 18,
+  "topic": "jim 与两人的 subset-of 方向",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(他们 :subset-of 个人)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "(个人 :subset-of 他们)",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "（没有这组链接）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "按精简版 (a :subset-of b) 是 a 属于 b，个人属于「他们」应写 (个人 :subset-of 他们)；gold 和 a2 方向相反。:subset-of 方向还没有定规则，不判对错。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 19,
+  "topic": "inflace 与第 15 句 protiinflační 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(protiinflační :same-entity inflace)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不链接",
+  "text": "s15p2 是形容词修饰语 protiinflační（反通胀的），不是「通胀」这个实体的提及；修饰语概念和实体名词不能 same-entity。",
+  "fix": {
+   "title": "删除 inflace 与 protiinflační 的 same-entity",
+   "conf": "mid",
+   "why": "s15p2 是形容词「protiinflační（反通胀的）」，是 plán 的修饰语而不是通胀实体的提及，不能与 inflace 同指。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s16i2",
+      "same-entity",
+      "s15p2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 1,
+  "topic": "「Cardosova」的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :name \"Cardos\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"Cardos\")"
+   },
+   {
+    "label": "person :name \"Cardoso\"",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"Cardoso\""
+   },
+   {
+    "label": "lemma Cardoso（不作命名实体）",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ Cardoso"
+   },
+   {
+    "label": "person :name \"Cardosova\"",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"Cardosova\""
+   }
+  ],
+  "best": null,
+  "text": "Cardosova 是 Cardoso 的物主形容词，人名是 Cardoso（gold 第 15 句也写 \"Cardoso\"）；gold 截成 \"Cardos\" 是错的。把物主形容词词形 Cardosova 当名字不是原形，判 minor。训练数据对人名多写 lemma（Klausova → Klaus），作命名实体也说得通。",
+  "fix": {
+   "title": "第 17 句人名：\"Cardos\" → \"Cardoso\"",
+   "conf": "high",
+   "why": "Cardosova 是 Cardoso 的物主形容词，同一份 gold 第 15 句的同一人写作 \"Cardoso\"，这里的 \"Cardos\" 是截错的词干。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s17c4",
+     "attr": "op1",
+     "value": "\"Cardoso\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 2,
+  "topic": "物主形容词 Cardosova 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "popularita :mod Cardoso",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "popularita :possessor Cardoso",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "popularita :poss Cardoso",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": "popularita :possessor Cardoso",
+  "text": "训练数据的物主形容词一律是 :possessor（Klausova strana / vláda → :possessor Klaus，多例）。gold 用 :mod 不合这个写法。:poss 是旧角色名，s0、s1f 全篇如此（s0/r1 第 16 句已有），之后不再逐句写。",
+  "fix": {
+   "title": "Cardosova：:mod → :possessor",
+   "conf": "mid",
+   "why": "捷克文训练数据把物主形容词（Klausova strana 等）一律标为 :possessor，Cardosova popularita 是同一结构。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s17p1",
+     "r": "mod",
+     "t": "s17c1",
+     "r2": "possessor"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 3,
+  "topic": "「Brazilců」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :mod (country :name \"Brazílie\")",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"Brazílie\""
+   },
+   {
+    "label": "Brazilec",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ Brazilec"
+   },
+   {
+    "label": "person :ARG0-of have-org-role-92（country, obyvatel）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": "/ obyvatel"
+   },
+   {
+    "label": "person :mod brazilský",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ brazilský"
+   }
+  ],
+  "best": "Brazilec",
+  "text": "训练数据把民族名词直接写成 lemma（Američan、Čech，带 refer-number plural）。gold 拆成 person 加国家，意思不错，但不合这个语言数据的写法。s0/r1 的 have-org-role-92 论元排错（人应是 ARG1，国家 ARG2，obyvatel 也不是职务）。",
+  "fix": {
+   "title": "Brazilců：person :mod country → Brazilec",
+   "conf": "low",
+   "why": "捷克文训练数据的民族名词（Američan、Čech）一律直接作 lemma，不拆成 person 加 country。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17b1",
+     "concept": "Brazilec"
+    },
+    {
+     "op": "del_node",
+     "var": "s17c2",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 4,
+  "topic": "úroveň 与 Brazilců 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "úroveň :mod Brazilci",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "úroveň :possessor Brazilci",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "úroveň :poss Brazilci",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "属格修饰名词在训练数据里 :possessor 和 :mod 都有（「v rukou Američanů」:possessor，「třetiny … Američanů」:mod），生活水平归属于巴西人，两种都说得通。:poss 是旧角色名（上一条已记）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 5,
+  "topic": "stoupnout 的主体角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "stoupnout :ARG0 úroveň",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "stoupnout :ARG1 úroveň",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": "stoupnout :ARG0 úroveň",
+  "text": "训练数据 stoupnout-001：上升的东西是 ARG0，「o X」是 :extent，「na X」（到达值）是 ARG1（「Hambros stoupla o 5 na 204」）。s0、s1f 照英文 rise-01 把主体排成 ARG1，在捷克文框架里是到达值的位置。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 6,
+  "topic": "「se zvýšila」的 lemma",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "zvýšit-se-001",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ zvýšit-se-001"
+   },
+   {
+    "label": "zvýšit-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ zvýšit-001"
+   }
+  ],
+  "best": "zvýšit-se-001",
+  "text": "反身形式「zvýšit se」（增长，不及物）在训练数据里是 zvýšit-se-001，与及物的 zvýšit（提高）分开。s0 丢了 se。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 7,
+  "topic": "「o pětinu」的挂接与角色",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "popularita :extent pětina（挂在名词上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "zvýšit-se :extent pětina",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent (s"
+   },
+   {
+    "label": "zvýšit(-se) :ARG2 pětina",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "zvýšit-se :extent pětina",
+  "text": "训练数据 zvýšit-se-001：「o 16 %」是事件的 :extent，「na 496 milionů」才是 ARG2（wsj2211、wsj0640）。gold 的括号把 :extent 关在 popularita 里面，成了名词的修饰语；增幅放在 ARG2 位置也是错的。",
+  "fix": {
+   "title": "o pětinu：:extent 从 popularita 移到 zvýšit-se-001",
+   "conf": "high",
+   "why": "「se zvýšila o pětinu」的增幅修饰事件；训练数据 zvýšit-se 的「o X」都是事件的 :extent。gold 因括号位置把它挂到了 popularita 上。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s17p1",
+     "r": "extent",
+     "t": "s17p2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s17z2",
+     "r": "extent",
+     "t": "s17p2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 8,
+  "topic": "pětina 的表示",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "pětina :quant 1",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":quant 1"
+   },
+   {
+    "label": "pětina（不带 quant）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ pětina"
+   },
+   {
+    "label": "percentage-entity :value 20",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":value 20"
+   }
+  ],
+  "best": "pětina（不带 quant）",
+  "text": "训练数据的 pětina（「asi pětinu celkové spotřeby」「o pětinu procentního bodu」）都不带 :quant；单数「一个五分之一」不必另写 :quant 1。s1f/r1 换算成 20 % 不忠于原文。",
+  "fix": {
+   "title": "删除 pětina 的 :quant 1",
+   "conf": "low",
+   "why": "训练数据的 pětina 都不带 :quant；「o pětinu」就是五分之一，:quant 1 多余。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s17p2",
+     "attr": "quant"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 9,
+  "topic": "Brazilci 与第 12 句选民共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第12句 volit 的 ARG0 person :same-entity Brazilci)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不链接",
+  "text": "s12p6 是第 12 句「prezidentských voleb」里补出来的隐含投票人，与「生活水平上升的巴西人」只是大致重合，不是同一提及对象，same-entity 过强。",
+  "fix": {
+   "title": "删除 Brazilci 与第 12 句隐含选民的 same-entity",
+   "conf": "low",
+   "why": "s12p6 是选举的隐含投票人，本句是全体巴西人的生活水平，两者不是同一实体；至多是 subset 关系。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s17b1",
+      "same-entity",
+      "s12p6"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 10,
+  "topic": "Cardoso 的共指对象",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "链到第 15 句 Cardoso",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "链到第 5 句 kandidát",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "链到第 15 句 Cardoso",
+  "text": "guideline 5.3 要求链到最近的前一次提及，即第 15 句的 Cardoso。s0/r2 链到更早的第 5 句，所指没错但不是最近提及。 s0/r2 全篇的跨句共指常链到第 5 句等较早的提及（第 16、17、19、21 句都是），只在这里记一次。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 1,
+  "topic": "「vedl」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "vést-002",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ vést-002"
+   },
+   {
+    "label": "vést-007",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ vést-007"
+   },
+   {
+    "label": "vést-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ vést-001"
+   }
+  ],
+  "best": "vést-002",
+  "text": "训练数据 vést-002 是比分、名次上的领先（「Vedl 4 : 0」：ARG0 领先者，ARG1 被领先者，:extent 差距），正合本句。vést-007 是「最受欢迎、排第一」（「vede smažené」），vést-001 是「引向」，编号不对，按义项编号体系判 minor。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 2,
+  "topic": "被领先者 da Silva 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "vést :ARG1 da Silva",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "vést :ARG1 entity、:ARG2 da Silva",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "/ entity)"
+   }
+  ],
+  "best": "vést :ARG1 da Silva",
+  "text": "「vedl … před protivníkem」：领先于谁是 vést-002 的 ARG1（训练数据「Vedl 4 : 0」的 ARG1）。a2/r2 另造一个空的 ARG1 entity，把对手放到 ARG2，角色分配错。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 3,
+  "topic": "「se 45 procenty podpory národa」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "vést :extent include-91（45 % 的国民支持他）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ include-91"
+   },
+   {
+    "label": "vést :companion 45 % :mod/:part-of podpora(podporovat)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":companion (s"
+   },
+   {
+    "label": "vést :manner podpora :quant 45 %",
+    "systems": [
+     "s0/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "vést :accompanier podporovat :degree 45 %",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":accompanier (s"
+   },
+   {
+    "label": "vést :other-role podpora :quant 45 %",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":other-role (s"
+   }
+  ],
+  "best": null,
+  "text": "训练数据的「s 12.8 procenty」用 :companion procento（「Následuje GM Europe s 12.8 procenty」），s3、a2 照此写；gold 把 45 % 当领先的幅度放在 :extent，用 include-91 展开「国民中 45 % 支持他」，更细但也说得通。:manner、:accompanier（不在 UMR 角色表）、:other-role 都不贴切；把百分比写成 podpora 的 :quant 也不对。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 4,
+  "topic": "「průzkumech veřejného mínění」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "event :result-of prozkoumat-002 :ARG1 (mínit-004 :ARG0 veřejnost)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ prozkoumat-002"
+   },
+   {
+    "label": "průzkum :ARG1/:mod (mínění :mod veřejný)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ průzkum"
+   },
+   {
+    "label": "průzkum :topic (mínění :mod veřejný)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": "průzkum :ARG1/:mod (mínění :mod veřejný)",
+  "text": "训练数据「průzkum(y) veřejného mínění」一律是名词 průzkum（带 refer-number）:ARG1 或 :mod (mínění :ARG0 entity :ARG1 entity :mod veřejný)（ln95045_085、mf920925_099、wsj0488）。gold 用 event 加 prozkoumat-002 重述，又把「veřejné mínění」拆成 mínit-004 :ARG0 veřejnost，偏离数据写法较多。:topic 不合数据写法。",
+  "fix": {
+   "title": "průzkumech veřejného mínění：改为 průzkum :ARG1 (mínění :mod veřejný)",
+   "conf": "low",
+   "why": "捷克文训练数据把「průzkum veřejného mínění」写成名词 průzkum :ARG1 (mínění … :mod veřejný)，不用 event、prozkoumat、mínit 和 veřejnost。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s18p1",
+     "concept": "průzkum"
+    },
+    {
+     "op": "del_attr",
+     "var": "s18p1",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s18p1",
+     "attr": "modal-strength"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18p1",
+     "r": "ARG1",
+     "t": "s18m1"
+    },
+    {
+     "op": "del_node",
+     "var": "s18p9",
+     "subtree": true
+    },
+    {
+     "op": "rename",
+     "var": "s18m1",
+     "concept": "mínění"
+    },
+    {
+     "op": "del_attr",
+     "var": "s18m1",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s18m1",
+     "attr": "modal-strength"
+    },
+    {
+     "op": "rename",
+     "var": "s18v2",
+     "concept": "veřejný"
+    },
+    {
+     "op": "del_attr",
+     "var": "s18v2",
+     "attr": "refer-number"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s18m1",
+     "r": "ARG0",
+     "t": "s18v2",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 5,
+  "topic": "průzkum 与 vést 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "vést :ARG2 průzkum",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "vést :place průzkum",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "vést :according-to průzkum",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":according-to (s"
+   }
+  ],
+  "best": "vést :place průzkum",
+  "text": "训练数据「v průzkumech」作 :place（wsj0595「v průzkumech mezi lety 1980 až 1982」、ln95045_085）；vést-002 的先例里没有 ARG2，「在民调里」不是它的核心论元。:according-to 意思不错但不在角色表、也不合数据写法。",
+  "fix": {
+   "title": "průzkum：vést 的 :ARG2 → :place",
+   "conf": "low",
+   "why": "「V průzkumech」是领先所在的范围，训练数据同类介词短语用 :place；vést-002 的先例只有 ARG0、ARG1 和 :extent。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s18v1",
+     "r": "ARG2",
+     "t": "s18p1",
+     "r2": "place"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 6,
+  "topic": "最高级「nejsilnějším」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "silný（不标最高级）",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "silný :degree most / nejvíce",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "have-degree-91 :ARG2 silný :ARG3 most",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "/ have-degree-91"
+   }
+  ],
+  "best": null,
+  "text": "捷克文训练数据把 nej- 最高级只写原级 lemma（「nejsilnější strany」「přežití nejsilnějších」→ silný，不带 degree），gold 照此写；guideline 4.2 把 most 写成 :degree，系统照这个写。两种都有依据。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 7,
+  "topic": "「svým … protivníkem」与 da Silva",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "da Silva :ARG1-of identity-91 :ARG2 protivník",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "da Silva :ARG1-of have-rel-role-92 :ARG2 他 :ARG3 protivník",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-rel-role-92"
+   },
+   {
+    "label": "Silva :mod protivník",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "protivník 作中心、带 :name",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ protivník"
+   },
+   {
+    "label": "person :ARG0-of protivník",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "训练数据的同位语「jeho protivníka, … Noriegy」用 identity-91（wsj2013），gold 照此；guideline 2.3 把关系名词具体化为 have-rel-role-92，也对。:mod 把同位语降成修饰语；把名字直接挂在 protivník 上、或把 protivník 当谓词，都不合两种写法。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 8,
+  "topic": "人名 da Silva 的写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":name \"Luiz\" \"Inacio\" \"da\" \"Silva\"（原形）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":op4 \"Silva\""
+   },
+   {
+    "label": "lemma Silva :mod Luiz/Inacio/da",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ Silva"
+   },
+   {
+    "label": ":name \"Luizem\" \"Inaciem\" \"da\" \"Silvou\"（变格形式）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":op4 \"Silvou\""
+   }
+  ],
+  "best": null,
+  "text": "命名实体的名字应写原形；句中是工具格 Luizem Inaciem da Silvou，照抄变格形式不对。s3/r1 按训练数据的人名写法（姓作 lemma，名作 :mod，如「Jim O'Donnell」→ Donnell :mod Jim）。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 9,
+  "topic": "「Strana práce」的类型与名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "political-organization :name \"Strana\" \"práce\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ political-organization"
+   },
+   {
+    "label": "political-party :name \"Strany\" \"práce\"（属格）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"Strany\""
+   },
+   {
+    "label": "strana :mod práce（lemma）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ strana"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.2 的类型表是 political-party（gold 第 13 句也用 political-organization，同一文件内一致）；系统类型对了，但名字照抄了属格 Strany。训练数据不用命名实体类型，写 lemma strana。没有哪一份完全对，不提 fix。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 10,
+  "topic": "da Silva 与 Strana práce 的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-org-role-92 :ARG1 Silva :ARG2 party",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-org-role-92"
+   },
+   {
+    "label": "Silva :ARG0-of have-org-role-92 :ARG1 party :ARG2 kandidát/člen",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "Silva :source party",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   },
+   {
+    "label": "Silva :start strana",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":start (s"
+   }
+  ],
+  "best": "have-org-role-92 :ARG1 Silva :ARG2 party",
+  "text": "「da Silva ze Strany práce」是党员身份，guideline 2.3：have-org-role-92 :ARG1 人 :ARG2 组织（:ARG3 职务可省）。s0 把人放在 ARG0、组织放在 ARG1、职务放在 ARG2，论元整体错位。:source、:start 只表达「来自」，丢了成员关系。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 11,
+  "topic": "括号里的「23 procent」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "da Silva :ARG1-of podporovat :extent include-91 :ARG3 23 %",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":value 23"
+   },
+   {
+    "label": "da Silva :parenthesis 23 %",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":parenthesis (s"
+   },
+   {
+    "label": "podpora（da Silva 的）:quant 23 %",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "da Silva :mod / :quant 23 %",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":value 23"
+   }
+  ],
+  "best": null,
+  "text": "训练数据把括号内容挂成 :parenthesis（「s 12.8 procenty ( 12.4 proc . )」）。gold 和 s1f 把省略的「他得到 23 % 的支持」补出来，意思更完整。把百分比直接作人的 :mod 或 :quant，等于说「这个人是 23 %」。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 12,
+  "topic": "gold 对 da Silva 的支持者角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "podporovat(Silva) :ARG2 národ",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "（没有对 da Silva 的支持事件）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "gold 在同一句里有两个 podporovat-001：支持 Cardoso 的那个以支持者为 ARG0（person :ARG0-of podporovat），支持 da Silva 的这个却把国民放在 ARG2。支持者应是 ARG0，前后不一。",
+  "fix": {
+   "title": "支持 da Silva 的 podporovat-001：:ARG2 národ → :ARG0",
+   "conf": "mid",
+   "why": "同一句 gold 的另一个 podporovat-001 以支持者为 ARG0（ARG1 是被支持者）；这里国民是支持者，ARG2 前后不一。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s18p8",
+     "r": "ARG2",
+     "t": "s18n1",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 13,
+  "topic": "národ 与第 17 句 Brazilci 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "链接 národ ↔ Brazilci",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "链接 národ ↔ Brazilci",
+  "text": "「podpora národa」的国民就是上一句的巴西人，同一实体，应当链接。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 1,
+  "topic": "「Zdálo se, že」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "zdát-se-004",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ zdát-se-004"
+   },
+   {
+    "label": "zdát-se-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ zdát-se-001"
+   }
+  ],
+  "best": "zdát-se-004",
+  "text": "训练数据带 že 从句的「Zdálo se, že …」一律是 zdát-se-004（ln95045_057、pdtsc_081_3.05、pdtsc_143_3.12）；zdát-se-001 是「某物在某人看来如何」（「Zdálo se mu to tam asi dlouhé」）。编号不对，判 minor。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 2,
+  "topic": "zdát-se 的 ARG0（感知者）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zdát-se :ARG0 entity",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ entity)"
+   },
+   {
+    "label": "没有 ARG0",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "zdát-se :ARG0 entity",
+  "text": "训练数据 zdát-se-004 即使感知者没说出来也补一个 :ARG0 entity（「Zdálo se, že tím je vše vyřešeno」）。不补不算大错，但不合这个语言数据的写法。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 3,
+  "topic": "「těšit se na」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "těšit-se-002",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ těšit-se-002"
+   },
+   {
+    "label": "těšit-se-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ těšit-se-001"
+   }
+  ],
+  "best": "těšit-se-002",
+  "text": "训练数据「mohou se … těšit na X」都是 těšit-se-002（ln95047_029、wsj0689、ln94210_124）。s0、s1f 默认 -001，编号不对。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 4,
+  "topic": "情态动词 mohou 是否成节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不设节点，体现在 modal-strength",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "moci-001 节点 :ARG1 těšit-se",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ moci-001"
+   }
+  ],
+  "best": "不设节点，体现在 modal-strength",
+  "text": "guideline 2.1：情态助动词不是节点，只影响 aspect 和 modal strength；训练数据「mohou se těšit」也不设 moci 节点。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 5,
+  "topic": "těšit-se 的 modal-strength（mohou）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "modal-strength partial-affirmative"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "modal-strength neutral-affirmative"
+   }
+  ],
+  "best": "neutral-affirmative",
+  "text": "「mohou」是「可以、有可能」，guideline 5.2 把 may、can 列为 neutral-affirmative，partial 是 probably、should 一类；外面还套着「Zdálo se」（看起来），也不会比 neutral 更强。",
+  "fix": {
+   "title": "těšit-se-002 的 modal-strength：partial → neutral-affirmative",
+   "conf": "mid",
+   "why": "「mohou se těšit」表示可能性，guideline 把 can/may 列为 neutral-affirmative；也有人把「看来能够」读成较强的推断，故给 mid。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s19t1",
+     "attr": "modal-strength",
+     "value": "neutral-affirmative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 6,
+  "topic": "těšit-se 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "训练数据「mohou se těšit na」三例都标 activity；「期待、盼着」也可以看成心理状态。未然的情态事件 aspect 难定，两种都给 ok。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 7,
+  "topic": "日期「3. října」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "date-entity :month (říjen) :day 3",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":month (s"
+   },
+   {
+    "label": "date-entity :month 10 :day 3",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":month 10"
+   },
+   {
+    "label": "říjen :mod 3",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ říjen"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.2 的日期是 date-entity :month 10 :day 3；捷克文训练数据写成 říjen :mod 31（wsj1805、wsj1872）。gold 两样混用：用了 date-entity，:month 却挂一个 lemma 节点而不是数字（第 15 句的 duben 也一样），两种约定都不合。",
+  "fix": {
+   "title": "3. října：:month 改为数字 10",
+   "conf": "low",
+   "why": "date-entity 的 :month 应是数字（guideline 2.2：:month 4）；gold 挂了 lemma 节点 říjen。也可整体改成训练数据的 říjen :mod 3，故给 low。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s19r2"
+    },
+    {
+     "op": "set_attr",
+     "var": "s19r1",
+     "attr": "month",
+     "value": 10
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 8,
+  "topic": "sociální demokraté 与前文政党共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "链到第 12 句 Sociálně demokratická strana",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "链到第 5 句的同一政党",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "链到第 12 句 Sociálně demokratická strana",
+  "text": "这里的「社会民主党人」转指第 12 句 Cardoso 所属的社会民主党，gold 和多数系统都链到最近一次提及。链到第 5 句不是最近提及；不链接漏了一条明显的共指。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 1,
+  "topic": "有没有 začít 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "začít 为根，带 zvyšovat-se 补语",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ začít-00"
+   },
+   {
+    "label": "没有 začít，根是 zvyšovat-se-001",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "začít 为根，带 zvyšovat-se 补语",
+  "text": "「se začala zvyšovat」是 začít 带不定式，训练数据写成 začít-001 :ARG1 不定式事件（wsj2443「začal zvyšovat」）。s1f 两次都丢了「开始」。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 2,
+  "topic": "začít 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "začít-001",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ začít-001"
+   },
+   {
+    "label": "začít-002",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ začít-002"
+   },
+   {
+    "label": "（没有 začít 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "začít-001",
+  "text": "训练数据带不定式的 začít 是 -001（wsj2443），不及物的「Začala válka」才是 -002。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 3,
+  "topic": "začít 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "začít :ARG1 inflace :ARG2 zvyšovat-se",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "začít :ARG0 inflace :ARG1 zvyšovat-se",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "začít :ARG1 zvyšovat（inflace 只在补语里）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（没有 začít 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "začít :ARG0 inflace :ARG1 zvyšovat-se",
+  "text": "训练数据 začít-001：主语是 ARG0，不定式事件是 ARG1（wsj2443：ARG0 entity，ARG1 zvyšovat-001）。gold 把主语放 ARG1、补语放 ARG2，两个都错位；也可以像 AMR 一样只留 ARG1 事件。",
+  "fix": {
+   "title": "začít-001 的论元：ARG1 inflace → ARG0，ARG2 zvyšovat-se → ARG1",
+   "conf": "mid",
+   "why": "训练数据 začít-001 带不定式时主语为 ARG0、不定式事件为 ARG1；gold 的 ARG2 在这个框架里没有先例。也可不给 začít 主语，只留 ARG1 事件，故给 mid。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s20z1",
+     "r": "ARG1",
+     "t": "s20i1",
+     "r2": "ARG0"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s20z1",
+     "r": "ARG2",
+     "t": "s20z3",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 4,
+  "topic": "začít 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "（没有 začít 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "performance",
+  "text": "「začala」是完成体过去时，「开始」这一事件已经发生，训练数据的 začít 一律标 performance。开始是事件不是状态，gold 的 state 是错的。",
+  "fix": {
+   "title": "začít-001 的 aspect：state → performance",
+   "conf": "high",
+   "why": "「začala」是已完成的开始事件；训练数据的 začít-001/-002 都标 performance，开始不是状态。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s20z1",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 5,
+  "topic": "「zvyšovat」的 lemma",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "zvyšovat-se-001",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ zvyšovat-se-001"
+   },
+   {
+    "label": "zvyšovat-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ zvyšovat-001"
+   }
+  ],
+  "best": "zvyšovat-se-001",
+  "text": "「se … zvyšovat」是反身不及物「上升」，与第 17 句 zvýšit-se 同理；s0 又丢了 se（全段如此）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 6,
+  "topic": "「Koncem srpna」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "date-entity :month srpen :ARG1-of končit-001",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ končit-001"
+   },
+   {
+    "label": "srpen（不写 konec）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ srpen"
+   },
+   {
+    "label": "konec 加八月（:part-of/:part/:op1 date-entity :month 8 或 :mod srpen）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ konec"
+   }
+  ],
+  "best": null,
+  "text": "训练数据的「koncem X」只写时间名词本身（「Koncem tohoto týdne」→ týden，「Koncem června」→ červen），a2 照此；系统用 konec 名词表达「月底」也说得通。gold 把「月底」写成「八月结束」的 končit-001 事件，还标 aspect state，不合两种写法。",
+  "fix": {
+   "title": "Koncem srpna：删去 končit-001",
+   "conf": "low",
+   "why": "捷克文训练数据把「koncem X」只标为时间名词 X，不另设「结束」事件；gold 的 končit-001 :aspect state 也不像事件。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s20k1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 7,
+  "topic": "「znovu」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "začít :mod znovu",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "zvyšovat :mod znovu",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "začít :temporal znovu",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": "začít :frequency znovu",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":frequency (s"
+   },
+   {
+    "label": "začít :manner znovu",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": null,
+  "text": "训练数据里 znovu 多为 :temporal，少数 :frequency（opět 也是 :temporal）；:mod 是名词修饰语用的，副词修饰事件不该用 :mod；:manner 也不贴切。",
+  "fix": {
+   "title": "znovu：:mod → :temporal",
+   "conf": "low",
+   "why": "捷克文训练数据把 znovu、opět 多标为 :temporal；:mod 用于名词修饰语。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s20z1",
+     "r": "mod",
+     "t": "s20z2",
+     "r2": "temporal"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 8,
+  "topic": "「však」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":clausal-marker však",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": ":mod však",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有 však",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": ":clausal-marker však",
+  "text": "训练数据的 však 一律是 :clausal-marker（10 余例）。s0 两次都漏了这个转折小品词。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 1,
+  "topic": "「ocitl se」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "ocitnout-se-001",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ocitnout-se-001"
+   },
+   {
+    "label": "ocitnout-se-002",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ ocitnout-se-002"
+   }
+  ],
+  "best": "ocitnout-se-001",
+  "text": "训练数据里落入某种处境用 -001（「Agentura AOT se rázem ocitla před bankrotem」），到了某个具体地方用 -002（「ocitla ve Švýcarsku」）。「ve stavu ohrožení」是处境，-001 更合适；这个区分只有少数先例，拿不太准。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 2,
+  "topic": "ocitnout-se 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "ocitnout-se :ARG1 Cardoso :ARG2 stav",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "ocitnout-se :ARG0 Cardoso :place stav",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "ocitnout-se :ARG0 Cardoso :place stav",
+  "text": "训练数据 ocitnout-se-001/-002 都以主语为 ARG0、所处位置或处境为 :place（「AOT se ocitla před bankrotem」：ARG0 agentura，:place bankrot；共 8 例无一用 ARG1/ARG2）。gold 与 s0、s1f 照英文习惯排成 ARG1/ARG2，判 minor。",
+  "fix": {
+   "title": "ocitnout-se-001：ARG1 Cardoso → ARG0，ARG2 stav → :place",
+   "conf": "mid",
+   "why": "捷克文训练数据的 ocitnout-se 一律是 ARG0 主语加 :place 处境（AOT se ocitla před bankrotem 等），没有 ARG1/ARG2 的先例。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s21o1",
+     "r": "ARG1",
+     "t": "s21c1",
+     "r2": "ARG0"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s21o1",
+     "r": "ARG2",
+     "t": "s21s2",
+     "r2": "place"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 3,
+  "topic": "「dosáhla」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "dosáhnout-002",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dosáhnout-002"
+   },
+   {
+    "label": "dosáhnout-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ dosáhnout-001"
+   }
+  ],
+  "best": "dosáhnout-002",
+  "text": "训练数据「dosáhly … 5.5 procenta」（达到某个数值）是 dosáhnout-002（ln94209_4）。s0、s1f 默认 -001。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 4,
+  "topic": "「šesti procent」的数值属性",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "percentage-entity :quant 6",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":quant 6"
+   },
+   {
+    "label": "percentage-entity :value 6",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":value 6"
+   },
+   {
+    "label": "procento :mod šest",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ šest"
+   }
+  ],
+  "best": null,
+  "text": "percentage-entity 的数值用 :value（AMR/UMR 的写法，gold 第 16 句也写 :value 54），不是 :quant。训练数据对写成词的「N procent」也用 procento :mod N，同样可以。",
+  "fix": {
+   "title": "6 %：percentage-entity 的 :quant → :value",
+   "conf": "high",
+   "why": "percentage-entity 的数值属性是 :value；同一份 gold 第 16 句写 :value 54，这里写成 :quant 6 前后不一。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s21p1",
+     "attr": "quant"
+    },
+    {
+     "op": "set_attr",
+     "var": "s21p1",
+     "attr": "value",
+     "value": 6
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 5,
+  "topic": "「tento měsíc」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "date-entity :month (srpen) :mod tento",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ srpen"
+   },
+   {
+    "label": "měsíc :mod tento",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ měsíc"
+   }
+  ],
+  "best": "měsíc :mod tento",
+  "text": "原文是「tento měsíc（这个月）」，没有说八月；训练数据「za tento měsíc」写成 měsíc :mod tento（wsj0580、wsj1646）。gold 把推出来的「八月」写进图里，与第 20 句的指代应交给共指（gold 已有这条共指）。",
+  "fix": {
+   "title": "tento měsíc：date-entity :month srpen → měsíc",
+   "conf": "low",
+   "why": "原文只说「tento měsíc」，训练数据写成 měsíc :mod tento；指八月由与第 20 句的共指表达，不必在图里补 srpen。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s21m1",
+     "concept": "měsíc"
+    },
+    {
+     "op": "del_node",
+     "var": "s21m3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 6,
+  "topic": "「za tento měsíc」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dosáhnout :duration",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":duration (s"
+   },
+   {
+    "label": "dosáhnout :temporal",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   }
+  ],
+  "best": null,
+  "text": "训练数据「za tento měsíc」一律 :duration（wsj0580、wsj1646、wsj1981）；作「在这个月」的时间 :temporal 意思也通。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 7,
+  "topic": "同位语「duchovní otec nové měny」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "Cardoso :ARG1-of have-rel-role-92 :ARG2 měna :ARG3 otec",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-rel-role-92"
+   },
+   {
+    "label": "identity-91 :ARG1 Cardoso :ARG2 (otec :mod/:possessor měna)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "Cardoso :ARG0-of have-rel-role-92 :ARG1 měna :ARG2 otec",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "Cardoso :ARG0-of (otec :ARG1 měna)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "训练数据的「Duchovní otec celé akce, … Eugen Brikcius」用 identity-91 :ARG1 otec :ARG2 人名（mf930709_050）；guideline 2.3 的 have-rel-role-92（ARG1 人，ARG2 关系对象，ARG3 关系）也对。s0/r1 把 have-rel-role-92 的论元整体错位。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 8,
+  "topic": "「ohrožení」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "ohrožovat-001（动词，aspect activity）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ ohrožovat-001"
+   },
+   {
+    "label": "ohrožení（名词）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ohrožení"
+   },
+   {
+    "label": "ohrozit-001",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ ohrozit-001"
+   }
+  ],
+  "best": "ohrožení（名词）",
+  "text": "训练数据的动名词 ohrožení 作名词概念（带 refer-number、ARG0/ARG1 entity，「Celní unie v ohrožení」「Zřetelné ohrožení」），与第 16 句 zavedení 同理。gold 还原成动词，意思不错但不合数据写法；ohrozit 是完成体，体也不对。",
+  "fix": {
+   "title": "ohrožení：ohrožovat-001 → ohrožení（名词）",
+   "conf": "low",
+   "why": "捷克文训练数据的动名词 ohrožení 一律作名词概念 ohrožení，不带 aspect。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s21o3",
+     "concept": "ohrožení"
+    },
+    {
+     "op": "del_attr",
+     "var": "s21o3",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s21o3",
+     "attr": "modal-strength"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "有没有 začít 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "začít-001 为根，:ARG1 bít…",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ začít-001"
+   },
+   {
+    "label": "没有 začít，根是 bít-001",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "začít-001 为根，:ARG1 bít…",
+  "text": "与第 20 句相同，s1f 又丢了「začali（开始）」，两次运行都如此。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "začít 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "（没有 začít 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "performance",
+  "text": "「začali」是完成体过去时，开始这一事件已完成；训练数据的「začali/začala」+ 不定式全部标 performance。gold 标 activity 是把补语的体写到了 začít 上。",
+  "fix": {
+   "title": "začít-001 的 aspect：activity → performance",
+   "conf": "high",
+   "why": "完成体「začali」表示开始已经发生；训练数据 začít-001 带不定式的例子都标 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s22z1",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "习语「bít na poplach」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "bít-na-poplach-002（一个概念）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ bít-na-poplach-002"
+   },
+   {
+    "label": "bít-002 :part-of-phraseme na_poplach",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of-phraseme (s"
+   },
+   {
+    "label": "bít-001 :ARG1 poplach（字面）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ poplach"
+   }
+  ],
+  "best": null,
+  "text": "「bít na poplach」（敲警钟、发出警报）是习语。guideline 2.6 把习语作一个概念，gold 照此；捷克文训练数据的固定搭配常用 :part-of-phraseme 挂剩余部分（「shodou okolností」「stejně tak」），s3、a2 照此。字面拆成「敲打 + 警报」丢了习语义。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "「své moci ministra financí」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "moc :possessor Ricupero :possessor ministr",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "moc :mod ministr",
+    "systems": [
+     "s0/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Ricupero :ARG1-of have-org-role-92 :ARG3 ministr",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-org-role-92"
+   },
+   {
+    "label": "Ricupero :ARG0-of have-org-role-92 :ARG2 ministr",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "/ have-org-role-92"
+   },
+   {
+    "label": "Ricupero :mod ministr",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「moc ministra financí」是 Ricupero 作为财政部长的权力：ministr 是 moc 的类型修饰（:mod），或按 guideline 2.3 用 have-org-role-92 把职务挂在 Ricupero 身上。gold 给 moc 两个 :possessor，把「部长」当成另一个拥有者，略差。s0/r2 的 have-org-role-92 论元错位；a2/r1 把职务直接作人的 :mod。",
+  "fix": {
+   "title": "moc 的第二个 :possessor ministr → :mod",
+   "conf": "low",
+   "why": "「své moci ministra」中 ministr 说明权力的类型（部长的职权），拥有者只有 Ricupero 一个；用 :mod 更贴切。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s23m1",
+     "r": "possessor",
+     "t": "s23m2",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "ministr 与 financí 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "ministr :mod finance",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ finance"
+   },
+   {
+    "label": "ministr :possessor finance",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "ministr :topic finance",
+    "systems": [
+     "s0/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": null,
+  "text": "训练数据「ministr financí」:mod 和 :possessor 都有（wsj0571 :mod，ln94206_35、ln94207_126 :possessor）。:topic 不合数据写法。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "有没有 začít 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :op2 začít-001 :ARG1 upravovat",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ začít-001"
+   },
+   {
+    "label": "and :op2 upravovat（无 začít）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "and :op2 začít-001 :ARG1 upravovat",
+  "text": "s1f 第三次丢掉 začít（第 20、22 句同），看来是这个设定一贯把「开始做」压成补语事件本身。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "ministr 与第 15 句 ministr 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第15句 Cardoso 的 ministr :same-entity 本句 ministr)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "链到第 5 句 Rubens Ricupero",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不链接",
+  "text": "第 15 句的 ministr 是 Cardoso 到 1994 年 4 月为止担任的职务修饰语，本句的 ministr 是 Ricupero 现在的职位，两者不是同一实体的提及（人不同，职位名词又只是修饰语）。s0/r2 把职务链到人，也不对。",
+  "fix": {
+   "title": "删除 ministr 与第 15 句 ministr 的 same-entity",
+   "conf": "low",
+   "why": "第 15 句的 ministr 修饰 Cardoso 担任过的职务，本句是 Ricupero 的职权；职务修饰语之间不构成实体共指。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s23m2",
+      "same-entity",
+      "s15m1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "「dopustil se podvodu」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "podvést-001 :ARG1 člověk（合成一个动词）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ podvést-001"
+   },
+   {
+    "label": "dopustit-se-001 :ARG1 (podvod :ARG1/:place člověk)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dopustit-se-001"
+   }
+  ],
+  "best": "dopustit-se-001 :ARG1 (podvod :ARG1/:place člověk)",
+  "text": "训练数据「dopustil se přestupku, ale nikoli podvodu」写成 dopustit-se-001 :ARG1 podvod（wsj1152），「dopustila se jedné chyby」同（pdtsc_115_3.07）。dopustit se 在捷克文数据里不当轻动词处理；gold 换成另一个动词 podvést，偏离原文用词。",
+  "fix": {
+   "title": "dopustil se podvodu：podvést-001 → dopustit-se-001 :ARG1 podvod",
+   "conf": "mid",
+   "why": "捷克文训练数据把「dopustit se podvodu / přestupku / chyby」写成 dopustit-se-001 :ARG1 名词（wsj1152 就是 podvod），受害者挂在 podvod 上。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s24p1",
+     "concept": "dopustit-se-001"
+    },
+    {
+     "op": "add_node",
+     "parent": "s24p1",
+     "role": "ARG1",
+     "var": "s24z1",
+     "concept": "podvod",
+     "attrs": {
+      "refer-number": "singular"
+     },
+     "align": "4-4"
+    },
+    {
+     "op": "add_rel",
+     "s": "s24z1",
+     "r": "ARG1",
+     "t": "s24c1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s24p1",
+     "r": "ARG1",
+     "t": "s24c1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "受骗者「na lidech」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "受骗者作 ARG1（podvod 或 podvést 的）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "podvod :place člověk",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "受骗者作 ARG1（podvod 或 podvést 的）",
+  "text": "「podvod na lidech」里 na 引出受骗的人，是受事，不是地点；a2 照字面的介词 na 写成 :place。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "「Nejenže …, navíc …」的篇章关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   },
+   {
+    "label": "gradation",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ gradation"
+   }
+  ],
+  "best": "gradation",
+  "text": "捷克文训练数据把「nejen(že) …, ale ještě …」的递进写成 gradation（wsj1795、wsj1002，nejenže 作 gradation 的 :clausal-marker）。and 丢了「不仅……而且」的递进义。",
+  "fix": {
+   "title": "Nejenže … navíc：and → gradation",
+   "conf": "mid",
+   "why": "捷克文训练数据的「Nejenže …, ale ještě …」递进结构一律用 gradation；本句同为 nejenže … navíc。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s24g1",
+     "concept": "gradation"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "「Nejenže」节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":clausal-marker nejenže",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ nejenže"
+   },
+   {
+    "label": "没有 nejenže",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": ":clausal-marker nejenže",
+  "text": "训练数据把 nejenže 留作 :clausal-marker 节点（挂在 gradation 或事件上）。gold 挂在第一个事件上，a2 挂在 gradation 上，都可以。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "「navíc」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":clausal-marker navíc",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": ":mod navíc",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": ":clausal-marker navíc",
+  "text": "navíc（此外、而且）是连接性小品词，训练数据同类词（však、také、tedy）都作 :clausal-marker；:mod 用于名词修饰语。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "「podporou」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "podporovat-002（动词，aspect activity）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ podporovat-002"
+   },
+   {
+    "label": "podpora（名词）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ podpora"
+   },
+   {
+    "label": "podpořit-001 / podporovat-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ podpo"
+   }
+  ],
+  "best": "podpora（名词）",
+  "text": "训练数据的 podpora 一律作名词（「zůstal bez podpory」「z humanitární podpory」）。gold 改写成动词，而且第 18 句同一个「支持」用的是 podporovat-001，这里是 -002，本文件内也不一致。",
+  "fix": {
+   "title": "podporou：podporovat-002 → podpora（名词）",
+   "conf": "low",
+   "why": "捷克文训练数据的 podpora 作名词概念；gold 在第 18 句、本句分别用了 podporovat-001 和 -002，编号前后不一。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s24p3",
+     "concept": "podpora"
+    },
+    {
+     "op": "del_attr",
+     "var": "s24p3",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s24p3",
+     "attr": "modal-strength"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 7,
+  "topic": "podpora 与 porušit 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "porušit :instrument podpora",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":instrument (s"
+   },
+   {
+    "label": "porušit :manner podpora",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "porušit :means podpořit/podporovat",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":means (s"
+   }
+  ],
+  "best": "porušit :instrument podpora",
+  "text": "工具格「svou podporou … porušil」表示违规的手段，与第 16 句 zavedením 同，用 :instrument。:means 不在角色表；:manner 意思偏了。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 8,
+  "topic": "「jednoho z kandidátů」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :quant 1 :ARG0-of kandidovat :part (person :ARG0-of kandidovat)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ kandidovat-002"
+   },
+   {
+    "label": "jeden :start kandidát",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":start (s"
+   },
+   {
+    "label": ":subset-of kandidát（jeden 或 kandidát :quant 1）",
+    "systems": [
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of (s"
+   },
+   {
+    "label": "kandidát :quant 1 :ARG1-of include-91",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "/ include-91"
+   },
+   {
+    "label": "kandidát :quant 1 :part kandidát",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "kandidát :quant 1（丢了「其中之一」）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "训练数据的「jeden z X」写成 jeden :start X（「Jedním z … segmentů」→ jeden :start segment），a2 照此；其余几种也都表达了「候选人之一」。gold 把 kandidát 拆成 person :ARG0-of kandidovat-002，第 12 句却用 kandidovat-001，编号不一，但无从判断哪个对。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 9,
+  "topic": "「jednoho z kandidátů」与 Cardoso 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "链到第 21 句 Cardoso",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "链到第 12 句 Cardoso / 第 5 句 kandidát",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "链到第 21 句 Cardoso",
+  "text": "Ricupero 支持的候选人就是 Cardoso（第 15 句起两人合作），应链到最近一次提及，即第 21 句。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 10,
+  "topic": "lidé 与第 18 句 národ 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(národ :same-entity lidé)",
+    "systems": [
+     "gold",
+     "s0/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "链到第 17 句 Brazilci",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不链接",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "被欺骗的「lidé」可以理解为前文支持 Cardoso 的国民，也可以只是泛指的人们；链不链都说得通。",
+  "fix": null
+ }
+]

@@ -1,0 +1,4843 @@
+[
+ {
+  "sent": 1,
+  "n": 1,
+  "topic": "「定价」与「推出」的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "定价 作为 装置 的关系从句（装置 :ARG0-of 定价-01）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of"
+   },
+   {
+    "label": "and :op1 推出 :op2 定价",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ and"
+   }
+  ],
+  "best": null,
+  "text": "原文「推出X，定价Y」是两个承前省略主语的并列小句，系统用 and 并列；gold 把定价写成装置的关系从句。两者语义等价，都不违反 guideline。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 2,
+  "topic": "「定价」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "定价-01 :ARG0 装置/产品 :ARG1 价格",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "定价-01"
+   },
+   {
+    "label": "定价-01 :ARG0 苹果 :ARG1 装置 :ARG2 价格",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "定价-01 :ARG0 装置/产品 :ARG1 价格",
+  "text": "PropBank 定价-01：ARG0 thing described、ARG1 price；s1f 用的是 定价-02（agent / entity / price）的论元框架却写 -01，-01 没有 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 3,
+  "topic": "「增强现实」是否拆开",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "整词 增强现实（不谓词化）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 增强现实)"
+   },
+   {
+    "label": "现实 :ARG1-of 增强-01（无 aspect）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 增强-01)"
+   },
+   {
+    "label": "现实 :ARG1-of 增强-01 :aspect process",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "装置 :mod 增强-01 :ARG1 现实",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 现实)"
+   }
+  ],
+  "best": null,
+  "text": "「增强现实」(AR) 是固定术语，guideline 2.6 允许作一个概念；按 AMR 拆成 reality :ARG1-of augment-01 也说得通。s1f 拆成事件却不给 aspect，违反「每个事件都有 aspect」。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 4,
+  "topic": "「首款」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "装置 :mod 首款",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 首款)"
+   },
+   {
+    "label": ":ord (ordinal-entity :value 1)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":value 1)"
+   },
+   {
+    "label": ":ord (ordinal-entity :value 1 :unit 款)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 款)"
+   }
+  ],
+  "best": ":ord (ordinal-entity :value 1 :unit 款)",
+  "text": "【更正】量词按规则保留为 :unit。guideline 2.2：序数用 ordinal-entity :value；「首款」即第一款，量词「款」保留为 ordinal-entity 的 :unit（训练数据有 ordinal-entity 带 :unit 次/届 的先例），a2 的写法最完整；只写 :value 1 的漏了量词节点。gold 直接写 :mod 首款不合序数规范。",
+  "fix": {
+   "title": "首款：:mod 首款 → :ord (ordinal-entity :value 1 :unit 款)",
+   "conf": "mid",
+   "why": "「首款」表示第一款，guideline 2.2 规定序数用 (ordinal-entity :value N)，不该当普通修饰词；量词「款」按规则保留为 ordinal-entity 的 :unit。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s1x5"
+    },
+    {
+     "op": "add_node",
+     "parent": "s1x3",
+     "role": "ord",
+     "var": "s1z1",
+     "concept": "ordinal-entity",
+     "attrs": {
+      "value": 1
+     },
+     "align": "4-4"
+    },
+    {
+     "op": "add_node",
+     "parent": "s1z1",
+     "role": "unit",
+     "var": "s1u1",
+     "concept": "款",
+     "align": "4-4"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok",
+    "ok"
+   ],
+   "best": ":ord (ordinal-entity :value 1)",
+   "fix": {
+    "title": "首款：:mod 首款 → :ord ordinal-entity :value 1",
+    "conf": "mid",
+    "why": "「首款」表示第一款，guideline 2.2 规定序数用 (ordinal-entity :value N)，不该当普通修饰词。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s1x5"
+     },
+     {
+      "op": "add_node",
+      "parent": "s1x3",
+      "role": "ord",
+      "var": "s1z1",
+      "concept": "ordinal-entity",
+      "attrs": {
+       "value": 1
+      },
+      "align": "4-4"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 1,
+  "n": 5,
+  "topic": "Apple Vision Pro 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "装置 :name Apple Vision Pro",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "product :name … :mod 装置",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ product",
+     "/ 装置)"
+    ]
+   },
+   {
+    "label": "identity-91 连接 装置 与 product",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": "product :name … :mod 装置",
+  "text": "guideline 2.2 命名实体用类型表里的类型（product），训练数据的产品名也用 product :name；gold 和 s1f 拿普通名词「装置」当命名实体类型，略差。a2 用 identity-91 表同位也可以。",
+  "fix": {
+   "title": "Apple Vision Pro：类型 装置 → product，装置作 :mod",
+   "conf": "low",
+   "why": "命名实体应使用类型表中的 product，普通名词「装置」保留为修饰。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s1x3",
+     "concept": "product"
+    },
+    {
+     "op": "add_node",
+     "parent": "s1x3",
+     "role": "mod",
+     "var": "s1z2",
+     "concept": "装置",
+     "align": "7-7"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 6,
+  "topic": "「（苹果）公司首款装置」的领属",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "装置 :mod 苹果",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":mod s"
+   },
+   {
+    "label": "装置 :possessor 苹果",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor s"
+   },
+   {
+    "label": "装置 :poss 苹果",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":poss s"
+   },
+   {
+    "label": "装置 :poss 公司（另立节点，句内 coref 到苹果）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "/ 公司)",
+     ":same-entity"
+    ]
+   }
+  ],
+  "best": "装置 :possessor 苹果",
+  "text": "「公司首款装置」是领属，应为 :possessor（完整 guideline 3-2-2-2 写作 :poss，训练数据用 :possessor，两者等价），不宜用 :mod（不过按 AMR 惯例厂商也常作 :mod，所以只是略差）。s1f/r1 另立「公司」节点再在句内 coref，guideline 5.3 规定句内同指用重入。",
+  "fix": {
+   "title": "装置与苹果：:mod → :possessor",
+   "conf": "low",
+   "why": "「(苹果)公司首款装置」表示属于苹果的装置，领属关系应为 :possessor，而不是 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s1x3",
+     "r": "mod",
+     "t": "s1c",
+     "r2": "possessor"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 7,
+  "topic": "「定价」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "state",
+  "text": "定价-01 是「某物价格为…」的状态谓词，state 合适；s1f/r2 按「定下价格」的动作理解标 performance，与它自己的论元框架一致但不如 state。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 8,
+  "topic": "「推出」相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 推出)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before"
+   },
+   {
+    "label": "推出没有时间父节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(document-creation-time :before 推出)",
+  "text": "guideline 5.1：每个事件都要有时间父节点，已经发生的推出应挂在 DCT 下 :before。s1f/r1 只有 (推出 :overlap 定价)，s1f/r2 整句没有 temporal。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 9,
+  "topic": "「定价」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 定价)",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :overlap"
+   },
+   {
+    "label": "(推出 :overlap 定价)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "定价没有时间父节点",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "价格这一状态在文档时间成立，也与推出同时；两种父节点都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 1,
+  "topic": "「在…活动上」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "发布 :temporal 活动",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "发布 :place 活动",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   }
+  ],
+  "best": null,
+  "text": "「在活动上发布」既可理解为发布发生的场合（:place），也可理解为以活动这一事件为时间参照（guideline 3 列表中 :temporal 可接时间表达或事件）。两者都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 2,
+  "topic": "「活动」是否作事件",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "活动（实体，无 aspect）",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "活动 :aspect process（事件名词）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "活动-01 :aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "活动-01"
+   }
+  ],
+  "best": "活动 :aspect process（事件名词）",
+  "text": "这里的「活动」指发布会（苹果开发者大会），是有过程意义的事件名词，guideline 2.1 规定会议、比赛这类事件名词按事件标、带 aspect（process）。PropBank 活动-01 只有 ARG0 agent，是「(人)活动、行动」的意思，不合「一场活动」的用法，s3 的义项略差。",
+  "fix": {
+   "title": "活动：作为事件名词加 :aspect process 和 modal",
+   "conf": "low",
+   "why": "「活动」指一场发布会，是事件名词，按 guideline 2.1 应作事件，带 aspect 和模态父节点。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s2x4",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s2x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 3,
+  "topic": "「美国西岸时间」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "date-entity :timezone 西岸（不立「时间」节点）",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "date-entity :timezone 时间 :mod 西岸",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 时间",
+     ":timezone"
+    ]
+   },
+   {
+    "label": "date-entity :mod 时间 :place 西岸",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": null,
+  "text": "「美国西岸时间」是时区，guideline 3-2-2-1 用 :timezone；gold 省掉「时间」直接以西岸为时区，或保留「时间」节点再修饰都可以。s3/r1 用 :mod 挂时间、:place 挂西岸，没有用时区关系。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 4,
+  "topic": "「西岸」与「美国」的整体部分方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "西岸 :part-of 美国",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of"
+   },
+   {
+    "label": "西岸 :part 美国",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 3-2-2-2 规定 :part 以部分为父、整体为子（string :part guitar），s1f 照此写；训练数据和 AMR 习惯用 :part-of 表示同一意思，两种写法训练数据里都有。语义相同，都算对。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 5,
+  "topic": "「星期一」相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :depends-on 星期一)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":depends-on"
+   },
+   {
+    "label": "(document-creation-time :before 星期一)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "(document-creation-time :before"
+   }
+  ],
+  "best": "(document-creation-time :depends-on 星期一)",
+  "text": "guideline 5.1：相对时间表达挂在 DCT 下用 :depends-on（时间节点之间的关系）；a2 用 :before 表达了先后，但不是时间表达的规范写法。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 1,
+  "topic": "「头戴」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "显示器 :mod 头戴",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 头戴)"
+   },
+   {
+    "label": "显示器 :ARG1-of 头戴-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "头戴-01"
+   }
+  ],
+  "best": null,
+  "text": "「头戴显示器」是复合名词，头戴作修饰可以；PropBank 有 头戴-01（ARG1 entity worn on the head），把显示器当被戴之物的关系从句也成立。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 2,
+  "topic": "量词「个」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "传感器/镜头/眼睛 :unit 个",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 个)"
+   },
+   {
+    "label": "省去「个」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "传感器/镜头/眼睛 :unit 个",
+  "text": "【更正】量词按规则保留为 :unit。「5 个传感器」「12 个镜头」「两个眼睛」的量词「个」应保留为 :unit，gold 三处都保留，正确；6 个系统都省掉了量词节点。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "省去「个」",
+   "fix": {
+    "title": "删去量词「个」的 :unit 节点",
+    "conf": "high",
+    "why": "guideline 2.2 明确规定普通量词「个」不标 :unit，只保留 :quant。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s3x5"
+     },
+     {
+      "op": "del_node",
+      "var": "s3x7"
+     },
+     {
+      "op": "del_node",
+      "var": "s3x14"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 3,
+  "n": 3,
+  "topic": "量词「面」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "荧幕 :unit 面",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 面)"
+   },
+   {
+    "label": "省去「面」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "荧幕 :unit 面",
+  "text": "【更正】量词按规则保留为 :unit。「一面 4K 荧幕」「一面荧幕」的量词「面」应保留为 :unit，gold 和 a2 正确；省掉的漏了量词节点。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok"
+   ],
+   "best": "省去「面」",
+   "fix": {
+    "title": "删去量词「面」的 :unit 节点",
+    "conf": "low",
+    "why": "「面」是个体量词，guideline 2.2 规定普通量词不作 :unit。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s3x10"
+     },
+     {
+      "op": "del_node",
+      "var": "s3x17"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 3,
+  "n": 4,
+  "topic": "「配置」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "配置 :ARG0 显示器",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 s"
+   },
+   {
+    "label": "配置 没有 ARG0",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 配置-01 ARG0 是 agent；显示器是「为眼睛配置荧幕」的承前主语，语义上更像被配备的整体而非施事。标成 ARG0 或不标都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 5,
+  "topic": "「为两个眼睛」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "配置 :ARG2 眼睛",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "配置 :affectee 眼睛",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":affectee"
+   }
+  ],
+  "best": "配置 :ARG2 眼睛",
+  "text": "PropBank 配置-01 ARG2 是 entity deployed for，「为两个眼睛」正是 ARG2；Stage 1 用编号论元，不用 :affectee。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 6,
+  "topic": "「各」挂在哪",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "配置 :mod 各",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "配置 :manner 各",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":manner"
+   },
+   {
+    "label": "眼睛 :mod 各",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「各配置一面」的「各」表示分配（每只眼睛一面），挂事件或挂眼睛作 :mod 都可以；它不是方式，:manner 略差。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 7,
+  "topic": "「在头盔正面有一面荧幕」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "有-03 :ARG0 正面 :ARG1 荧幕",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "有-03"
+   },
+   {
+    "label": "exist-91 :ARG1 正面 :ARG2 荧幕",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有-03 是存在义（ARG0 location/domain，ARG1 entity that exists），精简 guideline 2.3 也允许用 exist-91（ARG1 location，ARG2 theme）。训练数据两种都有（有-03 更多），都算对。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 8,
+  "topic": "头戴显示器与上句 Apple Vision Pro 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(Apple Vision Pro :same-entity 显示器)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "(Apple Vision Pro :same-entity 显示器)",
+  "text": "这里的「头戴显示器」就是上句发布的 Apple Vision Pro，guideline 5.3 定指描述与先行词要连 :same-entity；gold 本句 coref 为空。",
+  "fix": {
+   "title": "加 coref：s2 Apple Vision Pro = 头戴显示器",
+   "conf": "high",
+   "why": "「头戴显示器」指上句发布的 Apple Vision Pro，是同一实体的定指描述，应连 :same-entity。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s2p",
+      "same-entity",
+      "s3x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 9,
+  "topic": "「头盔」与显示器是否同一节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "另立 头盔 节点，与显示器无关联",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "另立 头盔 节点，句内 coref 到显示器",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "正面 :part-of 显示器（重入）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of s"
+   },
+   {
+    "label": "另立 头盔 节点，跨句 coref 到 Apple Vision Pro",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "正面 :part-of 显示器（重入）",
+  "text": "头盔就是同一部头戴显示器。guideline 5.3：句内同指用重入；s1f 在句内写 coref 三元组不合规范，gold 和 a2/r2 两个节点之间什么都没连，丢了同指信息。",
+  "fix": {
+   "title": "头盔并入显示器节点（重入）",
+   "conf": "low",
+   "why": "「头盔」和「头戴显示器」是同一设备，句内同指应用重入。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s3x23"
+    },
+    {
+     "op": "add_rel",
+     "s": "s3x24",
+     "r": "part-of",
+     "t": "s3x2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 10,
+  "topic": "「展示」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "process",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "「可展示用家的眼部」是能力 / 功能描述，未必发生，aspect 难定；按 REVIEWER 说明几种合理取值都给 ok。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 11,
+  "topic": "状态谓词相对 DCT 还是 present-reference",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 搭载 …)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :overlap"
+   },
+   {
+    "label": "(present-reference :overlap …)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "present-reference"
+   }
+  ],
+  "best": "(document-creation-time :overlap 搭载 …)",
+  "text": "guideline 5.1：没有时间词时，现时状态挂在 DCT 下用 :overlap；present-reference 用于「现在、如今」这类模糊时间词，本句没有。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 1,
+  "topic": "「和传闻相同」的结构与论元",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "相同-01 :ARG0 (and 传闻 (and 控制 连线 操作))",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "相同-01 :ARG0 事件 :ARG1 传闻",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "and :manner (相同-01 :ARG0 传闻)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "相同-01 :ARG0 (and 传闻 (and 控制 连线 操作))",
+  "text": "PropBank 相同-01 只有 ARG0（entities described），比较双方都应放进 ARG0；s1f 给了不存在的 ARG1。a2/r1 把相同当 :manner，ARG0 只有传闻，丢了比较的另一方。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 2,
+  "topic": "「传闻」的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "传闻（实体）",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "传闻-00 :aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "传闻-00"
+   },
+   {
+    "label": "传闻-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "传闻-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 没有「传闻」；作名词（流传的消息）不谓词化可以，作事件名词时应写 传闻-00（guideline 2.1），s1f 的 -01 是凭空编号。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 3,
+  "topic": "「早前」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "传闻 :mod 早前",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "传闻 :temporal 早前",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   }
+  ],
+  "best": "传闻 :temporal 早前",
+  "text": "「早前」是时间表达，guideline 3 用 :temporal 表示时间，不是一般修饰 :mod。",
+  "fix": {
+   "title": "早前：:mod → :temporal",
+   "conf": "mid",
+   "why": "「早前」是时间词，应用 :temporal 而不是 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s4x",
+     "r": "mod",
+     "t": "s4x14",
+     "r2": "temporal"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 4,
+  "topic": "「早前」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(past-reference :depends-on 早前)",
+    "systems": [
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(past-reference :depends-on"
+   },
+   {
+    "label": "(document-creation-time :depends-on 早前)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :depends-on"
+   },
+   {
+    "label": "(上句星期一 :depends-on 早前)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：每个时间表达都要有参照时间；「早前」是模糊的过去时间词，挂 past-reference 或 DCT 都说得通。s1f/r1 挂在上句的「星期一」下缺乏依据。",
+  "fix": {
+   "title": "加时间关系：past-reference :depends-on 早前",
+   "conf": "low",
+   "why": "「早前」是时间表达，guideline 5.1 要求它有参照时间；它是模糊的过去时间词，挂在 past-reference 下。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s4x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 5,
+  "topic": "「透过眼球、手部和语音」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "控制 :medium (and 眼球 手部 语音)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":medium"
+   },
+   {
+    "label": "控制 :instrument (and 眼球 手部 语音)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":instrument"
+   }
+  ],
+  "best": "控制 :instrument (and 眼球 手部 语音)",
+  "text": "完整 guideline 3-2-2-2：:medium 用于交流渠道（如语言）；眼球、手部、语音是操控头盔的手段，应为 :instrument。",
+  "fix": {
+   "title": "控制的手段：:medium → :instrument",
+   "conf": "mid",
+   "why": "眼球、手部和语音是控制头盔所用的手段，:medium 只用于交流渠道（语言等），这里应为 :instrument。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s4x15",
+     "r": "medium",
+     "t": "s4a",
+     "r2": "instrument"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 6,
+  "topic": "「连线」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "连线-01 :ARG0 (and 头盔 Mac)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连线-01 :ARG0 头盔 :ARG1 Mac",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "连线-01 :ARG0 (and 头盔 Mac)",
+  "text": "PropBank 连线-01 只有 ARG0（entities getting connected），被连接的双方都应在 ARG0 里；s1f 加了不存在的 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 7,
+  "topic": "「苹果的 Mac 电脑」的命名实体",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "product :name \"Mac\" \"电脑\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"电脑\""
+   },
+   {
+    "label": "电脑 :name \"Mac\"",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "product :name \"Mac\" :mod 电脑",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 电脑)"
+   },
+   {
+    "label": "电脑 :mod (product :name \"Mac\")",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "产品名是 Mac，「电脑」是类名，不该放进 :name；命名实体类型应用类型表里的 product（guideline 2.2），s1f 用普通名词「电脑」当类型。",
+  "fix": {
+   "title": "Mac 电脑：name 只保留 \"Mac\"，电脑作 :mod",
+   "conf": "low",
+   "why": "「电脑」是类名而不是名字的一部分，应从 :name 中拿出作修饰。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s4n3",
+     "r": "op2",
+     "t": "\"电脑\""
+    },
+    {
+     "op": "add_node",
+     "parent": "s4p",
+     "role": "mod",
+     "var": "s4z1",
+     "concept": "电脑",
+     "align": "25-25"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 8,
+  "topic": "「苹果的」Mac 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "Mac :mod 苹果",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":possessor/:poss 苹果",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「苹果的 Mac 电脑」可读作领属（:possessor），也可按 AMR 惯例把产品的厂商作 :mod；两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 9,
+  "topic": "三个能力事件的 aspect（控制、连线、操作）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity / performance / activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state ×3",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance ×3",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": null,
+  "text": "「可…控制、能够连线并操作」是能力描述，未然，aspect 难定，state、activity 都可以；连线本身有终点，标 performance 也说得通，但 a2/r2 把无终点的控制、操作也标 performance 较差。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 10,
+  "topic": "相同等状态相对 DCT 还是 present-reference",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap …)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :overlap"
+   },
+   {
+    "label": "(present-reference :overlap …)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(present-reference :overlap"
+   }
+  ],
+  "best": "(document-creation-time :overlap …)",
+  "text": "本句没有「现在」这类时间词，现时状态按 guideline 5.1 挂 DCT :overlap。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 1,
+  "topic": "「M2 处理器」「R1 处理器」的命名实体",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "product :name \"M2\" \"处理器\"",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"处理器\""
+   },
+   {
+    "label": "处理器 :name \"M2\"",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"M2\")"
+   },
+   {
+    "label": "product :name \"M2\" :mod 处理器",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 处理器)"
+   }
+  ],
+  "best": "product :name \"M2\" :mod 处理器",
+  "text": "芯片名是 M2、R1，「处理器」是类名，不属于名字；命名实体类型用类型表的 product（guideline 2.2）。与第 4 句「Mac 电脑」同一问题。",
+  "fix": {
+   "title": "M2/R1 处理器：name 去掉「处理器」，处理器作 :mod",
+   "conf": "low",
+   "why": "「处理器」是类名而不是芯片名的一部分，应从 :name 中拿出作修饰。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s5n2",
+     "r": "op2",
+     "t": "\"处理器\""
+    },
+    {
+     "op": "add_node",
+     "parent": "s5p",
+     "role": "mod",
+     "var": "s5z1",
+     "concept": "处理器",
+     "align": "6-6"
+    },
+    {
+     "op": "del_rel",
+     "s": "s5n3",
+     "r": "op2",
+     "t": "\"处理器\""
+    },
+    {
+     "op": "add_node",
+     "parent": "s5p2",
+     "role": "mod",
+     "var": "s5z2",
+     "concept": "处理器",
+     "align": "16-16"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 2,
+  "topic": "「苹果的」M2 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "M2 :mod 苹果",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":possessor/:poss 苹果",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "与第 4 句相同：领属 :possessor 和厂商 :mod 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 3,
+  "topic": "「公司表示」的说话人",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "表示 :ARG0 苹果（重入）",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另立「公司」节点，句内 coref 到苹果",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 公司)"
+   }
+  ],
+  "best": "表示 :ARG0 苹果（重入）",
+  "text": "「公司」就是同句的苹果，guideline 5.3：句内同指用重入，不写 coref 三元组。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 4,
+  "topic": "「研发」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "研发 :ARG0 苹果",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有 ARG0",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "研发者是苹果，原文未明说，补出隐含论元或不补都可以。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 5,
+  "topic": "「专门」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "研发 :mod 专门",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "研发 :manner 专门",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "研发 :manner 专门",
+  "text": "「专门新研发」里「专门」是修饰动词的副词，按惯例副词性修饰事件用 :manner，名词性修饰才用 :mod。",
+  "fix": {
+   "title": "专门：:mod → :manner",
+   "conf": "mid",
+   "why": "「专门」是修饰「研发」的副词，副词性的事件修饰应为 :manner，而不是 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s5x10",
+     "r": "mod",
+     "t": "s5x11",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 6,
+  "topic": "「新」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "研发 :mod 新",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "研发 :temporal 新",
+    "systems": [
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "研发 :manner 新",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「新研发」的「新」表示新近，可作 :mod 或 :temporal；不是方式，:manner 略差。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 7,
+  "topic": "「不适」是否作事件",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不适（实体，不连用家）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不适（实体）:poss 用家",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "不适-01 :ARG0 用家 :aspect state",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "不适-01"
+   }
+  ],
+  "best": "不适-01 :ARG0 用家 :aspect state",
+  "text": "PropBank 有 不适-01（ARG0 entity described）；「用家操作时的不适」是用家的不适，s3、a2 作状态事件并补出 ARG0，s1f 作名词连 :poss 也说明了感受者。gold 的「不适」没有连到用家。",
+  "fix": {
+   "title": "不适：谓词化为 不适-01，ARG0 用家",
+   "conf": "low",
+   "why": "PropBank 有 不适-01（ARG0 entity described），「用家操作时的不适」中不适的主体是用家，可以作状态事件并补出 ARG0。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s5x2",
+     "concept": "不适-01"
+    },
+    {
+     "op": "set_attr",
+     "var": "s5x2",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "add_rel",
+     "s": "s5x2",
+     "r": "ARG0",
+     "t": "s5x8"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s5c",
+      "full-affirmative",
+      "s5x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 8,
+  "topic": "「操作时」是否立「时」节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不适 :temporal (时 :op1 操作)",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 时"
+   },
+   {
+    "label": "不适 :temporal 操作",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「…时」可以立一个时间节点再以事件为 op1，也可以直接以事件作 :temporal，两种都常见。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 9,
+  "topic": "「操作」的 ARG1",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "操作 :ARG1 头盔",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有 ARG1",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "操作 :ARG1 头盔",
+  "text": "PropBank 操作-01 ARG1 是 thing operated；用家操作的就是头盔，前文明确，补出更好。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 10,
+  "topic": "「操作」的 :modal-strength 属性值",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":modal-strength undefined",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":modal-strength undefined"
+   },
+   {
+    "label": "合法取值或不写",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "合法取值或不写",
+  "text": "guideline 5.2 的模态强度取值里没有 undefined；gold 文档级给的是 unspecified，句子图里应一致。",
+  "fix": {
+   "title": "操作的 :modal-strength：undefined → unspecified",
+   "conf": "high",
+   "why": "undefined 不是合法的模态强度值；gold 文档级对同一事件标的是 unspecified，图中属性应与之一致。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s5x12",
+     "attr": "modal-strength",
+     "value": "unspecified"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 11,
+  "topic": "减少、操作的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "directed-activity / activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":aspect directed-activity"
+   },
+   {
+    "label": "state / activity",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state / process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「可减少」是能力描述、未然，「操作时」是泛指，aspect 难定，几种取值都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 12,
+  "topic": "引述内容（研发、操作、不适）的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "都挂在说话人苹果下",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "研发挂 author，其余挂苹果",
+    "systems": [
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "研发、操作、不适都挂 author",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2：转述内容的 conceiver 是说话人；研发作为关系从句里的背景事实挂 author 也可以，但操作、不适是苹果所说内容的一部分，a2 全挂 author 略差。gold 给「操作」unspecified、系统给 full-affirmative，泛指事件两者都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 13,
+  "topic": ":quote 的使用",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不用 :quote",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只在 减少 上 :quote 表示",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "在 研发、操作、不适 等多个节点上 :quote",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「公司表示…」是间接引语，内容已是 表示 的 ARG1；精简 guideline 3 说 :quote 用于引语内容，只加在 ARG1 上可以，加在 ARG1 内部的每个事件上没有依据。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 14,
+  "topic": "「减少」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 减少)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(表示 :overlap 减少)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(表示 :overlap 减少)",
+  "text": "guideline 5.1：补足语小句的事件以主句事件为参照，「减少」是「表示」的内容，应挂在 表示 下。",
+  "fix": {
+   "title": "减少的时间父节点：DCT → 表示",
+   "conf": "mid",
+   "why": "「减少」是「公司表示」的补足语内容，guideline 5.1 规定补足语事件以主句事件为时间参照。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s5x"
+     ],
+     "to": [
+      "s5x3",
+      "overlap",
+      "s5x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 15,
+  "topic": "「配有」相对 DCT 还是 present-reference",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 配有)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(present-reference :overlap 配有)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(present-reference :overlap"
+   }
+  ],
+  "best": "(document-creation-time :overlap 配有)",
+  "text": "本句没有「现在」这类时间词，现时状态按 guideline 5.1 挂 DCT :overlap。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 16,
+  "topic": "「用家」与第 3 句「用家」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 3 句用家 :same-entity 用家)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "两处「用家」都是泛指的使用者，连不连共指都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 1,
+  "topic": "「指」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "指-02",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "指-02"
+   },
+   {
+    "label": "指-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "指-01"
+   }
+  ],
+  "best": "指-02",
+  "text": "PropBank 指-02：ARG0 agent、ARG1 thing pointed out/claimed，正是「苹果指…」；指-01 是「用 ARG1 指称 ARG2」。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 2,
+  "topic": "「上市」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "上市-01 :ARG0 显示器",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "上市-01 :ARG1 显示器",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "上市-01 :ARG0 显示器",
+  "text": "PropBank 上市-01 只有 ARG0（entity going on the market）。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 3,
+  "topic": "「价格为 3,499 美元」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "显示器 :ARG1-of (have-value-91 :ARG2 金额)，不立「价格」",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-value-91"
+   },
+   {
+    "label": "and 下 (identity-91 :ARG1 (价格 :possessor 显示器) :ARG2 金额)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": "and 下 (identity-91 :ARG1 (价格 :possessor 显示器) :ARG2 金额)",
+  "text": "guideline 2.3 的抽象谓词表没有 have-value-91（完整 guideline 也没有），训练数据「其价格为 5040 円」用 identity-91 :ARG1 价格；gold 丢了「价格」一词并用了不在表中的谓词。改法要重画这一小句（换谓词、加价格节点、改挂接），不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 4,
+  "topic": "「明年初」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "初 :mod 明年",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "初 :op1 明年",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 (s"
+   },
+   {
+    "label": "初 :part 明年",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "上市 :temporal 明年 :part 初",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「明年初」以「初」为中心、明年为其所属的时段，gold、s3、s1f（按完整 guideline :part 以部分为父）都表达了这一点；a2 把 :temporal 指向「明年」，再挂「初」，中心词颠倒，时间精度下降。",
+  "fix": null,
+  "before_part_correction": {
+   "status": [
+    "ok",
+    "ok",
+    "ok",
+    "minor"
+   ],
+   "best": null,
+   "conf": null
+  }
+ },
+ {
+  "sent": 6,
+  "n": 5,
+  "topic": "引述内容（上市、价格）的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(苹果 :full-affirmative 上市 …)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :full-affirmative 上市 …)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(苹果 :full-affirmative 上市 …)",
+  "text": "guideline 5.2：转述内容的 conceiver 是说话人，author 只对「指」本身确信；「会」是 predictive future，强度 full-affirmative。a2 没有引入苹果作 conceiver。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 6,
+  "topic": "金额的 :quant / :value",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "monetary-quantity :quant 3499",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant 3499"
+   },
+   {
+    "label": "monetary-quantity :value 3499",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":value 3499"
+   }
+  ],
+  "best": "monetary-quantity :quant 3499",
+  "text": "guideline 2.2：金额是 (monetary-quantity :quant N :unit …)，:value 用于 ordinal-entity、percentage-entity。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 7,
+  "topic": "「头戴」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "显示器 :mod 头戴",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 头戴)"
+   },
+   {
+    "label": "显示器 :ARG1-of 头戴-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "头戴-01"
+   }
+  ],
+  "best": null,
+  "text": "与第 3 句相同，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 1,
+  "topic": "「虚拟现实 VR」「增强现实 AR」的切分",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "整词 虚拟现实 / 增强现实 :name VR / AR",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 虚拟现实"
+   },
+   {
+    "label": "现实 :mod 虚拟；现实 :ARG1-of 增强-01（无 aspect）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 增强-01)"
+   },
+   {
+    "label": "现实 :mod 虚拟；增强-01 :aspect process",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "虚拟-01 :ARG1 现实；增强-01",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "虚拟-01"
+   },
+   {
+    "label": "现实 :mod 虚拟；现实 :mod 增强",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 增强)"
+   }
+  ],
+  "best": null,
+  "text": "与第 1 句一样，固定术语作一个概念或拆开都可以。s1f 拆出 增强-01 却不给 aspect；s3/r2 用 虚拟-01（ARG1 thing arg0 makes a virtual version of）把「虚拟现实」解释成「把现实虚拟化」，不合术语义。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 2,
+  "topic": "「主导」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "state",
+  "text": "「市场由 Meta 主导」是目前持续的状态（主导-01：ARG0 entity described），state 合适。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 3,
+  "topic": "「售卖 1,500 美元」的价格角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "售卖 :value 金额",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":value (s"
+   },
+   {
+    "label": "售卖 :ARG2 金额",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "售卖 :other-role 金额",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":other-role"
+   }
+  ],
+  "best": "售卖 :other-role 金额",
+  "text": "PropBank 售卖-01 的 ARG2 是 buyer，没有价格论元，s1f 的 ARG2 错。完整 guideline 3-2-2-5 的 :value 只用于序数、百分比等数值，不是事件的价格角色；没有合适角色时用 :other-role。",
+  "fix": {
+   "title": "售卖的价格：:value → :other-role",
+   "conf": "mid",
+   "why": ":value 在 UMR 里只用于序数、百分比等数值属性；售卖-01 没有价格论元，按 guideline 用 :other-role。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s7s",
+     "r": "value",
+     "t": "s7m2",
+     "r2": "other-role"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 4,
+  "topic": "「售卖」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「刚推出时售卖 1,500 美元」说的是一段时间里的售价，不是一次完成的事件；activity、state 都说得通，performance 不合适。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 5,
+  "topic": "「刚」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "推出 :mod 刚",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "推出 :temporal 刚",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "推出 :temporal 刚",
+  "text": "「刚推出」的「刚」是表示时间的副词（新近），按 AMR 惯例 just 作 :time / UMR :temporal；作 :mod 不如 :temporal 明确。",
+  "fix": {
+   "title": "刚：:mod → :temporal",
+   "conf": "low",
+   "why": "「刚」是表时间的副词，用 :temporal 比 :mod 更准确。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s7x2",
+     "r": "mod",
+     "t": "s7x3",
+     "r2": "temporal"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 6,
+  "topic": "「刚推出时」是否立「时」节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "售卖 :temporal (时 :op1 推出)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "售卖 :temporal 推出",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "与第 5 句相同，两种写法都可以。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 7,
+  "topic": "「降价」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "降价-01 :ARG1 Quest Pro",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "降价-01 :ARG0 Quest Pro",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "降价-01 :ARG1 Quest Pro",
+  "text": "PropBank 降价-01：ARG0 cause/agent、ARG1 theme；降价的是 Quest Pro，应为 ARG1。s1f/r2、s3/r2 另补 ARG0 Meta 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 8,
+  "topic": "「降价至 999 美元」的终点",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "降价 :result (have-value-91 :ARG1 Quest Pro :ARG2 金额)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-value-91"
+   },
+   {
+    "label": "降价 :ARG3 金额",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "降价 :ARG2 金额",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "降价 :goal 金额",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":goal (s"
+   }
+  ],
+  "best": "降价 :goal 金额",
+  "text": "降价-01 只有 ARG0、ARG1，s1f 的 ARG2/ARG3 不存在。have-value-91 不在 guideline 的抽象谓词表里（第 6 句同）；以 :goal 标变化的终点更简单。",
+  "fix": {
+   "title": "降价终点：:result have-value-91 → :goal 金额",
+   "conf": "low",
+   "why": "have-value-91 不是 guideline 里的抽象谓词；降价的终点金额可直接作 :goal。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s7hv",
+     "subtree": true
+    },
+    {
+     "op": "add_node",
+     "parent": "s7r",
+     "role": "goal",
+     "var": "s7z1",
+     "concept": "monetary-quantity",
+     "attrs": {
+      "quant": 999
+     }
+    },
+    {
+     "op": "add_node",
+     "parent": "s7z1",
+     "role": "unit",
+     "var": "s7z2",
+     "concept": "美元",
+     "align": "40-40"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 9,
+  "topic": "Quest Pro 的命名实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "头盔 :name Quest Pro",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "product :name Quest Pro :mod 头盔",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "product :ARG1-of identity-91 :ARG2 头盔",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": "product :name Quest Pro :mod 头盔",
+  "text": "与第 1 句相同：命名实体类型应取类型表的 product（guideline 2.2），「头盔」是普通名词。",
+  "fix": {
+   "title": "Quest Pro：类型 头盔 → product，头盔作 :mod",
+   "conf": "low",
+   "why": "命名实体应使用类型表中的 product，普通名词「头盔」保留为修饰。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s7h2",
+     "concept": "product"
+    },
+    {
+     "op": "add_node",
+     "parent": "s7h2",
+     "role": "mod",
+     "var": "s7z3",
+     "concept": "头盔",
+     "align": "24-24"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 10,
+  "topic": "「最新款」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "最新款（一个概念）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 最新款)"
+   },
+   {
+    "label": "新-01 :degree 最（Quest 3 :ARG1-of 新-01）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "新-01"
+   },
+   {
+    "label": "款 :mod (新 :degree 最)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 款"
+   },
+   {
+    "label": "新 :degree 最（无「款」）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "最新（无「款」）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 最新)"
+   },
+   {
+    "label": "最新 + :unit 款",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 最新)",
+     "/ 款)"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "【更正】量词按规则保留为 :unit。「最新款」= 最 + 新 + 款（量词）；量词按规则保留：gold 整词作一个概念、a2 保留 :unit 款、s3/r1 保留 款 节点都可以，完全没有「款」的略差。拆成 新 :degree 最（guideline 4.2 :degree）或保留「最新」本身都可以。PropBank 新-01 只有 ARG0，s1f/r1 用 ARG1-of 是错的论元。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "bad",
+    "ok",
+    "ok"
+   ],
+   "best": null,
+   "fix": null
+  }
+ },
+ {
+  "sent": 7,
+  "n": 11,
+  "topic": "Quest 3 的命名实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "product :name Quest 3",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "产品 :name Quest 3",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 产品"
+   }
+  ],
+  "best": "product :name Quest 3",
+  "text": "命名实体类型应取类型表的 product，不用中文普通名词「产品」。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 12,
+  "topic": "「定价为 500 美元」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "定价-01 :ARG0 Quest 3 :ARG1 金额",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "定价-01 :ARG0 Meta :ARG1 Quest 3 :ARG2 金额",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "定价-01 :ARG0 Quest 3 :ARG1 金额",
+  "text": "与第 1 句相同：定价-01 ARG0 thing described、ARG1 price，没有 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 13,
+  "topic": "「而…则」的篇章关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :op1…:op4 平列",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "and 下 contrast-91 (consecutive 售卖 降价) 对 定价",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "contrast-91"
+   }
+  ],
+  "best": null,
+  "text": "「而…则」带对比意味，a2/r2 用 contrast-91 更细，平列 and 也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 14,
+  "topic": "「目前」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :depends-on 目前)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "(document-creation-time :depends-on"
+   },
+   {
+    "label": "(present-reference :depends-on 目前)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(present-reference :depends-on"
+   }
+  ],
+  "best": "(present-reference :depends-on 目前)",
+  "text": "guideline 5.1：「现在、目前」这类模糊时间词挂在 present-reference 下，DCT 下的 :depends-on 用于「今天、昨天」这类相对时间。",
+  "fix": {
+   "title": "目前：DCT → present-reference",
+   "conf": "mid",
+   "why": "「目前」是模糊的现在时间词，guideline 5.1 规定它挂在 present-reference 下，而不是 document-creation-time。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "depends-on",
+      "s7x12"
+     ],
+     "to": [
+      "present-reference",
+      "depends-on",
+      "s7x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 15,
+  "topic": "「推出」「定价」等相对 DCT 的锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "推出 DCT :before，定价 DCT :overlap",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "推出挂刚，定价 DCT :overlap",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "推出 past-reference :contained，定价 present-reference :overlap",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "推出、定价都 past-reference :contained",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(past-reference :contained"
+   }
+  ],
+  "best": null,
+  "text": "没有模糊时间词时应直接挂 DCT（guideline 5.1）；s1f 两次都改用 past-/present-reference，s1f/r2 还把 Quest 3 现行的定价放在过去。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 16,
+  "topic": "同句两次「Meta」与 AR 的跨句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "Meta 重入；不连 AR",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另立第二个 Meta 节点，句内 coref",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "Meta 重入；AR 连第 1 句「现实」",
+    "systems": [
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.3：句内同指用重入，s1f/r1 写了句内 coref 三元组。AR 作为技术类别和第 1 句的「增强现实」连不连都可以。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 1,
+  "topic": "「由…高位下跌」的起点角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "下跌-01 :source 高位",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":source (s"
+   },
+   {
+    "label": "下跌-01 :ARG2 高位",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "下跌-01 :source 高位",
+  "text": "PropBank 下跌-01 只有 ARG0（thing described）、ARG1（extent of fall），没有 ARG2；起点只能用非论元角色 :source。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 2,
+  "topic": "「下跌」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "directed-activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":aspect directed-activity"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "股价下跌是已经发生、以收市价为结果的变化，performance 合适；directed-activity 表示朝某方向的渐变过程，也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 3,
+  "topic": "「184 美元的高位」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "高位 :quant (monetary-quantity 184 美元)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "高位 :quant 184 :unit 美元",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":quant 184"
+   },
+   {
+    "label": "高位 :ARG1-of (identity-91 :ARG2 金额)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": null,
+  "text": "金额应包成 monetary-quantity（guideline 2.2），s3/r2 把 :quant、:unit 直接挂在「高位」上，丢了金额实体。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 4,
+  "topic": "「推出后」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":temporal (后 :op1 推出)",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 后"
+   },
+   {
+    "label": ":temporal (after :op1 推出)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ after"
+   }
+  ],
+  "best": null,
+  "text": "精简 guideline 2.5 用抽象概念 after 表示先后，用原词「后」也常见，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 5,
+  "topic": "「收市报 179.58 元」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "报-01 :ARG1 (have-value-91 :ARG1 股价 :ARG2 金额)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-value-91"
+   },
+   {
+    "label": "报-01 :ARG0 股价 :ARG1 金额",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "报-01 :ARG0 股价 :ARG1 金额",
+  "text": "PropBank 报-01：ARG0 reporter、ARG1 thing reported，「股价收市报 179.58 元」按股市用法即股价为 ARG0、报出的价位为 ARG1。have-value-91 不在 guideline 抽象谓词表里（第 6、7 句同）。",
+  "fix": {
+   "title": "报：去掉 have-value-91，股价作 ARG0、金额作 ARG1",
+   "conf": "mid",
+   "why": "have-value-91 不是 guideline 中的抽象谓词；报-01 的 ARG0/ARG1 已能表达「股价报 179.58 元」。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s8h"
+    },
+    {
+     "op": "add_rel",
+     "s": "s8x5",
+     "r": "ARG0",
+     "t": "s8x3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s8x5",
+     "r": "ARG1",
+     "t": "s8m"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 6,
+  "topic": "「收市」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "收市-00",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "收市-00"
+   },
+   {
+    "label": "收市-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "收市-01"
+   }
+  ],
+  "best": "收市-00",
+  "text": "PropBank 没有「收市」，按 guideline 2.1 写 收市-00。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 7,
+  "topic": "「较前一日跌」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "跌 :mod (较-01 :ARG0 股价 :ARG1 前一日)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "较-01"
+   },
+   {
+    "label": "跌 :ARG0-of (较-01 :ARG1 前一日)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "跌-01 :ARG2 前一日",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "跌-01 :ARG2 (股价 :temporal 前一日)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "跌-01 :ARG2 前一日",
+  "text": "PropBank 跌-01 ARG2 是 starting point，「较前一日跌」即以前一日（的股价）为起点，ARG2 直接表达；「较」在这里是介词，gold 把它立成事件再作 :mod（事件不该当 :mod），a2/r1 的 ARG0-of 也绕了一层。",
+  "fix": {
+   "title": "较前一日：去掉 较-01，前一日作 跌 的 ARG2",
+   "conf": "mid",
+   "why": "PropBank 跌-01 的 ARG2 是 starting point，「较前一日跌 0.8%」的前一日就是下跌的起点；「较」是介词，不必立事件节点再作 :mod。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s8x10"
+    },
+    {
+     "op": "add_rel",
+     "s": "s8x9",
+     "r": "ARG2",
+     "t": "s8d3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 8,
+  "topic": "「苹果的股价」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "股价 :mod 苹果",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":possessor/:poss 苹果",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "与第 4、5 句相同，两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 9,
+  "topic": "Apple Vision Pro 与第 6 句显示器的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(第 6 句显示器 :same-entity Apple Vision Pro)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 6 句显示器 :same-entity Apple Vision Pro)",
+  "text": "本句的 Apple Vision Pro 就是前文的头戴显示器，guideline 5.3 要求连 :same-entity；gold 本句只连了苹果、推出事件和日期。",
+  "fix": {
+   "title": "加 coref：s6 显示器 = Apple Vision Pro",
+   "conf": "high",
+   "why": "本句的 Apple Vision Pro 就是第 6 句的头戴显示器（也是第 1、2 句发布的产品），应连 :same-entity。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s6x2",
+      "same-entity",
+      "s8p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 10,
+  "topic": "「推出」的事件共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 1 句推出 :same-event 推出)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 2 句发布 :same-event 推出)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "本句的推出就是第 1 句的推出、第 2 句的发布；guideline 5.3 建议连最近的提及（第 2 句），连第 1 句也不错。a2 两次都没连。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 11,
+  "topic": "「星期一」与第 2 句星期一的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 2 句星期一 :same-entity 星期一)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(第 2 句星期一 :same-entity 星期一)",
+  "text": "两句的星期一是同一天（发布当日），应连 :same-entity。s1f 另在句内把「当日」和星期一写成 coref 三元组，句内应用重入。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 1,
+  "topic": "「投入…竞逐」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "投入-01 :ARG2 竞逐",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "投入-01"
+   },
+   {
+    "label": "投入-01 :ARG1 竞逐",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "投入-01"
+   },
+   {
+    "label": "投入-02 :ARG2 竞逐",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "投入-02"
+   }
+  ],
+  "best": "投入-02 :ARG2 竞逐",
+  "text": "PropBank 投入-01 的 ARG2 是 goal，投入-02 的 ARG2 是 activity；「投入（人工智能平台的）竞逐」是投身一项活动，应为 投入-02 :ARG2。s1f 把竞逐当投入的东西（ARG1 theme）更不对。",
+  "fix": {
+   "title": "投入：-01 → -02",
+   "conf": "mid",
+   "why": "PropBank 投入-02 的 ARG2 是 activity，「投入竞逐」是投身于竞争这项活动，比 投入-01（ARG2 goal）贴切。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s9x",
+     "concept": "投入-02"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 2,
+  "topic": "「陆续」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "投入 :mod 陆续",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "投入 :manner 陆续",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "投入 :manner 陆续",
+  "text": "「陆续」是修饰「投入」的副词（一个接一个地），副词性修饰事件用 :manner。",
+  "fix": {
+   "title": "陆续：:mod → :manner",
+   "conf": "mid",
+   "why": "「陆续」是修饰「投入」的副词，副词性的事件修饰应为 :manner，而不是 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s9x",
+     "r": "mod",
+     "t": "s9x9",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 3,
+  "topic": "「科技巨擎」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 :refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "「微软、Google 等科技巨擎」指多家公司，guideline 2.4：复数名词加 :refer-number plural。",
+  "fix": {
+   "title": "科技巨擎加 :refer-number plural",
+   "conf": "low",
+   "why": "「微软、Google 等科技巨擎」指多家公司，按 guideline 2.4 复数名词标 :refer-number plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s9x19",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 4,
+  "topic": "「人工智能」是否拆开",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "整词 人工智能",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 人工智能)"
+   },
+   {
+    "label": "智能 :mod 人工",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 人工)"
+   }
+  ],
+  "best": null,
+  "text": "「人工智能」是固定术语，作一个概念或拆成 智能 :mod 人工 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 5,
+  "topic": "「相关」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "产品 :mod 相关",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 相关)"
+   },
+   {
+    "label": "相关-01 带 ARG1/ARG2",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "相关-01"
+   }
+  ],
+  "best": "产品 :mod 相关",
+  "text": "PropBank 相关-01 只有 ARG0（entities which are relevant），s1f 两次都加了不存在的 ARG1/ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 6,
+  "topic": "「开发商大会」的角色与是否作事件",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "发布 :temporal 大会（无 aspect）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "发布 :place 大会 :aspect process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "发布 :place 大会-00 :aspect process",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "大会-00"
+   },
+   {
+    "label": "发布 :place 大会（无 aspect）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "发布 :place 大会 :aspect process",
+  "text": "开发商大会是会议类事件名词，guideline 2.1 要按事件标、带 aspect；「在大会上」作 :place 或 :temporal 都说得通（与第 2 句「活动」同），区别主要在是否作事件。",
+  "fix": {
+   "title": "大会：作为事件名词加 :aspect process 和 modal",
+   "conf": "low",
+   "why": "开发商大会是会议类事件名词，按 guideline 2.1 应作事件，带 aspect 和模态父节点。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s9x14",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s9x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 7,
+  "topic": "「就」是否立节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "发布 :mod 就",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 就)"
+   },
+   {
+    "label": "不立",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「苹果…就没有…」的「就」是表对比、强调的语气副词，可以作 :mod 保留，也可以由 contrast-91 吸收。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 8,
+  "topic": "「投入」「竞逐」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance / activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance / process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity / process",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「陆续投入竞逐」可看作已完成的加入（performance）或进行中的过程（activity）；竞逐作为事件名词标 process 或 activity 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 9,
+  "topic": "gold 的重复时间三元组",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 投入) 写了两次",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有重复",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有重复",
+  "text": "gold 文档级 temporal 把同一三元组写了两遍，违反「每个事件一个参照时间」的结构，应删去一条。",
+  "fix": {
+   "title": "删去重复的 (document-creation-time :before 投入)",
+   "conf": "high",
+   "why": "同一条时间三元组出现两次，删去重复的一条。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s9x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 10,
+  "topic": "「投入」相对 DCT",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 投入)",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before"
+   },
+   {
+    "label": "(document-creation-time :overlap 投入)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :overlap"
+   },
+   {
+    "label": "(past-reference :contained 投入)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(past-reference :contained"
+   }
+  ],
+  "best": null,
+  "text": "「陆续投入」已经开始、可能仍在持续，DCT :before 或 :overlap 都说得通；没有模糊时间词，不该用 past-reference。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 11,
+  "topic": "「大会」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 大会)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before"
+   },
+   {
+    "label": "挂在第 2 句的星期一下",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "大会没有时间父节点（未作事件或挂在发布下）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "大会就是第 2 句星期一的活动，挂在那个日期下最具体；挂 DCT :before 也对。a2/r1 未把大会当事件，a2/r2 用 (发布 :overlap 大会)，都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 12,
+  "topic": "「大会」与第 2 句「活动」的事件共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 2 句活动 :same-event 大会)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(第 2 句活动 :same-event 大会)",
+  "text": "开发商大会就是第 2 句发布 Apple Vision Pro 的活动，应连共指；a2 逐句标注两次都漏了。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 1,
+  "topic": "gold 句子图括号不平衡",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "缺两个右括号，图无法解析",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "multi-sentence"
+   },
+   {
+    "label": "图可以解析",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "图可以解析",
+  "text": "gold 第 10 句少两个右括号：「:unit (s10x9 / 次)」后应再加一个「)」关闭 ordinal-entity，「:modal-strength full-negative)」（提供-01）后应再加一个「)」关闭 contrast-91；否则还、aspect 会挂到 ordinal-entity 下、下挫会成为 contrast-91 的子节点，mechdiff 和 validate.js 都解析失败。补括号不能用编辑操作表达，需直接改 gold 文件；本句其余条目的 fix 是按补好括号后的图写的。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 2,
+  "topic": "整行两句是否用 multi-sentence",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "multi-sentence 分两句",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "multi-sentence"
+   },
+   {
+    "label": "整行一个 and",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "这一行含两个句号，gold 按 AMR 惯例用 multi-sentence；系统并成一个 and 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 3,
+  "topic": "「除开…外，苹果还…」的篇章关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :op 更新 :op 推出",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "推出 :companion 更新",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":companion"
+   },
+   {
+    "label": "推出 :pure-addition 更新",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":pure-addition"
+   },
+   {
+    "label": "subtract-91 :ARG1 推出 :ARG2 更新",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "subtract-91"
+   }
+  ],
+  "best": "and :op 更新 :op 推出",
+  "text": "「除开 X 外，还 Y」是追加（X 之外又有 Y），X 也发生了，and 合适。:companion 是伴随参与者；完整 guideline 3-1-6 的 :pure-addition 要求两件事不能单独成立，这里不是；subtract-91 表「除去」，与「还」的追加义相反，也不在 guideline 里。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 4,
+  "topic": "「更新」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "没有 ARG0",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "更新 :ARG0 苹果",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "更新操作系统的是苹果，原文未明说，补不补都可以。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 5,
+  "topic": "「年度」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "更新 :mod 年度",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "更新 :frequency 年度",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":frequency (s"
+   },
+   {
+    "label": "更新 :frequency (rate-entity-91 每 1 年)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "rate-entity-91"
+   }
+  ],
+  "best": null,
+  "text": "「年度更新」即每年一次的更新，:frequency 更精确，:mod 也可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 6,
+  "topic": "「各个」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "平台 :mod 各个",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "平台 :quant 各个",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   }
+  ],
+  "best": null,
+  "text": "「各个」是全称量词（每个），作 :quant 或按 AMR 的 each 作 :mod 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 7,
+  "topic": "MacBook Air 的命名实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "版本 :mod (电脑 :name MacBook Air)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "版本 :part (电脑 :name MacBook Air)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":part (s"
+   },
+   {
+    "label": "版本 :poss (电脑 :name MacBook Air)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "版本 :mod (product :name MacBook Air :mod 电脑)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "版本 :possessor (product :name MacBook Air)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "版本 :mod (product :ARG1-of identity-91 :ARG2 电脑)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": null,
+  "text": "命名实体类型应取类型表的 product（guideline 2.2），「电脑」是普通名词，与第 4 句「Mac 电脑」同。s1f/r1 用 :part 表示版本和电脑的关系不对（15 吋版本不是电脑的部分）。",
+  "fix": {
+   "title": "MacBook Air：类型 电脑 → product，电脑作 :mod",
+   "conf": "low",
+   "why": "命名实体应使用类型表中的 product，普通名词「电脑」保留为修饰。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s10x3",
+     "concept": "product"
+    },
+    {
+     "op": "add_node",
+     "parent": "s10x3",
+     "role": "mod",
+     "var": "s10z1",
+     "concept": "电脑",
+     "align": "18-18"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 8,
+  "topic": "「15 吋」的数量类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "distance-quantity",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "distance-quantity"
+   },
+   {
+    "label": "length-quantity",
+    "systems": [
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "length-quantity"
+   }
+  ],
+  "best": "distance-quantity",
+  "text": "AMR/UMR 的长度用 distance-quantity（训练数据 8 例），length-quantity 不是标准的数量类型。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 9,
+  "topic": "「新版 MacBook Air」与前句版本是否同一节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "另立 product 节点，句内 coref 到「版本」",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "重入「版本」或 MacBook Air 节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "重入「版本」或 MacBook Air 节点",
+  "text": "「新版 MacBook Air」就是前一小句推出的 15 吋版本，同在一个句子图里；guideline 5.3：句内同指用重入，不写 coref 三元组。",
+  "fix": {
+   "title": "新版 MacBook Air 并入「版本」节点（重入）",
+   "conf": "low",
+   "why": "新版 MacBook Air 和前一小句的 15 吋版本是同一实体，同一个句子图内应用重入。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s10p2",
+     "subtree": true
+    },
+    {
+     "op": "add_rel",
+     "s": "s10x18",
+     "r": "part-of",
+     "t": "s10v"
+    },
+    {
+     "op": "add_rel",
+     "s": "s10x37",
+     "r": "ARG0",
+     "t": "s10v"
+    },
+    {
+     "op": "add_node",
+     "parent": "s10v",
+     "role": "mod",
+     "var": "s10z2",
+     "concept": "新版",
+     "align": "26-26"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 10,
+  "topic": "「一样」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "一样-02 :ARG0 MacBook Air :ARG1 其他 Mac 产品",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "一样-02"
+   },
+   {
+    "label": "一样-01 :ARG0 (and MacBook Air 其他产品)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "一样-01"
+   },
+   {
+    "label": "一样-01 :ARG0 MacBook Air :ARG1 Mac 产品",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "一样-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 一样-01 只有 ARG0（entities described），一样-02 是 ARG0 entity / ARG1 entity arg0 is like；gold、a2 用 -02、s3 把双方并进 -01 的 ARG0 都对，s1f 给 -01 加了 ARG1（r2 还有 ARG2）。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 11,
+  "topic": "「和…一样」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "研发 :mod 一样",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "研发 :manner 一样",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(and MacBook Air 产品) :ARG0-of 一样-01",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "一样 作为独立的并列谓词",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「和其他 Mac 产品一样，处理器全部由苹果研发」是比照的方式；事件不宜作 :mod，:manner 或独立成句都更合适。",
+  "fix": {
+   "title": "一样：:mod → :manner",
+   "conf": "low",
+   "why": "「和其他 Mac 产品一样」说明研发的情形，作为事件修饰研发时用 :manner 比 :mod 合适。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s10x17",
+     "r": "mod",
+     "t": "s10x37",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 12,
+  "topic": "「全部」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "处理器 :quant 全部",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 全部)"
+   },
+   {
+    "label": "研发 :mod 全部",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "处理器 :quant 全部",
+  "text": "「处理器全部由苹果研发」的「全部」量化处理器（guideline 4.2 :quant (all)），不是修饰研发事件。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 13,
+  "topic": "「而非由英特尔提供」的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "contrast-91 :ARG1 研发 :ARG2 提供",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "contrast-91"
+   },
+   {
+    "label": "研发 :substitute 提供",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":substitute"
+   }
+  ],
+  "best": "研发 :substitute 提供",
+  "text": "完整 guideline 3-1-6：替代（「是 A 而非 B」）用 :substitute，替代者为父、被否定的选项为子；contrast-91 表达了对立，但没有体现替代关系，略差。",
+  "fix": {
+   "title": "研发 / 提供：contrast-91 → 研发 :substitute 提供",
+   "conf": "low",
+   "why": "「由苹果自主研发，而非由英特尔提供」是替代关系，完整 guideline 3-1-6 用 :substitute，替代者（研发）为父、被否定者（提供）为子。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s10b"
+    },
+    {
+     "op": "add_rel",
+     "s": "s10a",
+     "r": "op1",
+     "t": "s10x17"
+    },
+    {
+     "op": "add_rel",
+     "s": "s10x17",
+     "r": "substitute",
+     "t": "s10x25"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 14,
+  "topic": "「处理器制造商」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "英特尔 :ARG1-of (identity-91 :ARG2 制造商)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "英特尔 :ARG0-of (制造-01 :ARG1 处理器)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "制造-01"
+   },
+   {
+    "label": "英特尔 :ARG1-of (have-role-91 :ARG3 制造商)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   }
+  ],
+  "best": null,
+  "text": "同位语「处理器制造商英特尔」用 identity-91、have-role-91（guideline 2.3），或像 AMR 那样把职业名词改写成 制造-01 的施事，都可以。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 15,
+  "topic": "「下挫百分之 4.6」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "下挫 :extent percentage-entity",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent"
+   },
+   {
+    "label": "下挫 :ARG1 percentage-entity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "下挫 :extent percentage-entity",
+  "text": "PropBank 下挫-01 的 ARG1 是 level arg0 falls to（跌到的价位），4.6% 是跌幅，不是终点价位，应为 :extent。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 16,
+  "topic": "「Mac 产品」的「Mac」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "产品 :mod (Mac)（普通概念）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ Mac)"
+   },
+   {
+    "label": "产品 :mod (product :name \"Mac\")",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "product :name \"Mac\" :mod 其他（不立产品）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "产品 :name \"Mac\"",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "Mac 是产品系列名，guideline 2.2：专名作命名实体，类型用 product；gold 直接写成概念「Mac」，s1f 用普通名词「产品」作类型。",
+  "fix": {
+   "title": "Mac：普通概念 → product :name \"Mac\"",
+   "conf": "mid",
+   "why": "Mac 是苹果的产品系列名，按 guideline 2.2 应作命名实体 (product :name (name :op1 \"Mac\"))。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s10m2",
+     "concept": "product"
+    },
+    {
+     "op": "add_node",
+     "parent": "s10m2",
+     "role": "name",
+     "var": "s10z3",
+     "concept": "name",
+     "attrs": {
+      "op1": "\"Mac\""
+     }
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 17,
+  "topic": "「提供」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "被否定的「由英特尔提供」既可看作供货关系（state），也可看作没有发生的供应事件（performance），都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 18,
+  "topic": "「推出」「当日」各有两个时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "推出同时挂 DCT 和第 9 句大会，当日同时挂 DCT 和星期一",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "(document-creation-time :depends-on"
+   },
+   {
+    "label": "各一个父节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "各一个父节点",
+  "text": "guideline 5.1：每个事件、时间表达只有一个参照时间。推出是在第 9 句的大会上发生的，留 (大会 :overlap 推出)；当日就是星期一，留 (星期一 :overlap 当日)。",
+  "fix": {
+   "title": "删去推出、当日多余的 DCT 父节点",
+   "conf": "mid",
+   "why": "guideline 5.1 规定每个事件和时间表达只有一个时间父节点；推出已挂在第 9 句的大会下，当日已挂在星期一下，删去两条多余的 DCT 关系。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s10x"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "depends-on",
+      "s10d2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 19,
+  "topic": "「一样」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 一样)",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(研发 :overlap 一样)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(present-reference :overlap 一样)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(present-reference :overlap"
+   }
+  ],
+  "best": null,
+  "text": "「一样」是现时状态，挂 DCT 或研发都可以；本句没有「现在」这类时间词，不该用 present-reference。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 20,
+  "topic": "「更新」缺 modal、「推出」modal 重复",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "更新没有 modal 父节点，(author :full-affirmative 推出) 写了两次",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "每个事件一条",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "每个事件一条",
+  "text": "guideline 5.2：每个事件都要有 modal 父节点；gold 漏了「更新」，同时把推出的三元组重复了一次。",
+  "fix": {
+   "title": "补「更新」的 modal，删推出的重复三元组",
+   "conf": "high",
+   "why": "「更新」是作者直接断言的已发生事件，应有 (author :full-affirmative 更新)；推出的 modal 三元组重复，删去一条。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s10x11"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s10x"
+     ]
+    }
+   ]
+  }
+ }
+]

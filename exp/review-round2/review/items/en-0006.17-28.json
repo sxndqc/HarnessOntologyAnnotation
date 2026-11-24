@@ -1,0 +1,5257 @@
+[
+ {
+  "sent": 17,
+  "n": 1,
+  "topic": "set off 的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "set-off-04 :ARG0 wall :causer earthquake",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     "set-off-04",
+     ":causer"
+    ]
+   },
+   {
+    "label": "set-off-05 :ARG0 earthquake :ARG1 wall",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "set-off-05"
+   },
+   {
+    "label": "set-off-01 :ARG1 wall（PropBank 无此义项）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "set-off-01"
+   },
+   {
+    "label": "help :ARG1 (set-off-03 :ARG0 earthquake :ARG1 wall)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "set-off-03"
+   },
+   {
+    "label": "help :ARG2 (set-off-03 ...)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": "set-off-03"
+   }
+  ],
+  "best": "set-off-05 :ARG0 earthquake :ARG1 wall",
+  "text": "PropBank set-off-04 是「出发、启程」（ARG0 traveller），set-off-05 是「引发（炸弹、连锁反应）」（ARG0 cause，ARG1 reaction）；地震引发泥石流正是 set-off-05，earthquake 作 ARG0、wall of mud 作 ARG1。set-off-01/-03 在 PropBank 里不存在；s0/r1 把 set off 挂成 help-01 的 ARG2（受益者），角色错。",
+  "fix": {
+   "title": "set off：set-off-04 → set-off-05，wall 改 ARG1、earthquake 改 ARG0",
+   "conf": "high",
+   "why": "PropBank set-off-04 是「启程」，-05 是「引发」（ARG0 起因，ARG1 被引发的东西）。地震引发泥墙应为 set-off-05 :ARG0 earthquake :ARG1 wall，:causer 也不是 PropBank 论元。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17s4",
+     "concept": "set-off-05"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17s4",
+     "r": "ARG0",
+     "t": "s17w",
+     "r2": "ARG1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17s4",
+     "r": "causer",
+     "t": "s17e",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 2,
+  "topic": "which struck 的事件节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有 struck 节点（before 挂在 earthquake 上，文档级用 seismic-quantity 顶替）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "earthquake :ARG2-of strike-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "strike-01",
+     ":ARG2-of (s"
+    ]
+   },
+   {
+    "label": "earthquake :ARG0-of strike-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "strike-01"
+   },
+   {
+    "label": "earthquake :ARG1-of strike-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "strike-01"
+   }
+  ],
+  "best": "earthquake :ARG2-of strike-01",
+  "text": "关系从句 which struck before the landslide 是一个事件，gold 没有标 strike-01，把 :temporal before 直接挂在 earthquake 上；文档级三条 temporal 和一条 modal 用的却是 s17s2（seismic-quantity 数量节点），显然本想指 struck。PropBank strike-01 的例 1 正是 earthquake that struck ...，地震是 ARG2（non-volitional hitter）；ARG0 是有意志的打击者（minor），ARG1 是被击中者（错）。",
+  "fix": {
+   "title": "补 strike-01 节点（earthquake :ARG2-of），文档级 seismic-quantity 改指 struck",
+   "conf": "high",
+   "why": "原文有 which struck before the landslide，gold 漏了 strike-01，文档级 (s17l :before s17s2) 等把数量节点 seismic-quantity 当事件用。补 strike-01（PropBank 例句：earthquake 作 ARG2），把 before 挂到它下面，并把四条文档级三元组里的 s17s2 改成新节点。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s17e",
+     "role": "mod",
+     "var": "s17z1",
+     "concept": "strike-01",
+     "attrs": {
+      "aspect": "performance"
+     },
+     "align": "8-8"
+    },
+    {
+     "op": "add_rel",
+     "s": "s17e",
+     "r": "ARG2-of",
+     "t": "s17z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s17e",
+     "r": "mod",
+     "t": "s17z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s17e",
+     "r": "temporal",
+     "t": "s17b"
+    },
+    {
+     "op": "add_rel",
+     "s": "s17z1",
+     "r": "temporal",
+     "t": "s17b"
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s17l",
+      "before",
+      "s17s2"
+     ],
+     "to": [
+      "s17l",
+      "before",
+      "s17z1"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s17s2",
+      "overlap",
+      "s17e"
+     ],
+     "to": [
+      "s17z1",
+      "overlap",
+      "s17e"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s17s2",
+      "after",
+      "s17h3"
+     ],
+     "to": [
+      "s17z1",
+      "after",
+      "s17h3"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s17p",
+      "full-affirmative",
+      "s17s2"
+     ],
+     "to": [
+      "s17p",
+      "full-affirmative",
+      "s17z1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 3,
+  "topic": "earthquake 的概念和 2.6 级",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "earthquake-02 :ARG2 (seismic-quantity :quant 2.6 :scale richter)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": [
+     "earthquake-02",
+     ":scale (s"
+    ]
+   },
+   {
+    "label": "earthquake :quant (seismic-quantity :quant 2.6)",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "earthquake :mod (seismic-quantity :quant 2.6)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "seismic-quantity"
+   },
+   {
+    "label": "earthquake :mod (magnitude :quant 2.6)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ magnitude"
+   }
+  ],
+  "best": "earthquake :quant (seismic-quantity :quant 2.6)",
+  "text": "PropBank 没有 earthquake 的 roleset，earthquake-02 是编出来的（gold 第 18 句又写 earthquake-01，前后不一致），它的 ARG2 也就无从说起。按完整 guideline 3-2-2-5 (1h)，震级是 seismic-quantity，用 :quant 挂在事件上。原文只说 magnitude，:scale richter 是 gold 自己补的，可以接受。",
+  "fix": {
+   "title": "earthquake-02 → earthquake，seismic-quantity 改用 :quant",
+   "conf": "mid",
+   "why": "PropBank 没有 earthquake 的 roleset（gold 第 18 句写 earthquake-01，自相矛盾）；震级 seismic-quantity 按 guideline 3-2-2-5 用 :quant 挂，不是 ARG2。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17e",
+     "concept": "earthquake"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17e",
+     "r": "ARG2",
+     "t": "s17s2",
+     "r2": "quant"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 4,
+  "topic": "mild 的表示",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "earthquake :ARG1-of mild-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "mild-01"
+   },
+   {
+    "label": "earthquake :mod mild",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ mild)"
+   }
+  ],
+  "best": "earthquake :mod mild",
+  "text": "PropBank 查不到 mild 的 roleset；精简 guideline 2.1：作定语的性质词用 :mod（a tall man → :mod tall）。训练数据里有 large-01、huge-01 这类形容词 roleset 的写法，所以 gold 不算错，只是没有依据。",
+  "fix": {
+   "title": "mild-01 → :mod mild",
+   "conf": "low",
+   "why": "PropBank 没有 mild-01；作定语的性质词按 guideline 2.1 用 :mod。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17m",
+     "concept": "mild"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17e",
+     "r": "ARG1-of",
+     "t": "s17m",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 5,
+  "topic": "landslide 的概念（全篇）",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "landslide-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "landslide-01"
+   },
+   {
+    "label": "landslide（无义项号的事件名词）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ landslide"
+   }
+  ],
+  "best": "landslide（无义项号的事件名词）",
+  "text": "PropBank 没有 landslide 的 roleset，训练数据里也没有 landslide-01；gold 全篇（第 1、3、4、12、16、17、18、25、27 句）都写 landslide-01，第 1 句还给它带 :ARG3。系统全篇写 landslide。这是全篇的体系性差别，只在这里记一条，后面各句不再写；要改需整篇一起改，不单独给 fix。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 6,
+  "topic": "earthquake、landslide 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":aspect process",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": ":aspect performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "两个事件名词都没有 aspect（文档级却当事件用）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "事件名词 aspect 难定，process 与 performance（已发生的过去事件）都说得通。a2/r1 在文档级把 earthquake、landslide 当事件用，图里却没有 aspect，违反 guideline 7 checklist。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 7,
+  "topic": "crashed down on the village",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "crash-01 :goal village",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "crash-01 :destination village",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":destination"
+   },
+   {
+    "label": "crash-01 :ARG2 village",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "crash-01 :goal village",
+  "text": "PropBank crash-01 只有 ARG0、ARG1，into the lagoon 一类用 ARGM-GOL，对应 :goal。:destination 是 AMR 的旧角色，不在 UMR 角色表里；ARG2 在 crash-01 里不存在。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 8,
+  "topic": "down 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":direction (down-03)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "down-03"
+   },
+   {
+    "label": ":direction (down)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ down)"
+   }
+  ],
+  "best": null,
+  "text": "PropBank down-03 是「向下、低」，训练数据里方向词常写成 down-03（多数还配 trajectory :ARG4-of）；AMR 习惯写 :direction (down)。两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 9,
+  "topic": "wall of mud",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "wall :material mud",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":material"
+   },
+   {
+    "label": "wall :consist-of mud",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":consist-of"
+   }
+  ],
+  "best": null,
+  "text": "训练数据两种都有（stone wall → :material stone；mosaic of buildings → :consist-of）。两种都给 ok。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 10,
+  "topic": "office 与 government 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "office :part government",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "office :part-of government",
+    "systems": [
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of"
+   },
+   {
+    "label": "office :possessor government",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": "office :poss government-organization",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "按项目规则 `部分 :part 整体` 和 `部分 :part-of 整体` 都对，:possessor 也说得通。:poss 是 AMR 旧角色名，UMR 用 :possessor（s0/r1 全篇如此，后面不再写）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 11,
+  "topic": "government 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ government)"
+   },
+   {
+    "label": "government-organization",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ government-organization)"
+   },
+   {
+    "label": "government-organization :ARG0-of govern-01",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "govern-01"
+   }
+  ],
+  "best": null,
+  "text": "普通名词 government 直接写、或按 AMR 习惯写 government-organization（:ARG0-of govern-01）都可以。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 12,
+  "topic": "vulcanology office",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "office :topic vulcanology",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":topic"
+   },
+   {
+    "label": "office :mod vulcanology",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ vulcanology)"
+   }
+  ],
+  "best": null,
+  "text": "火山学办公室：办公室研究的领域，:topic 说得通；名词修饰名词用 :mod 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 13,
+  "topic": "have-org-role-92 的论元编号",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG2 office :ARG3 head",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "person :ARG0-of have-org-role-92 :ARG1 office :ARG2 head",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "person :ARG1-of have-org-role-92 :ARG2 office :ARG3 head",
+  "text": "精简 guideline 2.3：have-org-role-92 的 ARG1 是任职者，ARG2 是组织，ARG3 是职务。s0 两次全篇都错一位（ARG0/ARG1/ARG2），后面各句不再写。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 14,
+  "topic": "struck、landslide、set off、crash 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(landslide :before seismic-quantity) 等：用数量节点顶替 struck，先后本身对",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "struck / earthquake 在 landslide 之前，crash 在 set off 之后",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(earthquake :before landslide)、(set-off :before crash) 等，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "struck / earthquake 在 landslide 之前，crash 在 set off 之后",
+  "text": "(A :before B) 是 B 在 A 之前。地震在滑坡之前，泥墙被引发之后才冲下来：s1f、s3、a2 写 (landslide :before struck)、(set-off :after crash)，方向对；s0 两次写成滑坡在地震之前、crash 在 set off 之前。gold 的问题（数量节点当事件）在第 2 条里计，这里记 open。s3/r2 没写 set off 与 crash 的关系，只给了 overlap landslide，可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 15,
+  "topic": "said 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(crash :after said)：said 挂在所述事件下",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(document-creation-time :before said)、(said :before helped)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before"
+   },
+   {
+    "label": "(第 2/3 句 date :contained said)、(said :before helped)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "(said :contained date) / (said :before DCT)，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "说话在所述事件之后、在文档时间之前（或在电头日期之内）。gold 的 (s17c :after s17s) 意为 said 在 crash 之后，方向对；s0/r1 写成日期在 said 之内，s0/r2 写成 DCT 在 said 之前，都读反了。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 16,
+  "topic": "may also have helped 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "Solidum :neutral-affirmative helped、:neutral-affirmative set off",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Solidum :neutral-affirmative helped；helped :unspecified set off",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "Solidum :neutral-affirmative helped；helped :full-affirmative set off",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Solidum :partial-affirmative helped / set off",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "possible-01 节点 + :partial-affirmative helped / set off",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "possible-01",
+     ":partial-affirmative"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "精简 guideline 5.2：may 是 neutral-affirmative，conceiver 是说话人 Solidum；set off 作 help 的补足语，挂在 Solidum 下或 help 下都可以。s0 两次用 partial-affirmative（那是 probably/must 的强度）；s0/r2 还把 may 画成 possible-01 节点，guideline 2.1 说情态动词不是节点。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 17,
+  "topic": "多余的 null-conceiver（全篇）",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "不引入 null-conceiver",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :full-affirmative null-conceiver)，句中没有东西挂在它下面",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "author :full-affirmative null-conceiver"
+   }
+  ],
+  "best": "不引入 null-conceiver",
+  "text": "guideline 5.2：null-conceiver 只用于文本里没有出现的 conceiver。s1f 两次和 a2/r2 全篇 27 句都机械地加这一条，绝大多数句子里没有事件挂在它下面。只在这里记一条，后面不再写。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 18,
+  "topic": "s0/r1 的错误共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不把 set off、crash 连到第 1 句 landslide，不连 wall 与 mud",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(s1 landslide :same-event set-off / crash)、(s6 mud :same-entity wall)、(earthquake :same-event struck)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "不把 set off、crash 连到第 1 句 landslide，不连 wall 与 mud",
+  "text": "set off 和 crash 是滑坡里的子事件，不是同一事件；wall 和 mud 是整体与材料；earthquake 与 struck 也不是同一事件，而且同句内的共指应是图里的重入，不写 :coref（guideline 5.3）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 19,
+  "topic": "(第 2 句 thing :subset-of said)（全篇）",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s2t :subset-of 本句的 say/report 事件)",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 每一句都把本句的言说事件作为第 2 句电头 publication-91 的 :ARG3 thing（报道内容）的子集。按完整 guideline 4-1 的例子，(A :subset-of B) 是 B 属于 A，方向没反；但把事件挂成一个实体 thing 的子集，guideline 里没有这种用法，定不了。全篇如此，只在这里记一条。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 1,
+  "topic": "earthquake 的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "earthquake-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "earthquake-01"
+   },
+   {
+    "label": "earthquake",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ earthquake"
+   }
+  ],
+  "best": "earthquake",
+  "text": "PropBank 没有 earthquake 的 roleset；gold 第 17 句写 earthquake-02，这里写 earthquake-01，同一个地震前后两种编号，都是编出来的。",
+  "fix": {
+   "title": "earthquake-01 → earthquake",
+   "conf": "mid",
+   "why": "PropBank 没有 earthquake 的 roleset，gold 第 17 句同一地震写 earthquake-02，这里写 earthquake-01，前后矛盾；按系统和 AMR 的写法用不带编号的 earthquake。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s18e",
+     "concept": "earthquake"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 2,
+  "topic": "if there was a minor earthquake",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "hasten :condition earthquake（与 ARG0 同一节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "hasten :condition (exist-91 :ARG2 earthquake)",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "have-condition-91 :ARG1 hasten :ARG2 (exist-91 :ARG2 earthquake)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "have-condition-91"
+   },
+   {
+    "label": "hasten :condition (exist-01 :ARG1 earthquake)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "exist-01"
+   },
+   {
+    "label": "hasten :condition earthquake（ARG0 另立 it）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "hasten :condition (exist-91 :ARG2 earthquake)",
+  "text": "if there was X 是存在句作条件，精简 guideline 2.3：there is X → exist-91（ARG2 是存在物）。gold 把条件直接指向地震实体本身，丢了「有没有发生」这一层，意思能读出来但不准确。s0/r1 用 exist-01 而不是 guideline 的 exist-91。",
+  "fix": {
+   "title": "条件改为 exist-91 :ARG2 earthquake",
+   "conf": "low",
+   "why": "if there was a minor earthquake 是存在句，guideline 2.3 用 exist-91；gold 让 :condition 直接指向 earthquake 节点。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s18h",
+     "r": "condition",
+     "t": "s18e"
+    },
+    {
+     "op": "add_node",
+     "parent": "s18h",
+     "role": "condition",
+     "var": "s18z1",
+     "concept": "exist-91",
+     "attrs": {
+      "aspect": "state"
+     },
+     "align": "20-21"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18z1",
+     "r": "ARG2",
+     "t": "s18e"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 3,
+  "topic": "it might have hastened it 的两个 it",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "hasten :ARG0 earthquake :ARG1 landslide（重入）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "ARG1 另立 thing/it，再用 :coref 连 landslide",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "ARG0、ARG1 都另立代词节点，用 :coref 连",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "hasten :ARG0 earthquake :ARG1 landslide（重入）",
+  "text": "第一个 it 指本句的 earthquake，第二个指本句的 landslide。guideline 5.3：同一句内的共指用图里的重入，不另立节点再写 :coref。s0/r1、s1f/r2 还把代词连到前面句子而不是本句的先行词。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 4,
+  "topic": "hastened 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "hasten-01 :aspect activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "hasten-01 :aspect performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": "hasten-01 :aspect performance",
+  "text": "might have hastened 是假设中的一次完成性事件（加快了滑坡的到来），performance 合适；activity 是没有终点的进行中过程，不合。假设事件的 aspect 本身难定，所以 gold 只算 minor。",
+  "fix": {
+   "title": "hasten-01 的 aspect：activity → performance",
+   "conf": "low",
+   "why": "might have hastened it 指一次完成性的事件，guideline 4.1 的 activity 用于没有终点的进行中过程。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s18h",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 5,
+  "topic": "the amount of rainfall",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "volume-quantity :quant-of rain-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "volume-quantity"
+   },
+   {
+    "label": "amount :quant-of rain-01 / rainfall",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ amount"
+   }
+  ],
+  "best": "amount :quant-of rain-01 / rainfall",
+  "text": "volume-quantity 是带 :quant 和 :unit 的度量实体（几升、几立方米），这里没有数值也没有单位，原文只是 amount。rain-01 与 rainfall 两种写法都可以。",
+  "fix": {
+   "title": "volume-quantity → amount",
+   "conf": "low",
+   "why": "原文是 the amount of rainfall，没有数值和单位；volume-quantity 是度量实体，用 amount 更贴原文。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s18v",
+     "concept": "amount"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 6,
+  "topic": "really 的表示",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "ready-02 :degree intensifier",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": "ready-02 :degree (really)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "ready :mod (really)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ really)"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 3-3-6：:degree 可以作属性，取值 intensifier / downtoner / equal；really 在这里也可以读成强调真实性的 :mod。几种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 7,
+  "topic": "ready 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "ready-02",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "ready-02"
+   },
+   {
+    "label": "ready-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "ready-01"
+   }
+  ],
+  "best": "ready-02",
+  "text": "PropBank ready-01 是「准备（使就绪）」的动作，ready-02 是「已就绪」的状态，论元相同；be ready for a landslide 是状态，用 ready-02。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 8,
+  "topic": "minor 的表示",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "earthquake :ARG1-of minor-01",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "minor-01"
+   },
+   {
+    "label": "earthquake :mod minor",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ minor)"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 minor-01（lesser，ARG1 较小者），用它或作 :mod 修饰都可以。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 9,
+  "topic": "ready / hasten 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "Solidum :neutral-affirmative ready；hasten 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "Solidum :neutral-affirmative ready、hasten",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "hasten 挂在条件（have-condition-91 / have-condition）下 :neutral-affirmative",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Solidum :partial-affirmative ready、hasten",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "possible-01 节点 + :partial-affirmative ready、hasten",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "possible-01",
+     ":partial-affirmative"
+    ]
+   }
+  ],
+  "best": "Solidum :neutral-affirmative ready、hasten",
+  "text": "could have been / might have hastened 都是 neutral-affirmative（guideline 5.2：may, might, can），conceiver 是说话人 Solidum。gold 给了 ready 却漏了 hasten 的 modal（guideline 7：每个事件都要有 modal 父节点）。s0 用 partial-affirmative，s0/r2 还把情态动词画成 possible-01 节点。",
+  "fix": {
+   "title": "hasten-01 补 (Solidum :neutral-affirmative)",
+   "conf": "high",
+   "why": "it might have hastened it 是 Solidum 说的可能事件，might 对应 neutral-affirmative；gold 没有给 hasten-01 任何 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s18p",
+      "neutral-affirmative",
+      "s18h"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 10,
+  "topic": "条件里的 earthquake 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "earthquake 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "Solidum :neutral-affirmative earthquake / exist",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂在条件（have-condition-91 / have-condition / exist-91）下",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Solidum :full-affirmative earthquake、exist",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(null-conceiver :unspecified earthquake / exist)，null-conceiver 不挂在 author 下",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "null-conceiver :unspecified"
+   }
+  ],
+  "best": "Solidum :neutral-affirmative earthquake / exist",
+  "text": "if there was 是 Solidum 提出的假设条件，conceiver 是 Solidum，强度 neutral 或挂在 have-condition 下都说得通；说成 full-affirmative 与 if 不合，换 null-conceiver 则错认了 conceiver。gold 的 earthquake 有 aspect 却没有 modal 父节点。",
+  "fix": {
+   "title": "earthquake 补 (Solidum :neutral-affirmative)",
+   "conf": "mid",
+   "why": "if there was a minor earthquake 是 Solidum 的假设条件，事件 earthquake 需要 modal 父节点；用 neutral-affirmative（也可挂在 have-condition 下）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s18p",
+      "neutral-affirmative",
+      "s18e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 11,
+  "topic": "earthquake、rainfall 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(earthquake :contains ready)、(earthquake :after hasten)：earthquake 只当父节点，自己没有参照；rain 没有时间关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "rain 在 ready 之前、earthquake 在 hasten 之前等，方向对",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(said :before DCT)、(ready :before landslide)、(rain :before ready) 等，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "rain 在 ready 之前、earthquake 在 hasten 之前等，方向对",
+  "text": "gold 的 (s18e :contains s18r) 意为 ready 包含 earthquake，语义说得通，但 earthquake 本身没有时间父节点，ready 却有两个；rain-01 也没有时间关系。改成 (ready :contained earthquake) 意思不变而结构合规。s0 两次照例全部读反（如 (rain :before ready) 意为 ready 在 rain 之前）。",
+  "fix": {
+   "title": "earthquake 改挂到 ready 下，rain 补 (ready :before rain)",
+   "conf": "low",
+   "why": "(s18e :contains s18r) 让 earthquake 没有自己的参照时间、ready 有两个父节点；改为 (s18r :contained s18e) 意思不变。rain-01 是事件，补上「下雨在就绪之前」。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s18e",
+      "contains",
+      "s18r"
+     ],
+     "to": [
+      "s18r",
+      "contained",
+      "s18e"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s18r",
+      "before",
+      "s18r3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 12,
+  "topic": "earthquake 与第 17 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 17 句 earthquake :same-event earthquake)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 17 句 earthquake :same-event earthquake)",
+  "text": "Solidum 在第 17 句说的 mild 2.6-magnitude earthquake 和这里的 minor earthquake 是同一次地震，应连 :same-event（guideline 5.3）。",
+  "fix": {
+   "title": "连第 17、18 句的 earthquake",
+   "conf": "mid",
+   "why": "同一说话人在相邻两句谈的是同一次小地震（mild 2.6-magnitude / minor），应连 :same-event。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s17e",
+      "same-event",
+      "s18e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 13,
+  "topic": "landslide 与前文的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 17 句 landslide :same-event landslide)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 1 句 landslide :same-event landslide)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 17 句 landslide :same-event landslide)",
+  "text": "ready for a landslide 虽是无定形式，但后面 hastened it 加快的是实际发生的这次滑坡，与前文的 landslide 是同一事件。按 guideline 5.3 连最近的前一个提及（第 17 句）更合约定。因为无定形式也可读成泛指，fix 只给 low。",
+  "fix": {
+   "title": "连第 17、18 句的 landslide",
+   "conf": "low",
+   "why": "后半句 hastened it 指实际发生的滑坡，ready for a landslide 的 landslide 与第 17 句的 landslide 是同一事件。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s17l",
+      "same-event",
+      "s18l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 14,
+  "topic": "the area 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(area :subset-of 第 17 句 village)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 10 句 area :same-entity area)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 9 句 area :same-entity area)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 17 句 village :same-entity area)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "the area 是滑坡所在的地区，与第 9、10 句救援队赶去的 the area 是同一处；它包含被埋的村子（完整 guideline 4-1 的例子里 (A :subset-of B) 是 B 属于 A，gold 的方向说得通）。a2 把地区和村子当成同一实体，略不准确。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 1,
+  "topic": "head of a rescue task force",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :ARG0-of (head-01 :ARG1 force)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "head-01"
+   },
+   {
+    "label": "person :ARG1-of (have-org-role-92 :ARG2 force :ARG3 head)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ head)"
+   },
+   {
+    "label": "have-org-role-92 :ARG1 force :ARG2 head（s0 编号错位，第 17 句已记）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ head)"
+   }
+  ],
+  "best": null,
+  "text": "PropBank head-01（lead，ARG0 leader，ARG1 organization）可以直接表达「任某组织之首」；按 guideline 2.3 把职务名词 head 具体化为 have-org-role-92 :ARG3 head 也对。s0 的论元编号问题已在第 17 句记过，这里不重复计。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 2,
+  "topic": "rescue task force 的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "force :ARG0-of (task-01 :ARG1 rescue-01)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "task-01"
+   },
+   {
+    "label": "force :mod task :purpose rescue-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "force :mod task :ARG0-of rescue-01",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "force :mod task :mod rescue",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "task-force :purpose rescue-01 / :mod rescue",
+    "systems": [
+     "s3/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ task-force"
+   }
+  ],
+  "best": "force :mod task :purpose rescue-01",
+  "text": "PropBank task-01 的 ARG0 是派任务的人（boss），ARG2 是被派任务者；gold 让 force 作 task-01 的 ARG0，等于说特遣队给别人派了救援任务，角色错。训练数据里 advisory task force 写成 force :mod task :ARG0-of advise-01，系统的几种写法都与之相近。",
+  "fix": {
+   "title": "task force：force 由 task-01 的 ARG0 改为 ARG2",
+   "conf": "mid",
+   "why": "PropBank task-01：ARG0 boss，ARG1 task，ARG2 被派任务者。特遣队是被派去救援的一方，应是 ARG2，不是 ARG0。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s19f",
+     "r": "ARG0-of",
+     "t": "s19t",
+     "r2": "ARG2-of"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 3,
+  "topic": "task force 里 rescue 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "rescue-01 没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "rescue-01 :aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "rescue-01 :aspect activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "rescue 作普通名词（不是事件）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ rescue)"
+   }
+  ],
+  "best": null,
+  "text": "guideline 7：每个事件都要有 :aspect。gold 把 rescue 标成事件 rescue-01，却没有给 aspect；修饰 task force 的救援是事件名词，process 合适。",
+  "fix": {
+   "title": "task force 的 rescue-01 补 :aspect process",
+   "conf": "low",
+   "why": "rescue-01 是事件，guideline 7 要求每个事件有 aspect；作修饰的事件名词用 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s19r",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 4,
+  "topic": "dead bodies",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "body :ARG1-of die-01",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "die-01"
+   },
+   {
+    "label": "body :mod dead",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ dead)"
+   }
+  ],
+  "best": null,
+  "text": "dead 作定语，按 guideline 2.1 用 :mod dead 可以；AMR 习惯写 die-01，也可以。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 5,
+  "topic": "recovered / rescued 的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(said :before recovered / rescued)，so far 只依附 DCT",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(so-far :contained recovered)、(said :before ...)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "(recovered :before said)、(said :before DCT) 等，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(so-far :contained recovered)、(said :before ...)",
+  "text": "精简 guideline 5.1：事件所在分句有时间表达时，以它为参照（so far 是到说话时为止的一段时间，recovered 在其中）。gold 以 said 为参照，方向对但没用本句的时间表达。s0 两次写成 said 在 recovered 之前、DCT 在 said 之前，都读反了。",
+  "fix": {
+   "title": "recovered 改以 so-far 为时间父节点",
+   "conf": "low",
+   "why": "guideline 5.1：分句里有时间表达时，事件以它为参照。recovered so far 应写 (s19s2 :contained s19r2)。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s19s",
+      "before",
+      "s19r2"
+     ],
+     "to": [
+      "s19s2",
+      "contained",
+      "s19r2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 6,
+  "topic": "bodies、people 的 subset 关系",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "bodies 连第 5 句 200 dead，people 连第 12 句 3,000 居民",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "bodies 连第 1 句的 dead，people 连第 8 句的群体",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只连 bodies（第 5 句）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "都不连",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "16 具遗体是前文死者的一部分，100 名获救者是村民的一部分，用 :subset-of 连可以，不连也不算错。gold 按完整 guideline 4-1 的写法把整体放在前面（(整体 :subset-of 部分)），系统按精简 guideline 5.3 把部分放在前面，两种约定方向相反，这里不按方向判对错。归属已对着 mechdiff 列表核过。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 1,
+  "topic": "said ... and expressed 的连接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "consecutive :op1 say :op2 express",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "consecutive"
+   },
+   {
+    "label": "and :op1 say :op2 express",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ and"
+   }
+  ],
+  "best": "and :op1 say :op2 express",
+  "text": "原文是普通并列 and，两件事都发生在同一次电台采访里，没有先后的意思；精简 guideline 2.5：并列用 and，consecutive 用于明确的时间先后。",
+  "fix": {
+   "title": "consecutive → and",
+   "conf": "low",
+   "why": "said ... and expressed fears 是同一次采访里的两件事，原文 and 不表示先后，用 and 即可。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s20c2",
+     "concept": "and"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 2,
+  "topic": "had a population of 3,000 to 4,000",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "populate-01 :ARG1 village :ARG2 (person :quant between)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "populate-01"
+   },
+   {
+    "label": "have-91 :ARG1 village :ARG2 (population :quant between)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-91"
+   },
+   {
+    "label": "have-03 :ARG0 village :ARG1 population",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-03"
+   }
+  ],
+  "best": null,
+  "text": "PropBank populate-01：ARG1 area，ARG2 population，gold 的用法与之相符；按 guideline 2.3 写 have-91 也对。have-03 是「拥有财物」，不是 guideline 的拥有/包含谓词。a2/r1 用 value-interval 代替 between，不影响判断。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 3,
+  "topic": "Leyte 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country-partition :wiki \"Leyte_(province)\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "country-partition"
+   },
+   {
+    "label": "province",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ province"
+   },
+   {
+    "label": "island",
+    "systems": [
+     "s0/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ island"
+   }
+  ],
+  "best": null,
+  "text": "Leyte Congressman 里的 Leyte 是行政区（省/选区），country-partition（训练数据有先例）和 province（guideline 类型表）都对；Leyte 同时是岛名，但这里不是地理意义上的岛。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 4,
+  "topic": "in a radio interview 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":temporal interview-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": ":medium interview-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "said in a radio interview 可以看成说话发生的场合（:temporal），也可以看成说话的媒介（:medium）。两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 5,
+  "topic": "as many as 2,000",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :quant (as-many-as :op1 2000)",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "as-many-as"
+   },
+   {
+    "label": "person :quant (at-most :op1 2000)",
+    "systems": [
+     "s0/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "at-most"
+   }
+  ],
+  "best": null,
+  "text": "as many as 强调数目之大，as-many-as 最贴原文；at-most 给出上限，信息相同。都可以。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 6,
+  "topic": "interview 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "interview-01 没有时间关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "interview 只作 said 的父节点 (interview :overlap said)，自己没有参照",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(document-creation-time :before interview)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 2/3 句 date :contained interview)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(said :overlap interview)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(document-creation-time :before interview)",
+  "text": "interview-01 是带 aspect 的已然事件，guideline 7 要求每个事件都有时间父节点；gold 只在 modal 里给了它，temporal 里完全没有。按 5.1 第 (3) 步挂在 DCT 之前。归属已对着 mechdiff 列表核过。",
+  "fix": {
+   "title": "interview-01 补 (document-creation-time :before)",
+   "conf": "mid",
+   "why": "radio interview 是已经发生的事件，gold 有 aspect 和 modal 却没有时间父节点；按 guideline 5.1 挂在 DCT 之前。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s20i3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 7,
+  "topic": "said、fears、buried 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :before said / expressed)、(said :before buried)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(fears :before buried) 等，方向对",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":before"
+   },
+   {
+    "label": "(said :before DCT)、(buried :before fears) 等，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "被埋在说话和表达担忧之前（B 在 A 之前）。gold 和 s1f、s3、a2 方向都对；s0 两次写成 DCT 在 said 之前、担忧在被埋之前，读反了。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 8,
+  "topic": "fears that ... buried 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(Mercado :partial-affirmative buried)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "(fears :neutral-affirmative buried)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "(fears :unspecified buried)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   }
+  ],
+  "best": null,
+  "text": "担心某事已经发生，说话人倾向于认为它可能为真：直接从 Mercado 给 partial-affirmative，或按 guideline 5.2 挂在 fear 下（unspecified 或它隐含的强度）都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 9,
+  "topic": "buried 的事件共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 17 句 crash :same-event buried)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 1 句 landslide :same-event buried)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不连",
+  "text": "泥墙冲下（crash）和滑坡是埋人的起因，不是同一事件；与之最接近的是第 3 句 a landslide buried an entire village 的 bury，但那句的受事是村子，这里是人，也只是相关事件。这类因果相关的事件不该用 :same-event 连。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 10,
+  "topic": "coref 里的 :contains",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 5 句 missing / dead :contains buried people)：coref 用了 temporal 的关系名",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(buried people :subset-of 第 12 句 people)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "精简 guideline 5.3 的 coref 只有 :same-entity、:same-event、:subset-of 三种关系，:contains 是 temporal 的关系名。gold 想表达第 5 句的 1,500 名失踪者和 200 名死者都在这 2,000 名被埋者之中，应写成 :subset-of；gold 别处按完整 guideline 4-1 的约定把整体放在前面，所以改成 (被埋者 :subset-of 失踪者/死者)。",
+  "fix": {
+   "title": "coref 的 :contains 改为 :subset-of（整体在前）",
+   "conf": "mid",
+   "why": "coref 只有 same-entity / same-event / subset-of，:contains 不是合法的 coref 关系。按 gold 全篇的写法（整体在前），改成 (s20p3 :subset-of s5p2)、(s20p3 :subset-of s5p3)。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s5p2",
+      "contains",
+      "s20p3"
+     ],
+     "to": [
+      "s20p3",
+      "subset-of",
+      "s5p2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s5p3",
+      "contains",
+      "s20p3"
+     ],
+     "to": [
+      "s20p3",
+      "subset-of",
+      "s5p3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 1,
+  "topic": "called for 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "call-03",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "call-03"
+   },
+   {
+    "label": "call-02",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "call-02"
+   }
+  ],
+  "best": "call-03",
+  "text": "PropBank call-03 是 demand（ARG1 被要求的事），call for more rescuers to come 正是要求；call-02 是 summon（召唤某人），意思相近但不如 call-03 准确。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 2,
+  "topic": "call for X to come 的论元结构",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "call-03 :ARG1 rescuers :purpose come-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "call :ARG1 (come-01 :ARG1 rescuers)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "call :ARG1 (come-01 :ARG1 rescuers)",
+  "text": "PropBank call-03 的 ARG1 是被要求的事，Lerias 要求的是「更多救援人员来现场」这件事，come-01 应是 ARG1；gold 把人当 ARG1、把 come 当目的，「要求人以便人来」偏离了原意。",
+  "fix": {
+   "title": "call-03 的 ARG1 改为 come-01",
+   "conf": "low",
+   "why": "PropBank call-03：ARG1 是被要求的事。called for more rescuers to come 要求的是 come 这件事，rescuers 已是 come-01 的 ARG1。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s21c",
+     "r": "ARG1",
+     "t": "s21p2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s21c",
+     "r": "purpose",
+     "t": "s21c2",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 3,
+  "topic": "more rescuers",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :ARG1-of (have-quant-91 :ARG3 more :ARG4 person)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-quant-91"
+   },
+   {
+    "label": "person :quant more",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "person :mod more",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "gold 用 have-quant-91 把比较对象（已在现场的救援队，连到第 9 句 teams）显式写出，系统用 :quant more，两者都可以。more 是数量，:mod 不如 :quant。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 4,
+  "topic": "rescuers、moving 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "rescue-01、move-01 没有 aspect",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": ":aspect activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "rescuers 里的 rescue-01、earth moving equipment 里的 move-01 都标成了事件，guideline 7 要求每个事件都有 aspect；作修饰的事件名词 process 合适，activity 也说得通。",
+  "fix": {
+   "title": "rescue-01、move-01 补 :aspect process",
+   "conf": "low",
+   "why": "两个修饰性的事件节点没有 aspect；guideline 7 要求每个事件都有 aspect，作修饰的事件用 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s21r",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s21m2",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 5,
+  "topic": "come to the site",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "come-01 :ARG4 site",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "come-01 :goal site",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "come-01 :destination site",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":destination"
+   }
+  ],
+  "best": "come-01 :ARG4 site",
+  "text": "PropBank come-01 的 ARG4 是终点，应用核心论元，不用 :goal；:destination 还是 AMR 的旧角色。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 6,
+  "topic": "help look for 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "help-01 :ARG1 look-01",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "help-01 :ARG2 look-01",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "help-01 :ARG1 look-01",
+  "text": "PropBank help-01：ARG1 是所帮的事（project），ARG2 是受益者；look for bodies 是 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 7,
+  "topic": "equipment could not work 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "work-09 :ARG1 equipment",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "work-09"
+   },
+   {
+    "label": "work-01 :ARG0 equipment",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "work-01"
+   }
+  ],
+  "best": "work-09 :ARG1 equipment",
+  "text": "PropBank work-09 是 function, operate（ARG1 运转的东西），机器能不能运转用 work-09；work-01 是人的工作、劳动。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 8,
+  "topic": "could not work 的否定和 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "work-09 :polarity -，(Lerias :neutral-negative work)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "work-09 :polarity -，(author :full-negative work)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "author :full-negative"
+   },
+   {
+    "label": "work-09 :polarity -，(author :neutral-negative work)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "author :neutral-negative"
+   },
+   {
+    "label": "possible-01 :polarity - 节点，work 不带 polarity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "possible-01"
+   }
+  ],
+  "best": null,
+  "text": "could not work 说的是机器在泥里无法运转，事实上也没有运转：full-negative 说得通；按 can 对应 neutral，否定后 neutral-negative 也说得通。as 引出的原因可以看成作者的叙述，也可以看成 Lerias 呼吁的理由，conceiver 两种都可以。s0 把情态动词画成 possible-01 节点（guideline 2.1 说情态动词不是节点）。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 9,
+  "topic": "more than six metres deep 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "deep-02 :extent 6 米",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent"
+   },
+   {
+    "label": "deep-02 :ARG2 6 米",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s21"
+   },
+   {
+    "label": "have-mod-91 :ARG2 deep，deep :degree 6 米",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "deep-02 :extent 6 米",
+  "text": "PropBank deep-02 的 ARG2 是「延伸到/位于何处」（deep in the corner），不是深度的数值；度量用 :extent（UMR 非参与者角色表）。:degree 是程度副词的角色。more-than 套在 distance-quantity 外面还是里面，两种都可以。",
+  "fix": {
+   "title": "deep-02 的深度：:ARG2 → :extent",
+   "conf": "low",
+   "why": "PropBank deep-02 的 ARG2 是位置（deep in the corner），six metres 是深度数值，用 :extent。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s21d",
+     "r": "ARG2",
+     "t": "s21m4",
+     "r2": "extent"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 10,
+  "topic": "officials said 的 ARG1",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "say-01 :ARG1 mud",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "say-01 :ARG1 deep-02（或 have-mod-91）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "say-01 :ARG1 deep-02（或 have-mod-91）",
+  "text": "which officials said was more than six metres deep：官员说的内容是「泥深超过六米」这个命题，say-01 的 ARG1 应是 deep-02；gold 写成 mud :ARG1-of say-01，所说内容成了泥本身。gold 同时在 deep-02 上写了 :quote say-01，说明本意就是 deep 是所说内容。归属已对着 mechdiff 列表核过。",
+  "fix": {
+   "title": "said 的 ARG1：mud → deep-02",
+   "conf": "mid",
+   "why": "官员说的是「泥超过六米深」，say-01 的 ARG1 应是 deep-02 这个命题，不是 mud；gold 在 deep-02 上的 :quote 也指向这个 say-01。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s21m3",
+     "r": "ARG1-of",
+     "t": "s21s2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s21s2",
+     "r": "ARG1",
+     "t": "s21d"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 11,
+  "topic": "come / help / look 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(Lerias :partial-affirmative come)、(Lerias :full-affirmative help / look)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "come 挂在 called 下，help 挂在 come 下，look 挂在 help 下",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(Lerias :partial-affirmative come)，help 挂在 purpose 下",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(called :partial-affirmative come)、(author :partial-affirmative help / look)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(Lerias :neutral-affirmative come / help / look)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "come 挂在 called 下，help 挂在 come 下，look 挂在 help 下",
+  "text": "来现场、帮忙找遗体都是 Lerias 要求的事和它的目的，还没有发生，不能是 full-affirmative（guideline 5.2：补足语和目的从句挂在谓词或 purpose 下，用 unspecified 或谓词隐含的强度）。gold 给 come 用了 partial-affirmative，却给 help、look 用 full-affirmative，前后不一致。a2/r1 让 author 作 help、look 的 conceiver，不对。",
+  "fix": {
+   "title": "help、look 的 modal：full-affirmative → partial-affirmative（与 come 一致）",
+   "conf": "mid",
+   "why": "help look for bodies 是 Lerias 要求的「来现场」的目的，尚未发生，不能是 full-affirmative；gold 对 come 用的是 partial-affirmative，help、look 跟它一致。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s21p",
+      "full-affirmative",
+      "s21h2"
+     ],
+     "to": [
+      "s21p",
+      "partial-affirmative",
+      "s21h2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s21p",
+      "full-affirmative",
+      "s21l"
+     ],
+     "to": [
+      "s21p",
+      "partial-affirmative",
+      "s21l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 12,
+  "topic": "coref 里的 :contains（bodies、site）",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(bodies :contains 第 20 句 people)、(第 20 句 village :contains site)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(第 19 句 bodies :subset-of bodies)；site 连第 18 句 area",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "site :same-entity 第 9 句 area 或第 20 句 village",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只连 site（第 18 句 area）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "coref 只有 :same-entity、:same-event、:subset-of，:contains 不合法（同第 20 句）。gold 的意思是要找的遗体在 2,000 名被埋者之中、村子在现场之内，应写 :subset-of（按 gold 全篇的约定整体在前）。系统的几种连法都说得通。",
+  "fix": {
+   "title": "coref 的 :contains 改为 :subset-of（bodies、site）",
+   "conf": "mid",
+   "why": "coref 不能用 :contains。按 gold 全篇整体在前的写法：(s20p3 :subset-of s21b) 表示遗体属于被埋者，(s21s :subset-of s20v) 表示村子在现场之内。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s21b",
+      "contains",
+      "s20p3"
+     ],
+     "to": [
+      "s20p3",
+      "subset-of",
+      "s21b"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s20v",
+      "contains",
+      "s21s"
+     ],
+     "to": [
+      "s21s",
+      "subset-of",
+      "s20v"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 13,
+  "topic": "(areas :contains 第 6 句 sea)",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(many areas :contains 第 6 句 sea of mud 的 sea)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不连",
+  "text": "第 6 句的 s6s2 是 a sea of mud 的量词 sea（mud :unit sea），不是地区；它和 many areas 没有共指或包含关系，:contains 也不是合法的 coref 关系。",
+  "fix": {
+   "title": "删去 (s21a :contains s6s2)",
+   "conf": "low",
+   "why": "s6s2 是 sea of mud 里作量词的 sea，与 many areas 无共指关系，:contains 也不是 coref 关系。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s21a",
+      "contains",
+      "s6s2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "skilled in digging 的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "skillful-01 :ARG1 team :ARG2 dig",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "skillful-01"
+   },
+   {
+    "label": "skill-01 :ARG1 team :ARG2 dig",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "skill-01"
+   },
+   {
+    "label": "skilled-01 :ARG1 team :ARG2 dig",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "skilled-01"
+   },
+   {
+    "label": "team :mod skill / skilled（:topic dig）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "have-mod-91 :ARG1 team :ARG2 (skill :topic dig)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-mod-91"
+   }
+  ],
+  "best": "skillful-01 :ARG1 team :ARG2 dig",
+  "text": "PropBank 有 skillful-01（ARG1 技能持有者，ARG2 擅长什么），gold 的写法正好；skill-01、skilled-01 在 PropBank 里查不到。不谓词化、用 :mod 或 have-mod-91 加 :topic 也能表达。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "digging ... to rescue people",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dig-01 :ARG3 rescue-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "dig-01 :purpose rescue-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "dig-01 :purpose rescue-01",
+  "text": "PropBank dig-01 的 ARG3 是 in search of（找的东西），to rescue people 是挖掘的目的，用 :purpose；gold 把救人这个事件当成要找的东西。through the earth 用 ARG2（in what）或 :path 都可以。",
+  "fix": {
+   "title": "dig-01 的 rescue-01：:ARG3 → :purpose",
+   "conf": "low",
+   "why": "PropBank dig-01 的 ARG3 是 in search of；to rescue people 是目的从句，应为 :purpose。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s22d",
+     "r": "ARG3",
+     "t": "s22r2",
+     "r2": "purpose"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "were going to the area",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "go-01 :ARG1 teams :ARG4 area",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "go-01"
+   },
+   {
+    "label": "go-02 :ARG0 teams :ARG4 area",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "go-02"
+   },
+   {
+    "label": "go-02 :ARG0 teams :goal area",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     ":goal (s",
+     "go-02"
+    ]
+   },
+   {
+    "label": "go-01 :ARG0 teams :destination area",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":destination"
+   }
+  ],
+  "best": null,
+  "text": "PropBank go-01（motion，ARG1 移动者，ARG4 终点）和 go-02（self-directed motion，ARG0 移动者，ARG4 终点）都合用。s0/r1 终点用了 :goal 而不是 ARG4；s0/r2 给 go-01 加了它没有的 ARG0，终点用 AMR 旧角色 :destination。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 4,
+  "topic": "the country's mining companies 的领属",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "company :possessor country",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": "company :poss country",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": "company :possessor country",
+  "text": ":poss 是 AMR 的旧角色名，UMR 用 :possessor（精简 guideline 第 3 节）。s0 两次和 s1f 两次在全篇多句（各 3–4 句）都用 :poss，这里记一条，后面不再写。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 5,
+  "topic": "to rescue people（目的）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(Arroyo :full-affirmative rescue)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(digging :partial-affirmative rescue)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(digging :unspecified rescue)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(teams :partial-affirmative purpose)、(purpose :full-affirmative rescue)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :neutral-affirmative rescue)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "author :neutral-affirmative"
+   }
+  ],
+  "best": null,
+  "text": "to rescue people 是 digging 的目的，精简 guideline 5.2：目的从句挂在 purpose 常量或主事件下，用 unspecified 或它隐含的强度，不是说话人断言的已然事件。s0 让 author 作 conceiver，漏了引述者 Arroyo 这一层。归属已对着 mechdiff 列表核过。",
+  "fix": {
+   "title": "目的 rescue-01 改挂在 dig-01 下 :unspecified",
+   "conf": "low",
+   "why": "skilled in digging ... to rescue people 里救人是挖掘的目的，按 guideline 5.2 应挂在 dig-01 下用 unspecified，不是 Arroyo 断言的 full-affirmative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s22p",
+      "full-affirmative",
+      "s22r2"
+     ],
+     "to": [
+      "s22d",
+      "unspecified",
+      "s22r2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "重复的 said",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "Gordon say-01 :ARG1 (Red Cross say-01 :ARG1 try-01)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只有一个 say-01：Gordon say :ARG1 try-01（Red Cross 作 try 的 ARG0）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "原句 Gordon said the Red Cross said was trying ... 语法不完整，第二个 said 多半是编辑错误。照字面标两层言说或把它当作笔误略去都说得通。归属已对着 mechdiff 列表核过。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "dispatch ... to hunt 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dispatch-01 :ARG2 hunt-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "dispatch-01 :purpose hunt-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": "dispatch-01 :purpose hunt-01",
+  "text": "PropBank dispatch-01 的 ARG2 是 dispatched to（派往何处）；to hunt for survivors 是派遣的目的，用 :purpose。",
+  "fix": {
+   "title": "dispatch-01 的 hunt-01：:ARG2 → :purpose",
+   "conf": "mid",
+   "why": "PropBank dispatch-01：ARG2 是派往的地点。to hunt for survivors 是目的从句，应为 :purpose。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s23d",
+     "r": "ARG2",
+     "t": "s23h",
+     "r2": "purpose"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "survivors 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "person :ARG0-of survive-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "survive-02"
+   },
+   {
+    "label": "person :ARG0-of survive-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "survive-01"
+   }
+  ],
+  "best": "person :ARG0-of survive-01",
+  "text": "PropBank survive-01 是 live despite（ARG1 灾难等不利情形），survive-02 是 outlive（比某人活得长，ARG1 是死者）。灾难的幸存者是 survive-01。",
+  "fix": {
+   "title": "survive-02 → survive-01",
+   "conf": "mid",
+   "why": "PropBank survive-02 是「比某人活得久」（ARG1 死者）；滑坡的幸存者是 survive-01（live despite）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s23s4",
+     "concept": "survive-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "dispatch、sniff、survive 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "dispatch-01、sniff-01、survive-02 都没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "dispatch performance，sniff、survive 没有 aspect",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "dispatch performance，sniff、survive 都有 aspect",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "dispatch performance，sniff、survive 都有 aspect",
+  "text": "guideline 7：每个事件都要有 aspect。gold 给了 dispatch-01 modal 却没有 aspect；sniffer dogs、survivors 里的事件也都没标。归属已对着 mechdiff 列表核过（a2/r1 的 survive 有 performance、sniff 有 habitual）。",
+  "fix": {
+   "title": "dispatch-01 补 :aspect performance",
+   "conf": "low",
+   "why": "dispatch-01 是事件（gold 还在文档级给了它 modal 和 temporal），guideline 7 要求有 aspect；trying to dispatch 指一次完成性的派遣，用 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s23d",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 5,
+  "topic": "Red Cross 的 :wiki",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":wiki \"International_Red_Cross_and_Red_Crescent_Movement\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "International_Red_Cross_and_Red_Crescent_Movement"
+   },
+   {
+    "label": "没有 :wiki",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有 :wiki",
+  "text": "Gordon 是菲律宾红十字会会长（第 5 句），他说的 the Red Cross 是 Philippine Red Cross；gold 在共指里把它连到第 5 句的 Philippine_Red_Cross，:wiki 却写成国际红十字运动，前后矛盾。:wiki 是可选的，系统不写不算错。",
+  "fix": {
+   "title": "Red Cross 的 :wiki 改为 \"Philippine_Red_Cross\"",
+   "conf": "low",
+   "why": "gold 把这里的 Red Cross 共指到第 5 句的 Philippine Red Cross（:wiki \"Philippine_Red_Cross\"），本句 :wiki 却是国际红十字运动，应一致。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s23o",
+     "attr": "wiki",
+     "value": "\"Philippine_Red_Cross\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 6,
+  "topic": "dispatch / hunt 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(Red Cross :partial-affirmative dispatch)、(Red Cross :full-affirmative hunt)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "dispatch 挂在 try 下，hunt 挂在 dispatch 或 purpose 下",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(Red Cross :neutral-affirmative dispatch、hunt)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "dispatch 挂在 try 下，hunt 挂在 dispatch 或 purpose 下",
+  "text": "trying to dispatch 的派遣还没有实现，去搜寻幸存者又是派遣的目的，不能是 full-affirmative（guideline 5.2：try 的补足语挂在 try 下，目的从句挂在主事件或 purpose 下）。gold 给 dispatch 用了 partial，hunt 却用 full-affirmative。",
+  "fix": {
+   "title": "hunt-01 改挂在 dispatch-01 下 :unspecified",
+   "conf": "mid",
+   "why": "to hunt for survivors 是尚未实现的派遣的目的，不是 Red Cross 断言的事实；按 guideline 5.2 挂在 dispatch-01 下用 unspecified。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s23o",
+      "full-affirmative",
+      "s23h"
+     ],
+     "to": [
+      "s23d",
+      "unspecified",
+      "s23h"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 7,
+  "topic": "Gordon 与第 5 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 5 句 Richard Gordon :same-entity Gordon)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(第 5 句 Richard Gordon :same-entity Gordon)",
+  "text": "Gordon 就是第 5 句的 Richard Gordon（菲律宾红十字会会长），重复的名字应连 :same-entity（guideline 5.3）。a2 一句一句标，两次都没连上。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "but 连接两个分句",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "reach-01 为根 :concession-of cease-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":concession-of"
+   },
+   {
+    "label": "but-91 :ARG1 reach :ARG2 cease",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "but-91"
+   },
+   {
+    "label": "contrast-91 :ARG1 reach :ARG2 cease / fly",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "contrast-91"
+   },
+   {
+    "label": "contrast-01 :ARG1 ... :ARG2 ...",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "contrast-01"
+   },
+   {
+    "label": "and :op1 :op2，另挂 :ARG1-of contrast-01",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   }
+  ],
+  "best": "but-91 :ARG1 reach :ARG2 cease",
+  "text": "精简 guideline 2.5：but 用 but-91 或 contrast-91（:ARG1、:ARG2）。gold 把转折写成让步（cease :concession reach，「虽然到达了，但……」），意思接近，但 but 在 guideline 里不是 :concession。s0/r1 用 and 再挂 contrast-01，结构多绕一层。",
+  "fix": {
+   "title": "根改为 but-91 :ARG1 reach-01 :ARG2 cease-01",
+   "conf": "low",
+   "why": "精简 guideline 2.5：but 用 but-91（:ARG1、:ARG2），不用 :concession。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s24r",
+     "role": "mod",
+     "var": "s24z1",
+     "concept": "but-91",
+     "align": "12-12"
+    },
+    {
+     "op": "add_rel",
+     "s": "s24z1",
+     "r": "ARG1",
+     "t": "s24r"
+    },
+    {
+     "op": "set_root",
+     "var": "s24z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s24r",
+     "r": "mod",
+     "t": "s24z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s24r",
+     "r": "concession-of",
+     "t": "s24c2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s24z1",
+     "r": "ARG2",
+     "t": "s24c2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "despite heavy clouds",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "reach :concessive-condition (weather-91 :ARG2 cloud)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":concessive-condition"
+   },
+   {
+    "label": "reach :concession cloud",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":concession (s"
+   }
+  ],
+  "best": "reach :concession cloud",
+  "text": "despite 引出的是已成事实的让步，精简 guideline 2.5 用 :concession；:concessive-condition 是 even if 一类的让步条件，不合。gold 补出的 weather-91 结构可以保留。",
+  "fix": {
+   "title": "despite：:concessive-condition → :concession",
+   "conf": "mid",
+   "why": "despite heavy clouds 是事实性的让步（guideline 2.5 :concession），不是 even if 式的让步条件。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24r",
+     "r": "concessive-condition",
+     "t": "s24w",
+     "r2": "concession"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "were able to reach 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative reach)",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "possible-01 节点 + (author :full-affirmative reach)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "possible-01"
+   },
+   {
+    "label": "(author :neutral-affirmative reach)",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "author :neutral-affirmative"
+   }
+  ],
+  "best": "(author :full-affirmative reach)",
+  "text": "过去时的 were able to 表示做成了（直升机确实到了该地区），所以 reach 是作者断言的事实，full-affirmative；neutral-affirmative 把它当成「可能到达」，与后文 flights ceased 也不合。s0 把 able 画成 possible-01 节点（guideline 2.1 情态词不是节点）。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "reach 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "reach-01 :aspect performance",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "reach-01 :aspect state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect state"
+   }
+  ],
+  "best": "reach-01 :aspect performance",
+  "text": "到达是已完成的达成事件，performance；标 state 是把 able 的能力当成了事件本身（guideline 4.1：明显完成的事件标 state 算错，这里因 able 的干扰只记 minor）。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "flights ceased 的 cease 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "cease-01 :ARG1 fly-01",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "cease-01"
+   },
+   {
+    "label": "没有 cease 节点（fly-01 直接作 contrast 的 ARG2）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "cease-01 :ARG1 fly-01",
+  "text": "the flights ceased 的核心事件是 cease；s1f 两次都丢了它，只剩下 fly-01，意思变成「飞行发生了」。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "flights 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "fly-01 :ARG2 helicopters",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "fly-01 没有论元",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "fly-01 :ARG0 helicopters",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "fly-01 :ARG1 aircraft",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "fly-01 :ARG2 helicopters",
+  "text": "PropBank fly-01：ARG2 是 aircraft flown，ARG0 是驾驶者或能自己飞的主体，ARG1 是乘客、货物。直升机作 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 7,
+  "topic": "night-flying capabilities",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "fly-01 :polarity - :temporal night（不画 capability），(author :neutral-negative)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   },
+   {
+    "label": "have-91 :polarity - :ARG2 capable-01 / capability（:ARG2 / :topic fly）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "have-91"
+   },
+   {
+    "label": "capable-01 :polarity - :ARG2 fly",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "capable-01"
+   },
+   {
+    "label": "have-03 :polarity - :ARG1 capable-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-03"
+   }
+  ],
+  "best": null,
+  "text": "gold 把「没有夜航能力」改写成「夜里不能飞」（否定 + neutral-negative），意思保住了；系统照字面画 have-91 / capable-01 也对。have-03 是「拥有财物」，不是 guideline 2.3 的 have-91。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 8,
+  "topic": "the aircraft 与 helicopters",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "aircraft :ARG1-of (identity-91 :ARG2 helicopters)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "identity-91"
+   },
+   {
+    "label": "重入 helicopters 节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另立 aircraft 节点，句内用 :coref (helicopters :same-entity aircraft)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ aircraft"
+   }
+  ],
+  "best": "重入 helicopters 节点",
+  "text": "the aircraft 回指同一句的 military helicopters，guideline 5.3：句内共指用重入。gold 用 identity-91 把两个节点等同起来，系统 s0、s1f 写成句内 :coref 三元组，都不合约定。",
+  "fix": {
+   "title": "aircraft 改为重入 helicopters",
+   "conf": "low",
+   "why": "the aircraft 就是本句的 helicopters，句内共指按 guideline 5.3 用重入，不用 identity-91 另立节点。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s24f2",
+     "r": "ARG2",
+     "t": "s24h"
+    },
+    {
+     "op": "del_node",
+     "var": "s24a3",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 9,
+  "topic": "nightfall",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "fall-04 :ARG1 (date-entity :dayperiod night)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "fall-04"
+   },
+   {
+    "label": "nightfall",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ nightfall"
+   }
+  ],
+  "best": null,
+  "text": "PropBank fall-04 是 occur（ARG1 发生的事），「夜幕降临」可以这样分解；把 nightfall 当一个时间概念也可以。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 10,
+  "topic": "ceased after nightfall 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(nightfall :after ceased)：cease 在 nightfall 之后",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(nightfall :before ceased) / (ceased :after nightfall)，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "（没有 cease 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(nightfall :after ceased)：cease 在 nightfall 之后",
+  "text": "(A :after B) 是 B 在 A 之后。s0 两次写反。s0 每一句的文档级 temporal 都按「A 在 B 之前」读反，从这里起不再逐句写条目，只在 gold 有问题的地方一起列出。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 11,
+  "topic": "(not fly :subset-of reach)",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(not-fly :subset-of reach)：句内两个事件连 coref",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不连",
+  "text": "夜里不能飞和到达该地区是两件不同的事，没有包含关系；同一句里的事件之间也不该写 :coref 三元组（guideline 5.3）。",
+  "fix": {
+   "title": "删去 (s24f2 :subset-of s24r)",
+   "conf": "mid",
+   "why": "「夜里不能飞」不是「到达」的一部分，同一句内的两个不同事件不应连 :subset-of。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s24f2",
+      "subset-of",
+      "s24r"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 1,
+  "topic": "caused no damage but left ... 的连接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "damage-01 :concession leave-13",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":concession (s"
+   },
+   {
+    "label": "but-91 :ARG1 cause :ARG2 leave",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "but-91"
+   },
+   {
+    "label": "contrast-91 / contrast-01 :ARG1 cause :ARG2 leave",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ contrast-"
+   },
+   {
+    "label": "and :op1 :op2，另挂 :ARG1-of contrast-01",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   }
+  ],
+  "best": "but-91 :ARG1 cause :ARG2 leave",
+  "text": "同第 24 句：精简 guideline 2.5 中 but 用 but-91 / contrast-91，gold 又写成 :concession。",
+  "fix": {
+   "title": "say 的 ARG1 改为 but-91 :ARG1 damage :ARG2 leave",
+   "conf": "low",
+   "why": "精简 guideline 2.5：but 用 but-91（:ARG1、:ARG2），不用 :concession。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s25s",
+     "role": "ARG1",
+     "var": "s25z1",
+     "concept": "but-91",
+     "align": "13-13"
+    },
+    {
+     "op": "del_rel",
+     "s": "s25s",
+     "r": "ARG1",
+     "t": "s25d2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s25z1",
+     "r": "ARG1",
+     "t": "s25d2"
+    },
+    {
+     "op": "del_rel",
+     "s": "s25d2",
+     "r": "concession",
+     "t": "s25l3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s25z1",
+     "r": "ARG2",
+     "t": "s25l3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 2,
+  "topic": "caused no damage",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "damage-01 :polarity - :ARG0 landslide（不画 cause）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "cause-01 :ARG1 (damage-01 :polarity -)",
+    "systems": [
+     "s0/r2",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "cause-01"
+   },
+   {
+    "label": "cause-01 :polarity - :ARG1 damage-01",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "cause-01"
+   }
+  ],
+  "best": null,
+  "text": "caused no damage 就是「没有造成损害」，只画 damage-01 加否定、或画 cause-01 把否定放在 cause 或 damage 上，意思都一样。归属已对着 mechdiff 列表核过。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 3,
+  "topic": "left 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "leave-13",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "leave-13"
+   },
+   {
+    "label": "leave-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "leave-01"
+   },
+   {
+    "label": "leave-12",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "leave-12"
+   }
+  ],
+  "best": "leave-13",
+  "text": "PropBank leave-13 是「某事件使某人处于某状态」（ARG0 起因事件），正是 left many rescuers worried；leave-01 是离开，leave-12 要求 ARG0 是离开现场的施事。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 4,
+  "topic": "leave-13 的 aspect、时间和 modal",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "leave-13 没有 aspect、temporal、modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "leave :aspect performance，有时间和 modal 父节点",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "leave :aspect performance，有时间和 modal 父节点",
+  "text": "left many of the rescuers worried 是 Lerias 说的已然事件。gold 把 leave-13 画成事件，却既没有 aspect，也没有时间父节点和 modal 父节点（guideline 7 checklist 三条都缺）。",
+  "fix": {
+   "title": "leave-13 补 aspect performance、(landslide :after leave)、(Lerias :full-affirmative leave)",
+   "conf": "mid",
+   "why": "leave-13 是 Lerias 断言的已然事件，guideline 7 要求每个事件有 aspect、时间父节点和 modal 父节点；它发生在小滑坡之后。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s25l3",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s25l",
+      "after",
+      "s25l3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s25p",
+      "full-affirmative",
+      "s25l3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 5,
+  "topic": "worried about 的义项和论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "worry-02 :ARG0 rescuers :ARG1 disaster",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "worry-02"
+   },
+   {
+    "label": "worry-01 :ARG0 disaster :ARG1 rescuers",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "worry-01"
+   },
+   {
+    "label": "worry-02 :ARG0 disaster :ARG1 rescuers",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "worry-02"
+   }
+  ],
+  "best": null,
+  "text": "PropBank worry-02 的 ARG0 是担心的人、ARG1 是担心的事；worry-01 反过来（ARG0 令人担心的事，ARG1 担心的人）。s0、s1f/r1 用 worry-02 却按 worry-01 的方式分配论元，角色颠倒。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 6,
+  "topic": "small-01、disaster-01",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "small-01、disaster-01（PropBank 查不到）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": [
+     "small-01",
+     "disaster-01"
+    ]
+   },
+   {
+    "label": "small、disaster-01",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "disaster-01"
+   },
+   {
+    "label": "small、disaster",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ disaster"
+   }
+  ],
+  "best": "small、disaster",
+  "text": "PropBank 没有 small、disaster 的 roleset，与第 17 句的 mild-01、earthquake-02 同类。比较级 smaller 用 have-degree-91 或 :degree more 都可以，不另写条目。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 7,
+  "topic": "damage 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "damage-01 :aspect state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "damage-01 :aspect process / performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "damage-01 :aspect process / performance",
+  "text": "（没有）造成损害是一个具体事件，被否定也不变成状态；performance 或 process 都可以。",
+  "fix": {
+   "title": "damage-01 的 aspect：state → performance",
+   "conf": "low",
+   "why": "damage-01 是具体的过去事件，否定不改变它的 aspect 类型，用 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s25d2",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 8,
+  "topic": "landslide 与 later in the afternoon",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(landslide :contains afternoon)：时间表达挂在事件下，landslide 自己没有父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(later / afternoon :contained landslide)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "(landslide :contained afternoon) / (landslide :overlap afternoon)，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(later / afternoon :contained landslide)",
+  "text": "精简 guideline 5.1：时间表达是事件的父节点，(time :contained event)。gold 的 (s25l :contains s25d) 意为下午包含滑坡，语义对，但结构颠倒，landslide 没有自己的参照时间。",
+  "fix": {
+   "title": "(s25l :contains s25d) → (s25d :contained s25l)",
+   "conf": "mid",
+   "why": "guideline 5.1：事件以本分句的时间表达为父节点。改后意思不变（滑坡在那天下午之内），landslide 有了时间父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s25l",
+      "contains",
+      "s25d"
+     ],
+     "to": [
+      "s25d",
+      "contained",
+      "s25l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 9,
+  "topic": "Lerias 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(Lerias :same-entity Lerias)：自己连自己",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(第 21 句 Lerias :same-entity Lerias)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 12 句 Rosette Lerias :same-entity Lerias)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 21 句 Lerias :same-entity Lerias)",
+  "text": "gold 的 (s25p :same-entity s25p) 两端是同一个变量，没有意义；应连到前文最近的 Lerias（第 21 句，guideline 5.3）。",
+  "fix": {
+   "title": "Lerias 共指改为 (s21p :same-entity s25p)",
+   "conf": "high",
+   "why": "(s25p :same-entity s25p) 是自环，显然是笔误；最近的前一个提及是第 21 句的 Lerias（s21p）。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s25p",
+      "same-entity",
+      "s25p"
+     ],
+     "to": [
+      "s21p",
+      "same-entity",
+      "s25p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 1,
+  "topic": "called for 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "call-03",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "call-03"
+   },
+   {
+    "label": "call-02",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "call-02"
+   }
+  ],
+  "best": "call-03",
+  "text": "同第 21 句：call for X to be brought 是要求，PropBank call-03（demand，ARG1 被要求的事）；call-02 是召唤某人。s0、s1f 两处都用 call-02。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 2,
+  "topic": "relief groups",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "group :ARG0-of relieve-01",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "group :mod relief / relieve-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "group :purpose relieve-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": null,
+  "text": "救援团体是从事救援的组织，relieve-01 的 ARG0、作 :purpose 或作 :mod 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 3,
+  "topic": "relief、drinking 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "relieve-01、drink-01 没有 aspect",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": ":aspect activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "gold 把 relieve-01、drink-01 画成事件却不给 aspect（第 19、21 句同类），guideline 7 要求每个事件都有 aspect；作修饰的事件名词用 process。s1f/r1、s1f/r2 的 relief 是普通名词，只有 drink-01 缺 aspect。",
+  "fix": {
+   "title": "relieve-01、drink-01 补 :aspect process",
+   "conf": "low",
+   "why": "两个修饰性的事件节点没有 aspect，guideline 7 要求每个事件有 aspect。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s26r",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s26d",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 1,
+  "topic": "clear up 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "clear-up-04",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "clear-up-04"
+   },
+   {
+    "label": "clear-01",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "clear-01"
+   },
+   {
+    "label": "clear-02（批准）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": "clear-02"
+   },
+   {
+    "label": "clear-03（越过）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "clear-03"
+   }
+  ],
+  "best": "clear-up-04",
+  "text": "PropBank clear-up-04 是短语动词 clear up（清理），精简 guideline 2.6 短语动词作一个概念；clear-01（clean, make clear or open）意思也对。clear-02 是批准，clear-03 是越过、通过，都不对。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 2,
+  "topic": "to clear up 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "have-place-91 :reason clear-up-04",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":reason (s"
+   },
+   {
+    "label": "have-place-91 :purpose clear",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "equipment :purpose clear（不画 have-place-91）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": "have-place-91 :purpose clear",
+  "text": "to clear up earlier landslides 是不定式目的从句，精简 guideline 2.5：in order to → :purpose，不是 :reason。",
+  "fix": {
+   "title": "clear-up-04：:reason → :purpose",
+   "conf": "mid",
+   "why": "to clear up earlier landslides 是目的不定式，guideline 2.5 用 :purpose。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s27h3",
+     "r": "reason",
+     "t": "s27c",
+     "r2": "purpose"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 3,
+  "topic": "clear up（目的）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(Dumol :full-affirmative clear-up)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "挂在 have-place-91 下 :partial-affirmative / :unspecified",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(equipment :partial-affirmative purpose)、(purpose :full-affirmative clear)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(Dumol :neutral-affirmative clear)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "目的从句的事件不是说话人断言的已然事件，精简 guideline 5.2：挂在主事件或 purpose 常量下（同第 22、23 句）。这里清理很可能确实在进行，gold 的 full-affirmative 只记 minor。",
+  "fix": {
+   "title": "clear-up-04 改挂在 have-place-91 下 :unspecified",
+   "conf": "low",
+   "why": "to clear up 是目的从句，guideline 5.2 让目的事件挂在主事件或 purpose 下，不由说话人直接断言。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s27p",
+      "full-affirmative",
+      "s27c"
+     ],
+     "to": [
+      "s27h3",
+      "unspecified",
+      "s27c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 4,
+  "topic": "Guinasaugon 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "settlement :wiki \"Saint_Bernard,_Southern_Leyte\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ settlement"
+   },
+   {
+    "label": "village",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ village"
+   },
+   {
+    "label": "city",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ city"
+   }
+  ],
+  "best": "village",
+  "text": "gold 第 16 句同一个村子（Guinsaugon）用的是 human-settlement（同 wiki），这里写成 settlement，前后不一致；类型表里的写法是 human-settlement（gold 第 2 句的 Tacloban 也是）。Guinsaugon 是村，不是 city。",
+  "fix": {
+   "title": "settlement → human-settlement（与第 16 句一致）",
+   "conf": "mid",
+   "why": "gold 第 16 句同一个村子写 human-settlement（:wiki 相同），这里写 settlement，类型不一致。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s27s4",
+     "concept": "human-settlement"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 5,
+  "topic": "Guinasaugon 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连（只把 area 连到第 26 句 scene）",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 20 句 village :same-entity Guinasaugon)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 3 句 village :same-entity Guinasaugon)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 20 句 village :same-entity Guinasaugon)",
+  "text": "Guinasaugon（原文拼法）就是第 16 句的 Guinsaugon、第 17、20 句的 the village，应连 :same-entity；gold 把第 17、20 句的 village 都连上了，唯独这个专名没连。连最近的第 20 句更合约定，连第 3 句也不错。归属已对着 mechdiff 列表核过。",
+  "fix": {
+   "title": "连 (第 20 句 village :same-entity Guinasaugon)",
+   "conf": "low",
+   "why": "Guinasaugon 与第 20 句的 the village（gold 已与第 17 句 village 和第 16 句 Guinsaugon 相连）是同一个村子。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s20v",
+      "same-entity",
+      "s27s4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 1,
+  "topic": "a combined flood and mudslide",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "kill :ARG0 (flood-01 :ARG1-of (combine-01 :ARG2 mudslide))",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "kill :ARG0 (and :op1 flood :op2 mudslide :ARG1-of combine-01)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "kill :cause (and :op1 flood :op2 mudslide :ARG1-of combine-01)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   }
+  ],
+  "best": null,
+  "text": "PropBank combine-01：ARG1、ARG2 是被结合的两样东西，gold 让 flood 作 ARG1、mudslide 作 ARG2，符合框架；系统用 and 并列再挂 combine-01 也可以。自然灾害作 kill-01 的 ARG0 或 :cause 都说得通。归属已对着 mechdiff 列表核过。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 2,
+  "topic": "mudslide 的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "mudslide-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "mudslide-01"
+   },
+   {
+    "label": "mudslide",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ mudslide"
+   }
+  ],
+  "best": "mudslide",
+  "text": "PropBank 没有 mudslide 的 roleset，与 gold 全篇的 landslide-01 同类（见第 17 句）。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 3,
+  "topic": "killed / mudslide 与 November 1991",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :before killed)、(mudslide :contains date)：没有用本句日期作参照，日期有两个父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(date :contained killed / flood / mudslide)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "(killed :contained date) / (killed :overlap date)，方向读反",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(date :contained killed / flood / mudslide)",
+  "text": "精简 guideline 5.1：分句里有时间表达（November 1991）时，事件以它为父节点，(date :contained event)。gold 让 killed 挂在 DCT 下，又让日期作 mudslide 的子节点（日期已依附 root），mudslide 本身没有父节点。",
+  "fix": {
+   "title": "killed、mudslide 改以 November 1991 为时间父节点",
+   "conf": "mid",
+   "why": "guideline 5.1：事件优先以本分句的时间表达为参照。(s28d :contained s28k)、(s28d :contained s28m) 意思与原来相同，结构合规。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s28k"
+     ],
+     "to": [
+      "s28d",
+      "contained",
+      "s28k"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s28m",
+      "contains",
+      "s28d"
+     ],
+     "to": [
+      "s28d",
+      "contained",
+      "s28m"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 4,
+  "topic": "mudslide 的 modal（gold 给了日期）",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative date-entity)，mudslide 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(author :full-affirmative mudslide)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-affirmative mudslide)",
+  "text": "modal 依存只连事件和 conceiver（guideline 5.2）；日期不是事件，不该有 modal 强度。gold 的事件 mudslide-01（有 aspect）反而没有 modal 父节点，像是把 s28d 和 s28m 弄混了。",
+  "fix": {
+   "title": "(author :full-affirmative s28d) → (author :full-affirmative s28m)",
+   "conf": "high",
+   "why": "日期 s28d 不是事件，不该有 modal；事件 mudslide-01（s28m）缺 modal 父节点，应改指它。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28d"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s28m"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 5,
+  "topic": "combine-01 的文档级关系",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "combine-01 没有 modal（gold 也没有 temporal）",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :full-affirmative combine)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-affirmative combine)",
+  "text": "gold 给 combine-01 标了 aspect，说明当作事件，但文档级既没有 modal 也没有 temporal（guideline 7）。s1f/r1 的 combine-01 没有 aspect，也没有 modal。",
+  "fix": {
+   "title": "combine-01 补 (author :full-affirmative) 和 (date :contained)",
+   "conf": "low",
+   "why": "combine-01 带 aspect，是事件；guideline 7 要求事件有 modal 和时间父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28c"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s28d",
+      "contained",
+      "s28c"
+     ]
+    }
+   ]
+  }
+ }
+]

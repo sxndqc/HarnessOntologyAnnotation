@@ -1,0 +1,5735 @@
+[
+ {
+  "sent": 1,
+  "n": 1,
+  "topic": "United States 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "government-organization  :wiki \"United_states\""
+   },
+   {
+    "label": "country",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country"
+   }
+  ],
+  "best": "country",
+  "text": "国名转指政府时 AMR/UMR 照常用 country；训练数据里 Why does the United States allow this 的 United States 也是 country（:wiki \"United_States\"）。gold 第 2 句 America 也用 country。",
+  "fix": {
+   "title": "United States：government-organization → country",
+   "conf": "mid",
+   "why": "训练数据中作施事的 United States 也标 country；同一文件第 2 句同一国家用 country。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s1g",
+     "concept": "country"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 2,
+  "topic": "命名实体的 :wiki 与名字拼写",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":wiki \"United_states\" :op2 \"states\"（大小写错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":op2 \"states\"",
+     ":wiki \"United_states\""
+    ]
+   },
+   {
+    "label": "各实体都有正确 :wiki",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":wiki \"United_States\"",
+     ":wiki \"Vladimir_Putin\""
+    ]
+   },
+   {
+    "label": "都不写 :wiki",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"States\""
+   }
+  ],
+  "best": "各实体都有正确 :wiki",
+  "text": "原文是 States，gold 的 :op2 \"states\" 与 :wiki \"United_states\" 大小写都错（维基标题是 United_States）。:wiki 可选，但训练数据一贯带 :wiki；s0、s1f、s3/r2 全篇都不写 :wiki，之后不再重复。",
+  "fix": {
+   "title": "United States 的 :op2 和 :wiki 改正大小写",
+   "conf": "high",
+   "why": "原文是 United States，维基标题是 United_States；gold 写成 \"states\"、\"United_states\" 是笔误。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s1n",
+     "attr": "op2",
+     "value": "\"States\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s1g",
+     "attr": "wiki",
+     "value": "\"United_States\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 3,
+  "topic": "Russia 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "government-organization :wiki \"Russia\""
+   },
+   {
+    "label": "country",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country"
+   }
+  ],
+  "best": "country",
+  "text": "Russia's President 是俄罗斯这个国家的总统，have-org-role-92 的 ARG2 应是 country；gold 自己在第 3、8 句的 Russia 都用 country。",
+  "fix": {
+   "title": "Russia：government-organization → country",
+   "conf": "high",
+   "why": "Russia's President 的组织是国家；同一文件第 3、8 句的 Russia 都是 country。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s1g2",
+     "concept": "country"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 4,
+  "topic": "Putin 的总统身份",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG2 Russia :ARG3 president",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "have-org-role-92",
+     ":ARG3 (s"
+    ]
+   },
+   {
+    "label": "have-org-role-91 :ARG0-of，:ARG1 Russia :ARG2 president",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": "have-org-role-91"
+   },
+   {
+    "label": "have-org-role-92 :ARG0-of，:ARG1 Russia :ARG2 president",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     "have-org-role-92",
+     ":ARG0-of (s"
+    ]
+   }
+  ],
+  "best": "person :ARG1-of have-org-role-92 :ARG2 Russia :ARG3 president",
+  "text": "guideline 2.3：have-org-role-92 的 ARG1 是人、ARG2 是组织、ARG3 是职位；s0 两次把编号整体错位一格（s0/r1 还用 -91）。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 5,
+  "topic": "advise-01 中 commission 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "advise-01 :ARG1 commission",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-92"
+   },
+   {
+    "label": "advise-01 :ARG0 commission",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ commission"
+   }
+  ],
+  "best": "advise-01 :ARG0 commission",
+  "text": "PropBank advise-01：ARG0 是给建议的一方，ARG1 是接受建议的一方。advice of his commission 里委员会是建议者，应为 ARG0。",
+  "fix": {
+   "title": "advise-01 的委员会：:ARG1 → :ARG0",
+   "conf": "high",
+   "why": "PropBank advise-01 ARG0 = entity giving advice；委员会给普京建议，是 ARG0 不是 ARG1（ARG1 是受建议者）。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s1a2",
+     "r": "ARG1",
+     "t": "s1g3",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 6,
+  "topic": "advise-01 中 Putin 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "advise-01 :ARG2 Putin",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "advise-01 :ARG1 Putin",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标受建议者",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "advise-01 :ARG1 Putin",
+  "text": "PropBank advise-01 的 ARG1 是受建议者、ARG2 是建议内容；his 可以推出受建议者是 Putin，标成 ARG1 最完整，不标也可以；标成 ARG2 是把受建议者当成建议内容。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 7,
+  "topic": "advice 的内容",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "thing :ARG2-of advise-01，advise-01 另有 :ARG2 pardon-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":ARG2-of (s"
+   },
+   {
+    "label": "不标建议内容",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不标建议内容",
+  "text": "原文没有说建议是什么（pardon 是 and 的第二项）；gold 已经用 thing :ARG2-of advise-01 表示建议本身，又给同一个 advise-01 加 :ARG2 pardon-01，同一谓词出现两个 ARG2。follow 的 ARG1 用 thing :ARG2-of advise-01（gold、s3/r1）或直接用 advise-01 都可以。",
+  "fix": {
+   "title": "删去 advise-01 的第二个 :ARG2（pardon-01）",
+   "conf": "mid",
+   "why": "gold 的 thing 已是 advise-01 的 ARG2（建议本身），advise-01 再带 :ARG2 pardon-01 造成两个 ARG2；原文也没说建议的内容就是赦免。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s1a2",
+     "r": "ARG2",
+     "t": "s1p3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 8,
+  "topic": "his special commission 的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "government-organization :ARG1-of have-rel-role-92（:ARG2 Putin :ARG3 commission）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-92"
+   },
+   {
+    "label": "commission :possessor Putin",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor s"
+   },
+   {
+    "label": "commission :poss Putin",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss s"
+   },
+   {
+    "label": "commission :poss (person 3rd singular)，句内用 :coref 连 Putin",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": "commission :possessor Putin",
+  "text": "have-rel-role-92 用于亲属、朋友等人际关系（guideline 2.3），his commission 是领属，应为 commission :possessor Putin。:poss 是 AMR 旧名，UMR 用 :possessor（s0、s1f 全篇如此，之后不再重复）；句内同指应是重入而不是 :coref（guideline 5.3）。",
+  "fix": {
+   "title": "his commission：去掉 have-rel-role-92，改为 commission :possessor Putin",
+   "conf": "mid",
+   "why": "have-rel-role-92 是人际关系角色，委员会归属于总统是领属关系；把 special-02 改挂到委员会节点上，删去 have-rel-role-92 及其下的 commission 节点，委员会节点改名 commission 并加 :possessor。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s1g3",
+     "r": "ARG1-of",
+     "t": "s1s"
+    },
+    {
+     "op": "del_node",
+     "var": "s1h3",
+     "subtree": true
+    },
+    {
+     "op": "rename",
+     "var": "s1g3",
+     "concept": "commission"
+    },
+    {
+     "op": "add_rel",
+     "s": "s1g3",
+     "r": "possessor",
+     "t": "s1p"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 9,
+  "topic": "special 是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "special-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "special-02"
+   },
+   {
+    "label": ":mod special",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ special)"
+   }
+  ],
+  "best": null,
+  "text": "训练数据里 special guests、special festival treat 都用 :ARG1-of special-02；AMR 习惯的 :mod special 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 10,
+  "topic": "hoping 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s0/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "state",
+  "text": "hope 是心理状态谓词，guideline 4.1 把 want、believe 这类归为 state；is hoping 的进行体不改变它的状态性。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 11,
+  "topic": "follow 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "endeavor",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":aspect endeavor"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "follow the advice 是希望中的将来事件，若发生应达到结果；endeavor 指已经结束而未达成结果的过程（guideline 4.1），用在未然事件上没有依据。未然事件 aspect 难定，fix 只给 low。",
+  "fix": {
+   "title": "follow-02 的 aspect：endeavor → performance",
+   "conf": "low",
+   "why": "endeavor 表示做了而没有达成结果，这里是希望将来发生的完整事件，与同句 pardon-01 一样用 performance 更合适。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s1f",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 12,
+  "topic": "advice 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "advice 是事件名词，guideline 4.1 允许 process；建议已经给出，performance 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 13,
+  "topic": "hope 的补语事件的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(United States :partial-affirmative follow/pardon)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "(hope :unspecified follow/pardon)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "(hope :neutral-affirmative follow/pardon)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative"
+   }
+  ],
+  "best": "(hope :neutral-affirmative follow/pardon)",
+  "text": "完整 guideline 4-3-1-6、4-3-2：hope 属 NeutAff 一类，强度标在 hope 节点和补语事件之间；partial-affirmative 是 plan、intend 这类的强度。精简版允许 unspecified，但 hope 有明确的词汇强度。a2/r2 句子图里给 follow、pardon 写了 :modal-strength full-affirmative，与它自己文档级的 neutral-affirmative 矛盾。",
+  "fix": {
+   "title": "hope 的补语：(US :partial-affirmative X) → (hope :neutral-affirmative X)",
+   "conf": "mid",
+   "why": "完整 guideline 4-3-2 把 hope 列在 NeutAff，并说明强度是 hope 节点与补语事件之间的依存；gold 用了 partial-affirmative 且挂在 United States 上。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s1g",
+      "partial-affirmative",
+      "s1f"
+     ],
+     "to": [
+      "s1h",
+      "neutral-affirmative",
+      "s1f"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s1g",
+      "partial-affirmative",
+      "s1p3"
+     ],
+     "to": [
+      "s1h",
+      "neutral-affirmative",
+      "s1p3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 14,
+  "topic": "advice 的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(United States :full-affirmative advise)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :full-affirmative advise)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-affirmative advise)",
+  "text": "委员会给过建议是作者陈述的事实，不在 hope 的范围内，也不是美国的看法；应直接挂 author。",
+  "fix": {
+   "title": "advise-01 的 modal 父节点：United States → author",
+   "conf": "mid",
+   "why": "the advice of his special commission 是作者断言的已然事实，不属于美国所希望的内容。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s1g",
+      "full-affirmative",
+      "s1a2"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s1a2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 15,
+  "topic": "多余的 null-conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative null-conceiver)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(author :full-affirmative null-conceiver)"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "s1f 两次几乎每句都加这一条，而这句没有任何事件挂在 null-conceiver 下，是空的 conceiver。全篇如此，之后不再重复。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 16,
+  "topic": "follow、pardon 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :after follow) (DCT :after s1p)——第二条指向人 Putin",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(follow :after DCT) (pardon :after DCT)（方向写反）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": ":after document-creation-time"
+   },
+   {
+    "label": "(follow :after DCT) (pardon :after follow)（方向写反）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":after document-creation-time"
+   },
+   {
+    "label": "(hope :after follow) (follow :overlap pardon)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(hope :after follow) (hope :after pardon)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "按 guideline 5.1，(父 :after 子) 是子在父之后。gold 第二条的 s1p 是 Putin（人），显然想写 pardon-01（s1p3）。s0 两次全篇把三元组写成 (子 :关系 父)，方向全反（之后不再重复）。",
+  "fix": {
+   "title": "pardon 的时间三元组：s1p（Putin）→ s1p3（pardon-01）",
+   "conf": "high",
+   "why": "s1p 是人 Putin，不是事件；与 follow 并列、同样在将来的事件是 pardon-01 s1p3。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "after",
+      "s1p"
+     ],
+     "to": [
+      "document-creation-time",
+      "after",
+      "s1p3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 17,
+  "topic": "(follow :before and) 三元组",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(follow :before and)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "s1a 是并列连词 and，不是事件，不能作时间关系的一端；而且它的 op1 就是 follow 本身。",
+  "fix": {
+   "title": "删去 (s1f :before s1a)",
+   "conf": "mid",
+   "why": "s1a 是 and 节点，它的第一项就是 s1f；事件与包含它的并列节点之间的先后关系没有意义。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s1f",
+      "before",
+      "s1a"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 18,
+  "topic": "advice 的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(hope :before advise)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(follow :before advise)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(advise :before DCT/follow 或 hope)（方向写反）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "委员会的建议已经给出，在希望之前；guideline 7 要求每个事件都有时间父节点，gold 漏了。",
+  "fix": {
+   "title": "补 advise-01 的时间：(s1h :before s1a2)",
+   "conf": "mid",
+   "why": "建议在美国表示希望之前已经给出；gold 的 advise-01 没有时间父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s1h",
+      "before",
+      "s1a2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 19,
+  "topic": "root :depends-on 各时间常量",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(root :depends-on DCT/past/present/future-reference)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(root :depends-on past-reference)"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "s1f 照抄完整 guideline 的时间常量骨架，这句没有绝对时间表达式，root 下挂四个常量没有作用。只在第 1 句出现。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 1,
+  "topic": "serving 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "serve-04",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "serve-04"
+   },
+   {
+    "label": "serve-02",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "serve-02"
+   },
+   {
+    "label": "serve-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "serve-01"
+   }
+  ],
+  "best": "serve-04",
+  "text": "PropBank serve-04 就是 serve a sentence（ARG0 服刑者、ARG1 刑期）；serve-02 是供应、上菜，serve-01 是工作、任职。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 2,
+  "topic": "began 是否单立节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不立节点，用 serve 的 aspect 表示",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "begin-01 作根，serve 作 ARG1",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "begin-01"
+   }
+  ],
+  "best": "不立节点，用 serve 的 aspect 表示",
+  "text": "完整 guideline 3-3-1-4 (3a) He started playing the violin 只标 play-01 :aspect activity，起始义由 aspect 表达，不另立 start/begin 事件。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 3,
+  "topic": "serve-04 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "serve-04 没有 aspect（:aspect inceptive 落在 after 节点上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":aspect inceptive"
+   },
+   {
+    "label": "serve :aspect activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "serve :aspect activity",
+  "text": "gold 的右括号放错，:aspect inceptive 成了 after（非事件）的属性，serve-04 本身没有 aspect。完整 guideline 3-3-1-4 (3a) 把 started playing 标为 activity；inceptive 作为细分值也说得通。",
+  "fix": {
+   "title": "aspect 从 after 移回 serve-04（activity）",
+   "conf": "high",
+   "why": "after 不是事件，不能带 aspect；括号错位使 serve-04 没有 aspect。完整 guideline 3-3-1-4 (3a) started playing 标 activity（若保留 inceptive 也可）。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s2a",
+     "attr": "aspect"
+    },
+    {
+     "op": "set_attr",
+     "var": "s2s",
+     "attr": "aspect",
+     "value": "activity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 4,
+  "topic": "This week 挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "after :temporal week（括号错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "serve（或 begin）:temporal week",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ week"
+   }
+  ],
+  "best": "serve（或 begin）:temporal week",
+  "text": "This week 修饰 began serving；gold 因括号错位把它挂在 after（after being convicted）下面，变成定罪的时间。",
+  "fix": {
+   "title": "This week 改挂到 serve-04",
+   "conf": "high",
+   "why": "This week 是开始服刑的时间，不是定罪的时间；gold 的括号错位把它放进了 after 节点。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s2a",
+     "r": "temporal",
+     "t": "s2w"
+    },
+    {
+     "op": "add_rel",
+     "s": "s2s",
+     "r": "temporal",
+     "t": "s2w"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 5,
+  "topic": "American 挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "serve-04 :mod country（括号错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "商人 :mod country/nationality",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "商人 :mod country/nationality",
+  "text": "American 修饰 businessman；gold 的括号在 have-role-91 之后多关了一层，:mod 落到了 serve-04 上。",
+  "fix": {
+   "title": "American 的 :mod 从 serve-04 移到 person",
+   "conf": "high",
+   "why": "the American businessman 中 American 修饰人；gold 括号错位使 :mod 挂在 serve-04 上。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s2s",
+     "r": "mod",
+     "t": "s2c"
+    },
+    {
+     "op": "add_rel",
+     "s": "s2p2",
+     "r": "mod",
+     "t": "s2c"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 6,
+  "topic": "American 的国名写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country :name \"America\"",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"America\")"
+   },
+   {
+    "label": "country :name \"American\"",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"American\""
+   },
+   {
+    "label": "nationality :name \"American\"",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ nationality"
+   }
+  ],
+  "best": null,
+  "text": "训练数据里 an American、the Americans 都标 (country :name (n :op1 \"United\" :op2 \"States\") :wiki \"United_States\")，国名用国家的正式名称，不用形容词；没有一份这样写。gold 的 :wiki \"United_states\" 大小写也错。",
+  "fix": {
+   "title": "American：国名改为 United States，:wiki 改为 United_States",
+   "conf": "mid",
+   "why": "训练数据中 American 一律标 country :name \"United\" \"States\" :wiki \"United_States\"；gold 写 \"America\"、:wiki \"United_states\"（大小写错）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s2n2",
+     "attr": "op1",
+     "value": "\"United\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s2n2",
+     "attr": "op2",
+     "value": "\"States\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s2c",
+     "attr": "wiki",
+     "value": "\"United_States\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 7,
+  "topic": "businessman 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :ARG1-of have-role-91 :ARG2 businessman",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG3 businessman",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "have-org-role-92"
+   },
+   {
+    "label": "person :ARG0-of have-org-role-91/92 :ARG1 business :ARG2 businessman",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "businessman 直接作实体",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ businessman"
+   }
+  ],
+  "best": "businessman 直接作实体",
+  "text": "businessman 是普通名词，直接作实体即可。若用 have-role-91，类别是 :ARG3（精简 guideline 2.3，训练数据 have-role-91 :ARG3 architect / prince 等），gold 写成 :ARG2。have-org-role-92 需要组织，这里没有；s0 两次角色编号整体错位。",
+  "fix": {
+   "title": "have-role-91 的类别：:ARG2 → :ARG3",
+   "conf": "high",
+   "why": "have-role-91 的 ARG1 是成员、ARG3 是类别（guideline 2.3，训练数据一贯如此）；gold 用了 ARG2。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s2h",
+     "r": "ARG2",
+     "t": "s2b",
+     "r2": "ARG3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 8,
+  "topic": "convict、spy 的论元指向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "convict :ARG1 / spy :ARG0 指向类别节点 businessman",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "指向商人这个人",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "指向商人这个人",
+  "text": "gold 的商人是 s2p2（person），businessman 只是 have-role-91 的类别节点；被定罪、从事间谍活动的是这个人，serve-04 和 sentence-01 也都指向 s2p2，唯独 convict 和 spy 指向了类别节点。",
+  "fix": {
+   "title": "convict-01 :ARG1、spy-01 :ARG0 改指 person s2p2",
+   "conf": "high",
+   "why": "被定罪和从事间谍活动的是商人本人（s2p2），不是 have-role-91 的类别概念 businessman；同句 serve-04、sentence-01 都指向 s2p2。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s2c3",
+     "r": "ARG1",
+     "t": "s2b"
+    },
+    {
+     "op": "add_rel",
+     "s": "s2c3",
+     "r": "ARG1",
+     "t": "s2p2"
+    },
+    {
+     "op": "del_rel",
+     "s": "s2s3",
+     "r": "ARG0",
+     "t": "s2b"
+    },
+    {
+     "op": "add_rel",
+     "s": "s2s3",
+     "r": "ARG0",
+     "t": "s2p2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 9,
+  "topic": "20-year prison sentence 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "sentence-01 :ARG2 prison，20 年挂成 serve-04 :ARG4（括号错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "sentence-01 :ARG2 prison :ARG4 20 年",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG4 (s"
+   },
+   {
+    "label": "sentence-01 :ARG2 imprison-01 :duration 20 年",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "imprison-01"
+   },
+   {
+    "label": "sentence-01 :ARG2 20 年 :mod prison",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "sentence-01 :ARG2 (prison :duration 20 年)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":duration (s"
+   }
+  ],
+  "best": "sentence-01 :ARG2 prison :ARG4 20 年",
+  "text": "PropBank sentence-01：ARG2 刑罚、ARG4 刑期；serve-04 没有 ARG4。gold 的 temporal-quantity 因括号错位成了 serve-04 的 :ARG4。",
+  "fix": {
+   "title": "20 年刑期从 serve-04 :ARG4 移到 sentence-01 :ARG4",
+   "conf": "high",
+   "why": "PropBank sentence-01 的 ARG4 是刑期，serve-04 只有 ARG0–ARG2；gold 括号错位把刑期挂到了 serve-04 上。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s2s",
+     "r": "ARG4",
+     "t": "s2t2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s2s2",
+     "r": "ARG4",
+     "t": "s2t2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 10,
+  "topic": "spying 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "spy-01",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "spy-01"
+   },
+   {
+    "label": "spy-02",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "spy-02"
+   }
+  ],
+  "best": "spy-01",
+  "text": "PropBank 只有 spy-01（ARG0 secret agent）；spy-02 不存在，是照抄完整 guideline 例子的写法。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 11,
+  "topic": "spying、sentence 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "sentence-01 没有 aspect；spy activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "sentence-01 performance；spy activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "sentence-01 process/performance；spy process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "sentence-01 process；spy habitual",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   }
+  ],
+  "best": null,
+  "text": "guideline 7：每个事件都要有 :aspect，gold 的 sentence-01 没有；已判刑可标 performance，作事件名词 process 也可以。spy 的 activity、process、habitual 都说得通。",
+  "fix": {
+   "title": "sentence-01 补 :aspect performance",
+   "conf": "mid",
+   "why": "每个事件都应有 aspect；判刑已经完成。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s2s2",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 12,
+  "topic": "Moscow 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "human-settlement",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "human-settlement"
+   },
+   {
+    "label": "city",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ city"
+   }
+  ],
+  "best": null,
+  "text": "训练数据里城市 city 和 human-settlement 两种都有；gold 全篇一致用 human-settlement。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 13,
+  "topic": "American 与第 1 句 United States 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(s1 United States :same-entity American)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(s1 United States :same-entity American)",
+  "text": "American 指的就是第 1 句的美国，guideline 5.3 同一实体的不同提及要连。",
+  "fix": {
+   "title": "补共指：第 1 句 United States 与第 2 句 America",
+   "conf": "mid",
+   "why": "第 2 句的国家节点就是第 1 句的美国（gold 自己给的 :wiki 也相同）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s1g",
+      "same-entity",
+      "s2c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 14,
+  "topic": "This week 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :overlap week)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(week :overlap DCT)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(DCT :depends-on week)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(DCT :depends-on week)",
+  "text": "guideline 5.1：相对时间表达式（today、this week）以 :depends-on 依附 document-creation-time。",
+  "fix": {
+   "title": "This week：(DCT :overlap) → (DCT :depends-on)",
+   "conf": "mid",
+   "why": "guideline 5.1 规定相对时间词以 (document-creation-time :depends-on X) 依附 DCT。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s2w"
+     ],
+     "to": [
+      "document-creation-time",
+      "depends-on",
+      "s2w"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 15,
+  "topic": "serve 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :before serve)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(week :contained serve/begin)",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained s2"
+   },
+   {
+    "label": "(week :overlap serve)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(begin/serve :overlap/:contained week)（方向写反）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(week :contained serve/begin)",
+  "text": "guideline 5.1：事件有同小句的时间表达式时以它为父节点；开始服刑发生在 this week 之内。gold 跳过 week 直接挂 DCT。",
+  "fix": {
+   "title": "serve-04 的时间父节点改为 This week",
+   "conf": "mid",
+   "why": "guideline 5.1 第一条：小句里有时间表达式时事件挂在它下面；开始服刑在本周之内。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s2s"
+     ],
+     "to": [
+      "s2w",
+      "contained",
+      "s2s"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 16,
+  "topic": "sentence-01 的时间与 modal",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "都没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(serve :before sentence)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "经由 convict、serve 的链条（sentence 在 convict 后、serve 前）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(sentence :before begin) 等（方向写反）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(serve :before sentence)",
+  "text": "guideline 7：每个事件都要有时间和 modal 父节点。gold 的 sentence-01 两者都没有；其余各份都有 (author :full-affirmative sentence)。",
+  "fix": {
+   "title": "补 sentence-01 的时间和 modal",
+   "conf": "mid",
+   "why": "gold 的 sentence-01 既无时间父节点也无 modal 父节点；判刑在开始服刑之前，是作者断言的事实。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s2s",
+      "before",
+      "s2s2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s2s2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 17,
+  "topic": "convict 与 spy 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(convict :before spy)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(convict :after spy)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(spy :before convict)（方向写反）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(convict :before spy)",
+  "text": "(A :before B) 是 B 在 A 之前：间谍行为在定罪之前。a2/r2 的 :after 表示间谍在定罪之后，读反了。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 18,
+  "topic": "spying 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative spy)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "spy 没有 modal 父节点",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(convict :unspecified spy)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   }
+  ],
+  "best": "(convict :unspecified spy)",
+  "text": "被判间谍罪不等于作者断言他确实从事间谍活动（第 4 句 Pope 否认指控）；spy 是 convict 的补语，挂在 convict 下更合适。s0 两次的 spy 没有 modal 父节点，违反 guideline 7。",
+  "fix": {
+   "title": "spy 的 modal：author full-affirmative → convict unspecified",
+   "conf": "low",
+   "why": "被定罪的罪名是法庭的认定，作者并未断言间谍行为属实（第 4 句他否认指控）。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s2s3"
+     ],
+     "to": [
+      "s2c3",
+      "unspecified",
+      "s2s3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 19,
+  "topic": "convict 多一个 null-conceiver 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author 和 null-conceiver 两个父节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "(null-conceiver :full-affirmative"
+   },
+   {
+    "label": "只有 author",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "只有 author",
+  "text": "定罪是作者直接陈述的事实，modal 依存应是树，一个事件只挂一个父节点。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 1,
+  "topic": "charged 的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "charge-05 :ARG1 Pope :ARG2 steal",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "charge-05"
+   },
+   {
+    "label": "charge-06 :ARG1 steal",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "charge-06"
+   }
+  ],
+  "best": null,
+  "text": "PropBank charge-06 是 allege (an utterance or complement clause)，正合 charged that 从句；charge-05 是对某人提出罪名（ARG1 被控者、ARG2 罪名），把从句主语 Pope 提成 ARG1 也说得通，与第 4 句 the charges 的 charge-05 一致。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 2,
+  "topic": "Specifically 的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "charge :ARG1-of specific-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "specific-02"
+   },
+   {
+    "label": "charge :manner specific",
+    "systems": [
+     "s0/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "charge :mod specific/specifically",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "Specifically 是承接上句、说明细节的话语副词。PropBank specific-02 是 particular to, unique to（ARG1 独有的事物），说指控是「独特的」不符合原意；:manner / :mod specific 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 3,
+  "topic": "Russian 的国名写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country :name \"Russian\"",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"Russian\""
+   },
+   {
+    "label": "country :name \"Russia\"",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"Russia\""
+   }
+  ],
+  "best": "country :name \"Russia\"",
+  "text": "形容词 Russian 修饰时，名字仍用国名（训练数据 American 一律写 \"United\" \"States\"）；gold 第 1、8 句的 Russia 都是 :op1 \"Russia\"，:wiki 也是 Russia。",
+  "fix": {
+   "title": "第 3 句 Russia 的名字：\"Russian\" → \"Russia\"",
+   "conf": "mid",
+   "why": "国名实体的 :name 写国家的名字而不是形容词；gold 自己 :wiki 写的是 Russia，第 8 句也是 :op1 \"Russia\"。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s3n2",
+     "attr": "op1",
+     "value": "\"Russia\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 4,
+  "topic": "Russian torpedo 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "torpedo :possessor Russia（与 prosecutors 共用节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":possessor s"
+   },
+   {
+    "label": "torpedo :mod Russia",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "torpedo :mod Russia",
+  "text": "Russian torpedo 中国名形容词是来源/类别修饰，一般用 :mod；说成俄罗斯所有也说得通，但不如 :mod 直接。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 5,
+  "topic": "prosecutors 的表示与数",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "person :ARG0-of prosecute-01，refer-number plural",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "prosecute-01"
+   },
+   {
+    "label": "person :ARG0-of prosecute-01，没有 refer-number",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "prosecute-01"
+   },
+   {
+    "label": "prosecutor（复数）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ prosecutor"
+   },
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG2 Russia :ARG3 prosecutor（复数）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   }
+  ],
+  "best": null,
+  "text": "职业名词按 AMR/UMR 习惯可用 person :ARG0-of prosecute-01 或 have-org-role-92 :ARG3 prosecutor，直接写 prosecutor 也可以；复数要标 :refer-number plural（guideline 2.4）。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 6,
+  "topic": "secrets relating to 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "secret :topic torpedo",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "secret :ARG1-of relate-01 :ARG2 torpedo",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "relate-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank relate-01（ARG1 thing under consideration，ARG2 what it's related to）可以表达；relating to 等于关于，用 :topic 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 7,
+  "topic": "high-speed 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "speed :ARG1-of high-02",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "high-02"
+   },
+   {
+    "label": "speed :mod high",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ high)"
+   },
+   {
+    "label": "have-03 :ARG0 torpedo :ARG1 (speed :mod high)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-03"
+   }
+  ],
+  "best": null,
+  "text": "定语 high-speed 用 high-02 或 :mod high 都行；s0 另立 have-03 并对齐到 had stolen 的 had，多出一个不存在的事件。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 8,
+  "topic": "Russia 与第 1 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(s1 Russia :same-entity 本句 Russia)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 1 句，另在句内再连一次",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(s1 Russia :same-entity 本句 Russia)",
+  "text": "同一国家的重复提及要连（guideline 5.3）；句内两处 Russian 是同一节点的重入，不该写句内 :coref。",
+  "fix": {
+   "title": "补共指：第 1 句 Russia 与第 3 句 Russia",
+   "conf": "mid",
+   "why": "两处都是俄罗斯（gold 的 :wiki 都是 Russia），gold 没有连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s1g2",
+      "same-entity",
+      "s3c2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 9,
+  "topic": "stolen 的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(prosecutors :full-affirmative steal)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(charge :unspecified steal)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "(charge :unspecified steal)，charge 本身挂在 prosecutors 下",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "prosecutors 和 charge 两个父节点",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2：引述内容的 conceiver 是说话人，(author :full-affirmative 检察官) (检察官 :full-affirmative steal) 是标准写法；挂在 charge 下也说得通。s1f/r1 没有 (author :full-affirmative charge)，指控事件本身成了检察官的看法；s1f/r2 给 steal 两个 modal 父节点。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 1,
+  "topic": "backed him up 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "back-up-04",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "back-up-04"
+   },
+   {
+    "label": "back-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "back-01"
+   },
+   {
+    "label": "back-up-02",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "back-up-02"
+   }
+  ],
+  "best": "back-up-04",
+  "text": "PropBank 有短语动词 back-up-04（back up: support，ARG0 supporter、ARG1 被支持者），按 guideline 2.6 短语动词作一个概念；back-01（support）意思对但没用短语义项。back-up-02 在 PropBank 里不存在。gold 另加 :topic deny-01（在否认这件事上支持他），属合理推断。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 2,
+  "topic": "back up 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "Washington backed him up 是已经发生的表态支持，与并列的 denied 同为完成事件（guideline 4.1 performance）。把 support 理解成持续的立场也有一点道理，fix 给 low。",
+  "fix": {
+   "title": "back-up-04 的 aspect：state → performance",
+   "conf": "low",
+   "why": "backed him up 是过去完成的表态事件，与同句 denied 一样应是 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s4b",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 3,
+  "topic": "Washington 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization（无 :wiki）",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   },
+   {
+    "label": "city",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ city"
+   }
+  ],
+  "best": null,
+  "text": "Washington 在这里转指美国政府；AMR 习惯照字面标 city，按所指标 government-organization 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 4,
+  "topic": "Washington 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 1 句 United States",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 2 句 American",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "Washington 转指美国政府，与第 1 句 The United States（希望者，也是政府）可以算同指；不连也可以。第 2 句 American 只是商人的国籍，连到它不合适。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 5,
+  "topic": "denied the charges 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative charges)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :full-affirmative charges)，另有 (Pope :full-negative 第 2/3 句的 spy/steal)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(deny :full-negative charges)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":full-negative"
+   },
+   {
+    "label": "(Pope :full-negative charges) 且 (deny :unspecified charges)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":full-negative"
+   },
+   {
+    "label": "(deny :unspecified charges)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   }
+  ],
+  "best": null,
+  "text": "Pope 否认的是指控的内容（偷窃），指控这件事本身确实发生了，由作者断言；把 charge-05 标成 full-negative 等于说没有人指控他。s0 把否定落到前句的 steal/spy 上意思最准，但 Pope 作 conceiver 没有挂到 author 下。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 6,
+  "topic": "denied 的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative deny)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(Pope :full-affirmative deny)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(author :full-affirmative deny)",
+  "text": "否认是作者陈述的事实，不是 Pope 的看法；Pope 作 conceiver 只管他所否认的内容。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 1,
+  "topic": "Editor 挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "magazine :ARG3 editor（括号错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "have-org-role-92 :ARG3 editor",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "have-org-role-91/92 :ARG0 Lipman :ARG1 Itogi :ARG2 editor（编号错位）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG0 (s"
+   }
+  ],
+  "best": "have-org-role-92 :ARG3 editor",
+  "text": "guideline 2.3：have-org-role-92 的 ARG1 人、ARG2 组织、ARG3 职位。gold 的右括号少关一层，:ARG3 成了 magazine 的角色，have-org-role-92 没有 ARG3。s0 两次全篇把 have-org-role 的编号整体前移一格（之后不再重复）。",
+  "fix": {
+   "title": "Editor 从 magazine :ARG3 移到 have-org-role-92 :ARG3",
+   "conf": "high",
+   "why": "职位应是 have-org-role-92 的 ARG3；gold 括号错位使它挂在 magazine 上。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s5m",
+     "r": "ARG3",
+     "t": "s5p2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s5h",
+     "r": "ARG3",
+     "t": "s5p2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 2,
+  "topic": "职位 Editor 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :ARG0-of edit-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "edit-01"
+   },
+   {
+    "label": "editor",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ editor)"
+   }
+  ],
+  "best": "editor",
+  "text": "have-org-role-92 的 ARG3 是职位名称（guideline 2.3 例 :ARG3 (p2 / president)，训练数据 :ARG3 (governor)），直接写 editor；把职位写成 person :ARG0-of edit-01 等于又造了一个人。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 3,
+  "topic": "based 的义项与地点角色",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "base-01 :place Moscow",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "base-01"
+   },
+   {
+    "label": "base-01 :ARG2 Moscow",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "base-01"
+   },
+   {
+    "label": "base-02 :ARG2 Moscow",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "base-02"
+   }
+  ],
+  "best": "base-01 :place Moscow",
+  "text": "PropBank base-01（be located in）：ARG1 机构，地点是 ARGM-LOC，即 :place；base-01 没有 ARG2。base-02 是 justified by / made up of，义项错。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 4,
+  "topic": "Moscow 与第 2 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 2 句 Moscow :same-entity 本句 Moscow)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 2 句 Moscow :same-entity 本句 Moscow)",
+  "text": "同一城市的重复提及要连（guideline 5.3），所有系统都连了。",
+  "fix": {
+   "title": "补共指：第 2 句 Moscow 与第 5 句 Moscow",
+   "conf": "high",
+   "why": "两处是同一城市（gold 的 :wiki 都是 Moscow），guideline 5.3 要求重复的专名相连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s2h4",
+      "same-entity",
+      "s5h2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 5,
+  "topic": "based 的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :contains based)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :contains"
+   },
+   {
+    "label": "(DCT :overlap based)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(based :overlap DCT)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "杂志设在莫斯科是跨越文档时间的状态，overlap 和「状态包含 DCT」（:contains，子包含父）都对。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 1,
+  "topic": "对话句外加 say-91（全篇）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "say-91 :ARG0 说话人 :ARG1 内容 :ARG2 听话人，内容 :quote say-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "say-91"
+   },
+   {
+    "label": "不加 say-91，内容事件作根",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "从第 6 句起是访谈对话，gold 每句外加 say-91 标明说话人和听话人（训练数据里引语句有 say-91 … :quote 的写法），并在文档级把说话人作 conceiver；系统都不加。两种都说得通，按体系差别只记这一条，之后各句不再比较根节点和 say-91 的有无。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 2,
+  "topic": "一般疑问的 polarity",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":polarity (umr-unknown) 节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":polarity (s"
+   },
+   {
+    "label": ":polarity umr-unknown",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity umr-unknown"
+   },
+   {
+    "label": ":polarity amr-unknown",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity amr-unknown"
+   },
+   {
+    "label": "只有 :mode interrogative，没有 polarity",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 3-3-2 (1c) Did you see that? 标 :mode interrogative :polarity umr-unknown；训练数据也有 :polarity (x / umr-unknown) 的节点写法，精简版写 amr-unknown，都可以。s0 漏了 polarity，看不出是一般疑问。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 3,
+  "topic": "give 这个问句的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative give)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(author :neutral-affirmative give)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(author :neutral-affirmative"
+   },
+   {
+    "label": "(author :unspecified give)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "(author :unspecified"
+   }
+  ],
+  "best": "(author :neutral-affirmative give)",
+  "text": "问句不断言事件发生；完整 guideline 3-3-2 (1c) 的一般疑问标 :modstr NeutAff。gold 把问的内容当成作者确定的事实。",
+  "fix": {
+   "title": "问句 give-01 的 modal：full-affirmative → neutral-affirmative",
+   "conf": "mid",
+   "why": "Did ... give any reason? 是一般疑问，说话人并不肯定事件发生；完整 guideline 3-3-2 (1c) 对一般疑问标 NeutAff。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s6g"
+     ],
+     "to": [
+      "author",
+      "neutral-affirmative",
+      "s6g"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 4,
+  "topic": "reason for their decision",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "reason :reason-of decide-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":reason-of (s"
+   },
+   {
+    "label": "reason :cause-of decide-01",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":cause-of (s"
+   },
+   {
+    "label": "reason :ARG0-of cause-01 :ARG1 decide-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "cause-01"
+   },
+   {
+    "label": "reason :purpose decide-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": null,
+  "text": "理由是决定的原因（:reason / :cause / cause-01 都可以）；s1f/r2 的 :purpose 说成理由以决定为目的，关系错了。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 5,
+  "topic": "decide-01 的 :topic thing",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "decide-01 :topic thing（与第 1 句 advice 的 thing 共指）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "不标决定的内容",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不标决定的内容",
+  "text": "原文 their decision 没有说内容；委员会的决定就是第 1 句的建议本身，gold 却说决定「关于」建议，并用非核心的 :topic（PropBank decide-01 的 ARG1 是 thing decided）。不影响主干，不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 6,
+  "topic": "their 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "decide :ARG0 Presidential Pardons Commission（重入）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "decide :ARG0 (they 3rd plural)，用 :coref 连第 1 句 commission",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ they"
+   }
+  ],
+  "best": "decide :ARG0 Presidential Pardons Commission（重入）",
+  "text": "their 指同句的 Presidential Pardons Commission，句内同指应是重入（guideline 5.3）；代词概念也应是 person/thing 而不是 they（guideline 2.4，s0 全篇如此）。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 7,
+  "topic": "Presidential Pardons Commission 的类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   },
+   {
+    "label": "organization",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "commission",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ commission"
+   }
+  ],
+  "best": null,
+  "text": "总统赦免委员会是政府机构，government-organization 最准，organization 也可以；命名实体的类型应取 guideline 类型表里的类型，commission 不在表内。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 8,
+  "topic": "Marsha 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":vocative Marsha",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":vocative (s"
+   },
+   {
+    "label": ":other-role Marsha",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":other-role (s"
+   }
+  ],
+  "best": ":vocative Marsha",
+  "text": "句首呼语 Marsha 是 :vocative（guideline 3 非参与者角色表）。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 1,
+  "topic": "It 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "thing 3rd singular",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ thing"
+   },
+   {
+    "label": "organization 3rd singular",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "it 3rd singular",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ it"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.4：it 写成 thing（或按所指写实体类型）加 3rd singular，不写成词本身。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 2,
+  "topic": "reasons 的数",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "reason :quant several，没有 refer-number",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "reason :quant several :refer-number plural",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": "reason :quant several :refer-number plural",
+  "text": "guideline 2.4 复数名词标 :refer-number plural；several 已表达了数量，缺了影响不大。",
+  "fix": {
+   "title": "reasons 补 :refer-number plural",
+   "conf": "low",
+   "why": "reasons 是复数名词，guideline 2.4 要求标 :refer-number plural；gold 第 8 句 those reasons 也标了 plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s7r",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 3,
+  "topic": "reasons 与第 6 句 reason 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 6 句 reason :same-entity reasons)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "第 6 句问的是有没有给出任何理由（any reason），第 7 句回答给了几条；两者所指相同的说法和只算同类、不连的说法都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 4,
+  "topic": "gave 与第 6 句 give 的同指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 6 句 give :same-event gave)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(第 6 句 give :same-event gave)",
+  "text": "第 7 句是对第 6 句问题的回答，给理由是同一件事（guideline 5.3 :same-event）。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 5,
+  "topic": "gave 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-aff 说话人) (说话人 :full-aff give)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :full-affirmative give)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 按 say-91 的体系把说话人 Marsha 作 conceiver（guideline 5.2 引语），系统没有 say-91，直接由 author 断言；各按自己的体系都对。第 8–14 句同理，不再重复。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 1,
+  "topic": "but 的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-concession-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-concession-91"
+   },
+   {
+    "label": "but-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "but-91"
+   },
+   {
+    "label": "contrast-91",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "contrast-91"
+   },
+   {
+    "label": "contrast-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "contrast-01"
+   }
+  ],
+  "best": "but-91",
+  "text": "完整 guideline 3-1-6：英语 but 兼表对比与意外共现，标 but-91（adversative）；have-concession-91 是 even though / although 的让步，这里「我不确定……但委员们说……」不是让步。contrast-01 是动词 contrast 的义项，抽象关系应用 -91。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 2,
+  "topic": "I am not sure if 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不立 sure 节点，内容上加 :polarity umr-unknown",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":polarity (s"
+   },
+   {
+    "label": "sure-02 :polarity - :ARG0 I :ARG1 identity-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "sure-02"
+   },
+   {
+    "label": "sure-02 :ARG0 I :ARG1 truth-value（:polarity-of identity-91）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "truth-value"
+   },
+   {
+    "label": "sure-02 :ARG1 I :ARG2 内容",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "sure-02"
+   }
+  ],
+  "best": "sure-02 :polarity - :ARG0 I :ARG1 identity-91",
+  "text": "PropBank sure-02：ARG0 believer、ARG1 belief，没有 ARG2；s0、s1f 把 I 放在 ARG1。gold 不立 sure 节点、在文档级用 (I :neutral-negative …) 表达不确定也说得通，但 if 从句不是疑问，:polarity umr-unknown 只用于一般疑问句（完整 guideline 3-3-2 (1c)），不该出现在这里。",
+  "fix": {
+   "title": "删去 formalize-01 上的 :polarity umr-unknown",
+   "conf": "mid",
+   "why": "I am not sure if ... 是陈述句，不确定已由文档级 (s8p3 :neutral-negative s8f) 表达；:polarity umr-unknown 只用于一般疑问。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s8u"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 3,
+  "topic": "the formal reasons 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "formalize-01 :ARG1 reason",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "formalize-01"
+   },
+   {
+    "label": "reason :mod formal",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ formal)"
+   }
+  ],
+  "best": "reason :mod formal",
+  "text": "PropBank formalize-01 是 to make formal（使正式化），formal reasons 的 formal 是「正式的、官方的」，PropBank 没有形容词 formal，应写 :mod formal。gold 等于说「那些理由被正式化」。",
+  "fix": {
+   "title": "formalize-01 → have-mod-91 :ARG1 reason :ARG2 formal",
+   "conf": "mid",
+   "why": "formalize-01 意为「使正式化」，原文是 those were the formal reasons；按 guideline 2.3 改为 have-mod-91（those reasons were formal），保留其 ARG1、aspect 和文档级的不确定关系。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s8f",
+     "concept": "have-mod-91"
+    },
+    {
+     "op": "add_node",
+     "parent": "s8f",
+     "role": "ARG2",
+     "var": "s8z1",
+     "concept": "formal",
+     "align": "9-9"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 4,
+  "topic": "say-01 :place interview",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "say-01 :place interview-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "说话发生在采访中是时间关系（文档级已有 interview 与 say 的 temporal），把事件当作 :place 的地点不合适；and 已把两者并列。",
+  "fix": {
+   "title": "删去 say-01 :place interview-01",
+   "conf": "low",
+   "why": "事件不是处所；采访与说话的关系由并列和文档级 temporal 表达。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s8s2",
+     "r": "place",
+     "t": "s8i2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 5,
+  "topic": "were afraid of 的义项与 ARG1",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "fear-01 :ARG1 rise-01",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "fear-01"
+   },
+   {
+    "label": "fear-01 :ARG1 mania（mania :ARG1-of rise-01）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "fear-01"
+   },
+   {
+    "label": "afraid-01",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "afraid-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank fear-01 本身就是 fear, afraid（ARG0 害怕者、ARG1 害怕的对象），没有 afraid-01。害怕的对象写成 rising 事件或 spy mania 实体都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 6,
+  "topic": "suspicious 的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "suspicious-02 :ARG0 委员 :ARG1 contrast-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "suspicious-02"
+   },
+   {
+    "label": "suspicious-02 :ARG0 委员/they :ARG1 sentence",
+    "systems": [
+     "s0/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "suspicious-02"
+   },
+   {
+    "label": "suspicious-02 :ARG0 sentence :ARG1 they",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "suspicious-02"
+   },
+   {
+    "label": "suspicious-03 :ARG1 sentence（委员作 :beneficiary/:other-role）",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "suspicious-03"
+   },
+   {
+    "label": "have-mod-91 :ARG2 suspicious（无义项）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-mod-91"
+   }
+  ],
+  "best": null,
+  "text": "PropBank suspicious-02 是起疑（ARG0 怀疑者、ARG1 被怀疑的事）、suspicious-03 是引起怀疑（ARG1 可疑的事）；suspicious to them 两种读法都成立。s0/r2 把论元颠倒；PropBank 有 suspicious 的谓词义项，s1f 用 have-mod-91 加形容词绕开了。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 7,
+  "topic": "the article had 10 to 20 years",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "have-03 :ARG0 article :ARG1 范围",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-03"
+   },
+   {
+    "label": "have-91 :ARG1 article :ARG2 范围",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-91"
+   }
+  ],
+  "best": "have-91 :ARG1 article :ARG2 范围",
+  "text": "法条「规定」10 到 20 年不是所有权，guideline 2.3 的抽象谓词 have-91 比 PropBank have-03（own, possess）合适；差别不大。",
+  "fix": {
+   "title": "have-03 → have-91（ARG0→ARG1、ARG1→ARG2）",
+   "conf": "low",
+   "why": "法条含有的刑期范围不是所有关系，UMR 用抽象谓词 have-91（ARG1 拥有者、ARG2 所有物）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s8h2",
+     "concept": "have-91"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s8h2",
+     "r": "ARG1",
+     "t": "s8b",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s8h2",
+     "r": "ARG0",
+     "t": "s8a3",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 8,
+  "topic": "the article of the law",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "article :source law",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   },
+   {
+    "label": "article :part-of law",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "article :part law",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "法条是法律的一部分，是部分-整体关系；按项目规则 部分 :part 整体（完整 guideline 3-2-2-1）和 部分 :part-of 整体 都算对。:source 表示来源，不如部分关系准确。",
+  "fix": {
+   "title": "article :source law → :part law",
+   "conf": "low",
+   "why": "法条与法律是部分-整体关系，按完整 guideline 3-2-2-1 写 部分 :part 整体。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s8a3",
+     "r": "source",
+     "t": "s8l",
+     "r2": "part"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 9,
+  "topic": "today 的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :overlap today) (interview :contains today)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(DCT :depends-on today) (today :contained interview)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :depends-on"
+   },
+   {
+    "label": "today 写成 date-entity :mod today，(date-entity :overlap DCT)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "date-entity"
+   }
+  ],
+  "best": "(DCT :depends-on today) (today :contained interview)",
+  "text": "guideline 5.1：相对时间词以 :depends-on 依附 DCT，事件以同小句的时间词为父节点 (today :contained interview)。gold 让 today 有两个父节点，并把时间词挂在事件下面（:contains 的语义本身不错）。",
+  "fix": {
+   "title": "today：(DCT :depends-on today)，(today :contained interview)",
+   "conf": "mid",
+   "why": "guideline 5.1 规定相对时间词依附 DCT（:depends-on），事件挂在时间词下；gold 把 today 挂成 interview 的子节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s8t4"
+     ],
+     "to": [
+      "document-creation-time",
+      "depends-on",
+      "s8t4"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s8i2",
+      "contains",
+      "s8t4"
+     ],
+     "to": [
+      "s8t4",
+      "contained",
+      "s8i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 10,
+  "topic": "Edmund Pope 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "连前文 Pope",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连前文 Pope",
+  "text": "Edmund Pope 是全文主角，gold 在第 2–4 句都连了，这里漏连（guideline 5.3 连最近的前一次提及，即第 4 句）。",
+  "fix": {
+   "title": "补共指：第 4 句 Pope 与第 8 句 Edmund Pope",
+   "conf": "high",
+   "why": "同一人，gold 第 2–4 句的 Pope 都已连成链，这里漏了。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s4p2",
+      "same-entity",
+      "s8p2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 11,
+  "topic": "Russia 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连前文 Russia",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连前文 Russia",
+  "text": "同一国家的重复提及要连（guideline 5.3）；gold 全篇 Russia 都没有连。",
+  "fix": {
+   "title": "补共指：第 3 句 Russia 与第 8 句 Russia",
+   "conf": "high",
+   "why": "同一国家（gold 的 :wiki 都是 Russia），最近的前一次提及是第 3 句。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s3c2",
+      "same-entity",
+      "s8c4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 12,
+  "topic": "the commission 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "commission 不连，另写 (第 7 句 It :subset-of members)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 7 句 It :same-entity commission)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第 1 句 commission :same-entity commission)，另写 members :subset-of 第 1 句 commission",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(第 7 句 It :same-entity commission)",
+  "text": "members of the commission 的 commission 就是第 6 句的 Presidential Pardons Commission、第 7 句的 It；gold 只记了委员与委员会的部分关系，委员会节点本身没有连。",
+  "fix": {
+   "title": "补共指：第 7 句 It 与第 8 句 commission",
+   "conf": "mid",
+   "why": "the commission 指前文的总统赦免委员会（第 7 句 It）；gold 的 commission 节点没有任何共指。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s7t",
+      "same-entity",
+      "s8c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 13,
+  "topic": "they say 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "say-01 没有 aspect（:aspect performance 落在 and 上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "say-01 :aspect activity",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "say-01 :aspect performance",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 在 say-01 的 :place 之后多关了一层括号，:aspect performance 成了并列节点 and（interview、say）的属性，say-01 自身没有 aspect。they say（今天采访中说的）标 performance 或现在时的 activity 都可以。",
+  "fix": {
+   "title": "aspect 从 and 移回 say-01",
+   "conf": "high",
+   "why": "and 不是事件，不能带 aspect；括号错位使 say-01 缺 aspect。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s8a",
+     "attr": "aspect"
+    },
+    {
+     "op": "set_attr",
+     "var": "s8s2",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 1,
+  "topic": "even though 的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-concessive-condition-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-concessive-condition-91"
+   },
+   {
+    "label": "sentence :concession …",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":concession (s"
+   }
+  ],
+  "best": "sentence :concession …",
+  "text": "完整 guideline 3-1-6 (7c) 正是 even though 的例子：让步标 have-concession-91 或 :concession；concessive-condition 是 even if（让步条件），这里两件事都已发生，不是条件。",
+  "fix": {
+   "title": "have-concessive-condition-91 → have-concession-91",
+   "conf": "high",
+   "why": "完整 guideline 3-1-6 (7c)：even though 表示让步，用 have-concession-91；concessive condition 是 even if。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s9h4",
+     "concept": "have-concession-91"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 2,
+  "topic": "让步节点上多出的 :ARG2 organization 和 aspect",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "让步节点带第二个 :ARG2 (organization) 和 :aspect performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "gold 的括号错位：have-concessive-condition-91 已有 :ARG2 have-mod-91，又多一个 :ARG2 (organization)，还带了 :aspect（话语关系不是事件）。这个 organization 与第 8 句的 outlets、第 10 句 say-01 的 :ARG2 共指，原意应是 according to 那次说话的听话人。",
+  "fix": {
+   "title": "organization 改挂为 say-91（according to）的 :ARG2，删去让步节点的 aspect",
+   "conf": "mid",
+   "why": "话语关系节点不能有两个 ARG2，也不带 aspect；organization 与第 8 句 outlets 共指，按第 10 句的写法是委员们说话的对象。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s9h4",
+     "r": "ARG2",
+     "t": "s9o"
+    },
+    {
+     "op": "add_rel",
+     "s": "s9s2",
+     "r": "ARG2",
+     "t": "s9o"
+    },
+    {
+     "op": "del_attr",
+     "var": "s9h4",
+     "attr": "aspect"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 3,
+  "topic": "have-mod-91 的 ARG1/ARG2",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG1 quotient :ARG2 evidence",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "have-mod-91 :ARG1 evidence :ARG2 quotient",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "quotient :domain evidence",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":domain (s"
+   }
+  ],
+  "best": "have-mod-91 :ARG1 evidence :ARG2 quotient",
+  "text": "guideline 2.3：have-mod-91 的 ARG1 是主体、ARG2 是性质；the evidence was far from quotient 的主体是证据。:domain 是 AMR 写法，UMR 用 have-mod-91。",
+  "fix": {
+   "title": "have-mod-91 的主体和性质对调",
+   "conf": "high",
+   "why": "guideline 2.3 have-mod-91：ARG1 theme，ARG2 property；证据是主体、quotient（不足）是性质，gold 写反了。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s9h",
+     "r": "ARG1",
+     "t": "s9q2",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s9h",
+     "r": "ARG2",
+     "t": "s9e",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 4,
+  "topic": "far from 的表示",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":polarity - :degree intensifier",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": ":polarity - :degree (far)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   },
+   {
+    "label": ":degree (far)，没有否定",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "/ far)"
+   }
+  ],
+  "best": null,
+  "text": "far from sufficient 是「远不够」，必须有否定；完整 guideline 3-3-6 允许 :degree intensifier 作属性值。s1f/r1 漏了否定，意思变成「很充分」。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 5,
+  "topic": "members 的 have-org-role-92",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "have-org-role-92 :ARG2 commission :ARG2 member（两个 ARG2）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "have-org-role-92 :ARG2 commission :ARG3 member",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "have-org-role-91/92 :ARG0-of（编号错位）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   }
+  ],
+  "best": "have-org-role-92 :ARG2 commission :ARG3 member",
+  "text": "guideline 2.3：have-org-role-92 的 ARG3 是职位/身份；gold 把 member 也写成 ARG2，同一谓词两个 ARG2。gold 第 8 句同样结构用的是 :ARG3 member。",
+  "fix": {
+   "title": "member：:ARG2 → :ARG3",
+   "conf": "high",
+   "why": "have-org-role-92 的 ARG3 是身份；gold 第 8 句 members of the commission 就是 :ARG3 member，这里误写为第二个 ARG2。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s9h3",
+     "r": "ARG2",
+     "t": "s9m",
+     "r2": "ARG3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 6,
+  "topic": "Pardon Commission 的 :wiki",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":wiki \"Office_of_the_Pardon_Attorney\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":wiki \"Office_of_the_Pardon_Attorney\""
+   },
+   {
+    "label": "不写 :wiki",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不写 :wiki",
+  "text": "Office of the Pardon Attorney 是美国司法部的机构，这里是俄罗斯总统的赦免委员会；gold 第 6 句同一机构写的是 :wiki -。",
+  "fix": {
+   "title": "Pardon Commission 的 :wiki 改为 -",
+   "conf": "high",
+   "why": "Office_of_the_Pardon_Attorney 是美国司法部的机构，不是俄罗斯总统赦免委员会；gold 第 6 句同一机构是 :wiki -。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s9g",
+     "attr": "wiki",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 7,
+  "topic": "according to 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG1-of say-91 :ARG0 members",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "say-91"
+   },
+   {
+    "label": "say-01 :ARG0 members :ARG1 have-mod-91",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "say-01"
+   },
+   {
+    "label": ":according-to members",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":according-to (s"
+   }
+  ],
+  "best": null,
+  "text": "according to X 表示 X 说的内容，用 say-01 / say-91 都可以；:according-to 是 AMR 的角色，不在 UMR 的非参与者角色表里。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 8,
+  "topic": "He 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "连 Pope（第 8 句或第 1 句）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连 Pope（第 8 句或第 1 句）",
+  "text": "He 是被判刑的 Edmund Pope，代词必须连到先行词（guideline 5.3）；最近的提及是第 8 句。",
+  "fix": {
+   "title": "补共指：第 8 句 Edmund Pope 与第 9 句 He",
+   "conf": "high",
+   "why": "He was sentenced to 20 的 He 就是上一句被判最高刑期的 Edmund Pope。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s8p2",
+      "same-entity",
+      "s9p7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 9,
+  "topic": "sentenced 与前文判刑事件同指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连第 8 句 sentenced",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 2 句 sentence",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连第 8 句 sentenced",
+  "text": "判 20 年就是第 2 句的 20-year sentence、第 8 句的 sentenced to the maximum term；gold 已把第 2、8 句连起来，这里漏了。",
+  "fix": {
+   "title": "补同指：第 8 句 sentence-01 与第 9 句 sentence-01",
+   "conf": "mid",
+   "why": "同一次判刑；gold 已有 (s2s2 :same-event s8s5)。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s8s5",
+      "same-event",
+      "s9s"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 10,
+  "topic": "Pardon Commission 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连第 8 句 commission",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 1 句 commission",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连第 8 句 commission",
+  "text": "Pardon Commission 就是前文的总统赦免委员会，gold 只把 members 连到第 8 句的 members，委员会本身没连。",
+  "fix": {
+   "title": "补共指：第 8 句 commission 与第 9 句 Pardon Commission",
+   "conf": "mid",
+   "why": "同一个委员会；最近的前一次提及是第 8 句 the commission。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s8c",
+      "same-entity",
+      "s9g"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 11,
+  "topic": "sentenced 与 presented 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(members :full-aff sentence)，presented 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(author :full-aff sentence)，presented 挂 author 或 members",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-aff sentence)，presented 挂 author 或 members",
+  "text": "according to 只管让步从句（证据不足），判刑是说话人自己断言的；guideline 7 每个事件都要有 modal 父节点，gold 的 present-01 漏了。按 gold 的 say-91 体系，判刑应挂说话人 s9p5。",
+  "fix": {
+   "title": "sentence 改挂说话人，补 present-01 的 modal",
+   "conf": "mid",
+   "why": "He was sentenced to 20 是说话人自己的断言，不在 according to the members 的范围内；present-01 是委员们所说内容的一部分，缺 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s9p4",
+      "full-affirmative",
+      "s9s"
+     ],
+     "to": [
+      "s9p5",
+      "full-affirmative",
+      "s9s"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s9p4",
+      "full-affirmative",
+      "s9p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 12,
+  "topic": "evidence 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "evidence-01（无 aspect）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "evidence-01"
+   },
+   {
+    "label": "evidence",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ evidence"
+   }
+  ],
+  "best": "evidence",
+  "text": "PropBank evidence-01 是 provide proof for（ARG0 证据、ARG1 被证明的事），这里的 evidence 是被出示的证据本身，按实体名词写 evidence 即可；gold 把谓词当实体用，也没有 aspect。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 1,
+  "topic": "procedure 的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "procedure-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "procedure-01"
+   },
+   {
+    "label": "procedure",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ procedure"
+   }
+  ],
+  "best": "procedure",
+  "text": "PropBank 没有 procedure，procedure-01 是凭空编的义项；procedure 是普通名词，直接作实体（训练数据 due process 也作实体 due-process）。",
+  "fix": {
+   "title": "procedure-01 → procedure",
+   "conf": "high",
+   "why": "PropBank 没有 procedure 的框架，procedure-01 不存在；procedure 是实体名词。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s10p",
+     "concept": "procedure"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 2,
+  "topic": "due 的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "procedure :ARG1-of due-01 :ARG2 lawyers",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "due-01"
+   },
+   {
+    "label": "procedure :mod due",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ due)"
+   }
+  ],
+  "best": "procedure :mod due",
+  "text": "due procedure 即 due process（正当程序），作定语时 :mod due 就够了。若用 PropBank due-01（owed），ARG1 是应得者、ARG2 是应得之物，gold 把两者颠倒了（程序成了应得者，律师成了应得之物）。",
+  "fix": {
+   "title": "due-01 的论元对调：程序为 ARG2、律师为 ARG1",
+   "conf": "mid",
+   "why": "PropBank due-01：ARG1 recipient（律师），ARG2 thing owed（程序）；gold 写反。也可以整个改为 :mod due。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s10p",
+     "r": "ARG1-of",
+     "t": "s10d2",
+     "r2": "ARG2-of"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s10d2",
+     "r": "ARG2",
+     "t": "s10p5",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 3,
+  "topic": "the lawyers for the defense",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG2 (organization :ARG0-of defend-01) :ARG3 lawyer",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "defend-01"
+   },
+   {
+    "label": "lawyer :purpose/:ARG0-of defend-01",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "defend-01"
+   },
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG3 lawyer，:purpose defend-01",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   },
+   {
+    "label": "person :ARG1-of have-org-role-92 :ARG2 defense :ARG3 lawyer",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   },
+   {
+    "label": "lawyer :mod defense",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ defense)"
+   },
+   {
+    "label": "have-org-role-91/92 :ARG0-of（编号错位）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   }
+  ],
+  "best": null,
+  "text": "辩护律师可以写成在辩方任律师（have-org-role-92），也可以写成为辩护服务的律师；各种写法意思都对，s0 仍是编号错位（见第 1 句）。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 1,
+  "topic": "much less than 的比较结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "listen :ARG1-of have-quant-91 :ARG3 less :ARG4 listen(prosecution)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-quant-91"
+   },
+   {
+    "label": "have-degree-91 :ARG1 court :ARG2 listen :ARG3 less :ARG4 listen(prosecution)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-degree-91"
+   },
+   {
+    "label": "have-degree-91 :ARG1 listen :ARG2 much :ARG3 less :ARG4 listen",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "have-degree-91"
+   },
+   {
+    "label": "listen :degree less :compared-to listen",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":compared-to (s"
+   }
+  ],
+  "best": null,
+  "text": "听得少是数量比较，have-quant-91（ARG3 less、ARG4 比较对象）和 have-degree-91 都说得通。:compared-to 是 AMR 的角色，不在 UMR 的角色表里；s1f/r1 把 much 放在 ARG2（被比较的属性）位置，角色错位。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 2,
+  "topic": "第二个 listen 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(说话人 :full-affirmative less)——指向非事件，第二个 listen 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两个 listen 都挂 author（或只有一个 listen 节点）",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂第 10 句的 They",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "两个 listen 都挂 author（或只有一个 listen 节点）",
+  "text": "gold 的 s11l2 是 less（数量概念），不是事件；比较对象 it did to the prosecution 的 listen-01（s11l3）有时间父节点却没有 modal 父节点，显然是变量写错。",
+  "fix": {
+   "title": "modal 三元组 s11l2（less）→ s11l3（listen-01）",
+   "conf": "high",
+   "why": "s11l2 是 less，不能作 modal 依存的子节点；第二个 listen-01 s11l3 缺 modal，显然是笔误。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s11p3",
+      "full-affirmative",
+      "s11l2"
+     ],
+     "to": [
+      "s11p3",
+      "full-affirmative",
+      "s11l3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 3,
+  "topic": "listened 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "审判过程中法庭听取双方意见，是过去的持续过程，activity 或整体看作 performance 都可以；listen 不是状态谓词。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 4,
+  "topic": "prosecution 与第 9 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连第 9 句 prosecution",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第 3 句 prosecutors",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 9 句检方连到本句兼作辩方、检方的 person 节点",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "连第 9 句 prosecution",
+  "text": "本句的 the prosecution 与第 9 句出示证据的 the prosecution 是同一检方。s3/r1 用 :same-event 连两个 prosecute 名词也算连上；s3/r2 本句只有一个 person 同时作 defend 和 prosecute 的 ARG0，共指也就混了。",
+  "fix": {
+   "title": "补共指：第 9 句 prosecution 与第 11 句 prosecution",
+   "conf": "mid",
+   "why": "两处 the prosecution 指同一检方（gold 分别写作 person :ARG0-of prosecute-01 和 organization :ARG0-of prosecute-01）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s9p2",
+      "same-entity",
+      "s11o2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 1,
+  "topic": "sounds 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "sound-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "sound-01"
+   },
+   {
+    "label": "sound-02",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "sound-02"
+   }
+  ],
+  "best": "sound-01",
+  "text": "PropBank sound-01 是 seem, appear（ARG1 看起来如何的事物、ARG2 属性），sounds like a pardon 正是此义；sound-02 是发出声音。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 2,
+  "topic": "criticism 的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "criticism-04",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "criticism-04"
+   },
+   {
+    "label": "criticize-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "criticize-01"
+   }
+  ],
+  "best": "criticize-01",
+  "text": "PropBank criticism-04 是不带贬义的评判（尤指艺术评论），criticize-01 是 judging harshly and negatively；这里是对普京所依赖的机构的批评，取 criticize-01。",
+  "fix": {
+   "title": "criticism-04 → criticize-01",
+   "conf": "mid",
+   "why": "PropBank criticism-04 指中性的品评（esp. art/literature），本句是负面的批评，对应 criticize-01（ARG1 被批评者）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s12c",
+     "concept": "criticize-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 3,
+  "topic": "less like … more like 的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-degree-91 :ARG2 sound(pardon) :ARG3 less :ARG4 sound(criticism)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-degree-91"
+   },
+   {
+    "label": "and (sound :degree less :ARG2 pardon) (sound :degree more :ARG2 criticism)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "sound :ARG2 (and (pardon :degree less) (criticism :degree more))",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "sound :ARG2 (and pardon/criticism 各带 have-degree-91 less/more)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-degree-91"
+   }
+  ],
+  "best": null,
+  "text": "less X and more Y 是两项对照的程度比较，gold 用 have-degree-91 把两次 sound 相比，系统用并列加 :degree；都能表达原意。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 4,
+  "topic": "Mr. Putin 的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":name :op1 \"Mr.\" :op2 \"Putin\"",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"Mr.\""
+   },
+   {
+    "label": ":name \"Putin\"，Mr. 作 :mod",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"Putin\""
+   }
+  ],
+  "best": ":name \"Putin\"，Mr. 作 :mod",
+  "text": "称谓 Mr. 不是名字的一部分；gold 第 14 句 President Putin 的名字就只有 \"Putin\"。",
+  "fix": {
+   "title": "Mr. Putin 的名字只保留 \"Putin\"",
+   "conf": "high",
+   "why": "称谓不属于专名；gold 第 1、14 句 Putin 的 :name 都不含称谓。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s12n",
+     "attr": "op1",
+     "value": "\"Putin\""
+    },
+    {
+     "op": "del_attr",
+     "var": "s12n",
+     "attr": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 5,
+  "topic": "Putin 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连第 1 句 Vladimir Putin",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有连",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "连第 1 句 Vladimir Putin",
+  "text": "Mr. Putin 就是第 1 句的 Vladimir Putin；a2 逐句标注时两次都没连上。s0/r1 另把三个 his 各自立节点再连回去（应是重入）。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 6,
+  "topic": "including 的重复边",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "institution :ARG2-of include-01，include-01 内又写 :ARG2 institution",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "include-01"
+   },
+   {
+    "label": "include-91 :ARG1 and :ARG2 institutions（只写一次）",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "include-91"
+   },
+   {
+    "label": "include-91 :ARG1 institutions :ARG2 and（子集、全集颠倒）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "include-91"
+   },
+   {
+    "label": "institutions :example and",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":example (s"
+   }
+  ],
+  "best": "include-91 :ARG1 and :ARG2 institutions（只写一次）",
+  "text": "gold 用反向角色 :ARG2-of 把 include-01 挂在 institution 下，又在 include-01 里写 :ARG2 s12i2，同一条边出现两次。include-01（ARG1 被包含者、ARG2 群体）或 include-91 都可以。 include-91 的 ARG1 是子集、ARG2 是全集，s0/r1 写反。",
+  "fix": {
+   "title": "删去 include-01 里重复的 :ARG2 s12i2",
+   "conf": "mid",
+   "why": "s12i2 :ARG2-of s12i3 已经表示 institution 是 include-01 的 ARG2，include-01 内再写 :ARG2 s12i2 是重复边。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s12i3",
+     "r": "ARG2",
+     "t": "s12i2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 7,
+  "topic": "has to show some support 的表示与 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(说话人 :partial-aff show)，support 却是 full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :partial-aff show) (author :full-aff support)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "show、support 都是 partial-affirmative",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不立 show，(author :partial-aff support)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "has to 另立 obligate-01 节点",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "obligate-01"
+   }
+  ],
+  "best": null,
+  "text": "has to 是义务情态，按 guideline 5.2 / 4-3-2 给 PrtAff，不另立节点；被要求的是「表示支持」，support 也在义务范围内，不该是 full-affirmative。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 8,
+  "topic": "pardon、criticism 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(说话人 :full-affirmative pardon/criticism)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(sound :unspecified pardon/criticism)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "(author :full-affirmative pardon/criticism)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :partial-affirmative/:partial-negative …)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(sound :unspecified pardon/criticism)",
+  "text": "sounds like a pardon / a criticism 只说听起来像，并不断言赦免或批评作为事件发生；放在 sound 下 unspecified 最贴切。",
+  "fix": {
+   "title": "pardon、criticism 改挂各自的 sound-01，unspecified",
+   "conf": "low",
+   "why": "像赦免、像批评是 sound-01 的属性论元，不是说话人断言的事件。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s12p6",
+      "full-affirmative",
+      "s12p4"
+     ],
+     "to": [
+      "s12s5",
+      "unspecified",
+      "s12p4"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s12p6",
+      "full-affirmative",
+      "s12c"
+     ],
+     "to": [
+      "s12s6",
+      "unspecified",
+      "s12c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 1,
+  "topic": "How 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "respond :ARG2 umr-unknown/amr-unknown",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "respond :manner amr-unknown/umr-unknown",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "respond :manner amr-unknown/umr-unknown",
+  "text": "PropBank respond-01 的 ARG2 是 answer（回答的内容）；How is he going to respond 问的是方式，问点应是 :manner。",
+  "fix": {
+   "title": "How：respond-01 :ARG2 → :manner",
+   "conf": "mid",
+   "why": "PropBank respond-01 ARG2 是回答内容，how 问的是回应方式，应为 :manner umr-unknown。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13r",
+     "r": "ARG2",
+     "t": "s13u",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 2,
+  "topic": "and when 的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and (respond …) (have-temporal-91 :ARG1 respond :ARG2 umr-unknown)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-temporal-91"
+   },
+   {
+    "label": "respond :temporal amr-unknown/umr-unknown",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   }
+  ],
+  "best": null,
+  "text": "how … and when 是同一事件上的两个疑问点，直接在 respond 上加 :temporal 问点更简洁；gold 拆成并列的第二个问题也能表达原意。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 3,
+  "topic": "疑问 mode",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "respond :mode interrogative",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":mode interrogative"
+   },
+   {
+    "label": "没有 :mode",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "respond :mode interrogative",
+  "text": "guideline 4.2：问句标 :mode interrogative，问点用 umr-unknown；s0 只有问点没有 mode。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 4,
+  "topic": "respond 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "full-affirmative（说话人或 author）",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :neutral-affirmative respond)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "(author :neutral-affirmative"
+   },
+   {
+    "label": "(author :unspecified respond)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "(author :unspecified"
+   }
+  ],
+  "best": null,
+  "text": "特殊疑问句预设他会回应（is going to 是预测将来），问的是方式和时间，full-affirmative 说得通；按完整 guideline 3-3-2 (1c) 问句给 NeutAff 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 1,
+  "topic": "第二个 think 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "think-01 没有 aspect（:aspect state 落在 and 上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "think-01 :aspect state",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   }
+  ],
+  "best": "think-01 :aspect state",
+  "text": "gold 在 know-01 后多关了一层括号，:aspect state 和 :quote 成了 and 的属性，第二个 think-01 没有 aspect。think 是状态谓词（guideline 4.1）。",
+  "fix": {
+   "title": "aspect 从 and 移回第二个 think-01",
+   "conf": "high",
+   "why": "and 不是事件，不能带 aspect；括号错位使 s14t3 think-01 缺 aspect。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s14a",
+     "attr": "aspect"
+    },
+    {
+     "op": "set_attr",
+     "var": "s14t3",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 2,
+  "topic": "说话人与 I 两个节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "say-91 :ARG0 person 与 think :ARG0 (person 1st) 是两个节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "只有一个 I 节点",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "只有一个 I 节点",
+  "text": "按 gold 自己的 say-91 体系，说话人就是 I（第 8 句 gold 就让 say-91 的 ARG0 直接是 I 节点）；这里另立一个不带人称的 person 作 say-91 的 ARG0，同句同指没有用重入（guideline 5.3）。",
+  "fix": {
+   "title": "I 并入 say-91 的说话人节点",
+   "conf": "mid",
+   "why": "同一句里说话人与 I 是同一个人，应为重入；第 8 句 gold 就是这样写的。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s14t",
+     "r": "ARG0",
+     "t": "s14p6"
+    },
+    {
+     "op": "add_rel",
+     "s": "s14t3",
+     "r": "ARG0",
+     "t": "s14p6"
+    },
+    {
+     "op": "del_node",
+     "var": "s14p"
+    },
+    {
+     "op": "set_attr",
+     "var": "s14p6",
+     "attr": "refer-person",
+     "value": "1st"
+    },
+    {
+     "op": "set_attr",
+     "var": "s14p6",
+     "attr": "refer-number",
+     "value": "singular"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 3,
+  "topic": "否定落在 think 还是 know",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "know :polarity -",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "think :polarity -",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": null,
+  "text": "I don't think 是否定提升：:polarity 标在表层被否定的 think 上（AMR 习惯）或按语义标在 know 上都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 4,
+  "topic": "until 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "know :duration (until …)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":duration (s"
+   },
+   {
+    "label": "know :temporal (until …)",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   }
+  ],
+  "best": "know :temporal (until …)",
+  "text": "won't know until X 给出的是时间界限，AMR/UMR 写 :temporal (until :op1 X)；:duration 用于时长（for two years）。",
+  "fix": {
+   "title": "until：:duration → :temporal",
+   "conf": "low",
+   "why": "until 从句是时间界点，不是时长。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s14k2",
+     "r": "duration",
+     "t": "s14u",
+     "r2": "temporal"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 5,
+  "topic": "know 与 responded 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "回应在 know 之前（(know :before respond) 或 (respond :after know)）",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(know :after respond)：回应在 know 之后",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(respond :before know)：know 在回应之前",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "回应在 know 之前（(know :before respond) 或 (respond :after know)）",
+  "text": "(A :before B) 是 B 在 A 之前、(A :after B) 是 B 在 A 之后（guideline 5.1）。原文是普京回应之后才会有人知道，s1f、a2、s3/r2 和 s0 都把方向写反了。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 6,
+  "topic": "know 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(说话人 :partial-negative know)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(think :full-negative know)，think 由 I/author 肯定",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :full-negative think) 且 (think :full-negative know)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(I :full-negative think) 且 (think :unspecified know)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :full-negative think) 且 (I :partial-negative know)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :full-negative know)，(author :partial-affirmative think)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "I don't think anybody knows 是说话人相信没人知道：know 从说话人看是负向、强度因 think 而弱（PrtNeg），gold 的写法最贴切；think 本身是说话人肯定的心理状态，标 full-negative 等于否定两次。",
+  "fix": null
+ }
+]

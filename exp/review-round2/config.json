@@ -1,0 +1,120 @@
+{
+  "_comment": "Everything a run depends on. Edit here, not in the scripts. See AGENTS.md. One model, run twice: r1 uses the original task wording (prompts/), r2 a reworded one (prompts-r2/, same content). A condition with \"docs\": \"test\" runs only on the documents marked test in data/docs.json.",
+  "models": [
+    {
+      "key": "r1",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "run": "r1",
+      "prompts": "prompts",
+      "instruction": "Do the task described in TASK.md in this directory and write the answer to answer.txt. Work on your own, without asking questions, until answer.txt holds the whole answer. Use only this directory."
+    },
+    {
+      "key": "r2",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "run": "r2",
+      "prompts": "prompts-r2",
+      "instruction": "TASK.md in this directory describes a task. Carry it out by yourself, asking nothing, and put the answer in answer.txt; you are done only when answer.txt contains the complete answer. Do not use anything outside this directory."
+    }
+  ],
+  "conditions": [
+    {
+      "key": "s0",
+      "name": "s0-oneline",
+      "kind": "whole",
+      "guidelines": [
+        "umr_guidelines_oneline.md"
+      ],
+      "tools": [],
+      "docs": "test"
+    },
+    {
+      "key": "s1f",
+      "name": "s1-full",
+      "kind": "whole",
+      "guidelines": [
+        "umr_guidelines.md"
+      ],
+      "tools": []
+    },
+    {
+      "key": "s3",
+      "name": "s3-all",
+      "kind": "whole",
+      "guidelines": [
+        "umr_guidelines_abridged.md"
+      ],
+      "tools": [
+        "search_guidelines",
+        "propbank_lookup",
+        "search_annotations"
+      ]
+    },
+    {
+      "key": "a2",
+      "name": "a2-sentence-all",
+      "kind": "sentence",
+      "guidelines": [
+        "umr_guidelines_abridged.md"
+      ],
+      "tools": [
+        "search_guidelines",
+        "propbank_lookup",
+        "search_annotations"
+      ]
+    }
+  ],
+  "work_dir": "../umr-codex-work",
+  "jobs": 6,
+  "retries": 2,
+  "codex": {
+    "bin": "codex",
+    "exec_args": [
+      "exec",
+      "--skip-git-repo-check",
+      "--sandbox",
+      "workspace-write",
+      "--json",
+      "--ephemeral"
+    ],
+    "clean_args": [
+      "--ignore-user-config"
+    ],
+    "model_flag": "--model",
+    "cd_flag": "--cd",
+    "last_message_flag": "--output-last-message",
+    "effort_override": "model_reasoning_effort=\"{effort}\"",
+    "drop_env": [
+      "OPENAI_API_KEY",
+      "CODEX_API_KEY",
+      "OPENAI_BASE_URL",
+      "OPENAI_ORG_ID",
+      "AZURE_OPENAI_API_KEY"
+    ],
+    "timeout_minutes": {
+      "whole_base": 30,
+      "whole_per_sentence": 4,
+      "sentence": 30
+    },
+    "limit_patterns": [
+      "usage limit",
+      "rate limit",
+      "rate_limit",
+      "too many requests",
+      "429",
+      "quota"
+    ],
+    "limit_wait_minutes": 10,
+    "limit_max_waits": 6
+  },
+  "lang_labels": {
+    "zh": "zh",
+    "en": "en",
+    "cs": "cs (Czech)",
+    "it": "it (Italian)",
+    "la": "la (Latin)",
+    "arp": "arp (Arapaho)",
+    "nv": "nv (Navajo)"
+  }
+}

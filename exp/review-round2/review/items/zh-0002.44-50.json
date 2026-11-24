@@ -1,0 +1,7289 @@
+[
+ {
+  "sent": 44,
+  "n": 1,
+  "topic": "「女王」have-org-role 的编号和方向",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "伊丽莎白 :ARG1 (have-org-role-91 :ARG3 女王)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-org-role-91"
+   },
+   {
+    "label": "伊丽莎白 :ARG1-of (have-org-role-92 :ARG3 女王)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   }
+  ],
+  "best": "伊丽莎白 :ARG1-of (have-org-role-92 :ARG3 女王)",
+  "text": "abridged 2.3：X holds title T 用 have-org-role-92，:ARG1 是人、:ARG3 是职务。gold 用了旧名 -91，而且写成「人 :ARG1 have-org-role」，方向反了（应是人为 have-org-role 的 ARG1，即 :ARG1-of）。",
+  "fix": {
+   "title": "女王：have-org-role-91 → -92，:ARG1 → :ARG1-of",
+   "conf": "high",
+   "why": "guideline 只有 have-org-role-92（ARG1 人 / ARG3 职务）；gold 写成「伊丽莎白 :ARG1 have-org-role」把方向写反，女王应是伊丽莎白所任的职务。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s44h",
+     "concept": "have-org-role-92"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s44i2",
+     "r": "ARG1",
+     "t": "s44h",
+     "r2": "ARG1-of"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 44,
+  "n": 2,
+  "topic": "「伊丽莎白二世」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "类型表和精简版用 person，中文训练数据普遍用 individual-person，两者都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 3,
+  "topic": "have-org-role 是否当事件（aspect 及文档级）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "不带 aspect，不进文档级",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":aspect state，并写 modal / temporal",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state))"
+   }
+  ],
+  "best": null,
+  "text": "guideline 对角色名词的 reification 不强制 aspect 和文档级依存，标了也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 4,
+  "topic": "「受影响的人们」挂在哪个谓词下",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "表达 :affectee 人们（同情无 ARG1）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":affectee (s"
+   },
+   {
+    "label": "同情 :ARG1 人们",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "同情 :ARG1 人们 + 表达 :ARG2 人们",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 s44"
+   },
+   {
+    "label": "同情 :ARG1 人们 + 表达 :goal 人们",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":goal s44"
+   }
+  ],
+  "best": "同情 :ARG1 人们",
+  "text": "「向 X 表达同情」中 X 是同情的对象：PropBank 同情-01 ARG1 = entity sympathized with。表达-01 只有 ARG0 agent / ARG1 opinion，没有 ARG2，s1f 两次加了不存在的论元；:affectee 不是 Stage 1 的角色，gold 也漏了同情的 ARG1。",
+  "fix": {
+   "title": "受影响的人们：表达 :affectee → 同情 :ARG1",
+   "conf": "high",
+   "why": "PropBank 同情-01 ARG1 是同情的对象；「向受影响的人们表达同情」，人们应是同情的 ARG1，:affectee 不是 Stage 1 的角色。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s44x",
+     "r": "affectee",
+     "t": "s44x4"
+    },
+    {
+     "op": "add_rel",
+     "s": "s44x2",
+     "r": "ARG1",
+     "t": "s44x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 44,
+  "n": 5,
+  "topic": "「人们」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "人",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "人们",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 人们"
+   }
+  ],
+  "best": null,
+  "text": "「们」是复数后缀，去掉后用 :refer-number plural 表达，或按原词写 人们，都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 6,
+  "topic": "「人们」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   },
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "「人们」明确是复数，abridged 2.4：复数名词加 :refer-number plural。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 7,
+  "topic": "「她」（同情的 ARG0）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "同情 :ARG0 伊丽莎白（重入）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 s44"
+   },
+   {
+    "label": "另立 person 3rd singular，再用 :coref 连到伊丽莎白",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":refer-person 3rd"
+   }
+  ],
+  "best": "同情 :ARG0 伊丽莎白（重入）",
+  "text": "abridged 5.3：同一句里的共指用重入（同一变量），不写 :coref 三元组。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 8,
+  "topic": "「深切」修饰同情的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "同情 :manner 深切",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "同情 :mod 深切",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "同情 :degree 深切",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「最深切的同情」里 深切 是定语，按名词性修饰用 :mod；同情本身是事件，看作事件的方式 :manner 也说得通。深切是程度义的形容词，但不是强化副词，:degree 略差。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 9,
+  "topic": "「最」的表示",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "深切 :degree intensifier（没有「最」节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": "深切 :degree 最",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 最)"
+   },
+   {
+    "label": "深切 :degree most",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ most"
+   }
+  ],
+  "best": "深切 :degree 最",
+  "text": "abridged 4.2：程度词作 :degree 的概念节点（很、非常、太、最），中文修饰语用原词。gold 用训练数据里的常量 intensifier，丢了「最」的最高级意义，也没对齐到「最」；s1f/r2 用英文 most 且未对齐。",
+  "fix": {
+   "title": "「最」：:degree intensifier → :degree (最)",
+   "conf": "mid",
+   "why": "abridged 4.2 把 最 作为 :degree 的概念节点；常量 intensifier 丢了最高级义，原文的「最」也没有节点。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s44x3",
+     "attr": "degree",
+     "value": "intensifier"
+    },
+    {
+     "op": "add_node",
+     "parent": "s44x3",
+     "role": "degree",
+     "var": "s44z1",
+     "concept": "最",
+     "align": "17-17"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 44,
+  "n": 10,
+  "topic": ":quote 标在哪些节点上",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "同情、影响 :quote 表达",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":quote s44"
+   },
+   {
+    "label": "同情、事件 :quote 表达",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":quote s44"
+   },
+   {
+    "label": "仅 同情 :quote 表达",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quote s44"
+   },
+   {
+    "label": "不标 :quote",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "仅 同情 :quote 表达",
+  "text": "abridged 3：:quote 标在转述内容上。引号里的「最深切的同情」是女王表达的内容；「受这起可怕事件影响」是作者的叙述，只有「可怕事件」几个字带引号，影响-01 / 事件 不是被转述的事件。不标 :quote 也可以（release 数据才有）。",
+  "fix": {
+   "title": "删除 影响 :quote 表达",
+   "conf": "mid",
+   "why": "「受……影响的人们」是作者的叙述，不是女王转述的内容，影响-01 不该带 :quote。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s44x5",
+     "r": "quote",
+     "t": "s44x"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 44,
+  "n": 11,
+  "topic": "「事件」是否当事件",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "实体名词，无 aspect",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":aspect process，进 modal",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "「事件」指爆炸，是泛指的事件名词，当实体或当 process 事件名词都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 12,
+  "topic": "「这起」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "这起",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 这起)"
+   },
+   {
+    "label": "这",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 这)"
+   }
+  ],
+  "best": "这起",
+  "text": "【更正】量词按规则保留为 :unit。「这起」的量词「起」不该丢；整词作一个概念 这起 可以，只写 这 的完全没有表示量词。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "ok",
+    "ok"
+   ],
+   "best": null,
+   "fix": null
+  }
+ },
+ {
+  "sent": 44,
+  "n": 13,
+  "topic": "「同情」的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "伊丽莎白 :full-affirmative 同情",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author :full-affirmative 同情",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author :full-affirmative 同情，另有多余的 author→null-conceiver",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "(author :full-affirmative null-conceiver)"
+   }
+  ],
+  "best": null,
+  "text": "同情是女王表达的内容，按 abridged 5.2 转述内容挂在说话人下最合规；作者直接断言她的同情也说得通。s1f 两次多出一条与本句事件无关的 null-conceiver。gold 把 (author :full-affirmative 伊丽莎白) 重复写了两遍，无实质影响。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 14,
+  "topic": "「表达」的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "DCT :before 表达",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before s"
+   },
+   {
+    "label": "past-reference :contained 表达",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "(past-reference :contained s"
+   },
+   {
+    "label": "爆炸（第 2/3 句）:after 表达",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "表达同情发生在爆炸之后、报道之前，挂 DCT 或挂前文的爆炸事件都合规；abridged 5.1 的次序里有可用的事件或 DCT 时不必用 past-reference。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 15,
+  "topic": "「影响」的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "同情 :before 影响",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表达 :before 影响",
+    "systems": [
+     "s1f/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "爆炸（第 2 句）:after 影响",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 2 句日期 :contained 影响",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "爆炸（第 3 句）:overlap 影响",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "影响在表达同情之前、由爆炸造成，各种挂法都不矛盾。",
+  "fix": null
+ },
+ {
+  "sent": 44,
+  "n": 16,
+  "topic": "「事件」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 3 句 爆炸 :same-event 事件（gold 变量 s3x 在第 47 句重复定义）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 41 句 事件 :same-event 事件",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-event s44"
+   },
+   {
+    "label": "第 41 句 事件 :same-entity 事件",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity s44"
+   },
+   {
+    "label": "第 41 句 行为 :same-event 事件",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有连",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 41 句 事件 :same-event 事件",
+  "text": "abridged 5.3：连到最近的前一个提及；第 41 句「称事件是邪恶的行为」的 事件 最近。gold 连到第 3 句的 s3x，但 gold 第 47 句也定义了 s3x（出席-01），这条三元组实际指向不明。",
+  "fix": {
+   "title": "事件的共指：改连第 41 句的 事件",
+   "conf": "mid",
+   "why": "按 abridged 5.3 连最近的提及（第 41 句 事件 s41x3）；原三元组的 s3x 在 gold 里被第 3 句和第 47 句重复定义，指向不明。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s3x",
+      "same-event",
+      "s44x6"
+     ],
+     "to": [
+      "s41x3",
+      "same-event",
+      "s44x6"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 44,
+  "n": 17,
+  "topic": "「人们」:subset-of 第 4 句观众",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "人们 :subset-of 观众",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":subset-of s4"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不连",
+  "text": "受事件影响的人们包括死伤者家属、市民等，并不是现场观众的子集，这条关系没有依据。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 1,
+  "topic": "「称」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "称-02",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "称-02"
+   },
+   {
+    "label": "称-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "称-01"
+   }
+  ],
+  "best": "称-02",
+  "text": "PropBank 称-02 是 claimer / thing claimed，「称需要寻找……」是声称；称-01 是命名（name assigner / name receiver / name）。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 2,
+  "topic": "「称」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :op2 称（:ARG0 作家）",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s45"
+   },
+   {
+    "label": "发表 :purpose 称",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "推特 :ARG1-of identity-91 :ARG2 称",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "identity-91"
+   },
+   {
+    "label": "推特 :ARG0-of 称",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":ARG0-of (s"
+   }
+  ],
+  "best": "and :op2 称（:ARG0 作家）",
+  "text": "「发表推特，称……」是两个并列（或先后）的小句，称的施事是作家；称不是发表的目的。把推特当作称的施事或与称等同也不算错得离谱，但偏离原文。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 3,
+  "topic": "「认为……推特有……嫌疑」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "认为-02 :ARG1 推特 :ARG2 (exist-91 :ARG0 推特 :ARG1 嫌疑)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     "认为-02",
+     "exist-91"
+    ]
+   },
+   {
+    "label": "认为-01 :ARG1 (have-91 :ARG1 推特 :ARG2 嫌疑)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "认为-01",
+     "have-91"
+    ]
+   },
+   {
+    "label": "认为-01 :ARG1 煽动（没有「有」「嫌疑」）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "认为-01"
+   }
+  ],
+  "best": "认为-01 :ARG1 (have-91 :ARG1 推特 :ARG2 嫌疑)",
+  "text": "PropBank 认为-01 ARG1 = thing regarded as true，带小句宾语；认为-02 是「把 X 认作 Y」，ARG2 是名词性的身份。「推特有嫌疑」是领有，abridged 2.3 用 have-91（ARG1 领有者 / ARG2 领有物）；exist-91 的论元是 ARG1 处所 / ARG2 客体，gold 用的 ARG0 / ARG1 本身也不合 exist-91。s3/r2 丢了「嫌疑」，把怀疑程度挪到 modal 上。",
+  "fix": {
+   "title": "认为-02 + exist-91 → 认为-01 :ARG1 (have-91 :ARG1 推特 :ARG2 嫌疑)",
+   "conf": "high",
+   "why": "「认为」带小句宾语是 认为-01（ARG1 thing regarded as true）；「推特有嫌疑」是领有，用 have-91（ARG1 领有者 / ARG2 领有物），gold 的 exist-91 :ARG0/:ARG1 不是 exist-91 的论元。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s45x3",
+     "concept": "认为-01"
+    },
+    {
+     "op": "del_rel",
+     "s": "s45x3",
+     "r": "ARG1",
+     "t": "s45x18"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s45x3",
+     "r": "ARG2",
+     "t": "s45e",
+     "r2": "ARG1"
+    },
+    {
+     "op": "rename",
+     "var": "s45e",
+     "concept": "have-91"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s45e",
+     "r": "ARG1",
+     "t": "s45x21",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s45e",
+     "r": "ARG0",
+     "t": "s45x18",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 4,
+  "topic": "「推特」与「这条推特」是否同一节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个 推特 节点，没有共指",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两个 推特 节点，用 :coref 连起来",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity s45"
+   },
+   {
+    "label": "一个 推特 节点（重入）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "一个 推特 节点（重入）",
+  "text": "「她的这条推特」就是前面发表的推特；abridged 5.3：句内共指用重入。gold 立了两个节点（还都对齐到第 7 词），两者之间也没有任何共指。",
+  "fix": {
+   "title": "合并两个「推特」节点",
+   "conf": "high",
+   "why": "「她的这条推特」与前面「发表推特」是同一条推特；句内共指应是重入（abridged 5.3）。删掉第一个推特节点，让 发表 的 ARG1 指向第二个。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s45x8"
+    },
+    {
+     "op": "add_rel",
+     "s": "s45x",
+     "r": "ARG1",
+     "t": "s45x18"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 5,
+  "topic": "「她的」推特",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "推特 :ARG1-of (implicit-argument :ARG0 作家)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "implicit-argument"
+   },
+   {
+    "label": "推特 :possessor 作家",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor s45"
+   },
+   {
+    "label": "推特 :poss (person 3rd singular) + :coref 作家",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "没有标「她的」",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "推特 :possessor 作家",
+  "text": "「她的」是领属，abridged 3 用 :possessor，句内共指用重入。gold 造了一个 implicit-argument 事件来表达领属，不是 guideline 的做法；s1f 用旧名 :poss 且另立代词节点；s3 两次丢了领属。",
+  "fix": {
+   "title": "她的推特：implicit-argument → :possessor 作家",
+   "conf": "high",
+   "why": "「她的这条推特」是领属关系，用 :possessor 指向句中的作家（重入），不需要 implicit-argument 节点。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s45i3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s45x18",
+     "r": "possessor",
+     "t": "s45x5"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 6,
+  "topic": "「这条」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "推特 :mod 这 + :unit 条",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 条)"
+   },
+   {
+    "label": "推特 :mod 这",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 这)"
+   },
+   {
+    "label": "没有标「这条」",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "推特 :mod 这 + :unit 条",
+  "text": "【更正】量词按规则保留为 :unit。「这条推特」的量词「条」作 :unit 挂在 推特 上；只写 推特 :mod 这 的漏了量词节点。gold 的 这 和 条 对齐到同一个词（对齐问题不计）。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok",
+    "minor"
+   ],
+   "best": "推特 :mod 这",
+   "fix": {
+    "title": "删去量词「条」",
+    "conf": "mid",
+    "why": "「条」是普通量词，abridged 2.2 规定普通量词不立节点（三本书 → 书 :quant 3）。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s45x20"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 45,
+  "n": 7,
+  "topic": "「嫌疑」与「煽动」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "嫌疑 :mod 煽动",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "嫌疑 :topic 煽动",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":topic (s45"
+   },
+   {
+    "label": "（没有嫌疑节点）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「煽动……的嫌疑」，煽动是嫌疑的内容，:topic 或定语式的 :mod 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 8,
+  "topic": "「煽动」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "煽动 :ARG0 推特 :ARG2 发动",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "煽动 :ARG1 发动（无 ARG0）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "煽动 :ARG0 推特 :ARG2 发动",
+  "text": "PropBank 煽动-01：ARG0 agent、ARG1 被煽动者、ARG2 thing arg0 instigates arg1 to do。发动清洗是被煽动去做的事，应为 ARG2；煽动者是推特。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 9,
+  "topic": "「发动种族清洗」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "发动-02 :ARG1 群体 :ARG2 清洗",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "发动-02"
+   },
+   {
+    "label": "发动-01 :ARG1 清洗；清洗 :ARG1 群体",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "发动-01"
+   }
+  ],
+  "best": "发动-01 :ARG1 清洗；清洗 :ARG1 群体",
+  "text": "PropBank 发动-01：ARG0 conductor / ARG1 activity（发动战争、清洗）；发动-02 是「发动群众去做某事」（motivator / theme / action）。「对穆斯林群体发动种族清洗」中群体是被清洗的对象，即 清洗-01 的 ARG1（thing cleansed）。",
+  "fix": {
+   "title": "发动-02 → 发动-01，群体改为 清洗 的 ARG1",
+   "conf": "high",
+   "why": "PropBank 发动-01 的 ARG1 是被发动的活动（清洗）；发动-02 是动员某人做事，不合此句。穆斯林群体是清洗-01 的 ARG1（thing cleansed）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s45x23",
+     "concept": "发动-01"
+    },
+    {
+     "op": "del_rel",
+     "s": "s45x23",
+     "r": "ARG1",
+     "t": "s45x24"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s45x23",
+     "r": "ARG2",
+     "t": "s45x26",
+     "r2": "ARG1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s45x26",
+     "r": "ARG1",
+     "t": "s45x24"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 10,
+  "topic": "「解决方案」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "方案 :ARG0-of 解决-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "方案 :mod 解决-01",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "解决-01"
+   },
+   {
+    "label": "方案 :mod 解决（不谓词化）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 解决)"
+   }
+  ],
+  "best": null,
+  "text": "「解决方案」可分析为方案是解决的手段（:ARG0-of），也可当作定语修饰；PropBank 有 解决-01，作为事件义修饰时宜用编号。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 11,
+  "topic": "「政治专栏」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "专栏 :topic 政治",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":topic (s45"
+   },
+   {
+    "label": "专栏 :mod 政治",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "政治是专栏的话题，:topic 准确，:mod（typifying modifier）也可接受。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 12,
+  "topic": "「部分人」的「部分」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "人 :mod 部分",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "人 :quant 部分",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   }
+  ],
+  "best": null,
+  "text": "「部分」是数量义的限定词，:quant 和 :mod 都可接受（abridged 4.2 :quant 用于数词和量化词）。s3/r2 用 person 代替「人」，差别很小。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 13,
+  "topic": "「穆斯林」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "群体 :mod 穆斯林（普通词）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 穆斯林)"
+   },
+   {
+    "label": "religious-group 命名实体",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "religious-group"
+   }
+  ],
+  "best": null,
+  "text": "AMR 惯例把宗教群体（Muslim）标为 religious-group 命名实体；这里作群体的修饰词，普通词也可接受。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 14,
+  "topic": "「英国的」穆斯林群体",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "群体 :place 英国",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s45"
+   },
+   {
+    "label": "群体 :mod 英国",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「英国的穆斯林群体」指在英国的群体，:place 或 :mod 都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 15,
+  "topic": "「事发后」的「后」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "后 :op1 事发",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 后"
+   },
+   {
+    "label": "after :op1 事发",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ after"
+   }
+  ],
+  "best": null,
+  "text": "abridged 2.5 写作 :temporal (after :op1 …)；用原词 后 也是中文数据的常见做法。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 16,
+  "topic": "「事发」的 ARG0",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "事发 :ARG0 implicit-argument（并与第 44 句事件共指）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "implicit-argument"
+   },
+   {
+    "label": "事发 不带论元",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「事发」本身指爆炸发生，已和第 44 句的事件共指，再补一个 implicit-argument 不是 guideline 的概念（abridged 2.4 的零形式用 person / thing），多余但无害。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 17,
+  "topic": "「非议」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "非议-01",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "非议-01"
+   },
+   {
+    "label": "非议（无编号）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 非议"
+   }
+  ],
+  "best": "非议-01",
+  "text": "PropBank 有 非议-01（commentator / entity commented on negatively）；s1f/r1 给了 aspect 却不写编号。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 18,
+  "topic": "「非议」的对象",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "非议 :ARG1 推特",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "非议 :ARG1 作家",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标对象",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "非议-01 ARG1 是被批评的对象，原文没有直接说出，补推特或作家都可，不补也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 19,
+  "topic": "未然事件（寻找、煽动、发动）的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "寻找 activity，煽动 activity，发动 process",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "都是 process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "寻找、发动 performance",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":aspect performance)"
+   }
+  ],
+  "best": null,
+  "text": "寻找是「需要」的补足语、发动是被煽动去做的事，都没有发生，不能标 performance（abridged 4.1：performance 是完成并达到结果的事件）；process / activity 都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 20,
+  "topic": "「事发」「称」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "都是 performance",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "称 process",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "事发 process",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "都是 performance",
+  "text": "爆炸已经发生、作家已经在推特上说了，都是完成的过去事件。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 21,
+  "topic": "「非议」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「惹来非议」里非议是事件名词，作 process 或看成已发生的 performance 都可。",
+  "fix": null
+ },
+ {
+  "sent": 45,
+  "n": 22,
+  "topic": ":quote 标在哪些节点上",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "称、需要、寻找、解决 :quote 发表",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":quote s"
+   },
+   {
+    "label": "需要 :quote 称",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":quote s"
+   },
+   {
+    "label": "不标 :quote",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "需要 :quote 称",
+  "text": ":quote 标在转述内容上，指向转述动词（abridged 3）。这里转述动词是「称」，内容是「需要寻找…」；称本身不是被转述的内容，寻找、解决是内容内部的节点，也不需要重复标。",
+  "fix": {
+   "title": ":quote 只留在「需要」上并指向「称」",
+   "conf": "low",
+   "why": "转述动词是 称，转述内容的顶层是 需要；称自身和内容内部的节点不需要 :quote。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s45x2",
+     "r": "quote",
+     "t": "s45x"
+    },
+    {
+     "op": "del_rel",
+     "s": "s45x9",
+     "r": "quote",
+     "t": "s45x"
+    },
+    {
+     "op": "add_rel",
+     "s": "s45x9",
+     "r": "quote",
+     "t": "s45x2"
+    },
+    {
+     "op": "del_rel",
+     "s": "s45x10",
+     "r": "quote",
+     "t": "s45x"
+    },
+    {
+     "op": "del_rel",
+     "s": "s45x12",
+     "r": "quote",
+     "t": "s45x"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 23,
+  "topic": "「称」的内容（需要、寻找、解决）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 需要、寻找；作家 :full-affirmative 解决",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 需要、寻找、解决",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "作家 :full-affirmative 需要；需要 :unspecified 寻找、解决",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "作家 :full-affirmative 需要；需要 :partial-affirmative 寻找",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "推特 :full-affirmative 需要；需要 :unspecified 寻找；author :full-affirmative 解决",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "作家 :full-affirmative 需要；需要 :unspecified 寻找、解决",
+  "text": "abridged 5.2：转述内容挂在说话人下（作家 :full-affirmative 需要）；「需要」是补足语谓词，寻找挂在需要下用 unspecified。gold 让作者断言需要和寻找，又让作家断言解决会发生，层次全错。",
+  "fix": {
+   "title": "称的内容挂到作家 / 需要下",
+   "conf": "high",
+   "why": "转述内容的 conceiver 是说话人作家（abridged 5.2）；寻找、解决是「需要」的补足语，应挂在 需要 下用 unspecified，不是作者或作家断言它们发生。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s45x9"
+     ],
+     "to": [
+      "s45x5",
+      "full-affirmative",
+      "s45x9"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s45x10"
+     ],
+     "to": [
+      "s45x9",
+      "unspecified",
+      "s45x10"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s45x5",
+      "full-affirmative",
+      "s45x12"
+     ],
+     "to": [
+      "s45x9",
+      "unspecified",
+      "s45x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 24,
+  "topic": "「认为」的内容（有嫌疑、煽动、发动、清洗）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :neutral-affirmative 煽动、清洗、作家；作家 :neutral-affirmative 发动",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 全部",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "以 人 / 认为 为 conceiver，煽动 neutral-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "人 :partial-affirmative 煽动；煽动 :partial-affirmative 发动、清洗",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   }
+  ],
+  "best": "以 人 / 认为 为 conceiver，煽动 neutral-affirmative",
+  "text": "「部分人认为……有煽动的嫌疑」：认为的内容挂在「部分人」（或认为）下，「嫌疑」使煽动只是可能（neutral），发动、清洗是被煽动的未然事件，挂在煽动下用 unspecified。gold 让作者对煽动、清洗持 neutral，把发动挂在作家下，还写了 (author :neutral-affirmative 作家)，「有嫌疑」本身没有 modal 父节点。",
+  "fix": {
+   "title": "认为的内容挂到「部分人」/ 煽动 下",
+   "conf": "high",
+   "why": "认为的内容的 conceiver 是部分人（abridged 5.2）：他们认为推特有嫌疑（full），煽动因「嫌疑」是 neutral，发动、清洗是被煽动的未然事件，挂在煽动下 unspecified；作者对作家本人没有 neutral 的理由。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s45x22"
+     ],
+     "to": [
+      "s45x16",
+      "neutral-affirmative",
+      "s45x22"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s45x26"
+     ],
+     "to": [
+      "s45x22",
+      "unspecified",
+      "s45x26"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s45x5",
+      "neutral-affirmative",
+      "s45x23"
+     ],
+     "to": [
+      "s45x22",
+      "unspecified",
+      "s45x23"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s45x5"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s45x16"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s45x5"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s45x16",
+      "full-affirmative",
+      "s45e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 25,
+  "topic": "需要→寻找、煽动→发动 的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "需要 :overlap 寻找，煽动 :overlap 发动",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "需要 :after 寻找，煽动 :after 发动",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "需要 :after 寻找，煽动 :after 发动",
+  "text": "被需要的寻找、被煽动的发动都在主事件之后（abridged 5.1：补足语 / 目的事件 :after 主事件）。6 个系统一致。",
+  "fix": {
+   "title": "寻找、发动改为在主事件之后",
+   "conf": "mid",
+   "why": "需要的寻找、煽动的发动都是将来才会发生的事，相对主事件应为 :after，不是 :overlap。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s45x9",
+      "overlap",
+      "s45x10"
+     ],
+     "to": [
+      "s45x9",
+      "after",
+      "s45x10"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s45x22",
+      "overlap",
+      "s45x23"
+     ],
+     "to": [
+      "s45x22",
+      "after",
+      "s45x23"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 26,
+  "topic": "(称 :same-event 推特)",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "称 :same-event 推特",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不连",
+  "text": "称是事件，推特是实体，两者不是同一事件；而且同句内的共指应用重入，不写 :coref 三元组。",
+  "fix": {
+   "title": "删除 (称 :same-event 推特)",
+   "conf": "high",
+   "why": "称-02 是说话事件，推特是实体，不构成 same-event；同句共指也不该写成 :coref 三元组。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s45x2",
+      "same-event",
+      "s45x18"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 45,
+  "n": 27,
+  "topic": "「英国」与第 43 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 43 句 英国 :same-entity 英国",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 43 句 英国 :same-entity 英国",
+  "text": "abridged 5.3：重复出现的专名要连到最近的前一个提及，第 43 句有「英国大选」。",
+  "fix": {
+   "title": "补 英国 的共指（第 43 句）",
+   "conf": "mid",
+   "why": "第 43 句「2017 年英国大选」的英国（s43c）是最近的前一个提及，重复专名应连 :same-entity。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s43c",
+      "same-entity",
+      "s45c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 1,
+  "topic": "「欧霸杯决赛」的实体表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "game 命名实体，名字是「欧霸杯 决赛」",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"决赛\""
+   },
+   {
+    "label": "决赛 + event «欧霸杯»",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ event"
+   },
+   {
+    "label": "决赛 + game «欧霸杯»",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ game"
+   },
+   {
+    "label": "sport-event «欧霸杯» :mod 决赛",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ sport-event"
+   }
+  ],
+  "best": "决赛 + event «欧霸杯»",
+  "text": "专名是「欧霸杯」，「决赛」是普通名词（PropBank 有 决赛-01），不属于名字；gold 把决赛并进名字。s1f/r2 以欧霸杯为中心、决赛作修饰，丢了「是决赛」这层意思。要改 gold 需把这个节点拆成 决赛-01 + 欧霸杯 两个节点，改动较大，这里不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 2,
+  "topic": "「决赛」是否作事件",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "决赛-01",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "决赛-01"
+   },
+   {
+    "label": "决赛（无编号，带 aspect）",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 决赛"
+   },
+   {
+    "label": "决赛只是名字的一部分 / 修饰词",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "决赛-01",
+  "text": "abridged 2.1：比赛类事件名词按事件标，中文 PropBank 有 决赛-01（ARG0 agent），双方球队可作它的 ARG0。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 3,
+  "topic": "比赛双方（曼联、阿贾克斯）挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "game :ARG1-of (implicit-predicate :ARG0 (and 曼联 阿贾克斯))",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "implicit-predicate"
+   },
+   {
+    "label": "决赛 :ARG0 (and 曼联 阿贾克斯)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "欧霸杯 :ARG0 (and 曼联 阿贾克斯)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "决赛 :ARG0 (and 曼联 阿贾克斯)",
+  "text": "implicit-predicate 不是 UMR 的概念；「A 与 B 的决赛」，双方是 决赛-01 的 ARG0（agent），直接挂在决赛上即可。",
+  "fix": {
+   "title": "去掉 implicit-predicate，比赛双方作决赛的 :ARG0",
+   "conf": "mid",
+   "why": "implicit-predicate 不是 guideline 的概念；比赛双方是决赛（决赛-01 ARG0 agent）的参与者，直接作决赛节点的 :ARG0。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s46g",
+     "r": "ARG0",
+     "t": "s46a3"
+    },
+    {
+     "op": "del_node",
+     "var": "s46i5"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 4,
+  "topic": "「两队」与曼联、阿贾克斯",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两队 identity-91 另一份 (and 曼联 阿贾克斯)（同句两份同样的实体）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两队 identity-91 指向同一个 and（重入）",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "用 :coref (:subset-of / :same-entity) 连",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":subset-of s46"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "两队 identity-91 指向同一个 and（重入）",
+  "text": "「两队」就是前面的曼联和阿贾克斯。同句内同一实体只立一个节点、用重入引用（abridged 1、5.3）；gold 把两个俱乐部（连同「当地球会」）在句中完整地标了两遍。",
+  "fix": {
+   "title": "两队直接重入前面的 (and 曼联 阿贾克斯)，删去重复的一份",
+   "conf": "high",
+   "why": "同一句里同一实体只能有一个节点（重入）；gold 在「两队」下重复立了曼联、阿贾克斯和当地球会。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s46a2",
+     "subtree": true
+    },
+    {
+     "op": "add_rel",
+     "s": "s46i2",
+     "r": "ARG2",
+     "t": "s46a3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 5,
+  "topic": "「荷兰阿贾克斯」的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "名字是「荷兰 阿贾克斯」",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op2 \"阿贾克斯\""
+   },
+   {
+    "label": "名字「阿贾克斯」，:mod 荷兰",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"阿贾克斯\""
+   },
+   {
+    "label": "名字「阿贾克斯」，:place 荷兰",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"阿贾克斯\""
+   }
+  ],
+  "best": "名字「阿贾克斯」，:mod 荷兰",
+  "text": "俱乐部名是阿贾克斯，「荷兰」是国别修饰，应是单独的 country 命名实体。",
+  "fix": {
+   "title": "阿贾克斯：去掉名字里的「荷兰」，另立 country :mod",
+   "conf": "mid",
+   "why": "「荷兰阿贾克斯」是「荷兰的阿贾克斯」，名字只有阿贾克斯，荷兰是另一个命名实体（country）。只改比赛双方那一份（另一份由合并重复实体的方案处理）。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s46n6",
+     "r": "op1",
+     "t": "\"荷兰\""
+    },
+    {
+     "op": "mod_rel",
+     "s": "s46n6",
+     "r": "op2",
+     "t": "\"阿贾克斯\"",
+     "r2": "op1"
+    },
+    {
+     "op": "add_node",
+     "parent": "s46s4",
+     "role": "mod",
+     "var": "s46z1",
+     "concept": "country",
+     "align": "7-7"
+    },
+    {
+     "op": "add_node",
+     "parent": "s46z1",
+     "role": "name",
+     "var": "s46z2",
+     "concept": "name"
+    },
+    {
+     "op": "add_rel",
+     "s": "s46z2",
+     "r": "op1",
+     "t": "\"荷兰\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 6,
+  "topic": "欧足协、两个俱乐部的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "全部 sports-organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "协会 organization，俱乐部 sports-organization",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "sports-organization"
+   },
+   {
+    "label": "全部 organization",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "协会 organization，俱乐部 team",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ team"
+   }
+  ],
+  "best": null,
+  "text": "类型表里 organization 是上位类，sports-organization、team 都是常见的 AMR 类型，几种都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 7,
+  "topic": "「当地球会」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "曼联 :ARG1-of (identity-91 :ARG2 球会)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "曼联 :ARG1-of (have-role-91 :ARG3 球会)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "曼联 :mod 球会、:mod 当地",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "曼联 :mod 当地（不标球会）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「当地球会曼联」是同位语，identity-91 或 have-role-91 都可；作修饰也说得通。s1f 两次丢了「球会」。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 8,
+  "topic": "「为此」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "举办 :purpose 此",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "原因（:cause / :reason）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "原因（:cause / :reason）",
+  "text": "「为此举办默哀仪式」是因为这起事件而举办，「此」是原因，不是目的（目的是将要实现的事）。",
+  "fix": {
+   "title": "为此：:purpose → :cause",
+   "conf": "mid",
+   "why": "「为此」指因爆炸事件（而举办默哀仪式），「此」是原因而不是要达成的目的，应为 :cause。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s46x",
+     "r": "purpose",
+     "t": "s46x7",
+     "r2": "cause"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 9,
+  "topic": "「默哀仪式」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "仪式 :manner 默哀",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "仪式 :mod 默哀",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "仪式 :mod 默哀",
+  "text": "仪式是实体名词，默哀是它的类型修饰（typifying modifier），用 :mod；:manner 用于事件的方式。",
+  "fix": {
+   "title": "默哀仪式：:manner → :mod",
+   "conf": "mid",
+   "why": "仪式是名词，默哀说明是什么仪式，属于名词性修饰 :mod，不是事件的方式 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s46x5",
+     "r": "manner",
+     "t": "s46x6",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 10,
+  "topic": "「默哀」「防护」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "默哀-01、防护-01",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "防护-01"
+   },
+   {
+    "label": "默哀、防护（无编号）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 防护"
+   }
+  ],
+  "best": "默哀-01、防护-01",
+  "text": "PropBank 有 默哀-01、防护-01，作事件义修饰时应带编号。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 11,
+  "topic": "「安全防护措施」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "措施 :ARG1-of (identity-91 :ARG2 防护-01)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "措施 :mod 防护",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "措施 :mod 防护",
+  "text": "「防护措施」是定语修饰，不是「措施就是防护」的等同判断；identity-91 用于「X 是 Y」的句子。",
+  "fix": {
+   "title": "安全防护措施：identity-91 → 措施 :mod 防护",
+   "conf": "mid",
+   "why": "「防护措施」是定中结构，防护修饰措施，用 :mod；identity-91 是「X 是 Y」的判断句结构。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s46x10",
+     "r": "mod",
+     "t": "s46x11"
+    },
+    {
+     "op": "del_node",
+     "var": "s46i4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 12,
+  "topic": "「安全」与防护的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "防护 :mod 安全",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "防护 :ARG1 安全",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "防护 :mod 安全",
+  "text": "PropBank 防护-01 ARG1 是被保护的东西（defended）；安全是防护的性质 / 目标，不是被保护的对象。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 13,
+  "topic": "「在球场周边」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "措施 :place 周边（周边 :part-of 球场）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "加强 :place 周边",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「在球场周边加强……措施」句法上是加强的处所，语义上也是措施实施的地点，两种挂法都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 14,
+  "topic": "「两队球员」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "球员 :part-of 队",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s46"
+   },
+   {
+    "label": "球员 :possessor 队",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "球员 :poss 队",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "球员 :mod 队",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "球员 :part 队（方向反）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":part (s"
+   }
+  ],
+  "best": "球员 :part-of 队",
+  "text": "球员是队的成员，:part-of（或领属 :possessor）。s1f/r1 写成 球员 :part 队，意思成了队是球员的一部分；:poss 是旧名。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 15,
+  "topic": "「球员」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   },
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "两队球员明确是复数，abridged 2.4：复数名词加 :refer-number plural。",
+  "fix": {
+   "title": "球员加 :refer-number plural",
+   "conf": "mid",
+   "why": "「两队球员」是复数，abridged 2.4 要求复数名词标 :refer-number plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s46x19",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 16,
+  "topic": "「黑丝带」的切分",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "丝带 :mod 黑",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 丝带"
+   },
+   {
+    "label": "黑丝带",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 黑丝带"
+   }
+  ],
+  "best": null,
+  "text": "分词是一个词「黑丝带」，按词写或拆成 丝带 :mod 黑 都可接受（gold 两个节点对齐到同一个词）。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 17,
+  "topic": "「系上」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "系上-01",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "系上-01"
+   },
+   {
+    "label": "系-04",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "系-04"
+   },
+   {
+    "label": "系-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "系-01"
+   }
+  ],
+  "best": "系上-01",
+  "text": "PropBank 有 系上-01（agent / thing tied / location），与原词一致；系-04（tie）意思对但丢了「上」；系-01 是判断词「系」。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 18,
+  "topic": "「比赛中」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "系上 :temporal 比赛-01",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "比赛-01"
+   },
+   {
+    "label": "系上 :temporal 比赛（无编号）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 比赛"
+   },
+   {
+    "label": "系上 :temporal 决赛（重入）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "系上 :temporal (中 :op1 决赛)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 中"
+   }
+  ],
+  "best": null,
+  "text": "「比赛中」的比赛就是这场决赛，重入决赛最准确；另立 比赛-01 也可。PropBank 有 比赛-01，带 aspect 却不写编号是缺陷。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 19,
+  "topic": "「开赛」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "开赛 :ARG0 决赛 / game",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "开赛 :ARG1 决赛 / 欧霸杯",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "开赛 :ARG0 决赛 / game",
+  "text": "PropBank 开赛-01 只有 ARG0（theme），s1f 两次用了不存在的 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 20,
+  "topic": "「罹难者」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "者 :ARG0-of 罹难-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 者"
+   },
+   {
+    "label": "person :ARG0-of 罹难-01",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   },
+   {
+    "label": "人 :ARG0-of 罹难-01",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 人"
+   }
+  ],
+  "best": "person :ARG0-of 罹难-01",
+  "text": "「者」是名词化后缀，不是独立的实体词；按 AMR / abridged 3（卖菜的人 → person :ARG0-of 卖-01）用 person。gold 的 者 和 罹难 还对齐到同一个词。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 21,
+  "topic": "「哀悼」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "哀悼 :ARG1 罹难者（无 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "哀悼 :ARG0 球员 :ARG1 罹难者",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "哀悼 :ARG0 球员 :ARG1 罹难者",
+  "text": "PropBank 哀悼-01：ARG0 condoler、ARG1 person/event condoled。表达哀悼的是球员，应补 ARG0（重入）。",
+  "fix": {
+   "title": "哀悼补 :ARG0 球员",
+   "conf": "mid",
+   "why": "哀悼-01 ARG0 是哀悼者；「球员……表达对罹难者的哀悼」，哀悼者就是球员。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s46x21",
+     "r": "ARG0",
+     "t": "s46x19"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 22,
+  "topic": "「罹难」与「此事件」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "罹难 :cause 事件",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":cause"
+   },
+   {
+    "label": "罹难 :temporal 事件",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "罹难 :place 事件",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "罹难 :cause 事件",
+  "text": "「此事件罹难者」是死于这起事件的人，事件是死因；:temporal 勉强，:place 不对。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 23,
+  "topic": "罹难、哀悼上的 :quote",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "罹难、哀悼 :quote 表达",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":quote s"
+   },
+   {
+    "label": "不标 :quote",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不标 :quote",
+  "text": "这里没有引语：球员是系上黑丝带「表达」哀悼，不是说出一段话。:quote 只用于引用的内容（abridged 3）。",
+  "fix": {
+   "title": "删除 罹难、哀悼 上的 :quote",
+   "conf": "high",
+   "why": "原文没有引语，「表达哀悼」是用系黑丝带的行为表达，罹难、哀悼都不是被引用的话语。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s46x23",
+     "r": "quote",
+     "t": "s46x4"
+    },
+    {
+     "op": "del_rel",
+     "s": "s46x21",
+     "r": "quote",
+     "t": "s46x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 24,
+  "topic": "默哀、防护、比赛的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process（或不作事件）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "三者都是作修饰语或时间状语的事件名词，process 合适；仪式、比赛都已进行，看作完成的 performance 也可。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 25,
+  "topic": "表达、哀悼的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "表达 performance，哀悼 performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表达 performance，哀悼 process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表达 process，哀悼 state",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表达 performance，哀悼 state",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表达 process，哀悼 process",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "目的小句里的表达、作宾语的事件名词哀悼，aspect 难定，几种取值都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 26,
+  "topic": "「罹难」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "performance",
+  "text": "罹难者已经死于爆炸，是完成的事件。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 27,
+  "topic": "表达、哀悼的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 表达、哀悼",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "系上 :unspecified 表达",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified s46"
+   },
+   {
+    "label": "系上 :neutral-affirmative 表达（及哀悼）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":neutral-affirmative s"
+   }
+  ],
+  "best": null,
+  "text": "表达是系上黑丝带的目的，而目的已经实现（她们系了丝带表达哀悼），作者直接断言可以；按目的小句挂在主事件下用 unspecified 也合规（abridged 5.2）。neutral-affirmative（可能）不合适。",
+  "fix": null
+ },
+ {
+  "sent": 46,
+  "n": 28,
+  "topic": "「罹难」的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "欧洲足球协会 :full-affirmative 罹难",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "系上 :full-affirmative 罹难",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :full-affirmative 罹难",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author :full-affirmative 罹难",
+  "text": "有人罹难是作者直接陈述的事实，欧足协不是这件事的 conceiver（句中没有它说或想的内容）；系上也不是认知主体。",
+  "fix": {
+   "title": "罹难的 modal 父节点：欧足协 → author",
+   "conf": "high",
+   "why": "罹难是作者断言的事实，欧洲足球协会在句中没有任何言说或认知，不能作 conceiver。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s46s",
+      "full-affirmative",
+      "s46x23"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s46x23"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 29,
+  "topic": "举办（默哀仪式）与开赛的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "举办 :before 开赛（开赛在举办之前）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "开赛 :before 举办（举办在开赛之前）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "开赛 :before 举办（举办在开赛之前）",
+  "text": "「开赛前……举办了默哀仪式」：举办在开赛之前。(A :before B) 表示 B 在 A 之前，gold 的 (举办 :before 开赛) 说成开赛在举办之前，标反了。",
+  "fix": {
+   "title": "开赛相对举办：:before → :after",
+   "conf": "high",
+   "why": "原文「开赛前举办默哀仪式」，开赛在举办之后；(举办 :before 开赛) 的意思是开赛在举办之前，方向反了。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s46x",
+      "before",
+      "s46x9"
+     ],
+     "to": [
+      "s46x",
+      "after",
+      "s46x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 30,
+  "topic": "「2017 年」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "DCT :before 2017",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 2017",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(root :depends-on s"
+   }
+  ],
+  "best": "root :depends-on 2017",
+  "text": "abridged 5.1：绝对日期挂在 root 下 :depends-on；时间表达式之间用 :depends-on。",
+  "fix": {
+   "title": "2017 年：(DCT :before) → (root :depends-on)",
+   "conf": "high",
+   "why": "abridged 5.1：绝对日期（2017 年）依附 root，关系是 :depends-on。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s46d"
+     ],
+     "to": [
+      "root",
+      "depends-on",
+      "s46d"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 31,
+  "topic": "「此事件」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 45 句 事发 :same-event 事件",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 44 句 事件 :same-entity 事件",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 45 句 事发 → 为此的 thing → 事件（句内也写 :coref）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 45 句 事发 :same-event 事件",
+  "text": "「此事件」就是爆炸，有明确的前文提及，应连到最近的提及（第 45 句「事发」）；句内的照应应用重入而不是 :coref。",
+  "fix": {
+   "title": "补「此事件」与第 45 句事发的共指",
+   "conf": "mid",
+   "why": "「此事件」指爆炸，最近的前一提及是第 45 句的「事发」（s45x15），gold 前文也用 same-event 把事件名词连到事发。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s45x15",
+      "same-event",
+      "s46x24"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 46,
+  "n": 32,
+  "topic": "罹难（者）的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 7 句 身亡 :same-event 罹难",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 8 句 死者 :same-entity 罹难者",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "罹难者 :subset-of 第 8 句的人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s8"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "罹难者与前文的死者、身亡事件是同一批人 / 同一事件，各种连法都说得通，距离较远不连也可。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 1,
+  "topic": "「若顺利夺冠将不举办」的条件结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "声明 :ARG1 (have-condition-91 :ARG1 举办 :ARG2 顺利/夺冠)",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "have-condition-91"
+   },
+   {
+    "label": "声明 :ARG1 举办 :condition 夺冠",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":condition"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 3-1-6：条件关系可用 have-condition-91（ARG1 结果、ARG2 条件）或 :condition，两种等价。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 2,
+  "topic": "「顺利」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "顺利-01 :ARG0 夺冠 :ARG0 曼联（两个 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "顺利-01"
+   },
+   {
+    "label": "夺冠 :manner 顺利",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "夺冠 :manner 顺利",
+  "text": "PropBank 顺利-01 只有一个 ARG0（entity described），gold 同时给了夺冠和曼联两个 ARG0。「顺利夺冠」作方式修饰（:manner）最直接；保留 顺利-01 :ARG0 夺冠 也可，但必须去掉多出的 ARG0 曼联。",
+  "fix": {
+   "title": "顺利-01 去掉多余的 :ARG0 曼联",
+   "conf": "mid",
+   "why": "PropBank 顺利-01 只有 ARG0（entity described）；顺利的是夺冠这件事，gold 又加了 :ARG0 曼联，一个谓词出现两个 ARG0。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s47x4",
+     "r": "ARG0",
+     "t": "s47s"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 3,
+  "topic": "「对外」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "声明 :direction 外 / :manner 对外",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "声明 :ARG2 外",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "声明 :direction 外 / :manner 对外",
+  "text": "PropBank 声明-01 只有 ARG0 agent / ARG1 thing announced，没有 ARG2；「对外」作非论元修饰即可，gold 漏了这个词。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 4,
+  "topic": "「也」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "声明 :mod 也",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 也)"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "声明 :mod 也",
+  "text": "副词「也」在中文 UMR 数据里一般作 :mod 保留。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 5,
+  "topic": "「庆祝」挂在游行还是仪式上",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "游行 :purpose 庆祝",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "仪式 :purpose 庆祝",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "仪式 :mod 庆祝（不谓词化）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 庆祝)"
+   }
+  ],
+  "best": null,
+  "text": "「庆祝游行仪式」：庆祝是游行 / 仪式的目的，挂在哪一层都说得通；PropBank 有 庆祝-01、游行-01，s1f/r2 两个都不谓词化。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 6,
+  "topic": "夺冠、举办的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "条件句里的未然事件，aspect 难定，performance（看成整体事件）和 process 都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 7,
+  "topic": "「瑞典当地乐团」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "乐团 :place (当地 :op1 瑞典)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "乐团 :mod 当地 + :place 瑞典",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "乐团 :mod 当地 + :mod 瑞典",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "当地不是带论元的概念，「瑞典当地」是并列的两个限定，瑞典直接修饰乐团更合理；gold 的 当地 :op1 瑞典 不是 guideline 的用法，但意思没错。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 8,
+  "topic": "「爆炸事件」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "事件 :ARG1-of (identity-91 :ARG2 爆炸)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "事件 :mod 爆炸",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只有 爆炸（获知 :ARG1 爆炸）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「爆炸事件」即爆炸这件事，等同、修饰或只保留核心事件都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 9,
+  "topic": "「开幕」「演出」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "开幕-01、演出-01",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "开幕-01"
+   },
+   {
+    "label": "开幕（无编号）、演出-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 开幕)"
+   },
+   {
+    "label": "开幕、演出都不编号",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 演出"
+   }
+  ],
+  "best": "开幕-01、演出-01",
+  "text": "PropBank 有 开幕-01（theme / agent）和 演出-01；作事件义修饰时应带编号。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 10,
+  "topic": "被取消的出席、演出的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "出席 performance，演出 performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "出席 performance，演出 process",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "出席 process，演出 process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "出席 process，演出 process",
+  "text": "乐团决议取消出席，出席和他们的演出都没有发生，不能标完成的 performance（abridged 4.1）；未然事件用 process。",
+  "fix": {
+   "title": "出席、演出的 aspect：performance → process",
+   "conf": "mid",
+   "why": "出席开幕演出被取消，没有发生；performance 只用于完成并达到结果的事件（abridged 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s3x",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s3x2",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 11,
+  "topic": "「表示」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "表示 :quote 乐团（无 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":quote s47"
+   },
+   {
+    "label": "表示 :ARG0 乐团",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "表示 :ARG0 乐团",
+  "text": "表示的说话人是乐团，是 表示-01 的 ARG0；:quote 应从转述内容指向转述动词，不能从动词指向说话人。",
+  "fix": {
+   "title": "表示：:quote 乐团 → :ARG0 乐团",
+   "conf": "high",
+   "why": "乐团是「透过声明表示」的说话人，应为 表示-01 的 ARG0；:quote 是转述内容指向转述事件的关系，不指向人。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s47x3",
+     "r": "quote",
+     "t": "s47x12",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 12,
+  "topic": "「对我们而言，这不是演出的时机」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "表示 :ARG1 (言-01 :ARG0 (identity-91 …) :ARG1 我们)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "言-01"
+   },
+   {
+    "label": "表示 :ARG1 (而言-00 :ARG1 乐团/我们 :ARG2 (identity-91 …))",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "而言-00"
+   },
+   {
+    "label": "表示 :ARG1 (identity-91 :polarity - :beneficiary 我们/乐团)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":beneficiary"
+   }
+  ],
+  "best": "表示 :ARG1 (identity-91 :polarity - :beneficiary 我们/乐团)",
+  "text": "「对我们而言」是视角状语，不是说话事件；表示的内容是「这不是演出的时机」（identity-91 带 :polarity -），「我们」作修饰即可。gold 把「而言」拆成 言-01，还让判断句作它的 ARG0；a2 自造 而言-00，可以接受但不如直接修饰。",
+  "fix": {
+   "title": "去掉 言-01，表示 :ARG1 直接是 identity-91，我们作 :beneficiary",
+   "conf": "mid",
+   "why": "「对我们而言」只是视角状语，不是一个说话事件；表示的内容就是判断句「这不是演出的时机」，我们作它的 :beneficiary。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s47x3",
+     "r": "ARG1",
+     "t": "s47i2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s47i2",
+     "r": "beneficiary",
+     "t": "s47p"
+    },
+    {
+     "op": "del_node",
+     "var": "s47x20"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 13,
+  "topic": "「时机」与「演出」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "时机 :temporal-of 演出 / 演出 :temporal 时机",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "时机 :purpose 演出",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "时机 :mod 演出",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「演出的时机」是适合演出的时间，:temporal 最贴近，其他两种也说得通。gold 的这个 演出 节点对齐到第 33 词（应是 47）。",
+  "fix": null
+ },
+ {
+  "sent": 47,
+  "n": 14,
+  "topic": "曼联声明内容（举办、夺冠、庆祝游行）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-negative 举办，author :neutral-affirmative 夺冠、顺利，author :full-affirmative 庆祝、游行",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-negative 举办，author :full-affirmative 夺冠、庆祝、游行",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "曼联 :neutral-affirmative have-condition；author :full-affirmative 庆祝游行仪式",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "曼联 :neutral-affirmative have-condition（常量）…；曼联 :full-affirmative 游行",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "曼联 :full-negative 举办，夺冠在声明 / 举办下 neutral 或 unspecified",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "曼联 :full-negative 举办，夺冠在声明 / 举办下 neutral 或 unspecified",
+  "text": "abridged 5.2：声明的内容挂在说话人曼联下：将不举办 → full-negative；夺冠是条件，可能性 neutral；庆祝、游行属于被否定的举办，不能由作者断言发生。gold 全部挂在 author 下，还把庆祝、游行标成 full-affirmative。",
+  "fix": {
+   "title": "曼联声明的内容挂到曼联下",
+   "conf": "high",
+   "why": "转述内容的 conceiver 是说话人曼联（abridged 5.2）；庆祝游行是被否定的举办的一部分，不是作者断言发生的事。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-negative",
+      "s47x6"
+     ],
+     "to": [
+      "s47s",
+      "full-negative",
+      "s47x6"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s47x5"
+     ],
+     "to": [
+      "s47s",
+      "neutral-affirmative",
+      "s47x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s47x4"
+     ],
+     "to": [
+      "s47s",
+      "neutral-affirmative",
+      "s47x4"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s47x9"
+     ],
+     "to": [
+      "s47x6",
+      "unspecified",
+      "s47x9"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s47x8"
+     ],
+     "to": [
+      "s47x6",
+      "unspecified",
+      "s47x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 15,
+  "topic": "取消、出席的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "曼联 :full-affirmative 取消，author :full-negative 出席",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "乐团 :full-affirmative 取消，取消 :full-negative 出席",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "决议 :unspecified 取消，取消 :full-negative 出席",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified s47"
+   }
+  ],
+  "best": "决议 :unspecified 取消，取消 :full-negative 出席",
+  "text": "取消是乐团「决议」的内容（abridged 5.2：决定类谓词的补足语挂在谓词下），曼联与这件事无关；被取消的出席是 full-negative，挂在取消下。",
+  "fix": {
+   "title": "取消挂到决议下，出席挂到取消下",
+   "conf": "high",
+   "why": "取消出席是瑞典乐团决议的内容，不是曼联的；按 abridged 5.2 决定类谓词的补足语挂在谓词下（unspecified），被取消的出席是 full-negative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s47s",
+      "full-affirmative",
+      "s47x14"
+     ],
+     "to": [
+      "s47x2",
+      "unspecified",
+      "s47x14"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-negative",
+      "s3x"
+     ],
+     "to": [
+      "s47x14",
+      "full-negative",
+      "s3x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 16,
+  "topic": "乐团引语（这不是演出的时机）的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "曼联 :full-negative 引语",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "乐团 :full-negative 引语",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author :full-negative 引语",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "乐团 :full-negative 引语",
+  "text": "引语的说话人是瑞典乐团，abridged 5.2：转述内容挂在说话人下，否定判断为 full-negative。gold 误用了曼联的变量，且没有 (author :full-affirmative 乐团)。",
+  "fix": {
+   "title": "引语的 conceiver：曼联 → 乐团",
+   "conf": "high",
+   "why": "「对我们而言，这不是演出的时机」是乐团的声明，conceiver 应是乐团（并由作者断言乐团），不是曼联。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s47s",
+      "full-negative",
+      "s47i2"
+     ],
+     "to": [
+      "s47x12",
+      "full-negative",
+      "s47i2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s47x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 17,
+  "topic": "乐团的「声明」（透过声明）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "曼联 :full-affirmative 声明",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 声明",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "声明作名词，不进 modal",
+    "systems": [
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "乐团发声明是作者断言的事实，与曼联无关。gold 这个节点（s47x15）还错对齐到第 7 词。",
+  "fix": {
+   "title": "乐团声明的 modal 父节点：曼联 → author",
+   "conf": "high",
+   "why": "「透过声明表示」的声明是乐团发的，作者直接断言；曼联不是它的 conceiver。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s47s",
+      "full-affirmative",
+      "s47x15"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s47x15"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 18,
+  "topic": "出席、演出相对于取消的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "出席 无时间父节点，取消 :overlap 演出",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "取消 :after 出席（出席在取消之后）",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "决议 :after 出席、演出",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "取消 :after 出席（出席在取消之后）",
+  "text": "原定的出席开幕演出在决议取消之后（未来）；abridged 5.1 每个事件都要有时间父节点，gold 的出席（变量误写成 s3x，与第 3 句的 s3x 重名）没有。",
+  "fix": {
+   "title": "出席挂到取消之后，演出与出席重叠",
+   "conf": "mid",
+   "why": "出席是被取消的、原定在之后的事件，相对取消为 :after；演出是出席的对象，与出席重叠。gold 的出席没有时间父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s47x14",
+      "after",
+      "s3x"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s47x14",
+      "overlap",
+      "s3x2"
+     ],
+     "to": [
+      "s3x",
+      "overlap",
+      "s3x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 19,
+  "topic": "「在此之前」的「此」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 46 句 开赛 :same-event 言-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 46 句 开赛 :same-event 此",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 46 句 举办 :same-event 此",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 46 句 决赛 :same-event 此",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「此」指前一句描述的决赛 / 开赛前的仪式，几种连法都说得通。gold 把开赛连到了「而言」上的 言-01，显然是变量写错，应连到代表「此」的 thing（s47t）。",
+  "fix": {
+   "title": "开赛的共指改连「此」（thing）",
+   "conf": "high",
+   "why": "第 46 句的开赛与「在此之前」的「此」同指；gold 误连到「对我们而言」的 言-01 节点，两者毫无关系。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s46x9",
+      "same-event",
+      "s47x20"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s46x9",
+      "same-event",
+      "s47t"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 20,
+  "topic": "「瑞典」与第 46 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 46 句 瑞典 :same-entity 瑞典",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "第 46 句 瑞典 :same-entity 瑞典",
+  "text": "abridged 5.3：重复出现的专名连到最近的前一个提及（第 46 句「在瑞典的决赛」）。",
+  "fix": {
+   "title": "补 瑞典 的共指（第 46 句）",
+   "conf": "high",
+   "why": "第 46 句的瑞典（s46c）是最近的前一提及，重复专名应连 :same-entity，6 个系统都连了。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s46c",
+      "same-entity",
+      "s47c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 47,
+  "n": 21,
+  "topic": "「曼联」共指指向第 46 句的哪个节点",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第 46 句「两队」下重复的那份曼联（s46s2）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第 46 句唯一的曼联节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连到第 46 句唯一的曼联节点",
+  "text": "gold 第 46 句把曼联标了两份；第 46 句的合并方案删去「两队」下的那份（s46s2），这里应改连保留的 s46s5，否则这条共指会悬空。",
+  "fix": {
+   "title": "曼联共指改连 s46s5",
+   "conf": "mid",
+   "why": "第 46 句曼联有两份重复节点，保留的是比赛双方下的 s46s5；改连它，避免第 46 句合并重复实体后共指悬空。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s46s2",
+      "same-entity",
+      "s47s"
+     ],
+     "to": [
+      "s46s5",
+      "same-entity",
+      "s47s"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 1,
+  "topic": "献给与夺冠的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(献给 :after 夺冠)：夺冠在献给之后",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(夺冠 :after 献给)：献给在夺冠之后",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(夺冠 :after 献给)：献给在夺冠之后",
+  "text": "「在曼联夺冠后，球会将奖杯献给曼彻斯特市」：献给在夺冠之后。(A :after B) 表示 B 在 A 之后，gold 写成夺冠在献给之后，标反了；而且献给本身没有时间父节点。",
+  "fix": {
+   "title": "献给改为夺冠的 :after 子节点，夺冠挂 DCT",
+   "conf": "high",
+   "why": "夺冠后才献给奖杯；(献给 :after 夺冠) 的意思是夺冠在献给之后，方向反了。改为 (夺冠 :after 献给)，夺冠作为过去事件挂在 DCT 之前。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s48x",
+      "after",
+      "s48x7"
+     ],
+     "to": [
+      "s48x7",
+      "after",
+      "s48x"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s48x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 2,
+  "topic": "「同城劲旅曼彻斯特城足球俱乐部」的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "名字含「同城 劲旅」",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"同城\""
+   },
+   {
+    "label": "名字「曼彻斯特城 足球 俱乐部」，同城、劲旅作修饰 / 角色",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"曼彻斯特城\""
+   },
+   {
+    "label": "名字正确，丢了「同城」",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"曼彻斯特城\""
+   }
+  ],
+  "best": "名字「曼彻斯特城 足球 俱乐部」，同城、劲旅作修饰 / 角色",
+  "text": "「同城劲旅」是描述（同一城市的强队），不是俱乐部名字的一部分（abridged 2.2：专名整体作 name）。",
+  "fix": {
+   "title": "曼城：名字去掉「同城 劲旅」，改为 :mod (劲旅 :mod 同城)",
+   "conf": "mid",
+   "why": "俱乐部名字是「曼彻斯特城足球俱乐部」，「同城劲旅」是描述性的同位修饰，应作普通概念修饰而不进 name。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s48n4",
+     "r": "op1",
+     "t": "\"同城\""
+    },
+    {
+     "op": "del_rel",
+     "s": "s48n4",
+     "r": "op2",
+     "t": "\"劲旅\""
+    },
+    {
+     "op": "mod_rel",
+     "s": "s48n4",
+     "r": "op3",
+     "t": "\"曼彻斯特城\"",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s48n4",
+     "r": "op4",
+     "t": "\"足球\"",
+     "r2": "op2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s48n4",
+     "r": "op5",
+     "t": "\"俱乐部\"",
+     "r2": "op3"
+    },
+    {
+     "op": "add_node",
+     "parent": "s48s2",
+     "role": "mod",
+     "var": "s48z1",
+     "concept": "劲旅",
+     "align": "19-19"
+    },
+    {
+     "op": "add_node",
+     "parent": "s48z1",
+     "role": "mod",
+     "var": "s48z2",
+     "concept": "同城",
+     "align": "18-18"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 3,
+  "topic": "「球会」（献给的 ARG0）与曼联",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "球会 独立节点，不与曼联关联",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "球会 独立节点，用 :coref 连曼联",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "献给 :ARG0 曼联（重入）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "献给 :ARG0 曼联，曼联 :ARG1-of (identity-91 :ARG2 球会)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "献给 :ARG0 曼联（重入）",
+  "text": "「曼联于欧霸杯夺冠后，球会将奖杯献给……」，球会就是曼联。句内共指用重入（abridged 5.3）；gold 另立 球会 节点，没有任何共指，和曼联断了联系。",
+  "fix": {
+   "title": "献给的 ARG0 改为重入曼联",
+   "conf": "mid",
+   "why": "球会指前面的曼联，同句共指应用重入；gold 的 球会 节点与曼联毫无联系。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s48x",
+     "r": "ARG0",
+     "t": "s48s"
+    },
+    {
+     "op": "del_node",
+     "var": "s48x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 4,
+  "topic": "「与其联手」的「其」和捐出的 ARG0",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "捐出 :ARG0 (and 曼城 曼联)（重入曼联）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "捐出 :ARG0 (and 曼城 thing)，thing 再 :coref 到球会",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "捐出 :ARG0 曼城，联手 :ARG1 thing",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "捐出 :ARG0 (and 曼城 曼联)（重入曼联）",
+  "text": "「其」指曼联；同句共指用重入。s1f 两次另立代词节点再写句内 :coref。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 5,
+  "topic": "联手、救助、衍伸、相关的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "带编号却没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "事件都带 aspect（或不谓词化）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "事件都带 aspect（或不谓词化）",
+  "text": "abridged 4.1 / 7：每个事件都要有 :aspect。gold 的 联手-01、救助-01、衍伸-01、相关-01 都没有 aspect。",
+  "fix": {
+   "title": "联手、救助、衍伸、相关 补 aspect",
+   "conf": "mid",
+   "why": "abridged 7 checklist：每个事件都带 :aspect。联手、衍伸是已完成的（performance），救助是基金目的里的事件名词（process），相关是状态（state）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s48x9",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s48x13",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s48x18",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s48x16",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 6,
+  "topic": "联手、衍伸的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :full-affirmative（作事件的那几个）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author :full-affirmative（作事件的那几个）",
+  "text": "abridged 7：每个事件都有 modal 父节点。联手捐款、衍生作品都是作者断言的事实。",
+  "fix": {
+   "title": "联手、衍伸 补 (author :full-affirmative)",
+   "conf": "mid",
+   "why": "abridged 7：每个事件都要有 modal 父节点；两队联手、作品衍生都是作者直接陈述的事实。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s48x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s48x18"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 48,
+  "n": 7,
+  "topic": "「亦」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "捐出 :mod 亦",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 亦)"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "捐出 :mod 亦",
+  "text": "副词「亦」（也）一般作 :mod 保留。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 8,
+  "topic": "「与此同时」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "捐出 :temporal 与此同时 / 同时",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "捐出 :temporal 与此同时 / 同时",
+  "text": "「与此同时」是时间状语，可作 :temporal 节点；gold 只在文档级用 :overlap 表达，句子图漏了这个词。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 9,
+  "topic": "「于欧霸杯夺冠」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "夺冠 :place 欧霸杯",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "夺冠 :ARG1 欧霸杯",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "夺冠 :place 欧霸杯",
+  "text": "PropBank 夺冠-01 只有 ARG0（competitor, winner），s1f/r1 用了不存在的 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 10,
+  "topic": "「欧霸杯」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "game",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ game"
+   },
+   {
+    "label": "event",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ event"
+   },
+   {
+    "label": "sport-event",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ sport-event"
+   }
+  ],
+  "best": null,
+  "text": "欧霸杯是赛事，类型表中 event、game 都可，类型差别不大。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 11,
+  "topic": "「作为救助基金」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "金额 :ARG1-of (作为-01 :ARG2 基金)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "捐出 :purpose (作为 …)",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "金额 :ARG0-of (作为-02 :ARG1 基金)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "作为-02"
+   },
+   {
+    "label": "金额 :ARG1-of (have-role-91 :ARG3 基金)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 作为-01（ARG1 被用的东西 / ARG2 用作）与 作为-02（ARG0 entity / ARG1 serves as）都能表达「把一百万英镑作为救助基金」，挂在金额上或作捐出的目的都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 12,
+  "topic": "「救助基金」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "基金 :mod 救助",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "基金 :purpose 救助",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "救助是基金的用途，:purpose 更具体，:mod 也可。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 13,
+  "topic": "关键字「ACITYUNITED」（团结之城）的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "关键字 :ARG1-of (identity-91 :ARG2 \"ACITYUNITED\" :ARG1-of (identity-91 :ARG2 团结之城))",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 \"ACITYUNITED\""
+   },
+   {
+    "label": "关键字 作命名实体类型，name「ACITYUNITED」",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"ACITYUNITED\""
+   },
+   {
+    "label": "关键字 identity-91 ACITYUNITED 节点，再 identity-91 城",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ ACITYUNITED"
+   },
+   {
+    "label": "关键字 :value \"ACITYUNITED\"",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":value \"ACITYUNITED\""
+   }
+  ],
+  "best": "关键字 作命名实体类型，name「ACITYUNITED」",
+  "text": "gold 用字符串常量作 identity-91 的论元，又把「团结之城」写成与第一个 identity-91 事件（而不是与 ACITYUNITED）等同，关系挂错。合理的做法是把关键字的名字作 name（或 :value），「团结之城」作它的释义（与 ACITYUNITED 等同）。需要重画子图，不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 14,
+  "topic": "「团结之城」的切分",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "整体一个概念 团结之城",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 团结之城"
+   },
+   {
+    "label": "城 :mod 团结",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "城 :ARG1-of 团结-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "团结-01"
+   }
+  ],
+  "best": null,
+  "text": "「团结 之 城」分词为三个词，不是成语，按词分析为 城 + 团结 更合适；gold 合成一个概念且没有对齐到全部词。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 15,
+  "topic": "「其关键字」的「其」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "关键字 :possessor 基金",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "关键字 :possessor (and 曼城 曼联)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":possessor s48"
+   },
+   {
+    "label": "关键字 :possessor 捐出",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor s48"
+   },
+   {
+    "label": ":poss 另立 thing，再 :coref",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "「其」可指这笔基金 / 捐款行动，也可指两家俱乐部，几种都说得通；s1f 用旧名 :poss 并另立代词节点、写句内 :coref。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 16,
+  "topic": "「成为」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "成为 :ARG0 (and 关键字 作品) :ARG1 话题",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "成为 :ARG1 (and …) :ARG2 话题",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "成为 :ARG0 (and 关键字 作品) :ARG1 话题",
+  "text": "PropBank 成为-01：ARG0 theme、ARG1 result、ARG2 cause。成为话题的东西是 ARG0，话题是 ARG1；s1f 两次整体错位。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 17,
+  "topic": "「衍伸」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "作品 :ARG1-of 衍伸（无 ARG0）",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "衍伸 :ARG0 关键字 / ACITYUNITED",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "作品 :mod 衍伸（不谓词化）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「相关图文衍伸作品」是由这个关键字衍生的作品，补上 ARG0 是一种合理推断，不补也可。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 18,
+  "topic": "「欧霸杯」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 46 句 欧霸杯决赛（game）:same-event 欧霸杯",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 46 句 «欧霸杯» :same-entity 欧霸杯",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 46 句 比赛 :same-event 欧霸杯",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 46 句 «欧霸杯» :same-entity 欧霸杯",
+  "text": "这里的欧霸杯是赛事本身，与第 46 句的「欧霸杯」同指；第 46 句的决赛 / 比赛是其中一场比赛，不是同一个东西。gold 第 46 句没有单独的欧霸杯节点（见第 46 句第 1 条），没法在这里单独修正。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 19,
+  "topic": "「夺冠」与第 47 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 47 句 夺冠 :same-event 夺冠",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(本句夺冠 :same-event 第 47 句夺冠)（先后写反）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "第 47 句的夺冠是条件句里的假设，这里是实现了的夺冠，连与不连都说得通；abridged 5.3 规定前一个提及在前，s1f/r1 写反了。",
+  "fix": null
+ },
+ {
+  "sent": 48,
+  "n": 20,
+  "topic": "「曼彻斯特市」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 36 句 曼彻斯特 :same-entity 曼彻斯特市",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "同上，另把 团结之城 的 城 连到曼彻斯特市",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 36 句 曼彻斯特 :same-entity 曼彻斯特市",
+  "text": "重复出现的城市名要连到前一个提及；「团结之城」是口号里的释义，不宜作同指实体；a2 的文档级只看前五句，够不到第 36 句。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 1,
+  "topic": "「总教练」have-org-role 的编号",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-org-role-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-org-role-91"
+   },
+   {
+    "label": "have-org-role-92",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   }
+  ],
+  "best": "have-org-role-92",
+  "text": "abridged 2.3 只有 have-org-role-92（ARG1 人 / ARG2 机构 / ARG3 职务），gold 用了旧名 -91 却配 -92 的论元编号。",
+  "fix": {
+   "title": "have-org-role-91 → have-org-role-92",
+   "conf": "high",
+   "why": "guideline 只有 have-org-role-92（ARG1 人 / ARG2 机构 / ARG3 职务）；gold 用旧名 -91 却配 -92 的论元编号。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s49h2",
+     "concept": "have-org-role-92"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 2,
+  "topic": "「他的妻儿」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :ARG1-of (have-rel-role-91 :ARG2 瓜迪奥拉 :ARG3 妻儿)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "person :ARG1-of (have-rel-role-92 …)",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-rel-role-92"
+   },
+   {
+    "label": "妻儿 :possessor 瓜迪奥拉",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor s49"
+   },
+   {
+    "label": "妻儿 :poss (person 3rd) + :coref",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": "person :ARG1-of (have-rel-role-92 …)",
+  "text": "abridged 2.3：亲属角色用 have-rel-role-92（ARG1 人 / ARG2 对方 / ARG3 关系）；gold 用了不存在的 -91。直接用领属 :possessor 也能表达。",
+  "fix": {
+   "title": "have-rel-role-91 → have-rel-role-92",
+   "conf": "high",
+   "why": "abridged 2.3 的亲属角色谓词是 have-rel-role-92（ARG1 X / ARG2 Z / ARG3 关系），没有 -91。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s49h3",
+     "concept": "have-rel-role-92"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 3,
+  "topic": "「佩普·瓜迪奥拉」名字里的「·」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "name 含 \"·\"",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"·\""
+   },
+   {
+    "label": "name 只有 佩普、瓜迪奥拉",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"瓜迪奥拉\""
+   }
+  ],
+  "best": null,
+  "text": "分词把间隔号单列为一个词；名字里保留或去掉它都不影响意义，gold 前文（第 41 句）也保留了。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 4,
+  "topic": "「震惊」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "震惊 :ARG0 瓜迪奥拉",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "震惊 :ARG1 瓜迪奥拉",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "震惊 :ARG1 瓜迪奥拉",
+  "text": "PropBank 震惊-01：ARG0 entity described（令人震惊的事）、ARG1 people shocked by arg0。感到震惊的人是 ARG1。",
+  "fix": {
+   "title": "震惊：:ARG0 瓜迪奥拉 → :ARG1",
+   "conf": "high",
+   "why": "PropBank 震惊-01 的 ARG1 是受到震惊的人，ARG0 是使人震惊的事物；瓜迪奥拉是感到震惊的人。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s49x",
+     "r": "ARG0",
+     "t": "s49i2",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 5,
+  "topic": "「相当」的表示",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "震惊 :degree intensifier + :mod 相当",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": "震惊 :degree 相当",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "震惊 :degree 相当",
+  "text": "abridged 4.2：程度词作 :degree 的概念节点；gold 同时写了常量 intensifier 和 :mod 相当，重复且角色不对。",
+  "fix": {
+   "title": "相当：:mod → :degree，删除 :degree intensifier",
+   "conf": "mid",
+   "why": "abridged 4.2：程度副词（很、非常、相当）作 :degree 概念；gold 的 intensifier 常量与 :mod 相当 重复。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s49x",
+     "attr": "degree",
+     "value": "intensifier"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s49x",
+     "r": "mod",
+     "t": "s49x38",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 6,
+  "topic": "「因为…」「虽然…不过…」的篇章结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "but-91 :ARG1 (have-reason-91 震惊 参与) :ARG2 得知",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "震惊 :cause 参与；表态 :concession 得知",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":concession"
+   },
+   {
+    "label": "震惊 :cause 参与；but-91 (得知, 表态)",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "震惊 :reason 参与；but-91 (得知, 表态)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":reason (s"
+   }
+  ],
+  "best": "震惊 :cause 参与；表态 :concession 得知",
+  "text": "「因为他的妻儿也参与了演唱会」是震惊的原因（abridged 2.5：因为 → :cause）；「虽然事后得知妻儿安然无恙，不过……球团并未表态」，虽然小句是后面「不过」小句的让步（:concession），gold 却把它和震惊对立成 but-91。have-reason-91 也不是 guideline 里的概念。",
+  "fix": {
+   "title": "震惊 :cause 参与；得知改为表态的 :concession",
+   "conf": "mid",
+   "why": "abridged 2.5：因为 → :cause，虽然 → :concession。「虽然得知妻儿无恙」让步的是后面「不过球团并未表态」，不是与震惊构成转折；have-reason-91 不是 guideline 的概念。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s49x",
+     "r": "cause",
+     "t": "s49x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s49x16",
+     "r": "concession",
+     "t": "s49x3"
+    },
+    {
+     "op": "del_node",
+     "var": "s49b"
+    },
+    {
+     "op": "del_node",
+     "var": "s49h"
+    },
+    {
+     "op": "add_rel",
+     "s": "s49a",
+     "r": "op1",
+     "t": "s49x"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 7,
+  "topic": "「亚莉安娜的演唱会」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "演唱会 :ARG1-of (implicit-argument :ARG0 亚莉安娜)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "implicit-argument"
+   },
+   {
+    "label": "演唱会 :possessor / :poss 亚莉安娜",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "演唱会-00 :ARG0 亚莉安娜",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "演唱会-00"
+   }
+  ],
+  "best": "演唱会 :possessor / :poss 亚莉安娜",
+  "text": "「亚莉安娜的演唱会」是领属（或演唱会的主角），implicit-argument 不是 guideline 的概念，没有必要另立一个事件。",
+  "fix": {
+   "title": "演唱会：implicit-argument → :possessor 亚莉安娜",
+   "conf": "high",
+   "why": "「亚莉安娜当晚的演唱会」是领属关系，用 :possessor；gold 造的 implicit-argument 不是 guideline 的概念。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s49x13",
+     "r": "possessor",
+     "t": "s49i4"
+    },
+    {
+     "op": "del_node",
+     "var": "s49i6"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 8,
+  "topic": "演唱会、造成、伤亡的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "三个都没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "演唱会没有 aspect",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "都有 aspect",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "都有 aspect",
+  "text": "abridged 2.1、4.1：演唱会是事件名词（同 会议、比赛）、造成和伤亡是谓词，都要有 :aspect；伤亡用 process 或 performance 都可。",
+  "fix": {
+   "title": "演唱会、造成、伤亡 补 aspect",
+   "conf": "mid",
+   "why": "abridged 7：每个事件都带 :aspect；演唱会是事件名词（process），造成、伤亡是已发生的事（performance）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s49x13",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s49x23",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s49x22",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 9,
+  "topic": "演唱会、造成、伤亡的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :full-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author :full-affirmative",
+  "text": "abridged 7：每个事件都有 modal 父节点；这三件事都是作者断言的事实。",
+  "fix": {
+   "title": "演唱会、造成、伤亡 补 (author :full-affirmative)",
+   "conf": "mid",
+   "why": "abridged 7：每个事件都要有 modal 父节点；演唱会举行、事件造成伤亡都是作者直接陈述的事实。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s49x13"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s49x23"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s49x22"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 10,
+  "topic": "「得知」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "得知 :ARG2 安然无恙",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "得知 :ARG1 安然无恙 / have-mod-91",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "得知 :ARG1 安然无恙 / have-mod-91",
+  "text": "PropBank 得知-01：ARG1 message、ARG2 source of message。得知的内容（妻儿安然无恙）是 ARG1。",
+  "fix": {
+   "title": "得知的内容：:ARG2 → :ARG1",
+   "conf": "high",
+   "why": "PropBank 得知-01 ARG1 是得知的信息，ARG2 是信息来源；「得知妻儿安然无恙」的内容应是 ARG1。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s49x3",
+     "r": "ARG2",
+     "t": "s49x15",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 11,
+  "topic": "「安然无恙」的表示",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG2 安然无恙",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "安然无恙-01 :ARG0 妻儿",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "安然无恙-01"
+   }
+  ],
+  "best": "安然无恙-01 :ARG0 妻儿",
+  "text": "abridged 2.3：抽象谓词用于没有词汇谓词的情况；PropBank 有 安然无恙-01（ARG0 entity described），应直接用它。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 12,
+  "topic": "得知、指定的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「事后得知」「被当地政府指定为紧急救难中心」都是已完成的事件（abridged 4.1 performance），不是状态。",
+  "fix": {
+   "title": "得知、指定的 aspect：state → performance",
+   "conf": "mid",
+   "why": "得知（获悉）和被指定都是发生并完成的事件，abridged 4.1 用 performance；state 用于非动态的状态谓词。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s49x3",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s49x24",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 13,
+  "topic": "「事后」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "得知 :temporal 事后",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 事后"
+   }
+  ],
+  "best": "得知 :temporal 事后",
+  "text": "「事后」是时间状语，应作 :temporal；gold 漏了这个词。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 14,
+  "topic": "「并未表态」的否定",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "表态 没有 :polarity -",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "表态 :polarity -",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": "表态 :polarity -",
+  "text": "abridged 4.2：否定（没、不、未）在被否定的概念上标 :polarity -；gold 文档级给了 full-negative，句子图却漏了 polarity。",
+  "fix": {
+   "title": "表态加 :polarity -",
+   "conf": "high",
+   "why": "「并未表态」是否定，abridged 4.2 要求被否定的事件标 :polarity -（gold 文档级已是 full-negative）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s49x16",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 15,
+  "topic": "「球团」（表态的 ARG0）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "表态 :ARG0 曼城（重入）",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另立 球团 节点，用 :coref 连曼城",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 球团"
+   },
+   {
+    "label": "另立 球团 节点，不连",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 球团"
+   }
+  ],
+  "best": "表态 :ARG0 曼城（重入）",
+  "text": "球团指句首的曼城足球俱乐部，同句共指用重入（abridged 5.3）。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 16,
+  "topic": "「有关家庭的相关问题」",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "问题 :ARG1-of (相关-01 :ARG2 家庭)（没有「有关」）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "相关-01"
+   },
+   {
+    "label": "有关-01 :ARG0 问题 :ARG1 家庭；问题 :mod 相关",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "有关-01"
+   },
+   {
+    "label": "问题 :topic 家庭 / 家庭 :mod 有关；问题 :mod 相关",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "有关-01 :ARG0 问题 :ARG1 家庭；问题 :mod 相关",
+  "text": "PropBank 相关-01 只有 ARG0（entities which are relevant），gold 的 ARG1 / ARG2 都不存在；「有关家庭」用 有关-01（ARG0 entity / ARG1 entity arg0 is relevant to）。gold 还漏了「有关」，把两个词合成一个节点。",
+  "fix": {
+   "title": "相关-01 :ARG1/:ARG2 → 有关-01 :ARG0 问题 :ARG1 家庭，另立 相关",
+   "conf": "mid",
+   "why": "相关-01 只有 ARG0，gold 用了不存在的 ARG1、ARG2；「有关家庭」是 有关-01（ARG0 问题 / ARG1 家庭），「相关」另作问题的 :mod。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s49x20",
+     "concept": "有关-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s49x19",
+     "r": "ARG1-of",
+     "t": "s49x20",
+     "r2": "ARG0-of"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s49x20",
+     "r": "ARG2",
+     "t": "s49x21",
+     "r2": "ARG1"
+    },
+    {
+     "op": "set_attr",
+     "var": "s49x20",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "align",
+     "var": "s49x20",
+     "span": "45-45"
+    },
+    {
+     "op": "add_node",
+     "parent": "s49x19",
+     "role": "mod",
+     "var": "s49z1",
+     "concept": "相关",
+     "align": "48-48"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 17,
+  "topic": "「问题」挂在表态还是意见上",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "意见 :topic 问题",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表态 :topic 问题",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「对于……问题并未表态后续的意见」：问题是表态的话题，也是意见的内容，两种挂法都说得通（表态-01 ARG1 attitude = 意见）。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 18,
+  "topic": "「指定」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "指定-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "指定-02"
+   },
+   {
+    "label": "指定-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "指定-01"
+   }
+  ],
+  "best": "指定-01",
+  "text": "PropBank 只有 指定-01（designator / entity designated / predicate），gold 的 -02 不存在。",
+  "fix": {
+   "title": "指定-02 → 指定-01",
+   "conf": "high",
+   "why": "中文 PropBank 只有 指定-01（ARG0 designator / ARG1 entity designated / ARG2 predicate），没有 -02。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s49x24",
+     "concept": "指定-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 19,
+  "topic": "「阿提哈德球场」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "sports-facility",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "sports-facility"
+   },
+   {
+    "label": "stadium",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ stadium"
+   },
+   {
+    "label": "building",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ building"
+   }
+  ],
+  "best": null,
+  "text": "AMR 实体类型里 sports-facility、stadium、building 都有，球场取哪一个都可接受。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 20,
+  "topic": "「救难」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "救难（修饰词，不谓词化）",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 救难"
+   },
+   {
+    "label": "救难-00",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "救难-00"
+   },
+   {
+    "label": "救难-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "救难-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 没有「救难」，作事件时按 abridged 2.1 写 救难-00；救难-01 是凭空编号。作「中心」的修饰词不谓词化也可。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 21,
+  "topic": "「协助」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "协助-02 :ARG2 安顿（无 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "协助-02"
+   },
+   {
+    "label": "协助-01 :ARG0 球场 :ARG1 安顿",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "协助-01 :ARG1 安顿（无 ARG0）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 协助-01（assister / matter assisted）与 协助-02（assister / party assisted / predicate）都能容纳「协助安顿伤员」，安顿分别是 ARG1、ARG2。补出协助者（球场 / 救难中心）是合理推断。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 22,
+  "topic": "「伤员者」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "员 :ARG0-of 伤-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 员"
+   },
+   {
+    "label": "伤员",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 伤员"
+   },
+   {
+    "label": "者 / 人 :mod 伤员",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 伤员"
+   }
+  ],
+  "best": "伤员",
+  "text": "「伤员」是一个词（「者」是赘余），按词作实体即可；gold 把它拆成「员」并另立 伤-01（还错对齐到第 41 词「伤亡」）。",
+  "fix": {
+   "title": "伤员：员 + 伤-01 → 伤员",
+   "conf": "mid",
+   "why": "「伤员」是一个名词，abridged 2.1 实体按原词写；「员」不是独立的词，另立的 伤-01 节点还对齐到了「伤亡」。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s49x34",
+     "concept": "伤员"
+    },
+    {
+     "op": "del_node",
+     "var": "s49x35"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 49,
+  "n": 23,
+  "topic": "「也」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "参与 :mod 也",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 也)"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "参与 :mod 也",
+  "text": "副词「也」一般作 :mod 保留。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 24,
+  "topic": "协助（指定的目的）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 协助、安顿",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "指定 :unspecified 协助",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "指定 :neutral-affirmative 协助",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":neutral-affirmative s"
+   }
+  ],
+  "best": null,
+  "text": "协助安顿伤员是指定的目的，实际上也发生了；作者直接断言或按目的挂在主事件下用 unspecified 都合规（abridged 5.2），neutral-affirmative（可能）不合适。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 25,
+  "topic": "两个「当晚」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间父节点",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 1 句日期 :depends-on 当晚",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "DCT :depends-on 当晚",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 1 句日期 :depends-on 当晚",
+  "text": "abridged 5.1：时间表达式先入树。「当晚」指演唱会 / 爆炸那天晚上，参照第 1 句的 2017 年 5 月 22 日，不是文档时间。",
+  "fix": null
+ },
+ {
+  "sent": 49,
+  "n": 26,
+  "topic": "「曼彻斯特城足球俱乐部」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 48 句 曼联 :same-entity 曼城",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 48 句 曼城 :same-entity 曼城",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "第 48 句 曼城 :same-entity 曼城",
+  "text": "本句是曼彻斯特城足球俱乐部，第 48 句的 s48s 是曼联（曼彻斯特联），两家不同的俱乐部；应连第 48 句的曼城（s48s2）。",
+  "fix": {
+   "title": "曼城的共指：第 48 句曼联 → 第 48 句曼城",
+   "conf": "high",
+   "why": "本句的曼彻斯特城足球俱乐部与第 48 句的「同城劲旅曼彻斯特城足球俱乐部」（s48s2）同指，gold 误连到曼联（s48s）。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s48s",
+      "same-entity",
+      "s49s"
+     ],
+     "to": [
+      "s48s2",
+      "same-entity",
+      "s49s"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 1,
+  "topic": "「英格兰超级联赛」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "game",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ game"
+   },
+   {
+    "label": "league",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ league"
+   },
+   {
+    "label": "event",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ event"
+   }
+  ],
+  "best": "league",
+  "text": "英超是一个联赛（赛事 / 组织），不是一场比赛；AMR 类型 league 或 event 更贴切，game 指单场比赛。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 2,
+  "topic": "「英格兰超级联赛总冠军」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "拿下 :place 英超；冠军 :mod 总",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "总冠军 :mod 英超",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "总冠军 :poss / :possessor 英超",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "总冠军 :mod 英超",
+  "text": "「英超总冠军」是定中结构，英超修饰冠军；拿下的不是「在英超」这个处所。gold 的 总 对齐到了第 2 词（足总杯）。",
+  "fix": {
+   "title": "英超：拿下 :place → 冠军 :mod",
+   "conf": "mid",
+   "why": "「拿下英格兰超级联赛总冠军」中英超是「总冠军」的定语（哪个联赛的冠军），不是拿下事件的处所。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s50x6",
+     "r": "place",
+     "t": "s50g"
+    },
+    {
+     "op": "add_rel",
+     "s": "s50x7",
+     "r": "mod",
+     "t": "s50g"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 3,
+  "topic": "「英格兰足总杯总决赛」的实体表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "命名实体，名字含「总决赛」",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":op3 \"总决赛\""
+   },
+   {
+    "label": "总决赛 + event / sport-event «英格兰足总杯»",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "总决赛 + event / sport-event «英格兰足总杯»",
+  "text": "专名是「英格兰足总杯」，「总决赛」是普通名词，与第 46 句「欧霸杯决赛」同一问题；改 gold 要拆节点，不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 4,
+  "topic": "「开赛」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "开赛 :ARG0 总决赛",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "开赛 :ARG1 总决赛 / 足总杯",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "开赛 :ARG0 总决赛",
+  "text": "PropBank 开赛-01 只有 ARG0（theme），s1f 两次用了不存在的 ARG1（与第 46 句同）。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 5,
+  "topic": "「决赛球队之一」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "切尔西 :ARG1-of (include-91 :ARG2 球队)",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "include-91"
+   },
+   {
+    "label": "切尔西 :ARG1-of (have-role-91 :ARG3 球队)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "切尔西 :subset-of 球队",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   }
+  ],
+  "best": null,
+  "text": "「X 是 Y 之一」用 include-91（ARG1 部分 / ARG2 整体）最贴切；have-role-91（X 属于类别 Y）、:subset-of 也可。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 6,
+  "topic": "「因应此一突发事件」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "取消 :reason / :cause 事件（不标因应）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "因应-01 :ARG0 切尔西 :ARG1 突发事件",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "因应-01"
+   }
+  ],
+  "best": "因应-01 :ARG0 切尔西 :ARG1 突发事件",
+  "text": "PropBank 有 因应-01（agent / thing arg0 responds to），「因应……而取消」应保留这个谓词；只写原因关系丢了「应对」义，可接受但较差。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 7,
+  "topic": "「此一」的「一」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "事件 :unit 1",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":unit 1"
+   },
+   {
+    "label": "突发事件 :quant 1",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant 1"
+   },
+   {
+    "label": "只标 此 / 此一",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "只标 此 / 此一",
+  "text": "abridged 2.2：数字是 :quant，:unit 的值是度量单位概念，不能是数字。「此一」就是「这个」，不标数量也可。",
+  "fix": {
+   "title": "删除 事件 :unit 1",
+   "conf": "high",
+   "why": ":unit 的值应是度量单位（如 杯、年），不能是数字 1；「此一」的「一」不是度量。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s50x3",
+     "attr": "unit",
+     "value": "1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 8,
+  "topic": "「游街」挂在哪",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "活动 :manner 游街",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "庆祝 :manner 游街",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "庆祝 :manner 游街",
+  "text": "「夺冠游街庆祝活动」：游街是庆祝的方式；活动是名词，不带 :manner（参见第 46 句默哀仪式）。",
+  "fix": {
+   "title": "游街：活动 :manner → 庆祝 :manner",
+   "conf": "mid",
+   "why": "游街是庆祝的方式（以游街来庆祝），:manner 应挂在事件 庆祝 上，而不是名词 活动 上。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s50x13",
+     "r": "manner",
+     "t": "s50x15"
+    },
+    {
+     "op": "add_rel",
+     "s": "s50x14",
+     "r": "manner",
+     "t": "s50x15"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 9,
+  "topic": "夺冠、游街、庆祝的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "夺冠、游街没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "游街不谓词化，没有 aspect",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 游街)"
+   },
+   {
+    "label": "都有 aspect",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "都有 aspect",
+  "text": "abridged 7：每个事件都带 :aspect；PropBank 有 游街-01、夺冠-01。夺冠已经发生（performance），游街是被取消的计划（process）。",
+  "fix": {
+   "title": "夺冠、游街 补 aspect",
+   "conf": "mid",
+   "why": "abridged 7：每个事件都要有 aspect；切尔西已夺冠（performance），游街是计划中被取消的活动（process）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s50x16",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s50x15",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 10,
+  "topic": "「夺冠」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "夺冠 :ARG0 切尔西",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "夺冠 :ARG0 切尔西",
+  "text": "夺冠-01 ARG0 是 competitor / winner，句中明确是切尔西（刚拿下英超冠军），可以重入补上。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 11,
+  "topic": "「原本预定作为庆祝的资源」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "资源 :ARG1-of (预定 :purpose 庆祝)（不标作为）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "预定 :ARG1 (作为 :ARG1 资源 :ARG2 庆祝)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "作为-01"
+   },
+   {
+    "label": "预定 :ARG1 资源，作为-02 :ARG0 资源 :ARG1 庆祝",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "作为-02"
+   },
+   {
+    "label": "预定 :ARG1 资源 :ARG2 庆祝",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 预定-01 只有 ARG0 / ARG1，s1f 两次加了不存在的 ARG2。用 作为-01（ARG1 被用的东西 / ARG2 用作）最贴原文，gold 用 :purpose 概括也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 12,
+  "topic": "第二个「预定」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「原本预定」是之前已经完成的安排（performance）；gold 第一个预定标 performance，第二个却标 state（它还错对齐到第 28 词）。",
+  "fix": {
+   "title": "第二个预定的 aspect：state → performance",
+   "conf": "mid",
+   "why": "「原本预定作为庆祝的资源」的预定是已完成的安排，和 gold 对前一个「原本预定」的 performance 一致。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s50x24",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 13,
+  "topic": "「投入」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "投入-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "投入-02"
+   },
+   {
+    "label": "投入-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "投入-01"
+   }
+  ],
+  "best": null,
+  "text": "投入-01 的 ARG2 是 goal（投入到行列里），投入-02 的 ARG2 是 activity（投入救助工作），两种读法都成立。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 14,
+  "topic": "「救助与赈灾行列」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "行列 :part 救助、:part 赈灾",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":part (s"
+   },
+   {
+    "label": "行列 :mod (and 救助 赈灾)",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "投入 :ARG2 (and 救助 赈灾)（不标行列）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "行列 :mod (and 救助 赈灾)",
+  "text": "「救助与赈灾行列」是并列定语修饰行列；:part 表示整体—部分，用在这里不贴切。行列是虚化的「队伍」，省去也可。",
+  "fix": null
+ },
+ {
+  "sent": 50,
+  "n": 15,
+  "topic": "被取消的庆祝、游街的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :full-affirmative 庆祝、游街",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "取消 :full-negative 庆祝（、游街）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":full-negative s50"
+   },
+   {
+    "label": "预定 :unspecified 庆祝、游街",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified s50"
+   }
+  ],
+  "best": null,
+  "text": "游街庆祝被取消，没有发生，作者不能断言它发生；挂在取消下 full-negative 或挂在预定下 unspecified 都合规。gold 的活动里的 庆祝、游街 没有 modal 父节点。",
+  "fix": {
+   "title": "被取消的庆祝、游街挂在取消下（full-negative）",
+   "conf": "mid",
+   "why": "abridged 7：每个事件都有 modal 父节点；游街庆祝被取消、没有发生，挂在取消下为 full-negative。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s50x",
+      "full-negative",
+      "s50x14"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s50x",
+      "full-negative",
+      "s50x15"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 16,
+  "topic": "资源原定用途「庆祝」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 庆祝",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "预定 :unspecified 庆祝 / 作为",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "预定 :partial-affirmative 庆祝",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   }
+  ],
+  "best": "预定 :unspecified 庆祝 / 作为",
+  "text": "资源「原本预定作为庆祝」，庆祝只是计划且已取消，不是作者断言发生的事；按 abridged 5.2 挂在预定下用 unspecified。",
+  "fix": {
+   "title": "资源的庆祝用途挂到预定下（unspecified）",
+   "conf": "mid",
+   "why": "「原本预定作为庆祝」的庆祝是计划中的用途，实际已被取消，挂在预定下用 unspecified，而不是作者 full-affirmative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s50x23"
+     ],
+     "to": [
+      "s50x24",
+      "unspecified",
+      "s50x23"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 50,
+  "n": 17,
+  "topic": "救助、赈灾的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "投入 :neutral-affirmative",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":neutral-affirmative s"
+   }
+  ],
+  "best": "author :full-affirmative",
+  "text": "资源已经投入救助与赈灾，作者直接断言；没有表示「可能」的成分，neutral-affirmative 不合适。",
+  "fix": null
+ }
+]
