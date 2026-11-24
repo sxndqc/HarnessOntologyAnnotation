@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMR 第三轮：guideline 修订、Sonnet 5.5 五个设定、parse skill 反思</title>
+<style>
+:root{--ink:#1f1f1c;--mute:#6b6962;--line:#e3e1da;--bg:#faf9f6;--card:#fff;--up:#1d6b3a;--down:#a23a2a}
+@media (prefers-color-scheme: dark){:root{--ink:#ecebe6;--mute:#a3a199;--line:#3a3935;--bg:#1b1a18;--card:#242321;--up:#7fd19b;--down:#f09a8a}}
+*{box-sizing:border-box}
+body{font:15px/1.65 -apple-system,"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;color:var(--ink);background:var(--bg);margin:0;padding:28px 20px 60px}
+main{max-width:1080px;margin:0 auto}
+h1{font-size:24px;margin:0 0 6px}
+h2{font-size:19px;margin:38px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:22px 0 8px}
+p,li{max-width:900px}
+.lead{color:var(--mute);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;margin:8px 0 14px;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--mute);font-size:12.5px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td small,th small{color:var(--mute);font-weight:400}
+.up{color:var(--up);font-size:12px}.down{color:var(--down);font-size:12px}.flat{color:var(--mute);font-size:12px}
+.note{color:var(--mute);font-size:13.5px}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600}
+pre{white-space:pre-wrap;word-break:break-word;font:12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;margin:10px 0 4px}
+code{font:13px ui-monospace,Menlo,Consolas,monospace}
+nav a{margin-right:14px;color:inherit}
+</style>
+</head>
+<body>
+<main>
+<h1>UMR 第三轮：guideline 修订、Sonnet 5.5 五个设定、parse skill 反思</h1>
+<p class="lead">夜间自动完成的工作汇报。所有“gold 应改”“系统错”的判断都出自模型审阅，没有经过人工确认。</p>
+<nav class="note"><a href="#summary">结论</a><a href="#guideline">guideline</a><a href="#setup">实验设置</a><a href="#results">五个设定</a><a href="#review">训练集审阅</a><a href="#skills">parse skill</a><a href="#caveats">注意事项</a><a href="#files">文件</a></nav>
+
+<h2 id="summary">一、结论</h2>
+{{SUMMARY}}
+
+<h2 id="guideline">二、guideline 修订和切分</h2>
+{{GUIDELINE}}
+<h3>切分前后对比</h3>
+<div class="scroll">{{CHUNK_TABLE}}</div>
+
+<h2 id="setup">三、实验设置</h2>
+{{SETUP}}
+
+<h2 id="results">四、五个设定在测试集上的结果</h2>
+<p class="note">每格是该设定 10 次运行（5 种措辞各 2 次）的平均，± 后面是 10 次之间的标准差；彩色小字是相对 s0 的差（超过 1 分才着色）。一次运行的分数是把 4 篇文档的判定单元合在一起算的 F1。鼠标停在格上可以看最小值和最大值。</p>
+<h3>4 篇合计（中文 2 篇、英语 2 篇）</h3>
+<div class="scroll">{{T_TEST}}</div>
+<h3>中文 2 篇（zh-0029、zh-0035）</h3>
+<div class="scroll">{{T_TEST_ZH}}</div>
+<h3>英语 2 篇（en-0005、en-0006，各取前 25 句）</h3>
+<div class="scroll">{{T_TEST_EN}}</div>
+<h3>工具使用和开销</h3>
+<div class="scroll">{{USAGE}}</div>
+<h3>措辞的影响（juːmæʧ，4 篇合计）</h3>
+<div class="scroll">{{WORDING}}</div>
+{{RESULTS_NOTE}}
+
+<h2 id="review">五、训练集上的审阅：找出的问题</h2>
+{{REVIEW}}
+
+<h2 id="skills">六、三种反思方法和 parse skill</h2>
+{{SKILL_NOTE}}
+<div class="scroll">{{SKILL_TABLE}}</div>
+<p class="note">下面各表：每格是 5 次运行（5 种措辞各 1 次）的平均；彩色小字是相对“s3（无 skill）”的差。测试集上“s3（无 skill）”是 10 次运行。</p>
+<h3>训练集 4 篇，对修订版 gold</h3>
+<div class="scroll">{{T_SK_TRAINREV}}</div>
+<h3>训练集 4 篇，对原 gold</h3>
+<div class="scroll">{{T_SK_TRAIN}}</div>
+<h3>测试集 4 篇</h3>
+<div class="scroll">{{T_SK_TEST}}</div>
+<h3>测试集中文 2 篇</h3>
+<div class="scroll">{{T_SK_TEST_ZH}}</div>
+<h3>测试集英语 2 篇</h3>
+<div class="scroll">{{T_SK_TEST_EN}}</div>
+<h3>工具使用和开销（训练集加测试集）</h3>
+<div class="scroll">{{USAGE_SK}}</div>
+<h3>skill 原文</h3>
+{{SKILLS}}
+
+<h2 id="caveats">七、注意事项和没做完的</h2>
+{{CAVEATS}}
+
+<h2 id="files">八、文件在哪里</h2>
+{{FILES}}
+</main>
+</body>
+</html>
