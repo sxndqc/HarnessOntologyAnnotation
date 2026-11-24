@@ -1,0 +1,3055 @@
+[
+ {
+  "sent": 17,
+  "n": 1,
+  "topic": "义项编号体系（本段）",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "Vallex 三位框架号",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "无词典，按训练数据先例带三位号",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "无词典，多数默认写 -001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "cs-0004 不是 PUD 文件，gold 带捷克文框架号。s3、a2 能查训练数据，本段编号多与 gold 相同或有先例（přijímat-002 有 ln95045_077「kladně přijímán」先例，říci-008 与 gold 同）；s0、s1f 几乎一律写 -001（přijímat-001、říci-001、platit-001），按规则判 minor。之后只在 lemma 或切分不同时逐条写。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 2,
+  "topic": "「krok」是否写成事件 učinit-krok",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "učinit-krok-009（事件，带 aspect）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "učinit-krok-009"
+   },
+   {
+    "label": "名词 krok",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ krok"
+   }
+  ],
+  "best": "名词 krok",
+  "text": "原文只有名词 krok，没有 učinit。训练数据里 krok 一律是名词（ln94200_61「chybný krok」、wsj0082 第 36 句），「učinit kroky」时才是 učinit-009 + krok；učinit-krok-009 在训练数据里查不到，是凭空合成的概念。把 krok 当事件名词以便与第 1 句共指的意图可以理解，但概念名不合数据写法。",
+  "fix": {
+   "title": "učinit-krok-009 → krok（去掉事件属性）",
+   "conf": "low",
+   "why": "原文只有名词 krok，训练数据里 krok 是普通名词，učinit-krok-009 无先例。改为 krok，去掉事件才有的 aspect 和 modal-strength；ARG0 Time 与共指保留。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17u1",
+     "concept": "krok"
+    },
+    {
+     "op": "del_attr",
+     "var": "s17u1",
+     "attr": "aspect"
+    },
+    {
+     "op": "del_attr",
+     "var": "s17u1",
+     "attr": "modal-strength"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 3,
+  "topic": "krok 与 Time 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "krok :ARG0 Time",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "krok :mod společnost Time",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ společnost"
+   },
+   {
+    "label": "krok :poss Time（旧角色名）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "「krok společnosti Time」的属格是做出这一步的一方：训练数据「zákrokem E. Beneše」写 zákrok :ARG0 Beneš，属格名词作 :mod 也是训练数据常见写法。:poss 是 AMR 旧名，UMR 是 :possessor；s0、s1f 全篇都用 :poss，只在这里写一次。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 4,
+  "topic": "Time 的实体类型与名字结构",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "company :name (name :op1 \"Time\")",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ company"
+   },
+   {
+    "label": "společnost :name (name :op1 \"Time\")",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ společnost",
+     ":op1 \"Time\""
+    ]
+   },
+   {
+    "label": "společnost :name (Time)（name 节点写成概念 Time）",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ Time)"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.2 的命名实体是类型 + :name (name :op1 …)。训练数据也有「společnost :name (name :op1 \"Burger\" :op2 \"King\")」（wsj0466 第 16 句），用捷克文普通名词作类型可以接受。s3/r1、a2/r2 把 name 节点的概念直接写成 Time、没有 :op1，名字结构不合格式。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 5,
+  "topic": "「I tak」（尽管如此）的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":concession (event)，共指第 16 句 spadnout；i、tak 作 clausal-marker",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ event)"
+   },
+   {
+    "label": ":concession (tak)，i 作 clausal-marker 或 :mod",
+    "systems": [
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     ":concession (s",
+     "/ tak"
+    ]
+   },
+   {
+    "label": ":concession (thing)，共指第 16 句",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":concession (s",
+     "/ thing"
+    ]
+   },
+   {
+    "label": ":condition (tak)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": ":condition (s"
+   },
+   {
+    "label": ":mod (i-tak)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "/ i-tak"
+   },
+   {
+    "label": "concession-91 :ARG2 přijímat，缺 ARG1",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ concession-91"
+   }
+  ],
+  "best": null,
+  "text": "「i tak」是让步：尽管第 16 句销量下降，仍受好评。训练数据 wsj1822 第 35 句「i tak」写 :clausal-marker (i) + :concession (tak)，与 s3、a2/r1 相同；gold 用 event 节点并与第 16 句共指，语义更完整，也对。:condition 是条件，读错了；i-tak 合成一个 :mod 丢了让步关系；concession-91 只有 ARG2 没有让步内容。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 6,
+  "topic": "přijímat 的隐含施事 ARG0",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":ARG0 (person)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ person)"
+   },
+   {
+    "label": ":ARG0 (entity)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ entity)"
+   },
+   {
+    "label": "不标 ARG0",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "被动句「je přijímán」没有说出施事。捷克文训练数据习惯给未表达的必有论元补 entity 节点（cmpr9415_044 第 27 句 přijímat :ARG0 entity）；gold 用 person（接受者是人）也可以。不补略差。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 7,
+  "topic": "「opět」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":temporal opět",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": ":mod opět",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": ":temporal opět",
+  "text": "训练数据里 opět（又、再次）一律写 :temporal（十余例）。:mod 不合数据写法。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 8,
+  "topic": "přijímat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "activity",
+  "text": "现在时的进行中过程（又一次被正面接受），按精简版 4.1 是 activity，训练数据先例 ln95045_077 同样是 activity。process 用于事件名词或类型不明的过程，这里偏弱。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 9,
+  "topic": "名词的 refer-number（Time）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "Time :refer-number singular",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "Time :refer-number singular",
+  "text": "捷克文 gold 和训练数据给名词都标 refer-number。s0、s1f 全篇大多不标名词的 refer-number（s1f/r2 偶尔标），这一习惯只在这里写一次；s3/r1、a2/r2 在这句给 krok 标了，但在名字结构不合格的 Time 上漏了。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 10,
+  "topic": "krok 与前文哪一事件共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "same-event 第 1 句 snižovat（降低保证发行量）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-event 第 12 句 omezení（发行量削减）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 12 句 omezení",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "same-event 第 12 句 omezení（发行量削减）",
+  "text": "「krok společnosti Time」指削减发行量这一举措，第 1 句 snižuje 与第 12 句 omezení 都是它。精简版 5.3 要求连到最近的先行提及，即第 12 句；gold 连到第 1 句，而第 12 句的 omezení 在 gold 里没有和第 1 句连上，共指链断开。事件之间应写 same-event。",
+  "fix": {
+   "title": "krok 的共指改连第 12 句 omezení",
+   "conf": "low",
+   "why": "第 12 句 omezení nákladu 与本句 krok 是同一举措，且是最近的先行提及；gold 连到第 1 句 snižovat，第 12 句又没连上第 1 句，链断开。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s17u1",
+      "same-event",
+      "s1s1"
+     ],
+     "to": [
+      "s17u1",
+      "same-event",
+      "s12o2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 11,
+  "topic": "Time 与前文哪一实体共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "same-entity 第 8 句 Time Warner",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "same-entity 第 16 句 časopis Time",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 1 句 časopis Time",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "same-entity 第 16 句 časopis Time",
+  "text": "第 8 句说 Time 是「šetrného Time Warner」的一部分，Time Warner 是母公司，不是这里的 Time。本句的 Time 就是第 16 句的杂志 Time（gold s16m2），最近的先行提及在第 16 句；连第 1 句实体对但不是最近的。",
+  "fix": {
+   "title": "Time 的共指：Time Warner → 第 16 句的 Time",
+   "conf": "mid",
+   "why": "第 8 句明说 Time 是 Time Warner 的一部分，二者不是同一实体；本句的 Time 与第 16 句的杂志 Time（s16m2）同指，且是最近的先行提及。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s17c1",
+      "same-entity",
+      "s8c2"
+     ],
+     "to": [
+      "s17c1",
+      "same-entity",
+      "s16m2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 1,
+  "topic": "说话人 Drexler 与职务的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :name Drexler :ARG1-of have-org-role（ARG2 机构、ARG3 职务）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "\"Drexler\""
+   },
+   {
+    "label": "identity-91 :ARG1 person Drexler :ARG2 (person :ARG1-of have-org-role-92)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "identity-91",
+     "have-org-role-92"
+    ]
+   },
+   {
+    "label": "identity-91 :ARG1 Drexler（非命名实体）:ARG2 ředitel :mod agentura",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "identity-91",
+     "/ Drexler"
+    ]
+   },
+   {
+    "label": "have-org-role-92 :ARG0-of，ARG1 机构、ARG2 职务",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG0-of (s",
+     "have-org-role-92"
+    ]
+   }
+  ],
+  "best": "person :name Drexler :ARG1-of have-org-role（ARG2 机构、ARG3 职务）",
+  "text": "同位语职务按精简版 2.3 用 have-org-role-92（:ARG1 人、:ARG2 机构、:ARG3 职务），训练数据 ln95046_093 也这样写。identity-91 套一层多余；s3 把人名写成普通概念 Drexler :mod Michael、机构只作 ředitel 的 :mod，丢了任职关系；s0 用 :ARG0-of 并把论元整体错位一格，机构成了任职者。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 2,
+  "topic": "have-org-role 的编号",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "have-org-role-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-org-role-91"
+   },
+   {
+    "label": "have-org-role-92",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "have-org-role-92",
+  "text": "项目规则：have-org-role-92 是对的，-91 应改成 -92。s3 没有这个节点，已在上一条判过。",
+  "fix": {
+   "title": "have-org-role-91 → have-org-role-92",
+   "conf": "high",
+   "why": "项目已定规则：用 have-org-role-92（精简版 2.3）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s18h1",
+     "concept": "have-org-role-92"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 3,
+  "topic": "职务 ARG3 写成 ředitel 还是 person :ARG0-of řídit",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :ARG0-of řídit（无义项号）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ řídit"
+   },
+   {
+    "label": "名词 ředitel",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ředitel"
+   }
+  ],
+  "best": "名词 ředitel",
+  "text": "have-org-role 的 :ARG3 是职务名称本身（精简版 2.3 的 president；训练数据 ln95046_093 写 :ARG3 (poslanec)、:ARG3 (člen)），训练数据里 ředitel 也一律是名词。gold 把职务又拆成「领导它的人」，与 :ARG1 的人重复，řídit 还没带框架号。",
+  "fix": {
+   "title": "ARG3 职务：person :ARG0-of řídit → ředitel",
+   "conf": "low",
+   "why": "have-org-role 的 ARG3 是职务名称，训练数据写 :ARG3 (poslanec) 一类名词；gold 拆成 person :ARG0-of řídit 与 ARG1 重复，且 řídit 无框架号。保留 celostátní、mediální 修饰。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s18p5",
+     "concept": "ředitel"
+    },
+    {
+     "op": "del_node",
+     "var": "s18r2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 4,
+  "topic": "Bozell Inc 的类型与名字切分",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "organization :name \"Bozell\" \"Inc\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "agentura :name \"Bozell\" \"Inc.\"",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"Inc.\""
+   },
+   {
+    "label": "agentura / company :name \"Bozell\" \"Inc\" \".\"（句点作 op3）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":op3 \".\""
+   }
+  ],
+  "best": null,
+  "text": "实体类型 organization、company 或捷克文普通名词 agentura（训练数据有 společnost :name 的写法）都可以。把分词得到的句点单独作 :op3 是切分错误；「Inc.」整体或去掉句点都行。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 5,
+  "topic": "「je báječné」的谓词",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG1 vědět :ARG2 báječný，作 říci 的 ARG1",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-mod-91"
+   },
+   {
+    "label": "být-007 :ARG1 vědět :ARG2 báječný，作 říci 的 ARG1",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "být-007"
+   },
+   {
+    "label": "být-007 作 říci 的 :effect",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "形容词 báječný 直接作 říci 的 ARG1（:domain / :ARG1 vědět）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":beneficiary (s",
+     "/ báječný"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "系词加形容词按精简版 2.3 用 have-mod-91；捷克文旧训练数据大量用 být-007 表系词，也说得通。引语内容是 říci 的 ARG1（精简版 3），:effect 不对。形容词直接作谓词不合 guideline 2.3。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 6,
+  "topic": "「pro inzerenty」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":affectee inzerenti",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":affectee"
+   },
+   {
+    "label": ":beneficiary inzerenti",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":beneficiary"
+   }
+  ],
+  "best": ":affectee inzerenti",
+  "text": "「对广告商来说是好事」中 pro 引出的是评价所涉及的一方，捷克文数据这类形容词谓词的经验者写 :affectee（训练数据 možný :affectee entity），gold 全篇亦然。:beneficiary 是受益者，意思接近但不合数据写法。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 7,
+  "topic": "inzerent、čtenář 是否展开为 person :ARG0-of",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :ARG0-of inzerovat-001 / číst-002",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "inzerovat-001"
+   },
+   {
+    "label": "名词 inzerent、čtenář",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ čtenář"
+   }
+  ],
+  "best": null,
+  "text": "精简版 3 允许参与者名词用 :ARGn-of 展开，gold 在第 1、12 句也这样写 inzerent；训练数据则把 inzerent、čtenář 写成普通名词（wsj0677 第 21 句、wsj0062 第 9 句）。两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 8,
+  "topic": "čtenář 的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "plural",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "singular",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "singular",
+  "text": "原文是单数「čtenář」（泛指读者）。捷克文数据的 refer-number 按语法数标；gold 标 plural 与原文形式不符，意义上是泛指，影响不大。",
+  "fix": {
+   "title": "čtenář（person）的 refer-number：plural → singular",
+   "conf": "low",
+   "why": "原文是单数 čtenář，捷克文数据的 refer-number 按语法数标；泛指读者意义上可作复数，故只作提示。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s18p3",
+     "attr": "refer-number",
+     "value": "singular"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 9,
+  "topic": "「více」（付得更多）的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":ARG1 monetary-quantity :quant more-than",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ more-than"
+   },
+   {
+    "label": ":ARG1 více",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ více)"
+   },
+   {
+    "label": ":extent hodně（丢了比较）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ hodně)"
+   }
+  ],
+  "best": null,
+  "text": "「bude platit více」是付更多的钱。gold 与 a2 的 monetary-quantity + more-than 最明确；直接写 více 作 ARG1 也保留了比较义。hodně 是「很多」，丢了「更多」的比较。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 10,
+  "topic": "引语里事件的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "platit habitual",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "platit activity",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "platit process",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "「bude platit」是将来的、反复的付费，habitual 和 activity 都说得通（未然事件不硬判）。process 用于事件名词或类型不明的过程，偏弱。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 11,
+  "topic": "inzerenti 与前文广告商的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-entity 第 12 句 inzerenti",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 1 句 inzerenti",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "same-entity 第 12 句 inzerenti",
+  "text": "本句的广告商与第 1、12 句的广告商（gold s12p2）是同一群体，gold 在这里没有连。最近的先行提及在第 12 句，连第 1 句也算对。gold 连了读物与第 16 句 Time 的共指，这一点只有 gold 有。s0/r1 另把 čtenář 连到第 1 句的「新订户」，不是同一群人。",
+  "fix": {
+   "title": "补 inzerenti 与第 12 句广告商的共指",
+   "conf": "low",
+   "why": "本句 Pro inzerenty 与第 12 句 výhoda pro inzerenty 的广告商同指（泛指群体），gold 未连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s18p2",
+      "same-entity",
+      "s12p2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 1,
+  "topic": "引语续句外层的 say-91",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "say-91 :ARG0 person（共指 Drexler）包住引语",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "say-91"
+   },
+   {
+    "label": "无 say-91，文档级以 Drexler 为 conceiver",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "无 say-91，也没有说话人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "第 19、20 句是第 18 句 Drexler 引语的延续，没有言说动词。捷克文训练数据（pdtsc_146_2.05 等）用 say-91 包住说话人的话，gold 照此写并把 ARG0 与 Drexler 共指；s0 在文档级把 Drexler 作 conceiver，也表达了归属。其余系统把引语当作者直接断言，丢了说话人。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 2,
+  "topic": "「mít následky」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-result-91 :ARG1 snížení :ARG2 následek",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-result-91"
+   },
+   {
+    "label": "mít-019 :ARG1 snížení :predicative-noun následek",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "mít-019"
+   },
+   {
+    "label": "mít-001 :ARG0 snížení :ARG1 následek",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "mít-001"
+   },
+   {
+    "label": "have-91 :ARG1 snížení :ARG2 následek",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-91"
+   }
+  ],
+  "best": "mít-019 :ARG1 snížení :predicative-noun následek",
+  "text": "训练数据「mít následky / důsledky」一贯写 mít-019 :ARG1 X :predicative-noun následek（pdtsc_008_2.03 第 36 句、pdtsc_024_3.06 第 17 句、ln94204_79 第 35 句）；have-result-91 在训练数据里查不到。have-91 是领属，不合这里的「造成后果」；s0 的编号和论元都对不上先例。",
+  "fix": {
+   "title": "have-result-91 → mít-019，:ARG2 → :predicative-noun",
+   "conf": "mid",
+   "why": "训练数据「mít následky」一贯写 mít-019 :ARG1 X :predicative-noun následek（三例），have-result-91 无先例。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s19h1",
+     "concept": "mít-019"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19h1",
+     "r": "ARG2",
+     "t": "s19n3",
+     "r2": "predicative-noun"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 3,
+  "topic": "否定事件的 polarity 与 modal 强度",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":polarity - 且 full-negative",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   },
+   {
+    "label": "full-negative 但没有 :polarity -",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "modal-strength full-negative"
+   },
+   {
+    "label": ":polarity -，文档级 Drexler :full-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity - 且 full-negative",
+  "text": "「nebude mít」是否定：精简版 4.2 要求 :polarity -，modal 强度为 negative；捷克文训练数据也一律 :polarity - 与 full-negative 并用。s1f/r2 全篇在否定事件上只写 full-negative 不写 :polarity -（第 20 句同）。s0/r1 的 full-negative 写在文档级。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 4,
+  "topic": "「Několikeré」的概念与角色",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "několikrát :frequency",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ několikrát"
+   },
+   {
+    "label": "několikerý :frequency",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":frequency (s"
+   },
+   {
+    "label": "několikerý :mod",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ několikerý"
+   }
+  ],
+  "best": null,
+  "text": "「několikeré snížení」是几次削减。系统保留原词 lemma několikerý 作 :mod（训练数据 pdtsc_032_2.02 有 :mod několikery）；gold 换成副词 několikrát 写 :frequency，语义上更直接。都可以。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 5,
+  "topic": "snížení 写成事件还是名词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "snížit-001（动词 lemma）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "snížit-001"
+   },
+   {
+    "label": "名词 snížení",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ snížení"
+   }
+  ],
+  "best": null,
+  "text": "训练数据多把 snížení 留作名词（二十余例）；gold 在这篇文档里一贯把动名词还原为动词框架（第 12 句 omezení → omezit-001、第 1 句 lákání → lákat-002）。两种都可以。aspect 上 performance 与 process 对事件名词都说得通，不另列。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 6,
+  "topic": "snížení 与前文削减事件的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "前文削减 :subset-of 本句（第 15、17 句或第 1、15 句）",
+    "systems": [
+     "s0/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-event 第 17 句 krok",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-event 第 1 句 snižovat",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「几次削减不会有后果」是泛指，包括 Time 先前与这次的削减，不等同于某一次。不连或用 :subset-of 把具体削减归入它都说得通；same-event 把泛指与单次事件等同，偏差。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 7,
+  "topic": "náklad 与前文发行量的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "same-entity 第 15 句 garantovaný náklad",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "same-entity 第 16 句 prodaný náklad",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "same-entity 第 12 句 náklad",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "same-entity 第 1 句 náklad",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "文中有保证发行量（第 1、15 句）和实际售出量（第 16 句）两个不同的量，gold 在全篇都没有把各句的 náklad 连起来。本句泛指的「发行量」该连哪一个说不清，定不了。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 1,
+  "topic": "引语续句外层的 say-91",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "say-91 :ARG0 person（共指第 19 句说话人）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "say-91"
+   },
+   {
+    "label": "无 say-91，文档级以 Drexler 为 conceiver",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "无 say-91，也没有说话人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "同第 19 句：本句仍是 Drexler 的引语（句末有右引号）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 2,
+  "topic": "「Není to ukázka」的谓词",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity-91 :ARG1 event :ARG2 ukázka",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "být-007 :ARG1 ten :ARG2 ukázka",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "být-007"
+   },
+   {
+    "label": "have-role-91 :ARG1 thing :ARG3 ukázka",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "have-role-91 :ARG2 ukázka",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "být-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "být-001"
+   }
+  ],
+  "best": null,
+  "text": "「这不是软弱的表现」：identity-91（精简版 2.3）、训练数据常用的系词 být-007、类属 have-role-91 :ARG3 都说得通。have-role-91 的类别是 :ARG3，a2/r1 写成 :ARG2 角色错位；být-001 与训练数据的系词义项不符。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 3,
+  "topic": "否定小句的 modal 强度",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":polarity - 但 modal-strength full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":polarity - 且 full-negative",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   },
+   {
+    "label": "full-negative 但没有 :polarity -",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "modal-strength full-negative"
+   },
+   {
+    "label": ":polarity -，文档级 Drexler :full-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity - 且 full-negative",
+  "text": "「Není」是否定，精简版 5.2：被否定的事件是 full-negative。gold 第 19 句的否定写了 full-negative，训练数据也一律 :polarity - 配 full-negative；这里 gold 写 full-affirmative 自相矛盾。s0/r1 的 full-negative 在文档级。",
+  "fix": {
+   "title": "否定的 identity-91：modal-strength → full-negative",
+   "conf": "high",
+   "why": "identity-91 带 :polarity -，被否定的事件应为 full-negative（精简版 5.2）；gold 第 19 句和捷克文训练数据都是 :polarity - 配 full-negative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s20i1",
+     "attr": "modal-strength",
+     "value": "full-negative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 4,
+  "topic": "「ukázka slabosti」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "ukázat-001 :ARG1 slabost",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "ukázat-001"
+   },
+   {
+    "label": "ukázka :ARG1 slabost",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ukázka"
+   },
+   {
+    "label": "ukázka :mod slabost",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ukázka"
+   },
+   {
+    "label": "ukázka :topic slabost",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": null,
+  "text": "gold 与第 12 句「ukázka síly」一样把 ukázka 还原为 ukázat-001；训练数据把 ukázka 留作名词。属格 slabost 是被显示的东西，作 ARG1 或 :mod 都可以；:topic（关于）不合。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 5,
+  "topic": "「kvalitu nákladu」的方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "kvalita :mod-of náklad（= náklad :mod kvalita）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":mod-of (s"
+   },
+   {
+    "label": "kvalita :mod náklad",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "kvalita :possessor náklad",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "kvalita :poss náklad",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "kvalita :ARG1 náklad",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "kvalita :mod náklad",
+  "text": "「发行量的质量」中心是 kvalita，属格 náklad 修饰它；训练数据写 kvalita :mod (práce)。gold 用 :mod-of 把方向写反，成了「náklad 以 kvalita 为修饰」。kvalita 不是事件，给它 :ARG1 不妥。",
+  "fix": {
+   "title": "kvalita 与 náklad：:mod-of → :mod",
+   "conf": "mid",
+   "why": "「kvalitu nákladu」中心是 kvalita，náklad 是属格修饰语；gold 的 :mod-of 方向反了。训练数据同类写 kvalita :mod (práce)。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s20k1",
+     "r": "mod-of",
+     "t": "s20n1",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 6,
+  "topic": "zlepšovat、pojišťovat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "activity",
+  "text": "现在时的进行中过程，按精简版 4.1 是 activity。process 是事件名词或类型不明时用的，s0/r2、s1f/r2 在本段的定式动词上反复用 process（第 17、20 句）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 7,
+  "topic": "「si」与 pojišťovat 的受益者",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "不另标（si 只作 ARG0 / zisk 的 possessor）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "pojišťovat :beneficiary / :affectee = ARG0",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ pojišťovat-001"
+    ]
+   },
+   {
+    "label": "pojišťovat :ARG2 = ARG0",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「pojišťují si své zisky」里的 si 是为自己的反身与格。把它另标成 :beneficiary/:affectee 与 ARG0 重入，或不另标，都可以。pojišťovat 没有框架可查，ARG2 是否为受益者定不了。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 8,
+  "topic": "「to」与第 19 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "same-event 第 19 句 snížení",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 19 句 snížení",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-event 第 1 句 snižovat",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "same-event 第 19 句 snížení",
+  "text": "「to」指上句的削减，最近的先行提及是第 19 句；指事件应写 same-event。s0 连到第 1 句，不是最近的提及。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 9,
+  "topic": "náklad 与第 19 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-entity 第 19 句 náklad",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 12 句 náklad",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 1 句 náklad",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "same-entity 第 19 句 náklad",
+  "text": "同一段引语里，本句「kvalitu nákladu」和上句「snížení nákladu」说的是同一个发行量，gold 没有连。连第 12 句可以接受；连第 1 句的保证发行量不是最近提及。",
+  "fix": {
+   "title": "补 náklad 与第 19 句 náklad 的共指",
+   "conf": "low",
+   "why": "第 19、20 句是同一段引语，两处 náklad 指同一个发行量；gold 两处都没连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s20n1",
+      "same-entity",
+      "s19n2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 1,
+  "topic": "冒号后「příjem … byl odtajněn」的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "根 and：与 říci 并列（作者断言）",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "引语内容 and(reprezentovat, odtajnit)",
+    "systems": [
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "作 zaměření 的从属（:ARG1 / :topic / :mod）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "identity-91 :ARG1 reprezentovat :ARG2 odtajnit",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "identity-91"
+   }
+  ],
+  "best": "引语内容 and(reprezentovat, odtajnit)",
+  "text": "冒号后的小句解释「新的关注点」，仍在「Pan Heinemann řekl, že …」的转述范围内（英文原文同样是他说的话）。gold 把它挂在根 and 下与 říci 并列，成了作者自己的断言，归属错了；把两个事件用 identity-91 等同也不对。挂在 říci 的内容里或作 zaměření 的说明都可以。",
+  "fix": {
+   "title": "把 odtajnit 移入 Heinemann 所说的内容",
+   "conf": "low",
+   "why": "冒号小句是 Heinemann 转述内容的一部分，不该与 říci 并列作作者断言。改为 říci :ARG1 (and :op1 reprezentovat :op2 odtajnit)，复用原 and 节点。",
+   "ops": [
+    {
+     "op": "set_root",
+     "var": "s21r1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s21a1",
+     "r": "op1",
+     "t": "s21r1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s21r1",
+     "r": "ARG1",
+     "t": "s21r2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s21r1",
+     "r": "ARG1",
+     "t": "s21a1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s21a1",
+     "r": "op1",
+     "t": "s21r2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 2,
+  "topic": "říci 的内容用 :ARG1 还是 :effect",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "říci :ARG1 内容",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "říci :effect 内容",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "bad",
+    "grep": ":effect (s"
+   }
+  ],
+  "best": "říci :ARG1 内容",
+  "text": "转述内容是言说动词的 ARG1（精简版 3；训练数据 říkat-007 :ARG1 都是内容，第 18 句 gold 亦然）。:effect 是捷克文数据里补语、结果的角色，不用于言说内容。s3/r2 在第 18、22 句也这样写。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 3,
+  "topic": "příjem 的表示与 příjímat 拼写",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "monetary-quantity :ARG1-of příjímat-001（拼写错）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "příjímat-001"
+   },
+   {
+    "label": "名词 příjem",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ příjem"
+   }
+  ],
+  "best": "名词 příjem",
+  "text": "捷克文动词是 přijímat（gold 第 17 句也写 přijímat-003），příjímat 是把名词 příjem 的长元音误带进动词的拼写错误，训练数据里没有这个 lemma。把收入展开为「被收取的金额」本身可以，但概念名必须是真实的 lemma；训练数据把 příjem 留作名词（二十余例）。",
+  "fix": {
+   "title": "příjímat-001 → přijímat-001（拼写）",
+   "conf": "mid",
+   "why": "捷克文动词是 přijímat，příjímat 不存在（gold 第 17 句即 přijímat-003）；接收钱款取 přijímat-001（训练数据 přijímat majetek / hovory）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s21p3",
+     "concept": "přijímat-001"
+    },
+    {
+     "op": "rename",
+     "var": "s21p5",
+     "concept": "přijímat-001"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 4,
+  "topic": "「či」（即、或者说）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "and",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "or",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ or"
+   },
+   {
+    "label": "identity-91（两个 příjem 同指）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   }
+  ],
+  "best": "identity-91（两个 příjem 同指）",
+  "text": "「čistý příjem … či skutečný příjem …」是换个说法解释同一个量（net revenue per subscriber, or the actual revenue …），identity-91 最贴切，按字面写 or 也可以。gold 写 and 成了两样东西，偏离原意。改成 identity-91 要重画结构，不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 5,
+  "topic": "「na předplatitele」（每个订户）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "并入 přijímat :ARG2 person（来自订户），丢了「每」",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "rate-entity-91 :ARG3 předplatitel",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "rate-entity-91"
+   },
+   {
+    "label": "příjem :regard předplatitel",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":regard (s"
+   },
+   {
+    "label": "příjem :unit předplatitel",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":unit (s"
+   },
+   {
+    "label": "příjem :other-role / :mod předplatitel",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "rate-entity-91 :ARG3 předplatitel",
+  "text": "「每个订户的净收入」是比率，完整 guideline 用 rate-entity-91 表「每 …」。:regard、:unit、:other-role、:mod 都只是近似；gold 把「每个订户」和后面「来自订户」合成同一个 ARG2，比率义丢了。s1f/r2 的论元位置（AMR 里每单位是 ARG2）也不完全对。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 6,
+  "topic": "reprezentovat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "state",
+  "text": "「změny reprezentují nové zaměření」（变化代表新方向）是状态谓词，精简版 4.1 判 state。process 用于事件名词或类型不明的过程。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 7,
+  "topic": "změny 与前文事件的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "same-event 第 20 句 to（即第 19 句的削减）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-event 第 1 句 and（降保证量、提价、减赠品）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 1 句三个事件 :subset-of změny",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-event 第 2 句 and",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 20 句 ten",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "same-event 第 1 句 and（降保证量、提价、减赠品）",
+  "text": "复数「změny」指 Time 宣布的这组变化：第 1 句并列的降低保证发行量、提高订阅价、减少赠品（第 2 句可能是对它们的复述）。第 20 句的 to 只是发行量削减，范围不同；把事件写成 same-entity 也不对。",
+  "fix": {
+   "title": "změny 的共指改连第 1 句的三项变化",
+   "conf": "low",
+   "why": "复数 změny 指第 1 句并列的三项变化（s1a1），而第 20 句的 to 只是其中的发行量削减。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s21z1",
+      "same-event",
+      "s20e1"
+     ],
+     "to": [
+      "s21z1",
+      "same-event",
+      "s1a1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "dostávat 主语「we」的人称",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "person :refer-person 3rd",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "refer-person 1st",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 1st"
+   }
+  ],
+  "best": "refer-person 1st",
+  "text": "「dostáváme」是第一人称复数（我们得到），gold 写成 3rd 是错的；gold 第 13、14 句 Heinemann 口中的「我们」都写 1st plural。",
+  "fix": {
+   "title": "dostávat 的 ARG0：refer-person 3rd → 1st",
+   "conf": "high",
+   "why": "动词形式 dostáváme 是第一人称复数；gold 第 13、14 句同一说话人的「我们」都是 1st plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s22p2",
+     "attr": "refer-person",
+     "value": "1st"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "「Otázkou」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "plural",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "singular",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "singular",
+  "text": "Otázkou 是单数工具格（「问题在于……」），只有一个问题，gold 标 plural 与词形和语义都不符。",
+  "fix": {
+   "title": "otázka：refer-number plural → singular",
+   "conf": "mid",
+   "why": "Otázkou 是单数工具格，句中只有一个问题。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s22o1",
+     "attr": "refer-number",
+     "value": "singular"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "「Otázkou je」的谓词",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity-91 :ARG1 dostávat :ARG2 otázka",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "být-007 作 říci 的 ARG1",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "být-007"
+   },
+   {
+    "label": "být-007 作 říci 的 :effect",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "have-role-91 :ARG3 otázka",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "have-role-91 :ARG2 otázka",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "být-001",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "být-001"
+   },
+   {
+    "label": "otázka 直接作 říci 的 ARG1，:ARG1 dostávat",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ otázka"
+   }
+  ],
+  "best": null,
+  "text": "与第 20 句同类：identity-91、系词 být-007、have-role-91 :ARG3 都说得通；have-role-91 的类别应是 :ARG3；言说内容不该用 :effect；být-001 不是训练数据的系词义项；名词 otázka 直接带 :ARG1 少了系词谓词。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 4,
+  "topic": "「kolik」（多少）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "umr-unknown",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "umr-unknown"
+   },
+   {
+    "label": "amr-unknown",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "amr-unknown"
+   },
+   {
+    "label": "词 kolik",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ kolik"
+   }
+  ],
+  "best": null,
+  "text": "嵌入疑问的疑问词按完整 guideline 写 umr-unknown（精简版写作 amr-unknown）；捷克文较早的训练数据直接保留 kolik（ln95049_114 第 17 句、pdtsc_114_1.00 第 30 句），较新的数据用 umr-unknown。都可以。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 5,
+  "topic": "「od každého čtenáře」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dostávat :ARG2",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "dostávat :source",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   }
+  ],
+  "best": "dostávat :ARG2",
+  "text": "「od + 属格」是 dostávat 的来源论元，捷克文数据按框架作编号论元 ARG2；非论元的 :source 不如编号论元。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 6,
+  "topic": "dostávat 的 modal 强度",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "句内不标，文档级 Heinemann :full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "full-affirmative",
+  "text": "嵌入疑问只问数量，「我们从读者那里得到钱」本身是确定的，full-affirmative。neutral-affirmative 把得到本身变成了可能。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 7,
+  "topic": "「we」与前文的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "same-entity 第 20 句的「他们」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 2 句 Vedení",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「我们」是 Heinemann 所在的 Time 一方，gold 在第 13、14 句把同一说话人的「我们」连成了链，这里却没有连。连第 20 句的「他们」（同指 Time）或管理层都说得通。",
+  "fix": {
+   "title": "补「we」与第 14 句「we」的共指",
+   "conf": "low",
+   "why": "同一说话人 Heinemann 口中的「我们」，gold 第 14 句 s14p3 已与第 13 句连成链，本句未连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s22p2",
+      "same-entity",
+      "s14p3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "主语与同位语 Newsweek、U.S. News 的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "týdeník :ARG1-of identity-91 :ARG2 (and Newsweek U.S.News)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "and(Newsweek, U.S.News) :ARG1-of have-role-91 :ARG3 týdeník",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "být-007 :ARG1 (identity-91 事件) 作主语",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "být-007"
+   }
+  ],
+  "best": null,
+  "text": "破折号之间是对「与 Time 竞争的新闻周刊」的同位说明。identity-91 挂在 týdeník 上或用 have-role-91 都可以。s3、a2/r2 把 identity-91 这个事件本身当作系词 být-007 的主语（s3/r1、a2/r2 还让它作 zvyšovat 的 ARG0、náklad 的修饰），施事成了一个等同关系，结构错误。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "「méně závislé」（较少依赖）的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "záviset-001 :degree (less-than :op1 Time)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "less-than"
+   },
+   {
+    "label": "have-degree-91 :ARG2 závislý :ARG3 méně",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "have-degree-91"
+   },
+   {
+    "label": "have-degree-91 :ARG3 méně :ARG4 Time",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG4"
+   },
+   {
+    "label": "být-007 … závislý :extent málo",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ málo)"
+   }
+  ],
+  "best": null,
+  "text": "训练数据把「méně formální」写成 formální :extent (málo)（wsj1470 第 30 句），s3 与之相同；have-degree-91 是完整 guideline 的比较结构；gold 的 less-than 加上隐含的比较对象 Time 也表达了比较。几种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "gold 变量名 s22l1 出现在第 23 句",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "less-than 节点变量名为 s22l1（句号不符）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "s22l1"
+   },
+   {
+    "label": "变量都以 s23 开头",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "变量都以 s23 开头",
+  "text": "精简版 1、7：第 N 句的变量都以 s+N 开头。gold 第 23 句的 less-than 节点用了 s22l1，是格式错误，容易与第 22 句的变量混淆。",
+  "fix": {
+   "title": "把 s22l1 改为第 23 句的变量",
+   "conf": "mid",
+   "why": "第 23 句的变量必须以 s23 开头（精简版 1、7）；s22l1 是格式错误。删掉后以 s23l1 原样重建（less-than :op1 Time，对齐第 30 词）。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s22l1"
+    },
+    {
+     "op": "add_node",
+     "parent": "s23z2",
+     "role": "degree",
+     "var": "s23l1",
+     "concept": "less-than",
+     "align": "30-30"
+    },
+    {
+     "op": "add_rel",
+     "s": "s23l1",
+     "r": "op1",
+     "t": "s23m2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "「od Washington Post Co.」与 Newsweek 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "Newsweek :possessor company",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "Newsweek :ARG1-of vydávat-001 :ARG0 company",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "vydávat-001"
+   },
+   {
+    "label": "Newsweek :poss company / organization",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": ":start / :source (name 或 foreign-phrase)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「Newsweek od Washington Post Co.」是 Washington Post 公司旗下的 Newsweek，所属或出版关系都对。:poss 是旧角色名（s0、s1f 全篇如此，见第 17 句）。s3、a2/r2 把 od 读成起点/来源，而且没给公司建实体节点（foreign-phrase 或裸 name），丢了所属关系。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 5,
+  "topic": "「oba」（两者）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有 oba 节点",
+    "systems": [
+     "gold",
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "oba 挂在主语（týdeník / and）上",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ oba)"
+   },
+   {
+    "label": "zvyšovat :mod oba",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ oba)"
+   }
+  ],
+  "best": "oba 挂在主语（týdeník / and）上",
+  "text": "第二个小句的主语是「oba」（两家都），训练数据把 oba 写成 :mod (oba)（多例）或直接作论元。gold 漏了这个词；挂在动词上作 :mod 不如挂在它所指的主语上。",
+  "fix": {
+   "title": "补 oba：týdeník :mod oba",
+   "conf": "low",
+   "why": "原文第 39 词 oba（两者）是第二小句的主语，gold 漏标；训练数据把 oba 写成名词的 :mod。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s23t1",
+     "role": "mod",
+     "var": "s23o9",
+     "concept": "oba",
+     "align": "39-39"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 6,
+  "topic": "Time 与前文的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "same-entity 第 22 句被读的 entity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 21 句 časopis",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 17 句 Time",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "same-entity 第 1 句 Time",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不连",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "本句的 Time 是贯穿全文的杂志。gold 连到第 22 句隐含的「被读的东西」，s3 连第 21 句的 časopis，s1f 连上一次点名的第 17 句，都在附近；连第 1 句跳得太远，不连则断了链。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "「výše nákladů」的方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "výše :mod-of náklad（= náklad :mod výše）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":mod-of (s"
+   },
+   {
+    "label": "výše :possessor náklad",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "výše :mod náklad",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "výše :poss náklad",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "výše :ARG1 náklad",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "výše :mod náklad",
+  "text": "与第 20 句「kvalitu nákladu」相同：中心是 výše（水平），属格 náklad 修饰它，训练数据同类写 kvalita :mod (práce)。gold 再次用 :mod-of 把方向写反。",
+  "fix": {
+   "title": "výše 与 náklad：:mod-of → :mod",
+   "conf": "mid",
+   "why": "「výše nákladů」中心是 výše，náklad 是属格修饰语；gold 的 :mod-of 方向反了（与第 20 句同样的错）。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24v1",
+     "r": "mod-of",
+     "t": "s24n1",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "「sazby za inzerci」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "sazba :part inzerovat-001",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":part (s"
+   },
+   {
+    "label": "sazba :purpose inzerce",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "sazba :mod inzerce",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ inzerce"
+   },
+   {
+    "label": "sazba :ARG1 inzerce",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「广告费率」里 inzerce 是费率针对的服务，作 :mod 或 :purpose 都可以。:part 表示部分—整体（项目规则：部分 :part 整体），广告不是费率的部分，也不是其整体，gold 用错了角色。sazba 不是事件，带 :ARG1 不妥。",
+  "fix": {
+   "title": "sazba 与 inzerovat：:part → :mod",
+   "conf": "mid",
+   "why": "「sazby za inzerci」（广告费率）不是部分—整体关系，:part 用错；按训练数据写名词修饰的习惯改为 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24s1",
+     "r": "part",
+     "t": "s24i1",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "「pro rok 1990」的表示与挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "date-entity 只挂在 výše 上",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "date-entity 同时挂在 sazby 和 výše 上",
+    "systems": [
+     "s0/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":year 1990"
+   },
+   {
+    "label": "date-entity 挂在 and 上",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":year 1990"
+   },
+   {
+    "label": "rok :mod 1990，挂在两者上",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 1990)"
+   },
+   {
+    "label": ":duration rok :name (1990)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": ":duration (s"
+   },
+   {
+    "label": "oznámit :purpose date-entity",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "date-entity 同时挂在 sazby 和 výše 上",
+  "text": "「1990 年的广告费率和发行量」，年份修饰两个并列项；gold 只挂在 výše 上，漏了 sazby。日期按精简版 2.2 写 date-entity :year 1990，rok :mod 1990 略差；:duration 与「rok :name 1990」都不对；把年份当成「宣布」的目的是误读。",
+  "fix": {
+   "title": "年份同时修饰 sazby",
+   "conf": "low",
+   "why": "「sazby … a výše nákladů pro rok 1990」中年份修饰两个并列项，gold 只挂在 výše 上。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s24s1",
+     "r": "temporal",
+     "t": "s24d1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "被预期事件 oznámit 的 modal 强度",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "partial-affirmative（gold 另有 :modal-predicate očekávat）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "文档级 null-conceiver :partial-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不标强度，只写 :modpred",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":modpred"
+   }
+  ],
+  "best": "partial-affirmative（gold 另有 :modal-predicate očekávat）",
+  "text": "「Od obou časopisů se očekává, že … oznámí」是被预期的将来事件：精简版 5.2，补语事件的强度取谓词所蕴含的强度，预期给 partial-affirmative。a2 当作确定事件；s1f 只写了旧名 :modpred，没有给出强度。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "očekávat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   }
+  ],
+  "best": null,
+  "text": "「se očekává」（人们预期）可看作持续中的过程（activity，与第 12 句 gold očekávat-001 相同），也可看作心理状态（state，精简版 4.1 把 believe、want 一类列为 state）。都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "náklad 与第 23 句 náklady 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "same-entity 第 23 句 garantované náklady",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "第 23 句是两家杂志近年保证的发行量，本句是 1990 年的发行量水平，同类但时期不同、数值不同，是否同一实体定不了。gold 全篇不连各句的 náklad。",
+  "fix": null
+ }
+]

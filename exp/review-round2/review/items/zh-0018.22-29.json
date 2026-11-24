@@ -1,0 +1,6104 @@
+[
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "「发生」是否成节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "无 发生 节点（位置 :place-of 空袭）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "发生-01（位置 :place-of 发生-01）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 发生-01"
+   }
+  ],
+  "best": "发生-01（位置 :place-of 发生-01）",
+  "text": "「第二次空袭发生位置」中「发生」是关系从句里的谓词，PropBank 有 发生-01（ARG0 事件），不是轻动词；训练数据（chinese_umr-0013 第 1 句「近海发生逆冲地震」等）都把 发生-01 标成事件。gold 省掉它语义损失不大，算 minor。",
+  "fix": {
+   "title": "补出「发生-01」：位置 :place-of 发生-01 :ARG0 第二次空袭",
+   "conf": "mid",
+   "why": "发生 是 PropBank 有义项的谓词（发生-01 ARG0 事件），训练数据一律标成事件节点；gold 直接让位置 :place-of 空袭，漏了这个事件。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s22x6",
+     "role": "place-of",
+     "var": "s22z1",
+     "concept": "发生-01",
+     "attrs": {
+      "aspect": "performance"
+     },
+     "align": "3-3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s22z1",
+     "r": "ARG0",
+     "t": "s22x7"
+    },
+    {
+     "op": "del_rel",
+     "s": "s22x6",
+     "r": "place-of",
+     "t": "s22x7"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s22z1"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s22x7",
+      "overlap",
+      "s22z1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "「发生」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "发生 :ARG0 空袭，位置 是 :place",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":place-of (s"
+   },
+   {
+    "label": "发生 :ARG0 空袭，位置 是 :ARG1",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "发生 :ARG1 空袭",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 发生-01"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 发生-01：ARG0 是事件（accident, event），ARG1 是 happening to，例句里 ARG1 正是地点（淮河中、下游），所以位置作 :ARG1 或 :place 都说得通；把空袭本身作 ARG1 不符合 roleset。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "「相隔」「隔」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "ARG0 两端（and），ARG1 距离",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "ARG0 一端，ARG1 另一端，:extent 距离",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":extent (s"
+   },
+   {
+    "label": "ARG1、ARG2 两端，ARG3 距离",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG3 (s"
+   }
+  ],
+  "best": "ARG0 两端（and），ARG1 距离",
+  "text": "PropBank 相隔-01：ARG0 entities described（两端），ARG1 entity arg0 is separated by（距离，例「中国和以色列…相隔万水千山」）；隔-01 同样 ARG0 theme、ARG1 separating entity。距离是核心论元 ARG1，不该用 :extent；相隔-01 没有 ARG2、ARG3。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 4,
+  "topic": "距离两端是「位置」还是空袭",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两处都用位置（补出隐含的位置）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "相隔两端都是位置，隔的一端用空袭",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第一次、第三次直接用空袭",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "原文「…位置离第一次相隔」「第三次空袭离第二次的位置隔」，两端一边是位置一边是空袭（省略了位置）。补出隐含的「位置」节点更一致，直接用空袭也贴近字面，几种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 5,
+  "topic": "第二次空袭在句中两次出现",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "复用同一个位置/空袭节点",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另建一个第二次空袭节点，用句内 :same-event 连（还把 发生 和空袭 连成 same-event）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "复用同一个位置/空袭节点",
+  "text": "guideline 5.3：同一句里的共指用图内的 re-entrancy，不写 :coref 三元组。s1f 还把「发生」和空袭标成同一事件，发生 是空袭的谓词，不是同一事件的另一次提及。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 6,
+  "topic": "「第N次」的「次」作 :unit",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "ordinal-entity 不带 :unit",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "ordinal-entity :unit 次",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 次)"
+   }
+  ],
+  "best": "ordinal-entity :unit 次",
+  "text": "【更正】量词按规则保留为 :unit。「第二次」「第一次」「第三次」的动量词 次 保留为 ordinal-entity 上的 :unit（同第 17 句 gold 的写法）；gold 和 s1f、s3 只写 :value，漏了量词节点。",
+  "fix": {
+   "title": "三个序数补上量词 次",
+   "conf": "mid",
+   "why": "量词保留为 :unit；「第二次」「第一次」「第三次」的 次 挂在各自的 ordinal-entity 上，和第 17 句 gold 一致。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s22o",
+     "role": "unit",
+     "var": "s22u1",
+     "concept": "次",
+     "align": "1-1"
+    },
+    {
+     "op": "add_node",
+     "parent": "s22o2",
+     "role": "unit",
+     "var": "s22u2",
+     "concept": "次",
+     "align": "6-6"
+    },
+    {
+     "op": "add_node",
+     "parent": "s22o3",
+     "role": "unit",
+     "var": "s22u3",
+     "concept": "次",
+     "align": "12-12"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "ok",
+    "minor"
+   ],
+   "best": "ordinal-entity 不带 :unit",
+   "fix": null
+  }
+ },
+ {
+  "sent": 22,
+  "n": 7,
+  "topic": "三个「空袭」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "这里的「空袭」是事件名词，指已经完成的三次空袭；guideline 4.1 事件名词用 process，已完成的事件用 performance，两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 8,
+  "topic": "「米」写成字符串常量",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":unit \"米\"（字符串）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":unit \"米\""
+   },
+   {
+    "label": ":unit (米) 节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 米)"
+   }
+  ],
+  "best": ":unit (米) 节点",
+  "text": "guideline 2.2：单位是概念节点（:unit (y / year)），gold 同一句的「公里」也是节点；把「米」写成带引号的字符串是格式错误，对齐也因此丢失。",
+  "fix": {
+   "title": "距离单位「米」改成概念节点",
+   "conf": "high",
+   "why": "单位应是概念节点（guideline 2.2 :unit (y / year)），同句「公里」就是节点；字符串 \"米\" 是格式错误。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s22d",
+     "attr": "unit"
+    },
+    {
+     "op": "add_node",
+     "parent": "s22d",
+     "role": "unit",
+     "var": "s22z2",
+     "concept": "米",
+     "align": "10-10"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 9,
+  "topic": "「相隔」「隔」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "document-creation-time :overlap 相隔（隔 overlap 相隔或 DCT）",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :overlap s"
+   },
+   {
+    "label": "挂到前文事件 :overlap",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "document-creation-time :overlap 相隔（隔 overlap 相隔或 DCT）",
+  "text": "guideline 5.1 和检查表：每个事件都要有时间父节点。gold 的两个状态谓词 相隔-01、隔-01 都没有，两地之间的距离是现在仍成立的状态，可挂 DCT :overlap。",
+  "fix": {
+   "title": "相隔、隔补时间父节点（DCT overlap）",
+   "conf": "mid",
+   "why": "每个事件都要有时间父节点（guideline 5.1）；两处位置间的距离是持续成立的状态，挂 document-creation-time :overlap，隔 与 相隔 overlap。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s22x"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s22x",
+      "overlap",
+      "s22x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 10,
+  "topic": "三次空袭之间的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "第一次 before 第二次、第三次 after 第二次",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只挂到前文的对应事件或日期（overlap/contained）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第一次 before 第二次、第三次 after 第二次",
+  "text": "序数「第一次、第二次、第三次」使先后关系很明确，guideline 5.1 说清楚的事件间关系要标。只和前一句同一事件 overlap 没有错，但丢了先后信息。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 11,
+  "topic": "第二、三次空袭与第 21 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "第 21 句「这次空袭」:subset-of 第二、三次（只有第一次 same-event）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "三次分别与第 21 句的第一、二、三次 :same-event",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "三次分别与第 21 句的第一、二、三次 :same-event",
+  "text": "第 21 句把三次空袭分别标成 s21x12、s21i5、s21i6（带 ord 1/2/3），第 22 句的第二、三次空袭和它们是同一事件，应 :same-event；gold 第一次这样做了，第二、三次却连到整体的「这次空袭」，而且三元组方向是整体在左。",
+  "fix": {
+   "title": "第二、三次空袭改为与第 21 句对应空袭 same-event",
+   "conf": "high",
+   "why": "第 21 句有带序数的第二次（s21i5）、第三次（s21i6）空袭节点，与本句的第二、三次是同一事件；gold 第一次已用 same-event，二、三次误连到整体「这次空袭」。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s21x",
+      "subset-of",
+      "s22x7"
+     ],
+     "to": [
+      "s21i5",
+      "same-event",
+      "s22x7"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s21x",
+      "subset-of",
+      "s22x4"
+     ],
+     "to": [
+      "s21i6",
+      "same-event",
+      "s22x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 12,
+  "topic": "位置与第 16、17 句「位置/地点」共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第一、二次的位置分别连第 16 句「位置」、第 17 句「地点」",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "第二次的位置连第 17 句「地点」",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "第一、二次的位置分别连第 16 句「位置」、第 17 句「地点」",
+  "text": "第 16 句「第一辆汽车被击毁的位置」、第 17 句「第二辆车被袭击地点」与本句第一次、第二次空袭的位置是同一地点，guideline 5.3 应 :same-entity。a2 没有第一次位置的节点，已连上能连的。",
+  "fix": {
+   "title": "补两处位置共指（第 16 句位置、第 17 句地点）",
+   "conf": "mid",
+   "why": "第 17 句「第二辆车被袭击地点」（s17x9）即第二次空袭位置（s22x6）；第 16 句「第一辆汽车被击毁的位置」（s16x3）即第一次空袭位置（s22i2）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s17x9",
+      "same-entity",
+      "s22x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s16x3",
+      "same-entity",
+      "s22i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "「根据 OCHA」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "say-91 :ARG0 OCHA :ARG1 内容",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ say-91"
+   },
+   {
+    "label": "说-01 :ARG0 OCHA :ARG1 内容",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 说-01"
+   },
+   {
+    "label": "整句 :source OCHA",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":source (s"
+   },
+   {
+    "label": ":source OCHA 只挂在第一分句「指定」上",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   },
+   {
+    "label": "根据-01 :ARG1 OCHA :ARG2 内容",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 根据-01"
+   }
+  ],
+  "best": null,
+  "text": "「根据X」是信息来源：AMR 习惯用 say 谓词（according to → say-01），中文训练数据（chinese_umr-0011 第 23 句）用 :source，两种都可以。s3/r1 的 :source 只覆盖第一分句；根据-01 只有 ARG0、ARG1，没有 ARG2，s1f/r2 的用法不符合 roleset。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "say-91 缺 aspect 和文档级",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "say-91 没有 aspect，也没有时间、模态父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ say-91"
+   },
+   {
+    "label": "说-01 :aspect performance",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 说-01"
+   },
+   {
+    "label": "根据-01 :aspect state",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 根据-01"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "说-01 :aspect performance",
+  "text": "检查表：每个事件都有 :aspect、时间父节点和模态父节点。gold 引入了 say-91 却三样都没给。仿 guideline 第 1 部分 say-01 例句，补 performance、author full-affirmative、DCT before。",
+  "fix": {
+   "title": "say-91 补 aspect、模态和时间",
+   "conf": "mid",
+   "why": "每个事件都要有 aspect、时间父节点和模态父节点（guideline 检查表）；gold 的 say-91 三样都缺。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s23h3",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23h3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s23h3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "缩写「OCHA」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91 :ARG2 (ocha) 普通概念",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ ocha)"
+   },
+   {
+    "label": "identity-91 :ARG2 organization :name \"OCHA\"",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ identity-91",
+     ":op1 \"OCHA\""
+    ]
+   },
+   {
+    "label": "同一机构节点上第二个 :name \"OCHA\"",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"OCHA\""
+   },
+   {
+    "label": "简称-01 :ARG2 name \"OCHA\"",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 简称-01"
+   },
+   {
+    "label": "全称 name 里加 \"（\" \"OCHA\" \"）\"",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":op7 \"OCHA\""
+   }
+  ],
+  "best": "identity-91 :ARG2 organization :name \"OCHA\"",
+  "text": "OCHA 是专名缩写，guideline 2.2 专名作命名实体（类型 + :name）；gold 把它写成小写普通概念 ocha，丢了专名。a2 照搬训练数据（chinese_umr-0017 第 5 句 UNOCHA）把括号也写进名字，括号不是名字的词。",
+  "fix": {
+   "title": "OCHA 改为命名实体 organization :name \"OCHA\"",
+   "conf": "mid",
+   "why": "缩写 OCHA 是专名，应作命名实体（guideline 2.2）；gold 写成普通概念 ocha。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s23o",
+     "concept": "organization"
+    },
+    {
+     "op": "add_node",
+     "parent": "s23o",
+     "role": "name",
+     "var": "s23z1",
+     "concept": "name",
+     "attrs": {
+      "op1": "\"OCHA\""
+     }
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "联合国人道事务协调厅的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "international-organization",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ international-organization"
+   },
+   {
+    "label": "organization",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   }
+  ],
+  "best": null,
+  "text": "精简 guideline 的类型表只列 organization，但训练数据（chinese_umr-0017 第 5 句，同一机构）用 international-organization，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 5,
+  "topic": "两个分句的连接（「则」）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ and"
+   },
+   {
+    "label": "contrast-91",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ contrast-91"
+   }
+  ],
+  "best": null,
+  "text": "「头两次…获指定为…，第三次…则在这条公路的旁边」，「则」表对照，contrast-91 更贴切，and 也可接受。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 6,
+  "topic": "「遇袭」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "遇袭-00",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "遇袭-00"
+   },
+   {
+    "label": "遇袭-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "遇袭-01"
+   }
+  ],
+  "best": "遇袭-00",
+  "text": "中文 PropBank 没有「遇袭」，按 guideline 2.1 写 遇袭-00。s1f 没有 PropBank，编了 -01。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 7,
+  "topic": "「头两次」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-frequency-91 :ARG2 2 :ord (ordinal-entity 1)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ have-frequency-91"
+   },
+   {
+    "label": ":quant 2 :mod 头",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 头)"
+   },
+   {
+    "label": ":quant 2 :unit 次 :mod 头",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 次)"
+   },
+   {
+    "label": ":ord 1 :quant 2",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":quant 2"
+   },
+   {
+    "label": ":ord 1 :frequency 2",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":frequency 2"
+   }
+  ],
+  "best": ":quant 2 :unit 次 :mod 头",
+  "text": "【更正】量词按规则保留为 :unit。「头两次遇袭」是两次不同的遇袭事件（前两次），用 :quant 2 :unit 次 加 头/序数 1 表达最直接；have-frequency-91 和 :frequency 表示同一事件发生的频率，用在这里不贴切（训练数据只有「看到四十三次日落」这类频率用法）。量词 次 只有 a2 标了，gold 和其余系统都漏了。",
+  "fix": {
+   "title": "头两次：have-frequency-91 → :quant 2 :unit 次 + :ord 1",
+   "conf": "low",
+   "why": "「头两次遇袭」是两个事件，不是一个事件的频率；用 :quant 2 :unit 次 加 ordinal-entity 1 更直接，量词 次 按规则保留。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s23h",
+     "subtree": true
+    },
+    {
+     "op": "set_attr",
+     "var": "s23x13",
+     "attr": "quant",
+     "value": "2"
+    },
+    {
+     "op": "add_node",
+     "parent": "s23x13",
+     "role": "ord",
+     "var": "s23z2",
+     "concept": "ordinal-entity",
+     "attrs": {
+      "value": "1"
+     }
+    },
+    {
+     "op": "add_node",
+     "parent": "s23x13",
+     "role": "unit",
+     "var": "s23u2",
+     "concept": "次",
+     "align": "12-12"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok",
+    "minor",
+    "ok",
+    "minor"
+   ],
+   "best": null,
+   "fix": {
+    "title": "头两次：have-frequency-91 → :quant 2 + :ord 1",
+    "conf": "low",
+    "why": "「头两次遇袭」是两个事件，不是一个事件的频率；用 :quant 2 加 ordinal-entity 1 更直接。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s23h",
+      "subtree": true
+     },
+     {
+      "op": "set_attr",
+      "var": "s23x13",
+      "attr": "quant",
+      "value": "2"
+     },
+     {
+      "op": "add_node",
+      "parent": "s23x13",
+      "role": "ord",
+      "var": "s23z2",
+      "concept": "ordinal-entity",
+      "attrs": {
+       "value": "1"
+      }
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 23,
+  "n": 8,
+  "topic": "道路与遇袭地点的方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "地点 :place 道路（道路 :place-of 地点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "道路 :place 地点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   }
+  ],
+  "best": null,
+  "text": "「头两次遇袭地点的道路」：说道路位于遇袭地点或遇袭地点在道路上，意思一样，两个方向都可以。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 9,
+  "topic": "「这条公路」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "复用 道路 节点，不标「这条」",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "复用 道路 节点，:mod 这条",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 这条)"
+   },
+   {
+    "label": "另建 公路 节点（:mod 这）并用句内 coref 连",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 公路"
+   }
+  ],
+  "best": null,
+  "text": "「这条公路」回指前面的「道路」，guideline 5.3 同一句内的共指用 re-entrancy；s1f 另建节点再写 :same-entity 三元组（s1f/r2 还把被指定的道路和「可用道路」类别也连成同一实体）。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 10,
+  "topic": "「可用」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "可用-01",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 可用-01"
+   },
+   {
+    "label": "用-01 + neutral-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 用-01"
+   }
+  ],
+  "best": "可用-01",
+  "text": "PropBank 有整词 可用-01（ARG0 entity with the property），应整词处理；拆成 用-01 加可能性模态意思接近，但不符合 PropBank 的切分。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 11,
+  "topic": "「可用」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "道路 :ARG0-of 可用-01",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "道路 :mod 可用-01，可用 :ARG0 另一条道路节点",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "道路 :ARG1-of 可用-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "道路 :ARG1-of 用-01",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": "道路 :ARG0-of 可用-01",
+  "text": "PropBank 可用-01 只有 ARG0（entity with the property）；可用-01 带 ARG1 是错的。用-01 的 ARG1 是 entity used，在它们自己的切分下是对的。s3/r2 让「可用」修饰类别道路，却把 ARG0 指向被指定的那条道路，绕了一圈。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 12,
+  "topic": "「人道主义援助」的挂接",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "可用/用 :purpose 援助",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "用-01 :ARG2 援助",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "道路 :purpose 援助",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": null,
+  "text": "「人道主义援助可用（的）道路」：援助是「可用」的目的；用-01 的 ARG2 是 entity arg1 is used for，在 s3/r1 的切分下也对。a2/r2 把目的挂在道路上，可用-01 就成了没有补足的光杆状态。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 13,
+  "topic": "「援助」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "process",
+  "text": "援助在这里是道路用途里泛指的事件名词，没有发生完成；guideline 4.1 事件名词或类型不明的过程用 process，performance 表示已完成并达到结果，不合适。",
+  "fix": {
+   "title": "援助 aspect：performance → process",
+   "conf": "mid",
+   "why": "「人道主义援助可用道路」里的援助是泛指的用途，不是已完成的事件；事件名词按 guideline 4.1 用 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s23x8",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 14,
+  "topic": "两个「遇袭」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "遇袭在这里作定语里的事件，指已经发生的袭击；完成事件 performance、事件名词 process 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 15,
+  "topic": "英文注释「accessible road for humanitarian aid」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "道路 :ARG1-of identity-91 :ARG2 accessible-road-for-humanitarian-aid",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "accessible-road-for-humanitarian-aid"
+   },
+   {
+    "label": "不标英文注释",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不标英文注释",
+  "text": "括号里的英文是同一个名称的翻译，没有新增语义；gold 自造了一个英文连字符概念再用 identity-91 等同，guideline 没有这种做法。拿不准是否算错，所以 fix 只给 low。",
+  "fix": {
+   "title": "删除英文注释的 identity-91 节点",
+   "conf": "low",
+   "why": "括号英文只是「人道主义援助可用道路」的翻译，不提供新信息；自造概念 accessible-road-for-humanitarian-aid 不是 UMR 概念。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s23i5",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 16,
+  "topic": "引述内容的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author 直接 full-affirmative 各事件",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author → OCHA → 指定、遇袭、have-place 等",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "OCHA 只管 指定、have-place，遇袭仍挂 author",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "author → OCHA → 指定、遇袭、have-place 等",
+  "text": "guideline 5.2：引述内容由作者确信说话人，说话人确信内容（author :full-affirmative 说话人，说话人 :full-affirmative 事件）。「根据 OCHA」引出的内容的 conceiver 应是 OCHA；gold 图里有 say-91 :ARG0 OCHA，模态却全挂在 author 下。",
+  "fix": {
+   "title": "引述内容改由 OCHA 作 conceiver",
+   "conf": "mid",
+   "why": "「根据联合国人道事务协调厅」引出的是该机构的说法，guideline 5.2 引述内容的 conceiver 是说话人（author → OCHA → 事件）；gold 的 say-91 :ARG0 就是该机构。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23i3"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x5"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x13"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23x13"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x14"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23x14"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23h2"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23h2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x7"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23x7"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x8"
+     ],
+     "to": [
+      "s23i3",
+      "full-affirmative",
+      "s23x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 17,
+  "topic": "可用、援助的模态三元组",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "可用同时 full-affirmative 和 unspecified；道路(实体)作 conceiver 指向 purpose",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "(author :unspecified s"
+   },
+   {
+    "label": "可用、援助都 full-affirmative（author 或 OCHA 下）",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "可用/用、援助挂在 指定 或 以色列 下（neutral-affirmative / unspecified）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative s"
+   }
+  ],
+  "best": "可用、援助都 full-affirmative（author 或 OCHA 下）",
+  "text": "gold 给 可用（s23x7）同时标了 full-affirmative 和 unspecified，两条矛盾；又让实体「道路」（s23x6）作 author 的 unspecified 子节点、再作 purpose 的 conceiver，conceiver 只能是人、机构或事件。删掉这几条，可用、援助保留 full-affirmative。",
+  "fix": {
+   "title": "删除可用/道路/purpose 的矛盾和错误模态三元组",
+   "conf": "high",
+   "why": "可用同时标 full-affirmative 和 unspecified 自相矛盾；实体「道路」不能作 conceiver，也不是事件，不该带模态强度。保留 author full-affirmative 可用、援助。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "unspecified",
+      "s23x7"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "unspecified",
+      "s23x6"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "s23x6",
+      "partial-affirmative",
+      "purpose"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "purpose",
+      "full-affirmative",
+      "s23x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 18,
+  "topic": "时间关系挂在实体（道路、地点）上",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "遇袭 before 道路、道路 overlap 指定、遇袭 after 地点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "只在事件和时间常量之间建关系",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "只在事件和时间常量之间建关系",
+  "text": "guideline 5.1：时间依存只在事件和时间表达之间。gold 三条三元组用了实体 道路（s23x10）和 地点（s23x3），结果 指定-01 没有真正的时间父节点。指定发生在过去，挂 DCT :before。",
+  "fix": {
+   "title": "删去挂在实体上的时间关系，指定 挂 DCT before",
+   "conf": "high",
+   "why": "时间关系只在事件、时间表达之间（guideline 5.1）；gold 把 道路、地点 两个实体放进时间结构，指定-01 因此缺父节点。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s23x13",
+      "before",
+      "s23x10"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s23x10",
+      "overlap",
+      "s23x5"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s23x13",
+      "after",
+      "s23x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s23x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 19,
+  "topic": "第三次遇袭、have-place 的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第三次 after 头两次，have-place DCT overlap",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂到前文对应事件或日期（overlap/contained）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "第三次 after 头两次，have-place DCT overlap",
+  "text": "每个事件都要有时间父节点（guideline 5.1）。gold 的第三次遇袭（s23x14）和 have-place-91（s23h2）都没有；「第三次」相对「头两次」的先后是明确的，地点在公路旁是现在仍成立的状态。",
+  "fix": {
+   "title": "第三次遇袭挂在头两次之后，have-place 挂 DCT overlap",
+   "conf": "high",
+   "why": "gold 的第三次遇袭和 have-place-91 都没有时间父节点；按序数第三次在头两次之后，地点位置是持续状态。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s23x13",
+      "after",
+      "s23x14"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s23h2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 20,
+  "topic": "「以色列」与前文共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "与第 21 句「以色列」:same-entity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "与第 21 句「以色列」:same-entity",
+  "text": "guideline 5.3：重复出现的专名要和最近的前一次提及连 :same-entity；第 21 句的 以色列 是 s21c2。",
+  "fix": {
+   "title": "以色列 与第 21 句 same-entity",
+   "conf": "high",
+   "why": "同一国家的重复提及，按 guideline 5.3 连到最近的前一次提及（第 21 句 s21c2）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s21c2",
+      "same-entity",
+      "s23c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 21,
+  "topic": "第三次遇袭与第 22 句第三次空袭",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":same-event",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": ":same-event",
+  "text": "本句「第三次遇袭」和第 22 句「第三次空袭」（gold s22x4）是同一事件，guideline 5.3 应 :same-event。",
+  "fix": {
+   "title": "第三次遇袭与第 22 句第三次空袭 same-event",
+   "conf": "high",
+   "why": "第三次遇袭即第 22 句的第三次空袭（s22x4），同一事件的两次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s22x4",
+      "same-event",
+      "s23x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 22,
+  "topic": "「头两次遇袭」与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 22 句第一、二次空袭 :subset-of 头两次（位置 :subset-of 地点）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "头两次 :subset-of 第 1 句的整个空袭",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   }
+  ],
+  "best": "第 22 句第一、二次空袭 :subset-of 头两次（位置 :subset-of 地点）",
+  "text": "「头两次遇袭」是第 22 句第一、二次空袭的集合，guideline 5.3（4-1-2）用 :subset-of 表示事件的部分关系；连到第 1 句的整体空袭也对，但信息少一些。",
+  "fix": {
+   "title": "第 22 句第一、二次空袭 subset-of 头两次遇袭",
+   "conf": "mid",
+   "why": "「头两次遇袭」包含第 22 句的第一次（s22x8）、第二次（s22x7）空袭，按 guideline 4-1-2 用 :subset-of。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s22x8",
+      "subset-of",
+      "s23x13"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s22x7",
+      "subset-of",
+      "s23x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 23,
+  "topic": "「第三次」的量词 次",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "ordinal-entity :value 3 :unit 次",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 次)"
+   },
+   {
+    "label": "序数没有 :unit 次",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "ordinal-entity :value 3 :unit 次",
+  "text": "原文「第 三次 遇袭地点」，「三次」里的动量词 次 应保留为 ordinal-entity 上的 :unit（同第 17 句 gold 的写法）；gold 的 ordinal-entity :value 3 少了 :unit 次。",
+  "fix": {
+   "title": "「第三次」的序数补上量词 次",
+   "conf": "mid",
+   "why": "量词保留为 :unit；「第三次」的 次 挂在 ordinal-entity 上，和第 17 句 gold 一致。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s23o3",
+     "role": "unit",
+     "var": "s23u1",
+     "concept": "次",
+     "align": "36-36"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "「不治身亡」的切分和义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "不治身亡-01 整词",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 不治身亡-01"
+   },
+   {
+    "label": "不治-01 与 身亡-01 并列（and）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 不治-01"
+   },
+   {
+    "label": "身亡-01 :reason 不治-01",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":reason (s"
+   },
+   {
+    "label": "身亡-01 :cause 治-01（否定）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 治-01"
+   }
+  ],
+  "best": "不治身亡-01 整词",
+  "text": "中文 PropBank 有整词 不治身亡-01（ARG0 patient died from the disease），也分别有 不治-01、身亡-01。整词最好；拆开时「不治」是「身亡」的原因，用 :reason/:cause 能保住这层意思，and 丢了因果。s1f 把「不治」拆成 治-01 加否定，而 PropBank 有 不治-01。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "「身亡」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":ARG0 工作者",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":ARG1 工作者",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": ":ARG0 工作者",
+  "text": "PropBank 身亡-01、不治身亡-01 都只有 ARG0（entity described / patient），没有 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "「但」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-concession-91 :ARG1 身亡 :ARG2 移送",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ have-concession-91"
+   },
+   {
+    "label": "but-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ but-91"
+   },
+   {
+    "label": "contrast-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ contrast-01"
+   },
+   {
+    "label": "and + 身亡 :concession 抢救",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":concession s"
+   }
+  ],
+  "best": null,
+  "text": "精简 guideline 2.5：但是、却 → but-91；完整 guideline 3-1-6 把「出乎预料的共现」归为 concessive，用 have-concession-91，「抢救但不治」两种读法都成立。contrast-01 是 AMR 的写法（UMR 用 contrast-91），s1f/r1 用 and 再加 :concession 把句子结构拆散了。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "「穿着」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "穿-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 穿-01"
+   },
+   {
+    "label": "穿着-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 穿着-01"
+   }
+  ],
+  "best": "穿-01",
+  "text": "PropBank 没有「穿着」，「着」是体标记，应用 穿-01（ARG0 agent，ARG1 clothing）；穿着-01 不存在。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "「保护装备」的「保护」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "装备 :mod 保护",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "装备 :purpose 保护-01 :ARG1 工作者",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 保护-01"
+   }
+  ],
+  "best": null,
+  "text": "「保护装备」可以看成名词性修饰（:mod），也可以展开为用途事件 保护-01，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "工作者与世界中央厨房的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "工作者 :part-of 机构",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "工作者 :possessor 机构",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "工作者 :poss 机构",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "「世界中央厨房的7名人道工作者」：成员关系用 :part-of 或 :possessor 都说得通。:poss 是完整 guideline 的旧写法，精简版和发布数据用 :possessor。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 7,
+  "topic": "世界中央厨房的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "international-organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ international-organization"
+   },
+   {
+    "label": "organization",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   }
+  ],
+  "best": "organization",
+  "text": "世界中央厨房是非政府慈善组织，不是联合国那样的国际组织；organization 更准确。gold 全篇都这样标，单改一句会不一致，所以不给 fix。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 8,
+  "topic": "医院的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "facility",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ facility"
+   },
+   {
+    "label": "hospital",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ hospital"
+   },
+   {
+    "label": "building",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ building"
+   }
+  ],
+  "best": null,
+  "text": "AMR 的命名实体类型有 hospital（属于 facility 一类），facility、building 也是表里的类型，都可以。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 9,
+  "topic": "医院与城市的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "医院 :part-of 城市",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "医院 :place 城市",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   }
+  ],
+  "best": null,
+  "text": "「代尔拜莱赫市的舒哈达阿克萨医院」：地点包含关系，:part-of 和 :place 都常见，都可以。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 10,
+  "topic": "工作者的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "guideline 2.4：复数名词加 :refer-number plural。这里已有 :quant 7，缺 refer-number 影响很小。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 11,
+  "topic": "量词「名」作 :unit",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "工作者 :unit 名",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 名)"
+   },
+   {
+    "label": "不标「名」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "工作者 :unit 名",
+  "text": "【更正】量词按规则保留为 :unit。「7 名」的量词「名」保留为 :unit，和 :quant 7 并列；系统都没有标。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "不标「名」",
+   "fix": {
+    "title": "删除个体量词「名」的 :unit 节点",
+    "conf": "mid",
+    "why": "按 guideline 2.2，个体量词（个、位、名）省略，只保留 :quant 7；「名」不是度量单位。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s24x12"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 24,
+  "n": 12,
+  "topic": "「抢救」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "endeavor",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect endeavor"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "endeavor",
+  "text": "抢救进行了但「最终全员不治身亡」，没有达到结果；guideline 4.1 endeavor 正是「结束了但没达到结果的过程」，performance 表示达到了结果，和句意相反。process 作为目的事件也说得通。",
+  "fix": {
+   "title": "抢救 aspect：performance → endeavor",
+   "conf": "mid",
+   "why": "抢救之后全员不治身亡，抢救结束而未达到结果，按 guideline 4.1 是 endeavor，不是 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s24x5",
+     "attr": "aspect",
+     "value": "endeavor"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 13,
+  "topic": "移送、抢救的模态三元组",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "移送同时 full-affirmative 和 unspecified；红新月会(实体) unspecified 并作 purpose 的 conceiver",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "(author :unspecified s"
+   },
+   {
+    "label": "抢救 author full-affirmative",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "抢救挂在 移送 下（partial-affirmative / unspecified）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "抢救挂在 null-conceiver 下",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "null-conceiver :partial-affirmative"
+   }
+  ],
+  "best": "抢救 author full-affirmative",
+  "text": "gold 给 移送-01（s24x）同时标 full-affirmative 和 unspecified，自相矛盾；又给实体 红新月会（s24o）标 unspecified，再让它经 purpose 常量管 抢救，而 抢救 已有 author full-affirmative。和第 23 句是同一种错。删掉这几条即可。",
+  "fix": {
+   "title": "删除移送/红新月会/purpose 的矛盾模态三元组",
+   "conf": "high",
+   "why": "移送 同时 full-affirmative 和 unspecified 自相矛盾；作为 conceiver 的实体不该从 author 得到 unspecified；抢救 已有 author full-affirmative，purpose 链重复。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "unspecified",
+      "s24x"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "unspecified",
+      "s24o"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "s24o",
+      "partial-affirmative",
+      "purpose"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "purpose",
+      "full-affirmative",
+      "s24x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 14,
+  "topic": "移送相对前文的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "经 穿 挂 DCT before",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "移送 after 第三次袭击（第 17/23 句）",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "移送 after 第 17 句「身亡」（又和本句身亡 same-event）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "contained 在第 1 句的日期里",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "移送 after 第三次袭击（第 17/23 句）",
+  "text": "本句身亡在移送和抢救之后；s3 把移送挂在第 17 句「身亡」之后，又把两个身亡连成 same-event，等于说移送既在身亡之前又在之后，自相矛盾。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 15,
+  "topic": "世界中央厨房、代尔拜莱赫与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两者都连（第 20 句、第 14 句）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "只连世界中央厨房",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "两者都连（第 20 句、第 14 句）",
+  "text": "guideline 5.3：重复的专名连到最近的前一次提及。世界中央厨房上一次在第 20 句（s20i2），代尔拜莱赫上一次在第 14 句（s14c）。",
+  "fix": {
+   "title": "补世界中央厨房、代尔拜莱赫的共指",
+   "conf": "high",
+   "why": "重复出现的专名按 guideline 5.3 连到最近的前一次提及：世界中央厨房 s20i2，代尔拜莱赫 s14c。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s20i2",
+      "same-entity",
+      "s24i2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s14c",
+      "same-entity",
+      "s24c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 16,
+  "topic": "7名工作者及其身亡与第 17 句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "工作者 same-entity、身亡 same-event",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "工作者 same-entity、身亡 same-event",
+  "text": "第 17 句「车队的7名人道工作者全员身亡」与本句是同样的 7 个人、同一次死亡，guideline 5.3 应分别连 :same-entity、:same-event。",
+  "fix": {
+   "title": "工作者、身亡与第 17 句共指",
+   "conf": "high",
+   "why": "第 17 句的 7 名人道工作者（s17x3）全员身亡（s17x2），与本句的工作者、不治身亡是同一批人、同一事件。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s17x3",
+      "same-entity",
+      "s24x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s17x2",
+      "same-event",
+      "s24x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 1,
+  "topic": "「运」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "运-02",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 运-02"
+   },
+   {
+    "label": "运-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 运-01"
+   }
+  ],
+  "best": "运-02",
+  "text": "PropBank 运-02 有 ARG2 destination（例「从津巴布韦运至金沙萨」），运-01 只有 ARG0、ARG1；运到医院要用 运-02。s1f/r1 还给 运-01 带了 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 2,
+  "topic": "目的地「医院」和「至」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "运 :ARG2 医院",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "运 :goal 医院",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "运 :ARG2 至-01（至 :ARG1 医院）",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 至-01"
+   }
+  ],
+  "best": "运 :ARG2 医院",
+  "text": "「运至」是动词带结果补语，「至」引出目的地，不是另一个事件；目的地是 运-02 的 ARG2，不该用 :goal（s1f/r2 的 :goal 是因为它选了没有 ARG2 的 运-01）。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 3,
+  "topic": "「南部」与「加沙」的方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "南部 :part-of 加沙",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "南部 :part 加沙",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：南部是加沙的一部分，应 南部 :part-of 加沙；s1f/r1 方向反了。",
+  "fix": null,
+  "before_part_correction": {
+   "status": [
+    "ok",
+    "bad"
+   ],
+   "best": "南部 :part-of 加沙",
+   "conf": null
+  }
+ },
+ {
+  "sent": 25,
+  "n": 4,
+  "topic": "「加沙」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "territory",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ territory"
+   },
+   {
+    "label": "country-region",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country-region"
+   },
+   {
+    "label": "region",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ region"
+   },
+   {
+    "label": "location",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ location"
+   },
+   {
+    "label": "world-region",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ world-region"
+   }
+  ],
+  "best": null,
+  "text": "加沙（地带）用 AMR 类型 local-region、territory、country-region 都说得通，gold 全篇用 local-region；region、location 太泛，world-region 指中东这类大区域，不合适。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 5,
+  "topic": "「运」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "document-creation-time :before 运",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "(document-creation-time :before s"
+   },
+   {
+    "label": "运 after 第 24 句的身亡",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "运 after 第 24 句的身亡",
+  "text": "guideline 5.1：没有时间表达时，先用之前的、明确的事件作参照，再退到 DCT。运「遗体」显然在第 24 句的身亡之后，这个参照很清楚。",
+  "fix": {
+   "title": "运 改挂在第 24 句不治身亡之后",
+   "conf": "mid",
+   "why": "按 guideline 5.1 优先用明确的前文事件作参照：运遗体发生在第 24 句不治身亡（s24x2）之后。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s25x"
+     ],
+     "to": [
+      "s24x2",
+      "after",
+      "s25x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 6,
+  "topic": "「加沙」与第 13 句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "与第 13 句「加沙地带」same-entity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "与第 13 句「加沙地带」same-entity",
+  "text": "本句的加沙与第 13 句的加沙地带是同一地方，也是第 14–24 句间最近的一次提及，guideline 5.3 应连 :same-entity。",
+  "fix": {
+   "title": "加沙 与第 13 句加沙地带 same-entity",
+   "conf": "high",
+   "why": "同一地名的重复提及，连到最近的前一次提及（第 13 句 s13c）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s13c",
+      "same-entity",
+      "s25l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 7,
+  "topic": "「遗体」与工作者共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "遗体 same-entity 第 24 句工作者",
+    "systems": [
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "不连",
+  "text": "遗体是工作者死后的身体，不是同一个实体；:same-entity 说过头了，不连或用别的关系更稳妥。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 8,
+  "topic": "「遗体」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "遗体指 7 名工作者的遗体，是复数；guideline 2.4 复数名词加 :refer-number plural。影响小，不给 fix。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 1,
+  "topic": "「葬」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "下葬-02 :ARG0 雇员 :ARG1 加沙地带",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 下葬-02"
+   },
+   {
+    "label": "葬-00 :ARG1 雇员 :place 加沙地带",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 葬-00"
+   },
+   {
+    "label": "葬-01 :ARG1 雇员 :place 加沙地带",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 葬-01"
+   }
+  ],
+  "best": "葬-00 :ARG1 雇员 :place 加沙地带",
+  "text": "guideline 2.1：中文事件用原词加 PropBank 义项，不在 PropBank 的写 <词>-00。原文是「葬」，PropBank 没有，应为 葬-00；gold 借用了另一个词「下葬」的 roleset（论元按 下葬-02 标得是对的）。s1f 编了不存在的 葬-01。",
+  "fix": {
+   "title": "葬：下葬-02 → 葬-00（被葬者 ARG1，地点 :place）",
+   "conf": "mid",
+   "why": "原词是「葬」，PropBank 没有这个词，按 guideline 2.1 写 葬-00；借用 下葬-02 的 roleset 不合规范。改后被葬者作 ARG1（受事），地点用 :place。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s26x3",
+     "concept": "葬-00"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s26x3",
+     "r": "ARG0",
+     "t": "s26x9",
+     "r2": "ARG1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s26x3",
+     "r": "ARG1",
+     "t": "s26l",
+     "r2": "place"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 2,
+  "topic": "「工作人员」的「工作」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "人员 :ARG0-of 工作-01（habitual）",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 工作-01"
+   },
+   {
+    "label": "人员 :mod 工作",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 工作)"
+   }
+  ],
+  "best": null,
+  "text": "「工作人员」是复合名词，用 :mod 工作 或展开为 工作-01 的施事都可以。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 3,
+  "topic": "量词「名」作 :unit",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "人员 :unit 名",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 名)"
+   },
+   {
+    "label": "不标「名」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "人员 :unit 名",
+  "text": "【更正】量词按规则保留为 :unit。同第 24 句：「6 名」的量词「名」保留为 :unit，和 :quant 6 并列。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "不标「名」",
+   "fix": {
+    "title": "删除个体量词「名」的 :unit 节点",
+    "conf": "mid",
+    "why": "按 guideline 2.2，个体量词（个、位、名）省略，只保留 :quant 6；「名」不是度量单位。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s26x7"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 26,
+  "n": 4,
+  "topic": "「运回」的目的地",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "运回 :ARG2 原居国",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "运回 :goal 原居国",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":goal (s"
+   }
+  ],
+  "best": "运回 :ARG2 原居国",
+  "text": "PropBank 运回-01 的 ARG2 是 destination，目的地应是核心论元，不用 :goal。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 5,
+  "topic": "「而……则」的连接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "contrast-91",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ contrast-91"
+   },
+   {
+    "label": "and",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ and"
+   }
+  ],
+  "best": null,
+  "text": "「而」「则」对照外籍人员和巴勒斯坦雇员的不同处置，contrast-91 更贴切，and 也可接受。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 6,
+  "topic": "「则」是否成节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不成节点",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "葬 :mod 则",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 则)"
+   }
+  ],
+  "best": "不成节点",
+  "text": "「则」是表对照的连接词，意思已由 contrast-91 表达，不该再作 :mod。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 7,
+  "topic": "「巴勒斯坦」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country"
+   },
+   {
+    "label": "nationality",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ nationality"
+   }
+  ],
+  "best": null,
+  "text": "「巴勒斯坦雇员」的巴勒斯坦表示国籍，country 和 nationality 都在 guideline 2.2 的类型表里，都可以。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 8,
+  "topic": "「加沙地带」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "territory",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ territory"
+   },
+   {
+    "label": "country-region",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country-region"
+   },
+   {
+    "label": "region",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ region"
+   },
+   {
+    "label": "location",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ location"
+   }
+  ],
+  "best": null,
+  "text": "同第 25 句：local-region、territory、country-region 都说得通；region、location 太泛。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 9,
+  "topic": "「人员」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "guideline 2.4 复数名词加 :refer-number plural；已有 :quant 6，影响小。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 10,
+  "topic": "「葬」相对「运回」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "葬 after 运回",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "葬 contained 在 4月3日 内",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "葬 overlap 运回",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "葬 contained 在 4月3日 内",
+  "text": "句首的「4月3日」管两个分句，原文没说下葬在运回之后；guideline 5.1 先挂本句的时间表达，事件间关系只在清楚时标。gold 的 after 没有依据。",
+  "fix": {
+   "title": "葬 改挂在「4月3日」下（contained）",
+   "conf": "mid",
+   "why": "句首日期「4月3日」管两个分句，guideline 5.1 优先挂本句的时间表达；原文没有说下葬在运回之后。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s26x",
+      "after",
+      "s26x3"
+     ],
+     "to": [
+      "s26d",
+      "contained",
+      "s26x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 11,
+  "topic": "日期「4月3日」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "document-creation-time :before 日期",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before s"
+   },
+   {
+    "label": "root :depends-on 日期",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "(root :depends-on s"
+   },
+   {
+    "label": "document-creation-time :depends-on 日期",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "(document-creation-time :depends-on s"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：绝对日期挂 root（:depends-on）；训练数据也有 (document-creation-time :before 日期) 的写法，两种都接受。把不带相对意义的日期挂 DCT :depends-on 是相对时间词的写法，略差。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 12,
+  "topic": "「加沙地带」与第 25 句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "与第 25 句「加沙」same-entity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "与第 25 句「加沙」same-entity",
+  "text": "同一地方的重复提及，guideline 5.3 连到最近的前一次提及（第 25 句 s25l）。",
+  "fix": {
+   "title": "加沙地带 与第 25 句加沙 same-entity",
+   "conf": "high",
+   "why": "加沙地带与第 25 句的加沙（s25l）是同一地方，按 guideline 5.3 连 :same-entity。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s25l",
+      "same-entity",
+      "s26l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 13,
+  "topic": "外籍人员、雇员、遗体与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "人员、雇员 :subset-of 第 24 句工作者，遗体 :subset-of 第 25 句遗体",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "人员、雇员 :subset-of 第 2 句工作者，遗体 :subset-of 第 25 句遗体",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   }
+  ],
+  "best": "人员、雇员 :subset-of 第 24 句工作者，遗体 :subset-of 第 25 句遗体",
+  "text": "6 名外籍人员和巴勒斯坦雇员合起来就是遇难的 7 名工作者，6 具遗体是第 25 句遗体的一部分；guideline 5.3 用 :subset-of。连到第 2 句的工作者也对，只是不是最近的提及。",
+  "fix": {
+   "title": "人员、雇员、遗体 subset-of 前文",
+   "conf": "mid",
+   "why": "6 名外籍人员（s26x4）和巴勒斯坦雇员（s26x9）是第 24 句 7 名工作者（s24x6）的一部分，6 具遗体（s26x2）是第 25 句遗体（s25x2）的一部分。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26x4",
+      "subset-of",
+      "s24x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26x9",
+      "subset-of",
+      "s24x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26x2",
+      "subset-of",
+      "s25x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 1,
+  "topic": "「遇难者中」「其中」的部分关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "include-91（各组 ARG1，遇难者 ARG2；3 人 :ARG2-of include-91 两名工作者）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ include-91"
+   },
+   {
+    "label": "and 各分句，各组 :subset-of 遇难者，工作者 :subset-of 3 人",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "各组 :part-of 遇难者（另加句内 subset-of 三元组）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":part-of s"
+   },
+   {
+    "label": "各组 :part 遇难者（方向反了，另加句内 subset-of 三元组）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":part s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「遇难者中1人…」「其中两名…」是集合与成员的关系，include-91 或 :subset-of 都可以；:part/:part-of 是部分-整体，用于成员不准确，s1f/r1 的 :part 方向也反了（成了遇难者是人的一部分）。s1f 还在 :coref 里重复写句内的 subset-of，违反 guideline 5.3。",
+  "fix": null,
+  "before_part_correction": {
+   "status": [
+    "ok",
+    "ok",
+    "minor",
+    "bad"
+   ],
+   "best": null,
+   "conf": null
+  }
+ },
+ {
+  "sent": 27,
+  "n": 2,
+  "topic": "「1人为……巴勒斯坦人」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不用谓词，person :mod 巴勒斯坦 直接作 include-91 的成员",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "have-role-91 :ARG3 巴勒斯坦人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ have-role-91"
+   },
+   {
+    "label": "have-mod-91 :ARG2 巴勒斯坦",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ have-mod-91"
+   },
+   {
+    "label": "identity-91 :ARG2 巴勒斯坦人",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ identity-91"
+   }
+  ],
+  "best": "have-role-91 :ARG3 巴勒斯坦人",
+  "text": "「X 为 Y 人」是类别归属，guideline 2.3 用 have-role-91（ARG1 X，ARG3 category）；identity-91 只用于等同，have-mod-91 用于性质。gold 在 include-91 的结构里把它折进 person 节点，也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 3,
+  "topic": "「原居」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "居-02 + 原",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 居-02"
+   },
+   {
+    "label": "原居-00",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 原居-00"
+   },
+   {
+    "label": "居-01 + 原",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "/ 居-01"
+   },
+   {
+    "label": "原居-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 原居-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 没有「原居」；居-02 是 place arg0 lives，居-01 是 position arg0 occupies（名次）。拆成 居-02 加「原」或整词 原居-00 都可以；居-01 义项错，原居-01 不存在。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 4,
+  "topic": "「具有」用 have-91 还是 具有-01",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "have-91 :ARG1 人 :ARG2 国籍",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ have-91"
+   },
+   {
+    "label": "具有-01 :ARG0 人 :ARG1 国籍",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 具有-01"
+   }
+  ],
+  "best": "具有-01 :ARG0 人 :ARG1 国籍",
+  "text": "guideline 2.3 的抽象谓词只用于没有词汇动词的非动词小句；这里有动词「具有」，PropBank 具有-01：ARG0 entity described，ARG1 thing arg0 is in possession of。",
+  "fix": {
+   "title": "have-91 → 具有-01（ARG0 人，ARG1 国籍）",
+   "conf": "high",
+   "why": "原文有动词「具有」，PropBank 具有-01（ARG0 拥有者，ARG1 所有物）；抽象谓词 have-91 只用于没有词汇动词的情形。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s27h",
+     "concept": "具有-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s27p4",
+     "r": "ARG1-of",
+     "t": "s27h",
+     "r2": "ARG0-of"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s27h",
+     "r": "ARG2",
+     "t": "s27x7",
+     "r2": "ARG1"
+    },
+    {
+     "op": "align",
+     "var": "s27h",
+     "span": "28-28"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 5,
+  "topic": "「美国和加拿大双重国籍」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "国籍 :mod 双重 :ARG2-of include-91（美国、加拿大为 nationality）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ nationality"
+   },
+   {
+    "label": "国籍 :mod 双重 :possessor/:mod (and 美国 加拿大)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 双重)"
+   },
+   {
+    "label": "国籍 :quant 2 :possessor (and 美国 加拿大)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant 2"
+   },
+   {
+    "label": "国籍 :quant 2 :poss (and 美国 加拿大)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "几种写法都表达了「两个国籍：美国、加拿大」；「双重」作 :mod 或换成 :quant 2 都可以。s1f 用 :poss，精简 guideline 和发布数据用 :possessor。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 6,
+  "topic": "「遇难」是否成节点及其论元",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "无 遇难 节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "工作者 :ARG0-of 遇难-01",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 遇难-01"
+   },
+   {
+    "label": "工作者 :ARG1-of 遇难-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": "工作者 :ARG0-of 遇难-01",
+  "text": "「两名遇难的英国人道工作者」中「遇难」是关系从句谓词，guideline 2.1 要标成事件（the man who left → :ARG0-of leave-11）；PropBank 遇难-01 只有 ARG0（people described）。gold 漏了这个节点。",
+  "fix": {
+   "title": "补「遇难-01」：工作者 :ARG0-of 遇难-01",
+   "conf": "high",
+   "why": "关系从句谓词「遇难」是事件（guideline 2.1），PropBank 遇难-01 ARG0 是遇难者；gold 漏了这个节点。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s27x11",
+     "role": "ARG0-of",
+     "var": "s27z1",
+     "concept": "遇难-01",
+     "attrs": {
+      "aspect": "performance"
+     },
+     "align": "43-43"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s27z1"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s27z1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 7,
+  "topic": "「服役」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "服役 :place 陆战队",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "服役 :ARG1 陆战队",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": "服役 :place 陆战队",
+  "text": "PropBank 服役-01 只有 ARG0（person serving in military），没有 ARG1；服役的部队用 :place。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 8,
+  "topic": "「曾……服役」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「曾」表示过去的经历，服役已经结束；guideline 4.1 activity 是「正在进行、没有结束迹象」的过程，和「曾」矛盾。已结束的服役标 performance。",
+  "fix": {
+   "title": "服役 aspect：activity → performance",
+   "conf": "mid",
+   "why": "「曾在…服役」是已经结束的过去经历，guideline 4.1 的 activity 指没有结束迹象的进行中过程，应改为 performance。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s27x13",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 9,
+  "topic": "「曾」「其中」是否成节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "都不成节点",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "服役 :temporal 曾",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 曾)"
+   },
+   {
+    "label": ":mod 曾、:mod 其中",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "/ 曾)",
+     "/ 其中)"
+    ]
+   }
+  ],
+  "best": "都不成节点",
+  "text": "「曾」和「过」一样表示经历体，体现在 aspect 和时间关系里，不是节点；「其中」引出部分关系，已由 :subset-of / include-91 表达。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 10,
+  "topic": "工作者的「英国」修饰",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "工作者 :mod 英国（复用国家节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "工作者 :place 英国",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":place s"
+   }
+  ],
+  "best": "工作者 :mod 英国（复用国家节点）",
+  "text": "「两名遇难的英国人道工作者」里的「英国」（第 45 词）在 gold 里没有标；虽然可以从「3 人来自英国」推出，原文明确说了。国籍修饰用 :mod，:place 不对。",
+  "fix": {
+   "title": "工作者补 :mod 英国（复用 s27c7）",
+   "conf": "mid",
+   "why": "原文「英国人道工作者」的「英国」在 gold 里没有对应；国籍修饰用 :mod，复用同句的英国节点。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s27x11",
+     "r": "mod",
+     "t": "s27c7"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 11,
+  "topic": "拉法、南部、加沙的层级",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "拉法 :part-of 南部 :part-of 加沙",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "拉法 :place 南部，南部 :part-of 加沙",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "南部 :part 加沙（方向反了）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：城市在区域里用 :part-of 或 :place 都可以；南部是加沙的一部分，s1f/r1 写成 南部 :part 加沙，方向反了（同第 25 句）。",
+  "fix": null,
+  "before_part_correction": {
+   "status": [
+    "ok",
+    "ok",
+    "bad"
+   ],
+   "best": null,
+   "conf": null
+  }
+ },
+ {
+  "sent": 27,
+  "n": 12,
+  "topic": "「加沙」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "territory",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ territory"
+   },
+   {
+    "label": "country-region",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country-region"
+   },
+   {
+    "label": "region",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ region"
+   },
+   {
+    "label": "location",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ location"
+   }
+  ],
+  "best": null,
+  "text": "同第 25、26 句。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 13,
+  "topic": "遇难者、3 人、工作者的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "都没有 refer-number",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "部分或全部标 plural",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   }
+  ],
+  "best": "部分或全部标 plural",
+  "text": "guideline 2.4 复数名词加 :refer-number plural；遇难者（7 人）、3 人、两名工作者都是复数。有 :quant 的影响小。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 14,
+  "topic": "来自、具有等状态的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "present-reference :overlap",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "(present-reference :overlap s"
+   },
+   {
+    "label": "document-creation-time :overlap",
+    "systems": [
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂到遇难/身亡 :overlap",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：没有时间表达的现在状态挂 document-creation-time :overlap；present-reference 是给「现在、如今」这类模糊时间词作参照的常量，本句没有这样的词。影响小。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 15,
+  "topic": "遇难者、巴勒斯坦人与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "遇难者 same-entity 第 24 句工作者，1 名巴勒斯坦人 same-entity 第 26 句雇员",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "遇难者 same-entity 第 25 句遗体，巴勒斯坦人 same-entity 雇员",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "遇难者 same-entity 第 24 句工作者，1 名巴勒斯坦人 same-entity 第 26 句雇员",
+  "text": "遇难者就是第 24 句的 7 名工作者；原居拉法的巴勒斯坦人就是第 26 句葬在加沙的巴勒斯坦雇员，guideline 5.3 应 :same-entity。遗体不是人本身（见第 25 句），s1f/r1 连到遗体不妥。",
+  "fix": {
+   "title": "遇难者、巴勒斯坦人与前文 same-entity",
+   "conf": "mid",
+   "why": "遇难者（s27x）即第 24 句 7 名工作者（s24x6）；1 名巴勒斯坦人（s27p）即第 26 句的巴勒斯坦雇员（s26x9）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s24x6",
+      "same-entity",
+      "s27x"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26x9",
+      "same-entity",
+      "s27p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 16,
+  "topic": "加沙、巴勒斯坦与第 26 句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两者都连",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "两者都连",
+  "text": "加沙、巴勒斯坦在第 26 句都出现过（s26l、s26c3），guideline 5.3 重复专名连到最近的前一次提及。",
+  "fix": {
+   "title": "加沙、巴勒斯坦与第 26 句 same-entity",
+   "conf": "high",
+   "why": "重复出现的地名、国名按 guideline 5.3 连到最近的前一次提及：加沙地带 s26l，巴勒斯坦 s26c3。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26l",
+      "same-entity",
+      "s27l"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26c3",
+      "same-entity",
+      "s27c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 17,
+  "topic": "两名工作者的遇难与第 24 句身亡",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "遇难 :subset-of 第 24 句身亡/不治",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "遇难 :subset-of 第 2 句身亡",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "遇难 :same-event 第 24 句身亡",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-event"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "遇难 :subset-of 第 24 句身亡/不治",
+  "text": "两名英国工作者的遇难是 7 人身亡的一部分，guideline 4-1-2 用 :subset-of；same-event 把部分当成了整体。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 18,
+  "topic": "「两名」的量词 名",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有 :unit 名",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "原文「其中 两名 遇难的英国人道工作者」，「两名」里的量词 名 应保留为 :unit；gold 的 工作者 只有 :quant 2，少了 :unit 名，7 份标注都没有标。",
+  "fix": {
+   "title": "「两名」补上量词 名",
+   "conf": "mid",
+   "why": "量词保留为 :unit；「两名」是一个词，名 挂在 工作者（:quant 2）上，对齐到第 42 词。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s27x11",
+     "role": "unit",
+     "var": "s27u1",
+     "concept": "名",
+     "align": "42-42"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 1,
+  "topic": "后两个「要求」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "要求-02 :ARG2 展开；要求-02 :ARG1 美国 :ARG2 停止",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "要求-01 :ARG1 展开/调查；要求-02 :ARG1 美国 :ARG2 停止",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "要求-01 :ARG1 展开；要求-01 :ARG1 停止 :ARG2 美国",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 要求-02：ARG0 asker，ARG1 askee，ARG2 predicate；要求-01：ARG1 things asked for，ARG2 entity asked from。「要求美国停止…」有被要求者和谓词，正是 要求-02；s1f 用 要求-01 把美国当成「向谁要」，勉强。「要求展开调查」没有被要求者，-01、-02（只带 ARG2）都可以（要求-03 ARG1 predicate 最贴切，但没人用）。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 2,
+  "topic": "「是否」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "调查 :ARG1 truth-value :polarity-of 涉及",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ truth-value"
+   },
+   {
+    "label": "涉及 :polarity amr-unknown",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity amr-unknown"
+   },
+   {
+    "label": "涉及 :mode interrogative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":mode interrogative"
+   },
+   {
+    "label": "是否-01 :ARG1 涉及",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 是否-01"
+   }
+  ],
+  "best": null,
+  "text": "「调查事件是否涉及战争罪行」是内嵌的是非问，AMR 用 truth-value :polarity-of 或 :polarity amr-unknown；guideline 4.2 的 :mode interrogative 用于句子本身是问句。是否-01 在 PropBank 里有，但把疑问标记当谓词不如 truth-value 清楚。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 3,
+  "topic": "第一个「调查」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "process",
+  "text": "调查是家属要求的、尚未发生的事件，performance（已完成并达到结果）不合适；未然事件可用 process 等。拿不准，fix 只给 low。",
+  "fix": {
+   "title": "调查 aspect：performance → process",
+   "conf": "low",
+   "why": "被要求的调查还没有发生，不宜标 performance（已完成）；用 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s28i",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 4,
+  "topic": "「拒绝接受」中「接受」的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 接受",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "(author :full-affirmative s"
+   },
+   {
+    "label": "拒绝 :full-negative 接受",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":full-negative s"
+   },
+   {
+    "label": "author :full-negative 接受",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(author :full-negative s"
+   },
+   {
+    "label": "拒绝 :unspecified 接受",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":unspecified s"
+   }
+  ],
+  "best": "拒绝 :full-negative 接受",
+  "text": "家属拒绝接受道歉，「接受」没有发生；guideline 5.2 否定的事件是 full-negative。gold 让作者完全肯定「接受」，意思反了。",
+  "fix": {
+   "title": "接受：author full-affirmative → 拒绝 full-negative",
+   "conf": "high",
+   "why": "「拒绝接受以色列的道歉」意味着接受没有发生；guideline 5.2 应为 full-negative，以 拒绝 为父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28x8"
+     ],
+     "to": [
+      "s28x5",
+      "full-negative",
+      "s28x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 5,
+  "topic": "被要求事件的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "调查、涉及、展开、停止都 author :full-affirmative",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "挂在 要求（调查）下 :unspecified",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified s"
+   },
+   {
+    "label": "挂在 要求（调查）下 :neutral-affirmative",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative s"
+   }
+  ],
+  "best": "挂在 要求（调查）下 :unspecified",
+  "text": "guideline 5.2：「要求」这类谓词的补足事件以谓词为父节点，强度 unspecified；被调查的「是否涉及战争罪行」也只是待查的命题。作者不能完全肯定这些事件发生。gold 另漏了第二个 调查（s28x17）的模态父节点。",
+  "fix": {
+   "title": "被要求事件改挂在 要求/调查 下（unspecified）",
+   "conf": "high",
+   "why": "要求的补足事件（调查、展开、停止）和待查命题（涉及）都还没有发生，guideline 5.2 以 要求/调查 为父节点、unspecified；gold 全挂 author full-affirmative，第二个调查还没有模态父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28i"
+     ],
+     "to": [
+      "s28x",
+      "unspecified",
+      "s28i"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28x3"
+     ],
+     "to": [
+      "s28i",
+      "unspecified",
+      "s28x3"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28x16"
+     ],
+     "to": [
+      "s28x19",
+      "unspecified",
+      "s28x16"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s28x16",
+      "full-affirmative",
+      "s28x17"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s28x13"
+     ],
+     "to": [
+      "s28x2",
+      "unspecified",
+      "s28x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 6,
+  "topic": "「展开调查」的「展开」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "展开-01 :ARG1 调查",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 展开-01"
+   },
+   {
+    "label": "不标 展开，要求 直接带 调查",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不标 展开，要求 直接带 调查",
+  "text": "「展开调查」和「进行访问」一样，展开是轻动词，guideline 2.1：轻动词不成节点（进行访问 → 访问-01）。展开 在 PropBank 有 roleset，保留也说得过去，所以只算 minor、fix 给 low。",
+  "fix": {
+   "title": "去掉轻动词「展开」，要求 直接带 调查",
+   "conf": "low",
+   "why": "「展开调查」中展开是轻动词，按 guideline 2.1 不成节点，要求 的补足直接是 调查-01。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s28x19",
+     "r": "ARG2",
+     "t": "s28x17"
+    },
+    {
+     "op": "del_node",
+     "var": "s28x16"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s28x19",
+      "after",
+      "s28x17"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s28x19",
+      "unspecified",
+      "s28x17"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 7,
+  "topic": "「家属」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "家属 :possessor 工作者",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "家属 :poss 工作者",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "have-rel-role-92 :ARG2 工作者 :ARG3 家属",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-rel-role-92"
+   }
+  ],
+  "best": "have-rel-role-92 :ARG2 工作者 :ARG3 家属",
+  "text": "guideline 2.3：亲属等关系名词用 have-rel-role-92 展开（his wife → person :ARG1-of have-rel-role-92 :ARG2 p2 :ARG3 wife）。中文训练数据里「家属」有直接作普通名词的先例，所以 :possessor 算 minor，不给 fix。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 8,
+  "topic": "「澳大利亚籍」「美加籍」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "工作者 :mod 国家/国籍（美加 → 美国、加拿大）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"加拿大\""
+   },
+   {
+    "label": "工作者 :mod 国家/国籍（美、加）",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"加\""
+   },
+   {
+    "label": "另建 国籍 节点 :poss 国家",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 国籍"
+   },
+   {
+    "label": "工作者 :mod 籍 :mod 国家",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 籍"
+   },
+   {
+    "label": "籍 :mod «美加» 当成一个国家",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"美加\""
+   }
+  ],
+  "best": null,
+  "text": "「X籍的工作者」直接用 :mod 国家（或 nationality）就够了，「籍」不必成节点。「美加」是美国和加拿大的合称，a2/r2 把它当成一个名叫「美加」的国家是错的。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 9,
+  "topic": "「他们」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "复用美加籍家属节点",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另建代词 person，再用句内 :same-entity 连",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":refer-person 3rd"
+   }
+  ],
+  "best": "复用美加籍家属节点",
+  "text": "「他们」回指同一句的美加籍家属，guideline 5.3 句内共指用 re-entrancy，不写 :coref 三元组。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 10,
+  "topic": "句中两个「以色列」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个独立的 以色列 节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "复用同一个 以色列 节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "复用同一个 以色列 节点",
+  "text": "「以色列的道歉」和「为以色列提供武器」是同一个国家，guideline 1/5.3：同一句里的同一实体写一次，再用变量引用（re-entrancy）。",
+  "fix": {
+   "title": "第二个以色列改为复用 s28c",
+   "conf": "high",
+   "why": "同一句内同一实体应只有一个节点（re-entrancy）；提供-01 的 ARG2 以色列与道歉的 ARG0 以色列是同一国家。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s28x14",
+     "r": "ARG2",
+     "t": "s28c"
+    },
+    {
+     "op": "del_node",
+     "var": "s28c3",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 11,
+  "topic": "以色列、澳大利亚、美国、加拿大与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "以色列连第 23 句，三国连第 27 句",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "以色列连第 23 句，三国连第 27 句",
+  "text": "guideline 5.3：重复出现的专名连到最近的前一次提及。以色列上一次在第 23 句（s23c），澳大利亚、美国、加拿大在第 27 句（s27c4、s27n8、s27n12）。",
+  "fix": {
+   "title": "以色列与三国的跨句共指",
+   "conf": "high",
+   "why": "重复的专名按 guideline 5.3 连到最近的前一次提及：以色列 s23c；澳大利亚 s27c4、美国 s27n8、加拿大 s27n12。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s23c",
+      "same-entity",
+      "s28c"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27c4",
+      "same-entity",
+      "s28n6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27n8",
+      "same-entity",
+      "s28n3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27n12",
+      "same-entity",
+      "s28n8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 12,
+  "topic": "两类工作者与第 27 句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "澳籍、美加籍工作者分别连第 27 句的对应 1 人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "澳籍、美加籍工作者分别连第 27 句的对应 1 人",
+  "text": "澳大利亚籍工作者即第 27 句「1人来自澳大利亚」（s27p3），美加籍工作者即「1人具有美国和加拿大双重国籍」（s27p4），guideline 5.3 应 :same-entity。",
+  "fix": {
+   "title": "澳籍、美加籍工作者与第 27 句 same-entity",
+   "conf": "mid",
+   "why": "澳大利亚籍工作者（s28w）即第 27 句来自澳大利亚的 1 人（s27p3），美加籍工作者（s28x11）即双重国籍的 1 人（s27p4）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27p3",
+      "same-entity",
+      "s28w"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27p4",
+      "same-entity",
+      "s28x11"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 13,
+  "topic": "「事件」「道歉」与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "事件 same-event 第 21 句空袭，道歉 same-event 第 4 句道歉",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "事件 same-event 第 21 句空袭，道歉 same-event 第 4 句道歉",
+  "text": "「调查事件」的事件就是这次空袭（第 21 句 s21x「这次空袭」），「以色列的道歉」就是第 4 句以色列的道歉（s4x4），guideline 5.3 应 :same-event。",
+  "fix": {
+   "title": "事件、道歉与前文 same-event",
+   "conf": "mid",
+   "why": "「事件」指这次空袭（第 21 句 s21x），「以色列的道歉」即第 4 句以色列「立刻承认责任并道歉」的道歉（s4x4）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s21x",
+      "same-event",
+      "s28x4"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s4x4",
+      "same-event",
+      "s28x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 1,
+  "topic": "「但」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "contrast-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ contrast-91"
+   },
+   {
+    "label": "but-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ but-91"
+   },
+   {
+    "label": "contrast-01",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ contrast-01"
+   },
+   {
+    "label": "and + 折返 :concession 计划",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":concession s"
+   }
+  ],
+  "best": null,
+  "text": "「原本计划…，但…折返」：精简 guideline 2.5 但 → but-91，contrast-91 也可以。contrast-01 是 AMR 的写法；s1f/r1 把它改成让步，结构上说得通但偏离「但」的对比义。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 2,
+  "topic": "「计划」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "endeavor",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect endeavor"
+   }
+  ],
+  "best": "state",
+  "text": "「原本计划」表示曾经有这个打算，guideline 4.1 把 want、plan 类心理状态归为 state；计划没有实现，endeavor 也说得通。performance 表示完成并达到结果，不太合适。拿不准，fix 只给 low。",
+  "fix": {
+   "title": "计划 aspect：performance → state",
+   "conf": "low",
+   "why": "「原本计划」是一种打算（心理状态），按 guideline 4.1 标 state。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s29x",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 3,
+  "topic": "被计划的「协调」「供应」的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 协调、供应",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "挂在 计划（或 协调）下 :unspecified",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":unspecified s"
+   }
+  ],
+  "best": "挂在 计划（或 协调）下 :unspecified",
+  "text": "guideline 5.2：计划、打算这类谓词的补足事件以谓词为父节点，强度 unspecified；这里后文还说船队折返了，计划没有完全实现，作者不能完全肯定协调、供应发生。",
+  "fix": {
+   "title": "协调、供应改挂在 计划 下（unspecified）",
+   "conf": "high",
+   "why": "「计划协调供应」的补足事件按 guideline 5.2 以 计划 为父节点、unspecified；后文船队折返，计划未完全实现。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x2"
+     ],
+     "to": [
+      "s29x",
+      "unspecified",
+      "s29x2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x3"
+     ],
+     "to": [
+      "s29x",
+      "unspecified",
+      "s29x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 4,
+  "topic": "「协调」「供应」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "两者是计划中的未然事件，activity、process 都可以；performance 表示已完成，和「原本计划…但」矛盾。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 5,
+  "topic": "「公吨」写成字符串常量",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":unit \"公吨\"（字符串）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":unit \"公吨\""
+   },
+   {
+    "label": ":unit (公吨) 节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 公吨)"
+   }
+  ],
+  "best": ":unit (公吨) 节点",
+  "text": "同第 22 句：单位是概念节点（guideline 2.2），gold 同句另外两处「公吨」也是节点。",
+  "fix": {
+   "title": "340 公吨的单位改成概念节点",
+   "conf": "high",
+   "why": "单位应是概念节点（guideline 2.2 :unit (y / year)），同句其他「公吨」就是节点；字符串 \"公吨\" 是格式错误。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s29x5",
+     "attr": "unit"
+    },
+    {
+     "op": "add_node",
+     "parent": "s29x5",
+     "role": "unit",
+     "var": "s29z1",
+     "concept": "公吨",
+     "align": "12-12"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 6,
+  "topic": "「前往」是否成节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "无 前往 节点（船队 :ARG0-of 运送 :goal 加沙）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "船队 :ARG0-of 前往-01 :ARG1 加沙（:purpose 运送）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 前往-01"
+   }
+  ],
+  "best": "船队 :ARG0-of 前往-01 :ARG1 加沙（:purpose 运送）",
+  "text": "「第二队前往加沙运送救援粮食的货船船队」中「前往」是关系从句谓词（PropBank 前往-01：ARG0 agent，ARG1 goal），后接目的「运送」；gold 漏了这个事件。s3/r2 把 运送 也挂在船队下而不是作目的，差别不大。",
+  "fix": {
+   "title": "补「前往-01」：船队 :ARG0-of 前往 :ARG1 加沙 :purpose 运送",
+   "conf": "mid",
+   "why": "关系从句谓词「前往」是事件（guideline 2.1），PropBank 前往-01 ARG1 是目的地，「运送救援粮食」是它的目的；gold 漏了这个节点。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s29x10",
+     "role": "ARG0-of",
+     "var": "s29z2",
+     "concept": "前往-01",
+     "attrs": {
+      "aspect": "activity"
+     },
+     "align": "29-29"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29z2",
+     "r": "ARG1",
+     "t": "s29l"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29z2",
+     "r": "purpose",
+     "t": "s29x17"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29z2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s29x8",
+      "before",
+      "s29z2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 7,
+  "topic": "句中重复的「加沙」节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个 加沙 节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "四个 加沙 节点（句内 :same-entity 连）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "一个 加沙 节点，其余复用",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "一个 加沙 节点，其余复用",
+  "text": "「加沙平民」「在加沙的人道主义行动」「前往加沙」「加沙北部港口」是同一个加沙；guideline 1、5.3：同一句里同一实体只写一次，用 re-entrancy。合并时把 运送 指向加沙的边改成 :ARG2（见下一条）。",
+  "fix": {
+   "title": "合并两个 加沙 节点（复用 s29l；运送 的目的地改 ARG2）",
+   "conf": "high",
+   "why": "同一句内同一实体应只有一个节点（re-entrancy）；s29l2 与 s29l 都是加沙。重建 运送 的边时按 PropBank 运送-01 用 ARG2（destination）。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s29l2",
+     "subtree": true
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x17",
+     "r": "ARG2",
+     "t": "s29l"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x21",
+     "r": "place",
+     "t": "s29l"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x34",
+     "r": "part-of",
+     "t": "s29l"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 8,
+  "topic": "「运送」的目的地角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "运送 :goal 加沙",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "运送 :ARG2 加沙",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 s"
+   },
+   {
+    "label": "运送不带目的地（加沙在 前往 上）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "运送 :ARG2 加沙",
+  "text": "PropBank 运送-01 的 ARG2 是 destination，用核心论元，不用 :goal。gold 的修改合在上一条（合并加沙节点时重建这条边）。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 9,
+  "topic": "「折返回」的义项和目的地",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "折返-01 :ARG1 塞浦路斯",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 折返-01"
+   },
+   {
+    "label": "折返-01 :goal 塞浦路斯",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "折返回-00 :ARG1 塞浦路斯",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 折返回-00"
+   },
+   {
+    "label": "折返回-00 :goal 塞浦路斯",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":goal (s"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 折返-01（ARG1 locative, destination），没有 折返回；「回」可看作趋向补语用 折返-01，也可整词作 折返回-00。用 折返-01 时目的地应是 ARG1；-00 没有 roleset，:goal 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 10,
+  "topic": "宣布、暂停的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author 直接 full-affirmative 暂停",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author → 世界中央厨房 → 暂停",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author → 代词「其」→ 暂停、行动",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author → 世界中央厨房 → 暂停",
+  "text": "guideline 5.2：言说内容的 conceiver 是说话人（author :full-affirmative 说话人，说话人 :full-affirmative 内容）。「宣布暂停」的暂停是世界中央厨房宣布的内容。",
+  "fix": {
+   "title": "暂停 改由 世界中央厨房 作 conceiver",
+   "conf": "mid",
+   "why": "暂停是「宣布」的内容，guideline 5.2 言说内容以说话人（世界中央厨房 s29i2）为 conceiver。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29i2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x14"
+     ],
+     "to": [
+      "s29i2",
+      "full-affirmative",
+      "s29x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 11,
+  "topic": "行动、两个等同句缺父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "行动-01、identity-91（第一批）、identity-91（事件=空袭）没有时间、模态父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "都有父节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "都有父节点",
+  "text": "检查表：每个事件都要有时间父节点和模态父节点。gold 的 行动-01（s29x21）两样都没有，identity-91 s29i4、s29i10 也都没有，s29i3 缺时间父节点。行动在暂停之前（暂停 :before 行动），等同关系是现在成立的状态。",
+  "fix": {
+   "title": "补 行动、identity-91 的时间和模态父节点",
+   "conf": "mid",
+   "why": "每个事件都要有时间、模态父节点（guideline 检查表）；行动在暂停之前，等同关系挂 DCT overlap，都由作者断言。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s29x14",
+      "before",
+      "s29x21"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s29i3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s29i4"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s29i10"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x21"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29i4"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29i10"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 12,
+  "topic": "日期「4月3日」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "宣布 :after 日期（日期挂在事件下）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "root :depends-on 日期",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "(root :depends-on s"
+   },
+   {
+    "label": "document-creation-time :before 日期",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "(document-creation-time :before s"
+   },
+   {
+    "label": "日期 depends-on 第 26 句同一日期",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "root :depends-on 日期",
+  "text": "guideline 5.1：时间表达先进时间树，绝对日期挂 root（:depends-on）。gold 把日期作为「宣布」的子节点，时间表达挂到了事件下。s1f 挂到第 26 句的同一日期上也说得通。",
+  "fix": {
+   "title": "日期改挂 root（depends-on）",
+   "conf": "mid",
+   "why": "guideline 5.1：绝对日期依存于 root；gold 让日期作事件「宣布」的子节点。宣布 仍以 计划 为参照，不受影响。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s29x13",
+      "after",
+      "s29d"
+     ],
+     "to": [
+      "root",
+      "depends-on",
+      "s29d"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 13,
+  "topic": "「批」「批次」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "批 作节点，序数带 :unit 批/批次，那一批 :quant 1 :unit 批",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 批次)"
+   },
+   {
+    "label": "批、批次 都作概念节点（无 :unit）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 批次"
+   },
+   {
+    "label": "批 作节点，第一批次 的 批次 没有表示",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 批"
+   },
+   {
+    "label": "批 作节点，批次 作粮食的 :unit（与 公吨 并列）",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 批次)"
+   },
+   {
+    "label": "批、批次 都没有表示（粮/粮食 :ord）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "批 作节点，序数带 :unit 批/批次，那一批 :quant 1 :unit 批",
+  "text": "【更正】量词按规则保留为 :unit。「第二批」「第一批次」「那一批」里的 批、批次 是量词，gold 保留为序数（或 :quant 1）上的 :unit，并用 批 节点代替省去的名词，符合规则；s3/r2 把它们都写成概念节点也算有表示。s1f、a2/r1 漏了「批次」；a2/r2 把 批次 挂在已有 :unit 公吨 的粮食上，挂错了节点；s3/r1 完全没有表示 批、批次。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "minor",
+    "ok"
+   ],
+   "best": "批/批次 作节点或省略，不重复作单位",
+   "fix": null
+  }
+ },
+ {
+  "sent": 29,
+  "n": 14,
+  "topic": "「本次空袭事件」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "事件 :ARG1-of identity-91 :ARG2 空袭",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 事件"
+   },
+   {
+    "label": "只标 空袭 :mod 本次",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "只标 空袭 :mod 本次",
+  "text": "「空袭事件」是同位的说法，「事件」不增加语义；再用 identity-91 等同两者显得多余。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 15,
+  "topic": "「卸下」的地点和港口层级",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "卸下 :place 港口，港口 :part-of 北部",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "卸下 :path 港口，港口 :place 北部",
+    "systems": [
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":path (s"
+   },
+   {
+    "label": "卸下 :source 港口",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   },
+   {
+    "label": "卸下 :path 港口，北部 :part 加沙（方向反了）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":path (s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「经加沙北部港口卸下」：「经」表经由，:path 贴切，:place 也可以；:source 说成从港口卸走，不对。北部是加沙的一部分，s1f/r1 的 :part 方向反了（同第 25、27 句）。",
+  "fix": null,
+  "before_part_correction": {
+   "status": [
+    "ok",
+    "ok",
+    "minor",
+    "bad"
+   ],
+   "best": null,
+   "conf": null
+  }
+ },
+ {
+  "sent": 29,
+  "n": 16,
+  "topic": "世界中央厨房、加沙与前文",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "连第 24 句世界中央厨房、第 27 句加沙",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "连第 24 句世界中央厨房、第 27 句加沙",
+  "text": "重复的专名按 guideline 5.3 连到最近的前一次提及：世界中央厨房 s24i2，加沙 s27l。",
+  "fix": {
+   "title": "世界中央厨房、加沙的跨句共指",
+   "conf": "high",
+   "why": "重复出现的专名按 guideline 5.3 连到最近的前一次提及：世界中央厨房（第 24 句 s24i2）、加沙（第 27 句 s27l）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s24i2",
+      "same-entity",
+      "s29i2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s27l",
+      "same-entity",
+      "s29l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 17,
+  "topic": "宣布、暂停、行动与第 3 句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "宣布、暂停（行动/援助）与第 3 句 same-event",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "宣布、暂停（行动/援助）与第 3 句 same-event",
+  "text": "第 3 句「世界中央厨房宣布暂停其在加沙地带的人道援助行动」与本句「在其宣布暂停在加沙的人道主义行动后」说的是同一次宣布、同一次暂停、同一项行动，guideline 5.3 应 :same-event。",
+  "fix": {
+   "title": "宣布、暂停、行动与第 3 句 same-event",
+   "conf": "high",
+   "why": "第 3 句的宣布（s3x）、暂停（s3x2）、行动（s3x3）与本句的宣布、暂停、行动是同一事件。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s3x",
+      "same-event",
+      "s29x13"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s3x2",
+      "same-event",
+      "s29x14"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s3x3",
+      "same-event",
+      "s29x21"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 18,
+  "topic": "卸下、港口、第一批粮食与第 13 句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "卸下 same-event，港口 same-entity 第 13 句",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   },
+   {
+    "label": "只连 卸下",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "卸下 same-event，港口 same-entity 第 13 句",
+  "text": "第 13 句「空袭发生前一小时，世界中央厨房从加沙地带北部港口的货船卸下约100公吨…粮食」与本句「本次空袭事件前经加沙北部港口卸下的那一批」是同一次卸货、同一港口、同一批粮食，guideline 5.3 应分别连 same-event、same-entity。",
+  "fix": {
+   "title": "卸下、港口、那一批粮食与第 13 句共指",
+   "conf": "mid",
+   "why": "第 13 句的卸下（s13x）、北部港口（s13x11）、约 100 公吨粮食（s13x5）与本句的卸下、港口、「那一批」是同一事件和同一实体。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s13x",
+      "same-event",
+      "s29x32"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s13x11",
+      "same-entity",
+      "s29x33"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s13x5",
+      "same-entity",
+      "s29i9"
+     ]
+    }
+   ]
+  }
+ }
+]

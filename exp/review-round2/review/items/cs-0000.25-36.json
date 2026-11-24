@@ -1,0 +1,4966 @@
+[
+ {
+  "sent": 25,
+  "n": 1,
+  "topic": "角色体系（全篇）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "通用参与者角色（:actor / :undergoer / :theme / :recipient …）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":undergoer (s"
+   },
+   {
+    "label": "编号角色（:ARG0 / :ARG1 / :ARG2 …）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": null,
+  "text": "cs-0000 是 PUD 文件，gold 全篇用通用参与者角色，模态写在句子图的 :modal-strength 上，没有文档级标注；8 个系统全篇用编号角色（Czech 训练数据也是编号角色）。按说明两边都 ok，之后只比较角色分配；系统多写的文档级关系不比较。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 2,
+  "topic": "义项编号体系（全篇）",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "不带编号的词形（zničit、zbourat、používat）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "带三位编号（多为 -001，s3/a2 有按训练数据查的 -004、-008 等）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "zničit-001"
+   }
+  ],
+  "best": null,
+  "text": "PUD 文件的 gold 只写 lemma，不带 Vallex 框架号；系统按训练数据习惯带编号（s0、s1f 多一律 -001，s3、a2 查过先例，如 zbýt-004、říci-008）。按说明 PUD 文件两边都 ok，全篇只记这一条，之后只比较 lemma 本身。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 3,
+  "topic": "nepoužívalo 的否定标注",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "只有 :modal-strength full-negative，没有 :polarity -",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "full-negative"
+   },
+   {
+    "label": ":polarity - 加 full-negative",
+    "systems": [
+     "s0/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":polarity -",
+     "full-negative"
+    ]
+   },
+   {
+    "label": ":polarity - 却标 full-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity - 加 full-negative",
+  "text": "guideline 4.2：否定的概念加 :polarity -，模态强度随之为 full-negative。gold 在本文第 6、13 句同时写了两者，这里漏了 :polarity -；s0/r2 两者自相矛盾。",
+  "fix": {
+   "title": "nepoužívalo：补 :polarity -",
+   "conf": "mid",
+   "why": "原文 se už nepoužívalo 是否定（ne-）；guideline 要求否定概念带 :polarity -，本文 gold 第 6、13 句的否定事件都同时写了 :polarity - 和 full-negative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s25p",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 4,
+  "topic": "už（不再）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "没有标 už",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "používat :temporal už",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s25"
+   },
+   {
+    "label": "používat :clausal-marker už",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": "používat :mod už",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ už"
+   }
+  ],
+  "best": null,
+  "text": "už 在这里和否定一起表示「不再」，是有内容的时间副词。捷克文训练数据一般写 :temporal (už)，也有 :clausal-marker（pdtsc_089_2.10、pdtsc_080_1.05）；:mod 不如二者。gold 漏标信息有损失，但不影响主干，fix 给 low。",
+  "fix": {
+   "title": "补 už（:temporal）",
+   "conf": "low",
+   "why": "už 和否定一起表达「不再使用」，捷克文训练数据把 už 标成 :temporal (už)。gold 没有这个节点。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s25p",
+     "role": "temporal",
+     "var": "s25z9",
+     "concept": "už",
+     "align": "6-6"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 5,
+  "topic": "požár（火灾）在 zničit 上的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zničit :cause požár",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "zničit :ARG0 požár",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   }
+  ],
+  "best": "zničit :ARG0 požár",
+  "text": "完整 guideline 3-2-1-1 表 9 和例 (7g) The storm damaged the power lines：发起动作的无生命实体是 :force；:cause 是旁及的原因（he was late because of the fire）。火灾直接毁掉了残余看台，是 zničit 的 force，系统的 ARG0 与之对应。",
+  "fix": {
+   "title": "požár：:cause → :force",
+   "conf": "mid",
+   "why": "完整 guideline 表 9 和例 (7g)：无生命的发起者（the storm damaged the power lines）是 :force；:cause 用于背景原因。火灾是 zničit（摧毁）的直接发起者。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s25z2",
+     "r": "cause",
+     "t": "s25p2",
+     "r2": "force"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 6,
+  "topic": "požár 是否作事件（带 aspect）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "实体名词，不带 aspect",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "带 :aspect process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "带 :aspect performance 和 modal-strength",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": null,
+  "text": "požár 可以看作事件名词，也可以看作发起者实体，两种都说得通；s0/r2 给它 performance 和 full-affirmative，却又把它当 zničit 的 ARG0，处理得不一致。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 7,
+  "topic": "「co zbylo z tribun」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "thing :theme-of zbýt :source tribuna",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":theme-of (s"
+   },
+   {
+    "label": "thing :ARG1-of zbýt-001 :ARG2 tribuna",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "zbýt-001"
+   },
+   {
+    "label": "thing :ARG0-of zbýt-004（:source 或 :ARG1 tribuna）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "zničit :ARG1 直接是 zbýt-004 事件，co 作其 ARG0",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ co"
+   }
+  ],
+  "best": null,
+  "text": "被毁的是「剩下的东西」这个实体：gold、s0、s1f、s3 用 thing 加关系从句表示，都对；a2 把事件 zbýt 本身当成 zničit 的受事，co 只是事件的论元，语义上偏了。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 8,
+  "topic": "zbýt（剩下）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-negative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "full-affirmative"
+   }
+  ],
+  "best": "full-affirmative",
+  "text": "co zbylo（剩下的部分）是肯定的事实，没有否定词；gold 标 full-negative 是错的，可能是把前一分句 nepoužívalo 的否定值带了过来。",
+  "fix": {
+   "title": "zbýt：modal-strength full-negative → full-affirmative",
+   "conf": "high",
+   "why": "co zbylo z dřevěných tribun（木看台剩下的部分）没有任何否定或不确定成分，剩余部分确实存在，应为 full-affirmative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s25z4",
+     "attr": "modal-strength",
+     "value": "full-affirmative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 9,
+  "topic": "zbýt 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "zbýt"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "zbýt-004"
+   }
+  ],
+  "best": "state",
+  "text": "co zbylo 指被火烧之前「剩下的东西」，说的是结果状态，state 合适；performance 把它当成一个完成的变化事件，略差。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 10,
+  "topic": "dřevěných（木制）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "tribuna :material dřevěný",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":material (s"
+   },
+   {
+    "label": "tribuna :mod dřevěný",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dřevěný"
+   },
+   {
+    "label": "tribuna :consist-of dřevo",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":consist-of (s"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 3-2-1-1 例 (1a) 把 ice cube 写成 cube :material ice，gold 照此；:mod 也可以。s0/r1 的 :consist-of 是 AMR 角色，不在 UMR 角色表里，并把形容词改成了名词 dřevo。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 11,
+  "topic": "zbourat 的受事和挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "zbourat 为 op3，:undergoer (and 剩余部分 + stáj)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "zbourat 为 op3，:ARG1 tribuna",
+    "systems": [
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":op3 (s"
+   },
+   {
+    "label": "zbourat 作 tribuna 的关系从句（:ARG1-of）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": null,
+  "text": "které 在形式上指 tribun（看台），实际被拆的是火灾后剩下的看台残余，gold 指向 thing、系统指向 tribuna，都说得通；关系从句挂在 tribuna 下还是作并列第三项也只是结构表达不同。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 12,
+  "topic": "spolu se stájemi（连同马厩）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "与被拆物并列：and :op2 stáj",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "zbourat :companion stáj",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":companion (s"
+   },
+   {
+    "label": "zbourat :accompanier stáj",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":accompanier (s"
+   }
+  ],
+  "best": "与被拆物并列：and :op2 stáj",
+  "text": "马厩和看台一起被拆，是同一事件的另一个受事；guideline 表 9 的 :companion 是「和 actor 一起发起动作的有生实体」，不适合；:accompanier 是 AMR 角色，不在 UMR 表里。gold 的并列受事最贴切。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 13,
+  "topic": "později（后来）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "pozdě :degree more",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ more"
+   },
+   {
+    "label": "později",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ později"
+   },
+   {
+    "label": "pozdě（丢了比较级）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ pozdě"
+   }
+  ],
+  "best": null,
+  "text": "později 是比较级「后来」。gold 拆成 pozdě + :degree more，系统整词写 později，都可以；a2 还原成原级 pozdě 而不加比较，意思变成「晚」。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 14,
+  "topic": "年份的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "date-entity :year 1976 / 1990",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "date-entity"
+   },
+   {
+    "label": "rok :name 1976（数字作概念挂在 :name 下）",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "/ rok"
+   }
+  ],
+  "best": "date-entity :year 1976 / 1990",
+  "text": "guideline 2.2：日期写 date-entity :year。a2/r2 把年份写成 rok 的 :name，:name 下面又挂一个以数字为概念的节点，格式不对。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 15,
+  "topic": "单数名词的 refer-number（全篇）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "závodiště、požár 带 :refer-number singular",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "refer-number singular"
+   },
+   {
+    "label": "单数名词一般不写 refer-number",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "závodiště、požár 带 :refer-number singular",
+  "text": "guideline 4/2.4：名词标 refer-number。s0 两次和 s1f 两次全篇基本只给复数名词写 refer-number，单数名词（这里 závodiště、požár；第 27 句 muž、Olivia、Walter 等）都不写，s0/r2 连复数的 tribuna、stáj 也漏了。全篇如此，之后不再逐句写。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 16,
+  "topic": "používat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   }
+  ],
+  "best": null,
+  "text": "「不再被使用」否定的是一种持续的使用状况，activity 和 habitual 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 1,
+  "topic": "系词句的抽象谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-role-91",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "být-007",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "být-007"
+   },
+   {
+    "label": "identity-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "have-identity-91（不存在的谓词）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-identity-91"
+   },
+   {
+    "label": "záležitost 作根，:ARG1 vydávat",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「发行硬币主要是一件钱币学的事」是归类句，guideline 2.3/表 8 用 have-role-91；捷克文训练数据的系词常写 být-007 :ARG1 :ARG2，a2 照此也说得通。identity-91 是等同句，不合归类的意思；have-identity-91 不存在；s0/r1 让名词 záležitost 带 ARG1 也不规范。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 2,
+  "topic": "have-role-91 中 záležitost 的论元号",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "have-role-91 :ARG2 záležitost",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "have-role-91 :ARG3 záležitost",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "（不用 have-role-91）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "have-role-91 :ARG3 záležitost",
+  "text": "完整 guideline 表 8：have-role-91 的 ARG2 是参照点（reference point），类别是 ARG3（例 3-1-2 (1) Edmond Pope is an American businessman、3-2-1-1-1 (1f)）。gold 把类别放在 ARG2。",
+  "fix": {
+   "title": "have-role-91 的类别：:ARG2 → :ARG3",
+   "conf": "mid",
+   "why": "完整 guideline 表 8 和例 3-2-1-1-1 (1f)：have-role-91 :ARG1 主体、:ARG3 所属类别，:ARG2 是参照点。záležitost（一件……的事）是类别。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s26h",
+     "r": "ARG2",
+     "t": "s26z",
+     "r2": "ARG3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 3,
+  "topic": "根谓词的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "activity（být-007 上）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "state",
+  "text": "归类、系词句是状态（guideline 4.1 表：非动词谓语为 state）；a2 给 být-007 标 activity 不对。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 4,
+  "topic": "Vydávání（发行）的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "动词 vydávat（带 aspect）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ vydávat"
+   },
+   {
+    "label": "动名词 vydávání",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ vydávání"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.1 把过程义的事件名词当事件；捷克文训练数据则保留动名词词形（如 obchodování :ARG0 :ARG1，wsj2205.cz 第 43 句）。两种都可以，带不带 aspect 也跟着各自的做法走。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 5,
+  "topic": "převážně（主要）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "have-role-91 :manner převážně",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":extent převážně",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":extent (s"
+   },
+   {
+    "label": ":clausal-marker převážně",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": ":degree převážně",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": ":mod převážně",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "/ převážně"
+   }
+  ],
+  "best": null,
+  "text": "převážně 表示「在很大程度上、主要」，不是方式。捷克文训练数据多写 :extent（pdtsc_004_1.01、pdtsc_128_3.11），也有 :clausal-marker；:degree 也说得通。gold 的 :manner 和 s0、s1f/r1 的 :mod 略差。",
+  "fix": {
+   "title": "převážně：:manner → :extent",
+   "conf": "low",
+   "why": "převážně 是程度/范围副词（主要地），捷克文训练数据一般标 :extent，不是方式 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s26h",
+     "r": "manner",
+     "t": "s26p",
+     "r2": "extent"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 6,
+  "topic": "s cílem prodávat（目的）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":purpose prodávat（挂在 záležitost 或根上）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "záležitost :companion (cíl :ARG1 prodávat)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ cíl"
+   }
+  ],
+  "best": ":purpose prodávat（挂在 záležitost 或根上）",
+  "text": "s cílem + 不定式是目的，guideline 2.5 用 :purpose；挂在 záležitost 还是根上都可以。a2 保留 cíl 名词并用 :companion 连接，:companion 是有生的共同施事，不对。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 7,
+  "topic": "prodávat（目的事件）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "unspecified",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "unspecified"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 4-3-1-4 的目的句例子在句子层给目的事件 FullAff（相对 purpose 节点），精简版说可以 unspecified 或按谓词含义给值。几种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 8,
+  "topic": "sběratelům（收藏者）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :actor-of sbírat",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ sbírat"
+   },
+   {
+    "label": "person :ARG0-of sbírat-001",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "sbírat-001"
+   },
+   {
+    "label": "名词 sběratel",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ sběratel"
+   }
+  ],
+  "best": null,
+  "text": "施事名词可以分解成 person + 事件，也可以直接用名词；捷克文训练数据多直接用名词。都可以。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 9,
+  "topic": "sběratelům 的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 refer-number",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "sběratelům 是复数与格，guideline 2.4：复数名词标 :refer-number plural。gold 在 person 节点上漏了。",
+  "fix": {
+   "title": "收藏者 person：补 :refer-number plural",
+   "conf": "mid",
+   "why": "原文 sběratelům 是复数（collectors），guideline 2.4 要求复数名词标 refer-number plural；gold 同句的 mince 也标了 plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s26p4",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 26,
+  "n": 10,
+  "topic": "především（主要）挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "挂在收藏者上（:mod）",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂在 prodávat 上（:mod / :degree / :extent / :clausal-marker）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ především"
+   }
+  ],
+  "best": null,
+  "text": "především sběratelům「主要卖给收藏者」限定的是收藏者这一项，也可以看成修饰整个出售事件；捷克文训练数据常写 :clausal-marker。两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 1,
+  "topic": "mu（他）的 person / number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":refer-number 3 :refer-person singular（两值互换）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":refer-number 3"
+   },
+   {
+    "label": ":refer-person 3rd :refer-number singular",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 3rd"
+   }
+  ],
+  "best": ":refer-person 3rd :refer-number singular",
+  "text": "gold 把两个属性的值写反了：refer-number 的值应是 singular，refer-person 的值应是 3rd（guideline 2.4）。",
+  "fix": {
+   "title": "mu：refer-number / refer-person 值互换",
+   "conf": "high",
+   "why": "gold 写成 :refer-number 3 :refer-person singular，两个属性的值写反且 3 不是合法取值；mu 是第三人称单数。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s27p",
+     "attr": "refer-number",
+     "value": "singular"
+    },
+    {
+     "op": "set_attr",
+     "var": "s27p",
+     "attr": "refer-person",
+     "value": "3rd"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 2,
+  "topic": "dítě 的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": ":refer-number singulat（拼写错误）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "singulat"
+   },
+   {
+    "label": ":refer-number singular",
+    "systems": [
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "refer-number singular"
+   },
+   {
+    "label": "不写",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": ":refer-number singular",
+  "text": "gold 的 singulat 是 singular 的拼写错误，不是合法取值。",
+  "fix": {
+   "title": "dítě：singulat → singular",
+   "conf": "high",
+   "why": "refer-number 的取值 singulat 是拼写错误，应为 singular（jako dítě，单数）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s27d",
+     "attr": "refer-number",
+     "value": "singular"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 3,
+  "topic": "válka（战争）的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "动词化 válčit，但不带 aspect、modal-strength",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ válčit"
+   },
+   {
+    "label": "名词 válka",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ válka"
+   }
+  ],
+  "best": "名词 válka",
+  "text": "把事件名词 válka 写成 válčit 是可以的（guideline 2.1），但作为事件它应有 aspect（checklist：every event has :aspect），gold 漏了；系统直接用名词 válka，和捷克文训练数据一致。",
+  "fix": {
+   "title": "válčit：补 :aspect process",
+   "conf": "low",
+   "why": "gold 把 válka 处理成事件 válčit，事件应带 aspect；未然的战争作事件名词用 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s27v",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 4,
+  "topic": "两个世界与战争的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "válčit :actor svět 且 :undergoer svět（互相）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":undergoer s"
+   },
+   {
+    "label": "válka :ARG0 svět",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "válka :mod svět",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ svět"
+   },
+   {
+    "label": "válka :between svět（不存在的角色）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":between (s"
+   },
+   {
+    "label": "válka :accompanier svět",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":accompanier (s"
+   }
+  ],
+  "best": null,
+  "text": "mezi těmito dvěma světy 是交战双方。gold 让同一个复数节点既是 actor 又是 undergoer 表达互相交战，系统用 ARG0 也可以；:mod 丢了参与者关系；:between 不在 UMR 角色表（训练数据也没有）；:accompanier 是 AMR 角色。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 5,
+  "topic": "je na cestě（即将到来）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "整体 být-na-cestě",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "být-na-cestě"
+   },
+   {
+    "label": "have-place-91 :ARG1 válka :ARG2 cesta（字面）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "have-place-91"
+   },
+   {
+    "label": "cesta 作谓词 :ARG1 válka",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ cesta"
+   }
+  ],
+  "best": "整体 být-na-cestě",
+  "text": "je na cestě 在这里是习语「快要来了」，guideline 2.6 习语作一个概念；系统按字面写成「战争在路上」，丢了习语义。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 6,
+  "topic": "「on a Walter」里的 on 指谁",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "on = 说话的 muž",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "on = 听话人（mu）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "新建一个不回指的 person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "on 可以指说话的人，也可以指听话人；按上下文，和 Walter 一起作出预言的应是说话人，但单从这句定不了，听话人读法 open。s1f 新建 person 却不和任何人回指，丢了指称信息。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 7,
+  "topic": "předpovídali 与「战争将至」的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "předpovídat :theme být-na-cestě",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "předpovídat 作 ARG1-of 挂在「将至」上",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "have-place-91 :manner předpovídat :ARG1 have-place-91",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "have-place-91 :comparison předpovídat :ARG1 válka",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":comparison (s"
+   }
+  ],
+  "best": null,
+  "text": "jak … předpovídali「正如他们预言的那样」：被预言的是战争将至，gold 和多数系统都这么连；s3/r1 让预言对象是 válka 本身，也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 8,
+  "topic": "z tohoto důvodu：谁是谁的原因",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "být-na-cestě :cause trénovat（战争将至由训练引起）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "trénovat :cause 战争将至 / důvod",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":cause"
+   }
+  ],
+  "best": "trénovat :cause 战争将至 / důvod",
+  "text": "je to z tohoto důvodu, že Olivia … byla trénovaná：正是因为战争将至，Olivia 才被训练，训练是结果、战争将至是原因。gold 把方向写反了。",
+  "fix": {
+   "title": "z tohoto důvodu：原因方向改正",
+   "conf": "high",
+   "why": "原文「正是出于这个原因 Olivia 被训练」：战争将至是 trénovat 的原因。gold 写成 být-na-cestě :cause trénovat，方向反了；改成 být-na-cestě :cause-of trénovat（即 trénovat :cause být-na-cestě），图的连通不变。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s27b",
+     "r": "cause",
+     "t": "s27t2",
+     "r2": "cause-of"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 9,
+  "topic": "第二分句是否在转述内容里",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "trénovat 挂在转述内容（být-na-cestě）下",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "根为 and：říci 与 trénovat 并列",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   }
+  ],
+  "best": null,
+  "text": "分号后的「正是因此 Olivia 从小受训」可以是叙述者的说明，也可以是那人话的一部分；两种结构都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 10,
+  "topic": "jako dítě（小时候）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "trénovat :temporal (have-role-91 :ARG1 Olivia :ARG2 dítě)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "trénovat :temporal (have-role-91 :ARG1 Olivia :ARG3 dítě)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "trénovat :temporal dítě",
+    "systems": [
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dítě"
+   },
+   {
+    "label": "trénovat :temporal (dítě :ARG1 Olivia)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "trénovat :manner dítě（dítě :mod-of Olivia）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": null,
+  "text": "jako dítě 指「她还是孩子的时候」，是时间。用 have-role-91 表达「Olivia 是孩子」时，类别应放在 ARG3（完整 guideline 表 8），gold 放在 ARG2；直接 :temporal dítě 也可以。a2 的 :manner 不对，s0/r1 让名词 dítě 带 ARG1 不规范。",
+  "fix": {
+   "title": "have-role-91（Olivia 是孩子）：:ARG2 → :ARG3",
+   "conf": "mid",
+   "why": "完整 guideline 表 8：have-role-91 的类别是 ARG3，ARG2 是参照点。dítě 是 Olivia 所属的类别。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s27h",
+     "r": "ARG2",
+     "t": "s27d",
+     "r2": "ARG3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 11,
+  "topic": "mimo jiné（以及其他人）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "trénovat :subtraction jiný",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":subtraction (s"
+   },
+   {
+    "label": "mimo-jiné / mimo_jiné 整体（:mod 或 :clausal-marker）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "jin"
+   },
+   {
+    "label": "mimo :op1 jiný",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ mimo"
+   }
+  ],
+  "best": null,
+  "text": "mimo jiné 表示受训的不只 Olivia，有实际意义。捷克文训练数据一律写 :subtraction (jiný)（wsj0964.cz、pdtsc_037_1.00、wsj1692.cz），a2 照此；整体写成一个修饰语也可以。s0/r2 把介词 mimo 当成带 :op1 的概念，不规范。",
+  "fix": {
+   "title": "补 mimo jiné（:subtraction jiný）",
+   "conf": "low",
+   "why": "mimo jiné（among others）表示受训者不止 Olivia。捷克文训练数据把它写成事件上的 :subtraction (jiný)。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s27t2",
+     "role": "subtraction",
+     "var": "s27z9",
+     "concept": "jiný",
+     "align": "30-31"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 1,
+  "topic": "「byl … oblastí」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "exist-91（orogeneze 存在于 okraj）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "have-role-91 :ARG1 okraj + oblast",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "identity-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "have-identity-91（不存在的谓词）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-identity-91"
+   },
+   {
+    "label": "oblast 作根，:ARG1 okraj",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「西缘早已是数次造山运动的地区」可以看作归类（okraj 属于 oblast 这一类，have-role-91），也可以像 gold 那样去掉 oblast 直接写成存在句（exist-91）。identity-91 是等同句，不合；have-identity-91 不存在；名词 oblast 作根带 ARG1 不规范。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 2,
+  "topic": "exist-91 的论元方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "exist-91 :ARG1 orogeneze :ARG2 okraj",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "exist-91"
+   },
+   {
+    "label": "（不用 exist-91）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "完整 guideline 表 8 和精简版 2.3：exist-91 的 ARG1 是处所，ARG2 是存在物（例 On the rock was a symbol：exist-91 :ARG1 rock :ARG2 symbol）。gold 把造山运动放在 ARG1、西缘放在 ARG2，正好反了。",
+  "fix": {
+   "title": "exist-91：ARG1 / ARG2 互换",
+   "conf": "high",
+   "why": "guideline 表 8：exist-91 :ARG1 处所、:ARG2 存在物（On the rock was a symbol → :ARG1 rock :ARG2 symbol）。这里处所是 okraj（西缘），存在物是 orogeneze（造山运动）。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s28e",
+     "r": "ARG1",
+     "t": "s28o",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s28e",
+     "r": "ARG2",
+     "t": "s28o2",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 3,
+  "topic": "Andy 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "mountains",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ mountains"
+   },
+   {
+    "label": "mountain",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ mountain"
+   }
+  ],
+  "best": "mountain",
+  "text": "实体类型表（guideline 2.2，同 AMR）用单数的 mountain；mountains 不是类型名。复数由 refer-number 表示。",
+  "fix": {
+   "title": "Andy：mountains → mountain",
+   "conf": "mid",
+   "why": "命名实体类型用 guideline 类型表里的名字（mountain），mountains 不是合法类型；山脉的复数已由 :refer-number plural 表示。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s28m",
+     "concept": "mountain"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 4,
+  "topic": "zformovat 中 Andy 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zformovat :result Andy",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":result (s"
+   },
+   {
+    "label": "zformovat :ARG1 Andy",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s28"
+   }
+  ],
+  "best": "zformovat :ARG1 Andy",
+  "text": ":result 不在 UMR 角色表里；完整 guideline 3-2-1-1：创造事件中被创造的实体是 :undergoer（She built a house → :undergoer house）。安第斯山脉被形成，是 zformovat 的 undergoer，对应系统的 ARG1。",
+  "fix": {
+   "title": "Andy：:result → :undergoer",
+   "conf": "mid",
+   "why": "完整 guideline 3-2-1-1：undergoer 包括创造事件中被创造的实体（she built a house）；:result 不是 UMR 角色。Andy 是被形成的东西。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s28z2",
+     "r": "result",
+     "t": "s28m",
+     "r2": "undergoer"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 5,
+  "topic": "Andy 的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "plural",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "refer-number plural"
+   },
+   {
+    "label": "singular",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "refer-number singular"
+   },
+   {
+    "label": "不写",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "plural",
+  "text": "Andy 是复数形式的专名（山脉），plural 合适；s3 写 singular 与形态不符。s0、s1f 不写属全篇习惯（见第 25 句）。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 6,
+  "topic": "okraj 与 Jižní Amerika 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "okraj :possessor continent",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "okraj :part continent",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "okraj :part-of continent",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "okraj :mod continent",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ continent"
+   }
+  ],
+  "best": null,
+  "text": "「南美洲的西缘」是部分—整体关系。按项目规则（完整 guideline 3-2-2-1），部分 :part 整体 和 部分 :part-of 整体 都可以；:possessor 是领属，不如 :part 准确；:mod 丢了关系。",
+  "fix": {
+   "title": "okraj：:possessor → :part",
+   "conf": "low",
+   "why": "西缘是南美洲的一部分，guideline 3-2-2-1 用 :part（部分为父节点）表示部分—整体，:possessor 用于领属。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s28o2",
+     "r": "possessor",
+     "t": "s28c",
+     "r2": "part"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 7,
+  "topic": "západní（西）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "okraj :place západní",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "okraj :mod západní",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ západní"
+   }
+  ],
+  "best": "okraj :mod západní",
+  "text": "západní 是形容词修饰语（西边的），精简版第 3 节：名词性修饰用 :mod；:place 是事件发生的处所，不用于名词的方位修饰。",
+  "fix": {
+   "title": "západní：:place → :mod",
+   "conf": "mid",
+   "why": "západní okraj（西缘）里 západní 是形容词定语，应为 :mod；:place 是事件的处所角色。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s28o2",
+     "r": "place",
+     "t": "s28z",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 8,
+  "topic": "Jižní Ameriky 的名字写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":op2 \"Amerika\"（原形）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "\"Amerika\""
+   },
+   {
+    "label": ":op2 \"Ameriky\"（属格词形）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "\"Ameriky\""
+   }
+  ],
+  "best": ":op2 \"Amerika\"（原形）",
+  "text": "名字应写规范形式（主格），gold 还原成 Amerika；系统照抄了属格 Ameriky。8 个系统全篇都把专名照抄成句中的屈折形式（第 29 句 Kiki Deeem、第 30 句 Césarovo、第 31 句 Číně），gold 都还原成了原形；只在这里记一次。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 9,
+  "topic": "Předtím, než（在……之前）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":temporal (before :op1 zformovat)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ before"
+   },
+   {
+    "label": ":temporal (před :op1 zformovat)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ před"
+   },
+   {
+    "label": ":temporal zformovat（没有 before）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "zformovat-001"
+   }
+  ],
+  "best": ":temporal (before :op1 zformovat)",
+  "text": "精简版 2.5：时间先后写 :temporal (b / before :op1 …)。s1f 用捷克词 před 代替抽象概念 before；a2 直接把 zformovat 挂成 :temporal，「之前」的意思丢了，读成同时。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 10,
+  "topic": "už（早已）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":clausal-marker už",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": ":temporal už",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s28"
+   },
+   {
+    "label": ":mod už",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ už"
+   }
+  ],
+  "best": null,
+  "text": "同第 25 句：už 在这里是「早已」，捷克文训练数据写 :temporal 或 :clausal-marker；gold 漏标。",
+  "fix": {
+   "title": "补 už（:temporal）",
+   "conf": "low",
+   "why": "už（早已）表达时间，捷克文训练数据把 už 标成 :temporal (už)；gold 没有这个节点。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s28e",
+     "role": "temporal",
+     "var": "s28z9",
+     "concept": "už",
+     "align": "13-13"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 11,
+  "topic": "několika（几个）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "orogeneze :quant několik",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "orogeneze :mod několik",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ několik"
+   }
+  ],
+  "best": "orogeneze :quant několik",
+  "text": "精简版 4.2：数量词用 :quant（:quant (a / all) 一类）；několik 是数量词。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 12,
+  "topic": "orogenezí 的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "不写",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":refer-number plural",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "refer-number plural"
+   }
+  ],
+  "best": ":refer-number plural",
+  "text": "orogenezí 是复数（několika orogenezí，数次造山运动），guideline 2.4：复数名词标 plural。",
+  "fix": {
+   "title": "orogeneze：补 :refer-number plural",
+   "conf": "mid",
+   "why": "原文 několika orogenezí 是复数；guideline 2.4 要求复数名词标 :refer-number plural，gold 同句的 Andy 也标了 plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s28o",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 13,
+  "topic": "orogeneze 是否作事件",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "实体名词，不带 aspect",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "事件名词，带 aspect（process / activity / performance）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect"
+   }
+  ],
+  "best": null,
+  "text": "造山运动可以看作过程名词（guideline 2.1 事件名词），也可以看作实体，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 1,
+  "topic": "setkal se 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "setkat-se（带反身词）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "setkat-se"
+   },
+   {
+    "label": "setkat-001（丢了 se）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "setkat-001"
+   }
+  ],
+  "best": "setkat-se（带反身词）",
+  "text": "setkat se（相遇、会面）是反身动词，捷克文训练数据把反身词并进 lemma（如 rozhodnout-se）；s0 丢了 se。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 2,
+  "topic": "Kiki Dee 与「朋友」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "přítel :name Kiki Dee（朋友作类型，和「他」的关系没标）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ přítel"
+   },
+   {
+    "label": "person :ARG1-of have-rel-role-92 :ARG2 他 :ARG3 přítel",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "have-rel-role-92"
+   },
+   {
+    "label": "person :ARG2-of have-rel-role-92 :ARG1 他 :ARG4 přítel",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG4 (s"
+   },
+   {
+    "label": "have-rel-role-91",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "person :mod přítel",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ přítel"
+   }
+  ],
+  "best": null,
+  "text": "s přítelem Kiki Deeem「和他的朋友 Kiki Dee」：精简版 2.3 用 person :ARG1-of have-rel-role-92 :ARG2 他 :ARG3 přítel；a2/r2 的 ARG4 是「对方的角色」，按表 8 也对。gold 把 přítel 当命名实体的类型，丢了「是谁的朋友」；按项目规则 -91 应为 -92。",
+  "fix": {
+   "title": "Kiki Dee：改为 person + have-rel-role-92",
+   "conf": "low",
+   "why": "精简版 2.3：亲友关系用 have-rel-role-92（:ARG1 本人 :ARG2 对方 :ARG3 关系）。gold 把 přítel 作命名实体类型，丢了他与 Kiki Dee 的朋友关系。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s29p2",
+     "concept": "person"
+    },
+    {
+     "op": "add_node",
+     "parent": "s29p2",
+     "role": "ARG1-of",
+     "var": "s29z1",
+     "concept": "have-rel-role-92",
+     "attrs": {
+      "aspect": "state",
+      "modal-strength": "full-affirmative"
+     }
+    },
+    {
+     "op": "add_rel",
+     "s": "s29z1",
+     "r": "ARG2",
+     "t": "s29p"
+    },
+    {
+     "op": "add_node",
+     "parent": "s29z1",
+     "role": "ARG3",
+     "var": "s29z2",
+     "concept": "přítel",
+     "align": "7-7"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 3,
+  "topic": "pracoval 的 aspect / modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 aspect 和 modal-strength",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":aspect activity，full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "pracovat-00"
+   }
+  ],
+  "best": ":aspect activity，full-affirmative",
+  "text": "精简版 checklist：每个事件都要有 :aspect；捷克文 gold 把模态写在事件的 :modal-strength 上，本句其他事件都写了，唯独 pracovat 漏了。「在他的唱片公司工作」是持续的活动。",
+  "fix": {
+   "title": "pracovat：补 aspect activity 和 modal-strength",
+   "conf": "high",
+   "why": "每个事件都应有 aspect，本文 gold 也给每个事件写 :modal-strength；pracovat（在唱片公司工作）两者都缺。它是作者肯定陈述的持续活动。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s29p3",
+     "attr": "aspect",
+     "value": "activity"
+    },
+    {
+     "op": "set_attr",
+     "var": "s29p3",
+     "attr": "modal-strength",
+     "value": "full-affirmative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 4,
+  "topic": "唱片公司在 pracovat 上的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "pracovat :place 唱片公司",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "pracovat :ARG1 唱片公司",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": "pracovat :place 唱片公司",
+  "text": "pracoval v … vydavatelství「在唱片公司工作」，公司是工作的处所；s0 把它当成 pracovat 的受事 ARG1（工作的对象），不对。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 5,
+  "topic": "The Record Company 的类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "vydavatelství :name …",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ vydavatelství"
+   },
+   {
+    "label": "company :name …（vydavatelství 作 :mod 或 have-role-91）",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ company"
+   }
+  ],
+  "best": null,
+  "text": "捷克文训练数据常用普通名词作命名实体的中心（如 společnost :name Shearson），gold 照此；用类型表的 company 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 6,
+  "topic": "jeho（他的）唱片公司",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":possessor 他（同一个 person）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": ":poss 他（旧角色名）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":poss s"
+   },
+   {
+    "label": ":poss 新建的 person（不回指）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": ":possessor 他（同一个 person）",
+  "text": "UMR 用 :possessor，:poss 是 AMR 的旧名；s0 和 s1f 全篇都写 :poss（第 28 句也是），只在这里记一次。s1f/r2 还另建了一个 person，没有和主语同指。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 7,
+  "topic": "「co by mohlo být dalším úspěchem」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "skladba :ARG1-of identity-91 :ARG2 úspěch",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "identity-91"
+   },
+   {
+    "label": "have-role-91 :ARG3 úspěch",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "have-role-91 :ARG2 úspěch",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "have-identity-91 :ARG2 úspěch",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-identity-91"
+   },
+   {
+    "label": "úspěch 作谓词，skladba :ARG1-of úspěch",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "nahrát :ARG1 identity-91（thing … have-role-91）",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ identity-91"
+   }
+  ],
+  "best": "have-role-91 :ARG3 úspěch",
+  "text": "「（这首歌）可能成为他又一个显著的成功」是归类：歌属于「成功之作」这一类，按 guideline 表 8 用 have-role-91 :ARG3；identity-91 是等同（she is the winner），不太贴切。a2/r2 把 nahrát 的受事做成一个 identity-91 事件，绕得太远。",
+  "fix": {
+   "title": "「又一个成功」：identity-91 → have-role-91 :ARG3",
+   "conf": "low",
+   "why": "「成为又一个成功之作」是类别归属，guideline 表 8 用 have-role-91（:ARG1 主体 :ARG3 类别）；identity-91 用于等同句。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s29i",
+     "concept": "have-role-91"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s29i",
+     "r": "ARG2",
+     "t": "s29u",
+     "r2": "ARG3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 8,
+  "topic": "mohlo by být 的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   }
+  ],
+  "best": "neutral-affirmative",
+  "text": "mohlo by（可能会）是可能情态，精简版 5.2：may / might / can → neutral-affirmative；partial 对应 probably / should。英文译文是 would be，但捷克文原文用的是 mohlo。",
+  "fix": {
+   "title": "「可能成为成功」：partial → neutral-affirmative",
+   "conf": "low",
+   "why": "捷克文 co by … mohlo být（可能会是）用的是可能情态 moci，guideline 5.2 的 can / may 对应 neutral-affirmative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s29i",
+     "attr": "modal-strength",
+     "value": "neutral-affirmative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 9,
+  "topic": "nahrát（目的事件）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   }
+  ],
+  "best": null,
+  "text": "目的从句 aby … nahrál。完整 guideline 4-3-1-4 在句子层给目的事件 FullAff（相对 purpose 节点），系统按「意图」给 neutral / partial 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 10,
+  "topic": "歌名的类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "skladba :name …",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ skladba"
+   },
+   {
+    "label": "music :name …",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ music"
+   }
+  ],
+  "best": null,
+  "text": "music 是 AMR 的作品类型；用普通名词 skladba 作中心是捷克文训练数据的写法。都可以。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 1,
+  "topic": "prohlášení（声明）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "thing :undergoer-of prohlásit（:actor César）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":undergoer-of (s"
+   },
+   {
+    "label": "名词 prohlášení",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ prohlášení"
+   }
+  ],
+  "best": null,
+  "text": "把「恺撒的声明」分解成「恺撒宣布的东西」（thing + 事件）或直接用名词 prohlášení 都可以；捷克文训练数据一般保留名词。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 2,
+  "topic": "两个 prohlásit 事件缺 aspect / modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "两个 prohlásit 都没有 aspect 和 modal-strength",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "prohlásit-001 :aspect performance，full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "prohlásit-001"
+   }
+  ],
+  "best": "prohlásit-001 :aspect performance，full-affirmative",
+  "text": "精简版 checklist：每个事件都有 :aspect；本文 gold 在事件上写 :modal-strength，这句的 přečíst 写了，两个 prohlásit（名词化的「声明」和从句里的「宣称」）都漏了。两者都是过去完成的言语行为。",
+  "fix": {
+   "title": "两个 prohlásit：补 aspect performance 和 modal-strength",
+   "conf": "high",
+   "why": "每个事件都要有 aspect，本文 gold 也给事件写 :modal-strength。恺撒的声明和其中「宣称自己是和平之友」都是已完成的言语行为，作者肯定陈述。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s30p4",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s30p4",
+     "attr": "modal-strength",
+     "value": "full-affirmative"
+    },
+    {
+     "op": "set_attr",
+     "var": "s30p2",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s30p2",
+     "attr": "modal-strength",
+     "value": "full-affirmative"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 3,
+  "topic": "prokonzul（总督）与 César 同指",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "prokonzul 另立节点，不与 César 同指",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "prohlásit 的施事就是 César，prokonzul 作 have-org-role-92 :ARG3",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   },
+   {
+    "label": "César :ARG1-of have-role-91 :ARG3 prokonzul",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "César :mod prokonzul",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ prokonzul"
+   }
+  ],
+  "best": "prohlásit 的施事就是 César，prokonzul 作 have-org-role-92 :ARG3",
+  "text": "「恺撒的声明，其中这位总督宣称……」里的 prokonzul 指的就是恺撒；精简版 5.3：同一句内的同指写成重入（同一个变量）。gold、s0、s1f 都另立了一个 prokonzul 节点；s0/r1 还用了 have-org-role-91 和错误的 ARG2。头衔按 guideline 2.3 用 have-org-role-92 :ARG3。",
+  "fix": {
+   "title": "prokonzul 并入 César（重入 + have-org-role-92）",
+   "conf": "mid",
+   "why": "Césarovo prohlášení, ve kterém se prokonzul prohlásil…：总督就是恺撒本人。句内同指应写成重入；头衔按精简版 2.3 写成 have-org-role-92 :ARG3 prokonzul。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s30p3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s30p4",
+     "r": "actor",
+     "t": "s30p8"
+    },
+    {
+     "op": "add_rel",
+     "s": "s30p4",
+     "r": "undergoer",
+     "t": "s30p8"
+    },
+    {
+     "op": "add_node",
+     "parent": "s30p8",
+     "role": "ARG1-of",
+     "var": "s30z1",
+     "concept": "have-org-role-92",
+     "attrs": {
+      "aspect": "state",
+      "modal-strength": "full-affirmative"
+     }
+    },
+    {
+     "op": "add_node",
+     "parent": "s30z1",
+     "role": "ARG3",
+     "var": "s30z2",
+     "concept": "prokonzul",
+     "align": "20-20"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 4,
+  "topic": "za přítele míru（作为和平之友）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "prohlásit :result přítel",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":result (s"
+   },
+   {
+    "label": "prohlásit :ARG2 přítel",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "prohlásit :effect přítel",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "prohlásit :ARG2 (have-rel-role-92 :ARG2 mír :ARG3 přítel)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-rel-role-92"
+   }
+  ],
+  "best": null,
+  "text": "「宣称自己为和平之友」里 přítel 是宾语补足语。:result 不在 UMR 角色表里；捷克文训练数据把这类补足语写成 :effect（PDT 的 EFF），编号角色 ARG2 也可以。s1f 把「和平之友」做成亲友关系 have-rel-role-92（和「和平」是朋友），过度分解。通用角色里没有现成的对应角色，gold 不提 fix。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 5,
+  "topic": "ve kterém（在其中）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "prohlásit :place 声明",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place"
+   },
+   {
+    "label": "prohlásit :medium 声明",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":medium-of (s"
+   },
+   {
+    "label": "prohlášení :ARG1 prohlásit（声明的内容）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s"
+   },
+   {
+    "label": "prohlášení :mod prohlásit",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "prohlásit :ARG1 prohlášení（宣布的是声明本身）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": null,
+  "text": "ve kterém se prokonzul prohlásil「在声明里他宣称」：声明是宣称的载体，:place、:medium，或者把宣称当作声明的内容都说得通。:mod 丢了关系；s1f/r2 让声明成为被宣布的东西，偏了。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 6,
+  "topic": "公元前（př. n. l.）的写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":era (BCE) 节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ BCE"
+   },
+   {
+    "label": ":era \"BCE\" / \"BC\" 字符串",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":era \""
+   },
+   {
+    "label": ":era 英文常量节点 bc / bce",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "bc"
+   },
+   {
+    "label": ":era (před-naším-letopočtem) 捷克词节点",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "před-naším-letopočtem"
+   }
+  ],
+  "best": null,
+  "text": "guideline 只把 :era 列为 date-entity 的规范关系，没有给值的写法；AMR 习惯写字符串 \"BC\"。英文缩写的各种写法都可以接受，s1f/r2 把它写成捷克文短语节点，不规范。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 7,
+  "topic": "přečíst 中声明的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "přečíst :undergoer / :ARG1 声明",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "přečíst"
+   },
+   {
+    "label": "přečíst-004 :effect 声明",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "přečíst-004"
+   }
+  ],
+  "best": "přečíst :undergoer / :ARG1 声明",
+  "text": "被宣读的声明是 přečíst 的受事；捷克文训练数据的 přečíst-001 都是 :ARG1（pdtsc_140_1.08、faust_2010_07_es_06）。a2 选了 přečíst-004 并用 :effect，不太合。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 1,
+  "topic": "odstraněna（被除去）的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "形容词/分词 odstraněný",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ odstraněný"
+   },
+   {
+    "label": "动词 odstranit-001",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "odstranit-001"
+   }
+  ],
+  "best": "动词 odstranit-001",
+  "text": "aby byla kutikula odstraněna 是被动态，事件应写动词 lemma odstranit；gold 用了被动分词 odstraněný（形容词形式），而它的角色、aspect 都按事件写。",
+  "fix": {
+   "title": "odstraněný → odstranit",
+   "conf": "mid",
+   "why": "byla … odstraněna 是 odstranit（除去）的被动形式，事件概念应用动词 lemma；gold 写成分词形容词 odstraněný。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s31o",
+     "concept": "odstranit"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 2,
+  "topic": "úplně（完全）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "odstranit :manner úplně",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":extent úplně",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent (s"
+   },
+   {
+    "label": ":degree úplně",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": null,
+  "text": "úplně 表示完全的程度，不是方式。捷克文训练数据一律写 :extent（pdtsc_024_3.03、pdtsc_049_3.08 等）；精简版把程度词放在 :degree，也可以。",
+  "fix": {
+   "title": "úplně：:manner → :extent",
+   "conf": "mid",
+   "why": "úplně（完全地）是程度副词，捷克文训练数据一律标 :extent (úplně)，不是方式 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s31o",
+     "r": "manner",
+     "t": "s31u",
+     "r2": "extent"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 3,
+  "topic": "typicky（通常）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dávat :manner typicky",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "dávat :mod typicky",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": "dávat :manner typicky",
+  "text": "捷克文训练数据把 typicky 写成 :manner（wsj1118.cz、wsj0986.cz）；副词修饰事件用 :manner，:mod 略差。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 4,
+  "topic": "chemické lázně 在 dávat 上的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "dávat :goal lázeň",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "dávat :ARG2 lázeň",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": null,
+  "text": "「把头发放进化学浴」，lázeň 是放置的终点：通用角色是 :goal（guideline 表 9 she put the books on the shelf），编号角色 ARG2 也对。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 5,
+  "topic": "odstranit（目的事件）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "unspecified",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "unspecified"
+   }
+  ],
+  "best": null,
+  "text": "目的从句 aby …。同第 26 句：完整 guideline 4-3-1-4 在句子层给目的事件 FullAff，其他取值也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 6,
+  "topic": "被转述内容的 :quote",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不写 :quote",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "被转述事件上加 :quote vysvětlovat",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quote s"
+   }
+  ],
+  "best": null,
+  "text": "精简版第 3 节：转述内容是转述动词的 ARG1，release 数据在引语上另加 :quote。这里是间接的「Tarlo 解释说」，写不写 :quote 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 1,
+  "topic": "三个否定事件的 :polarity",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "komunikovat、spolupracovat、have-mod-91 都只有 full-negative，没有 :polarity -",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "full-negative"
+   },
+   {
+    "label": ":polarity - 加 full-negative",
+    "systems": [
+     "s0/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":polarity -",
+     "full-negative"
+    ]
+   },
+   {
+    "label": ":polarity - 却标 full-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity - 加 full-negative",
+  "text": "nekomunikoval、nespolupracoval、nebyl ochotný 三处否定。guideline 4.2：否定的概念加 :polarity -，模态随之 full-negative；gold 本文第 6、13 句两者都写，这里三个都漏了 :polarity -（同第 25 句）。s0/r2 否定却标 full-affirmative，自相矛盾。",
+  "fix": {
+   "title": "三个否定事件补 :polarity -",
+   "conf": "mid",
+   "why": "nekomunikoval / nespolupracoval / nebyl ochotný 都带否定前缀 ne-；guideline 要求否定概念带 :polarity -，本文 gold 第 6、13 句的否定事件都同时写了 :polarity - 和 full-negative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s32k",
+     "attr": "polarity",
+     "value": "-"
+    },
+    {
+     "op": "set_attr",
+     "var": "s32s",
+     "attr": "polarity",
+     "value": "-"
+    },
+    {
+     "op": "set_attr",
+     "var": "s32h",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 2,
+  "topic": "jít（不愿意去）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不写（按精简版约定即 full-affirmative）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "s0/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "neutral-negative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "neutral-negative"
+   },
+   {
+    "label": "unspecified",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "unspecified"
+   }
+  ],
+  "best": null,
+  "text": "jít 是被否定的「愿意」所带的补足事件，作者没有断言 Klein 去了（实际上他不愿意去）。精简版 5.2：意愿类谓词的补足事件取 unspecified 或谓词蕴含的强度；full-affirmative 等于断言他去了，不对。几种非 full 的取值都说得通。",
+  "fix": {
+   "title": "jít：modal-strength full-affirmative → unspecified",
+   "conf": "mid",
+   "why": "nebyl ochotný jít（不愿意去）：去这件事没有被断言发生。精简版 5.2：意愿、打算类谓词的补足事件取 unspecified（或谓词所蕴含的强度），不能是 full-affirmative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s32j",
+     "attr": "modal-strength",
+     "value": "unspecified"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 3,
+  "topic": "zúčastnit se（目的事件）的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "partial-affirmative",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "neutral-negative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "neutral-negative"
+   }
+  ],
+  "best": null,
+  "text": "目的从句 aby se zúčastnil。完整 guideline 4-3-1-4 在句子层给目的事件 FullAff（相对 purpose 节点）；这里目的所依附的「去」本身没有发生，neutral 一类的取值也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 4,
+  "topic": "ochotný 上的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "形容词 ochotný 带 :refer-number singular",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不带",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不带",
+  "text": "refer-number 用于名词性的指称对象（guideline 2.4）；ochotný 是形容词谓语（have-mod-91 的 ARG2），不该带 refer-number。",
+  "fix": {
+   "title": "ochotný：删 :refer-number",
+   "conf": "low",
+   "why": "ochotný（愿意的）是形容词性质，作 have-mod-91 的 ARG2，refer-number 只用于名词性指称对象。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s32o",
+     "attr": "refer-number"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 5,
+  "topic": "z cely（从牢房）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "jít :start cela",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":start (s"
+   },
+   {
+    "label": "jít :source cela",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":source (s"
+   },
+   {
+    "label": "jít :ARG1 cela",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "/ cela"
+   }
+  ],
+  "best": "jít :start cela",
+  "text": "完整 guideline 表 9：位移事件的起点是 :start（she biked from her house），:source 是 theme 脱离的实体（plucked a flower from the bush）。s1f/r1 把牢房当成 jít 的 ARG1（移动者），错。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 6,
+  "topic": "do soudní budovy（到法院）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "jít :goal budova",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":goal (s"
+   },
+   {
+    "label": "jít :ARG2 budova",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": null,
+  "text": "位移终点：通用角色 :goal，编号角色 ARG2（jít-022 的方向论元）都可以。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 7,
+  "topic": "slyšení 在 zúčastnit se 上的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zúčastnit-se :affectee slyšení",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":affectee (s"
+   },
+   {
+    "label": "zúčastnit-se :ARG1 slyšení",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": "zúčastnit-se :ARG1 slyšení",
+  "text": "完整 guideline 表 9：:affectee 是受益或受损的有生实体（he made a cake for the dog）；听证会是参加的对象事件，不是 affectee。通用角色里没有现成的对应（可考虑 :theme 或 :other-role），gold 不提 fix。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 8,
+  "topic": "zúčastnil se 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "zúčastnit-se（带反身词）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "zúčastnit-se"
+   },
+   {
+    "label": "zúčastnit-001（丢了 se）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "zúčastnit-001"
+   }
+  ],
+  "best": "zúčastnit-se（带反身词）",
+  "text": "同第 29 句 setkat se：反身词并入 lemma；s0 两次都丢了 se。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 9,
+  "topic": "Také（也）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "uvést :manner také",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "uvést :clausal-marker také",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": "uvést :mod také",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ také"
+   }
+  ],
+  "best": "uvést :clausal-marker také",
+  "text": "také 是焦点/连接小品词，不是方式。捷克文训练数据一律写 :clausal-marker (také)（pdtsc_023_3.06、pdtsc_098_1.04 等），AMR 习惯写 :mod (also)。",
+  "fix": {
+   "title": "také：:manner → :clausal-marker",
+   "conf": "low",
+   "why": "také（也）是连接性小品词，捷克文训练数据一律标 :clausal-marker (také)；不是方式 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s32u",
+     "r": "manner",
+     "t": "s32t",
+     "r2": "clausal-marker"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 10,
+  "topic": "jít 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": null,
+  "text": "未实现的「去」难定 aspect（说明：未然事件几种合理取值都 ok）；走到法院有终点，performance 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 11,
+  "topic": "uvést 的转述内容角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "uvést :theme / :ARG1 并列从句",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "uvést-007 :effect 并列从句",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":effect (s"
+   }
+  ],
+  "best": null,
+  "text": "捷克文训练数据里 uvést-007 的转述内容常写 :effect（wsj1654.cz、wsj1636.cz），ARG1 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 1,
+  "topic": "není 的否定标注",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "identity-91 只有 full-negative，没有 :polarity -",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "full-negative"
+   },
+   {
+    "label": ":polarity - 加 full-negative",
+    "systems": [
+     "s0/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":polarity -",
+     "full-negative"
+    ]
+   },
+   {
+    "label": ":polarity - 却标 full-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity - 加 full-negative",
+  "text": "To není to, co potřebujem（这不是我们需要的）是否定的等同句：guideline 4.2 要求 :polarity -（同第 25、32 句）。s0/r2 自相矛盾。",
+  "fix": {
+   "title": "není：identity-91 补 :polarity -",
+   "conf": "mid",
+   "why": "není 是否定（ne-），guideline 要求否定概念带 :polarity -；本文 gold 第 6、13 句的否定事件都同时写了 :polarity - 和 full-negative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s33i",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 2,
+  "topic": "系词句的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "have-identity-91（不存在的谓词）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-identity-91"
+   },
+   {
+    "label": "být-007 :ARG2 直接是 potřebovat 事件",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "být-007"
+   }
+  ],
+  "best": "identity-91",
+  "text": "「这不是我们需要的东西」是等同句，guideline 表 8 用 identity-91。have-identity-91 不存在；a2/r2 用训练数据的 být-007 也可以，但把 ARG2 写成事件 potřebovat 而不是「所需之物」，并给系词标 activity。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 3,
+  "topic": "To（这）的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "thing",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "thing :mod ten",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ ten"
+   },
+   {
+    "label": "ten（代词 lemma）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ ten"
+   },
+   {
+    "label": "thing :mod to（未还原 lemma）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ to)"
+   }
+  ],
+  "best": null,
+  "text": "指示代词作 thing 或按捷克文训练数据写 lemma ten 都可以；s1f/r2 写成中性形式 to，没有还原成 lemma ten。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 4,
+  "topic": "přátelé（朋友们，呼语）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":vocative přítel",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":vocative (s"
+   },
+   {
+    "label": ":other-role přítel",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":other-role (s"
+   }
+  ],
+  "best": ":vocative přítel",
+  "text": "呼语用 :vocative（精简版第 3 节角色表）；:other-role 是不确定时的占位角色，这里不需要。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 5,
+  "topic": "potřebovat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "state",
+  "text": "「需要」是状态谓词（guideline 4.1：want、like、have 一类为 state）。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 6,
+  "topic": "své zemi（我们的国家）的领属",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "země :possessor 我们",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": "země :poss 我们",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss s"
+   },
+   {
+    "label": "země :mod 我们",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod s"
+   }
+  ],
+  "best": "země :possessor 我们",
+  "text": "své zemi 是「我们自己的国家」，用 :possessor（:poss 是 s0、s1f 全篇的旧写法，见第 29 句）；a2/r2 用 :mod 不对。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 1,
+  "topic": "chybět 中 schopnost 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "chybět :actor schopnost",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":actor (s"
+   },
+   {
+    "label": "chybět :ARG1 schopnost",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s34"
+   }
+  ],
+  "best": "chybět :ARG1 schopnost",
+  "text": "「他的能力将会让人非常怀念（将会缺失）」：schopnost 是缺失的东西，不是发起动作的有生实体。完整 guideline 表 9：:actor 是 animate entity that initiates the action。缺失/不在是处所类状态，通用角色宜用 :theme，系统的 ARG1 对应受事。",
+  "fix": {
+   "title": "schopnost：:actor → :theme",
+   "conf": "mid",
+   "why": "完整 guideline 表 9：:actor 必须是发起动作的有生实体；chybět（缺失）的主语 schopnost（能力）是无生的、处于「不在」状态的对象，宜作 :theme（也可能有人选 :undergoer）。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s34c",
+     "r": "actor",
+     "t": "s34s",
+     "r2": "theme"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 2,
+  "topic": "schopnost 与 získávat 的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "schopnost :mod získávat",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "schopnost :ARG1 získávat",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s"
+   },
+   {
+    "label": "schopnost :ARG2 získávat",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "schopnost :ARG1 získávat",
+  "text": "「获取答案的能力」里 získávat 是能力的内容。捷克文训练数据给 schopnost 带 :ARG1（ln94207_74：schopnost :ARG1 analýza）；:mod 丢了论元关系；s0/r1 的 ARG2 没有依据。通用角色体系下没有现成的对应，gold 不提 fix。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 3,
+  "topic": "jeho（他）与 získávat 的施事",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "同一 person：schopnost :possessor，získávat :recipient",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":recipient s"
+   },
+   {
+    "label": "同一 person：schopnost 的领属者兼 získávat :ARG0",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "jeho 写成 entity，作 schopnost 的 :mod 兼 získávat :ARG0",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ entity"
+   }
+  ],
+  "best": null,
+  "text": "「他的能力」：他既是能力的领有者，也是获取答案的人。gold 用 :recipient（获得答案的一方）也说得通，系统的 ARG0 也对；a2 把物主代词写成 entity 并挂成 :mod，丢了领属关系。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 4,
+  "topic": "získávat 的 modal-strength",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "neutral-affirmative",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "neutral-affirmative"
+   },
+   {
+    "label": "full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不写（按约定即 full-affirmative）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "neutral-affirmative",
+  "text": "získávat 是「能力」所指的潜在事件，不是作者断言发生过的具体事件。精简版 5.2：can（能力）对应 neutral-affirmative。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 5,
+  "topic": "získávat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect state"
+   }
+  ],
+  "best": null,
+  "text": "能力所指的「获取答案」是反复进行的活动，activity、habitual 都说得通；state 不合。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 6,
+  "topic": "odpovědi na otázky（对问题的回答）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "odpověď :mod otázka",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ otázka"
+   },
+   {
+    "label": "odpověď :topic otázka",
+    "systems": [
+     "s0/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "odpověď :ARG1 / :ARG2 otázka",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "答案针对的是问题，用 :topic 或把 odpověď 当作带论元的名词（ARG1/ARG2）都可以；:mod 没有表达出「回答的是什么」。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 7,
+  "topic": "chybět 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "state",
+  "text": "「将会缺失、令人怀念」是状态（guideline 4.1），activity 不合。",
+  "fix": null
+ },
+ {
+  "sent": 35,
+  "n": 1,
+  "topic": "Badarpur 与 Dillí 的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "Badarpur :ARG1-of identity-91 :ARG2 Dillí",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "identity-91"
+   },
+   {
+    "label": "Badarpur :place Dillí",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "Badarpur :part-of Dillí",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "Badarpur :part Dillí",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "Badarpur :location Dillí",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":location (s"
+   }
+  ],
+  "best": null,
+  "text": "v Badarpuru, v jihovýchodním Dillí：巴达尔布尔位于德里东南部，是处所/部分关系，不是等同。identity-91 把两个地名说成同一个地方，错。按项目规则 部分 :part 整体 和 :part-of 都可以；:location 是 AMR 角色。",
+  "fix": {
+   "title": "Badarpur–Dillí：identity-91 → have-place-91",
+   "conf": "high",
+   "why": "原文是同位的处所说明（巴达尔布尔，在德里东南部）：巴达尔布尔位于德里之内，不是同一个地方。guideline 表 8：have-place-91 :ARG1 主体 :ARG2 处所，论元位置与现有的 ARG1/ARG2 正好对应。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s35i2",
+     "concept": "have-place-91"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 2,
+  "topic": "Badarpur 的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "city",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ city"
+   },
+   {
+    "label": "city-district",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "city-district"
+   },
+   {
+    "label": "Badarpur 作普通概念，没有命名实体结构",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad",
+    "grep": "/ Badarpur"
+   }
+  ],
+  "best": "city-district",
+  "text": "Badarpur 是德里东南部的一个城区，实体类型表里有 city-district（AMR 同），比 city 准确；a2/r1 把 Badarpur、Dillí 都写成普通概念，没有 :name，不合 guideline 2.2。",
+  "fix": {
+   "title": "Badarpur：city → city-district",
+   "conf": "low",
+   "why": "Badarpur 是德里市内的一个区（v jihovýchodním Dillí），实体类型表有 city-district。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s35t",
+     "concept": "city-district"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 3,
+  "topic": "na deset dní（十天）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "temporal-quantity :quant 10 :unit den",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "temporal-quantity"
+   },
+   {
+    "label": "den :mod deset",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ deset"
+   }
+  ],
+  "best": "temporal-quantity :quant 10 :unit den",
+  "text": "精简版 2.2：时长写 temporal-quantity :quant N :unit，数字写阿拉伯数字。",
+  "fix": null
+ },
+ {
+  "sent": 35,
+  "n": 4,
+  "topic": "i（也）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "generátor :manner i",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":clausal-marker i（挂在 generátor 或 vypnout 上）",
+    "systems": [
+     "a2/r1",
+     "a2/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":clausal-marker (s"
+   },
+   {
+    "label": ":mod i",
+    "systems": [
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "改写成 také",
+    "systems": [
+     "s0/r1",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ také"
+   },
+   {
+    "label": "没有标 i",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": ":clausal-marker i（挂在 generátor 或 vypnout 上）",
+  "text": "i 是焦点小品词（连……也），捷克文训练数据一律写 :clausal-marker (i)（pdtsc_139_1.10 等）；:manner 不对。s0/r1、s3/r1 换成了原文没有的 také。",
+  "fix": {
+   "title": "i：:manner → :clausal-marker",
+   "conf": "mid",
+   "why": "i（也、连）是焦点小品词，捷克文训练数据一律标 :clausal-marker (i)；它不表示方式。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s35g",
+     "r": "manner",
+     "t": "s35i",
+     "r2": "clausal-marker"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 5,
+  "topic": "ve městě（城里）的指称",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "vypnout :place město",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ město"
+   },
+   {
+    "label": "vypnout :place Dillí（直接重入）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "město 指前面的德里，可以写普通名词再在文档级共指，也可以句内直接重入 Dillí；gold 没有文档级，不比较共指。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 1,
+  "topic": "hraju si 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "hrát-si（带反身词）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "hrát-si"
+   },
+   {
+    "label": "hrát-001（丢了 si）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "hrát-001"
+   }
+  ],
+  "best": "hrát-si（带反身词）",
+  "text": "hrát si s něčím（玩弄、摆弄）是带反身代词的动词，与 hrát（演奏、比赛）不同；s0 丢了 si。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 2,
+  "topic": "rád（喜欢）的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "hrát-si :manner rád",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "rád 作谓词 :ARG1 我 :ARG2 hrát",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "person :mod rád",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ rád"
+   }
+  ],
+  "best": null,
+  "text": "rád + 动词（喜欢做）：作方式修饰或作谓词都可以；a2 把 rád 挂在说话人身上，变成「高兴的我」。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 3,
+  "topic": "kolekcí 在 hrát si 上的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "hrát-si :undergoer / :ARG1 kolekce",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "hrát-si :companion kolekce",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":companion (s"
+   }
+  ],
+  "best": "hrát-si :undergoer / :ARG1 kolekce",
+  "text": "玩的对象是收藏；guideline 表 9 的 :companion 是和 actor 一起发起动作的有生实体，不合。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 4,
+  "topic": "vždy（总是）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "hledat :manner vždy",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "hledat :frequency vždy",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":frequency (s"
+   }
+  ],
+  "best": "hledat :frequency vždy",
+  "text": "vždy（总是）表示频率；精简版第 3 节有 :frequency，捷克文训练数据的 vždycky 也多写 :frequency（pdtsc_099_3.02、pdtsc_117_2.02）。",
+  "fix": {
+   "title": "vždy：:manner → :frequency",
+   "conf": "mid",
+   "why": "vždy（总是）是频率副词，guideline 的非参与者角色有 :frequency，捷克文训练数据的 vždycky 多标 :frequency；不是方式。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s36h2",
+     "r": "manner",
+     "t": "s36v",
+     "r2": "frequency"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 5,
+  "topic": "hledat 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "habitual",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "vždy hledám（总是在找）：habitual 最贴切，activity 也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 6,
+  "topic": "splňující（符合）的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "splňovat（动词）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "splňovat"
+   },
+   {
+    "label": "splňující（分词形容词）作 :mod",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ splňující"
+   }
+  ],
+  "best": "splňovat（动词）",
+  "text": "splňující 是现在分词，作定语从句的谓词应还原成动词 splňovat 并按事件标注（同第 31 句 odstraněný 的问题）。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 7,
+  "topic": "velmi（很）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "zajímavý :manner velmi",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":degree velmi",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": ":extent velmi",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":extent (s"
+   }
+  ],
+  "best": ":degree velmi",
+  "text": "精简版 4.2：很、非常之类的程度词用 :degree；捷克文训练数据写 :extent (velmi)。:manner 不对。",
+  "fix": {
+   "title": "velmi：:manner → :degree",
+   "conf": "mid",
+   "why": "精简版 4.2：intensifier（very、很）用 :degree；velmi 修饰形容词 zajímavý 表程度，不是方式。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s36z",
+     "r": "manner",
+     "t": "s36v2",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 8,
+  "topic": "zajímavý 上的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "形容词 zajímavý 带 :refer-number singular",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "不带",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不带",
+  "text": "同第 32 句 ochotný：refer-number 用于名词性指称对象，have-mod-91 的 ARG2（形容词属性）不该带。",
+  "fix": {
+   "title": "zajímavý：删 :refer-number",
+   "conf": "low",
+   "why": "zajímavý 是 have-mod-91 的形容词属性，refer-number 只用于名词性的指称对象。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s36z",
+     "attr": "refer-number"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 9,
+  "topic": "「je to velmi zajímavé」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG1 ten/thing :ARG2 zajímavý，:condition najít",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":condition"
+   },
+   {
+    "label": "have-mod-91 :ARG1 najít/thing，:temporal najít",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":temporal"
+   },
+   {
+    "label": "zajímavý 作根谓词，:ARG1 thing / najít",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "když ji najdu（每当我找到时）既可看作条件也可看作时间，两种都可以；「这」指找到这件事，写成 ten/thing 或直接以 najít 作 ARG1 都可以。s0 让形容词直接带 ARG1，不用 have-mod-91，不规范。",
+  "fix": null
+ }
+]

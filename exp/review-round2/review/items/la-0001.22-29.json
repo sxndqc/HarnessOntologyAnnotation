@@ -1,0 +1,3485 @@
+[
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "义项编号体系",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "两位框架号（video-10、quaero-15、vivo-NEW-02、fruor-04、intendo-06 …）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "video-10"
+   },
+   {
+    "label": "不带框架号，只写词元（video、quaero、intendo …）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ intendo"
+   },
+   {
+    "label": "一律写 -01（videor-01、quaero-01、intendo-01 …）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "quaero-01"
+   }
+  ],
+  "best": null,
+  "text": "全篇如此：gold 的谓词带拉丁文两位框架号（含 -NEW- 新增框架），系统没有拉丁文框架词典可查，拉丁训练数据是自动转换的、谓词不带编号。s1f、s3、a2 照训练数据只写词元，s0 一律补 -01，都与 gold 编号不同，按说明判 minor。之后各句只在词元、切分、是否谓词化不同时另写条目。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "角色体系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "编号角色 ARGn，非论元角色用 UMR 名称；s3、a2 另用训练数据的 :effect、:clausal-marker",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0"
+   }
+  ],
+  "best": null,
+  "text": "gold 和 8 个系统都用编号角色，体系相同；gold 不用训练数据从依存树转来的 :effect、:clausal-marker，s3、a2 照训练数据用。之后各句只比较角色分配。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "文档级 have-condition 常量三元组",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "每句都加 (author :neutral-affirmative have-condition)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "neutral-affirmative have-condition"
+   },
+   {
+    "label": "没有这条",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有这条",
+  "text": "全篇如此：s3/r1 全部 50 句、a2 两次运行几乎每句都写这条，与句中有没有条件从句无关（本句没有条件）。have-condition 只该作条件从句事件的父节点（guideline 5.2），凭空挂在 author 下无意义。之后各句不再重复。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 4,
+  "topic": "句首连接词 verum enim vero",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "but-91 作根，:ARG1 是本句",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "but-91"
+   },
+   {
+    "label": "verus、enim、verus 作 :clausal-marker",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ enim"
+   }
+  ],
+  "best": "but-91 作根，:ARG1 是本句",
+  "text": "verum 是承上文的转折（gloss: but），guideline 2.5 转折用 contrast-91 / but-91；gold 第 7 句句首 Sed 就写成 but-91 :ARG1 event :ARG2 本句，本句漏掉不一致（第 18 句的 sed 也漏了）。a2 照训练数据把小品词作 :clausal-marker 也说得通。gold 第 18 句同样不标，前后不一，fix 只给 low。",
+  "fix": {
+   "title": "句首 verum：加 but-91 作根",
+   "conf": "low",
+   "why": "verum（but）是承接上句的转折，gold 第 7 句句首 Sed 写成 but-91，本句照同一写法加 but-91，原句作 :ARG2。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s22v",
+     "role": "mod",
+     "var": "s22z1",
+     "concept": "but-91",
+     "align": "1-1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s22z1",
+     "r": "ARG2",
+     "t": "s22v"
+    },
+    {
+     "op": "set_root",
+     "var": "s22z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s22v",
+     "r": "mod",
+     "t": "s22z1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 5,
+  "topic": "「demum」（唯有他）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "demum :mod 在 is / person 上",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ demum"
+   },
+   {
+    "label": "demum :mod 在 vivo 上",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ demum"
+   },
+   {
+    "label": "demum 作 video 的 :clausal-marker",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ demum"
+   }
+  ],
+  "best": "demum :mod 在 is / person 上",
+  "text": "is demum（只有这样的人才……，gloss: he only）有实义，限定的是 is。gold 漏了这个节点；系统挂在 is 上最贴切，挂在 vivo 或作 clausal-marker 也可接受。",
+  "fix": {
+   "title": "补上 demum（:mod 在 is 上）",
+   "conf": "low",
+   "why": "is demum 意为「只有他」，demum 限定 is，gold 漏标；照系统多数写成 is 的 :mod。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s22p",
+     "role": "mod",
+     "var": "s22z2",
+     "concept": "demum",
+     "align": "5-5"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 6,
+  "topic": "videtur 的词元",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "video（gold 带框架号 video-10）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ video"
+   },
+   {
+    "label": "videor",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ videor"
+   }
+  ],
+  "best": "video（gold 带框架号 video-10）",
+  "text": "拉丁训练数据和 gold 都把 videtur（seem）归到 video 之下（sallust-training 432、cicero 210），videor 是被动形式另立词元，与本语言的写法不一致。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 7,
+  "topic": "「mihi」（体验者）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "video :ARG0 person 1st",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 1st"
+   },
+   {
+    "label": "videor :ARG2 person 1st",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "videor :ARG2 ego",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ ego"
+   }
+  ],
+  "best": "video :ARG0 person 1st",
+  "text": "训练数据 mihi videtur 的体验者用 :ARG0 person 1st（sallust-training 90），gold 同；s0、s1f 套英文 seem-01（ARG2 体验者）。s0 的 ego 还违反 guideline 2.4（代词作 person）。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 8,
+  "topic": "videtur 的论元：is 与 vivere / frui",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "video :ARG1 is，:ARG2 and(vivo, fruor)（人称结构）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "video :ARG1 is，:effect and(vivo, fruor)",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "video :ARG1 and(vivo, fruor)，is 只作 vivo / fruor 的 ARG0（无人称结构）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "video 有两个 :ARG1（is 和 and）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "is ... videtur vivere 是人称结构（他似乎活着），gold 和 s3/r2、a2/r2（:effect 是训练数据 videtur 补语的写法，sallust-training 432）照原文分出主语与补语；系统按「似乎他活着」只把 and 作 ARG1 也表达了同一意思。a2/r1 同一角色写了两次，违反图的格式。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 9,
+  "topic": "「is」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person 3rd singular",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 3rd"
+   },
+   {
+    "label": "person :mod is",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ is"
+   },
+   {
+    "label": "代词词元 is",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ is"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.4 代词作 person 加人称、数；拉丁训练数据又常把指示代词 is 直接写成词元（如 sallust-training 87），两种都算对。s3/r1 既建 person 又挂 is 作 :mod，is 在这里不是指示修饰语，重复。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 10,
+  "topic": "「aliquo」的词元",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "aliquus",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ aliquus"
+   },
+   {
+    "label": "aliquis",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ aliquis"
+   },
+   {
+    "label": "aliqui",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ aliqui"
+   },
+   {
+    "label": "把关系代词 qui 当成 negotium 的 :mod，漏了 aliquo",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad",
+    "grep": "/ qui"
+   },
+   {
+    "label": "quis",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ quis"
+   }
+  ],
+  "best": "aliquis",
+  "text": "aliquo 是不定代词 aliquis / aliqui（形容词用法）的夺格，拉丁文没有 aliquus 这个词元，gold 是词形还原错误。a2/r1 把句中的关系代词 qui（13）挂成 negotium 的修饰语，意思错。a2/r2 的 quis 丢了 ali-，意义变成疑问 / 泛指代词，略差。",
+  "fix": {
+   "title": "aliquo 的词元：aliquus → aliquis",
+   "conf": "mid",
+   "why": "aliquo 是不定代词 aliquis（aliqui）的夺格，aliquus 不是拉丁词元，属词形还原错误。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s22a4",
+     "concept": "aliquis"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 11,
+  "topic": "intendo（intentus）的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "intendo :ARG0 is，:ARG1 negotium",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "intendo-06"
+   },
+   {
+    "label": "intendo :ARG1 is，:ARG2 negotium",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ negotium"
+   },
+   {
+    "label": "另加 :ARG0 entity，:ARG1 is，:ARG2 negotium",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ entity"
+   }
+  ],
+  "best": null,
+  "text": "没有框架词典，intentus（专注于）的编号角色无从核对：gold 按主动「专注者 ARG0、对象 ARG1」，系统按被动分词「被引向者 ARG1、对象 ARG2」，都说得通。a2 另造一个施事 entity，但 intentus 在这里是形容词性的「专注」，没有另外的施事，多余。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 12,
+  "topic": "intendo 挂在 quaero 下的关系与 aspect",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "quaero :manner intendo，aspect state",
+    "systems": [
+     "gold",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "is :ARG1-of intendo（作 is 的定语），aspect state",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "quaero :manner intendo，aspect performance",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "quaero :cause intendo，aspect performance",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":cause (s"
+   }
+  ],
+  "best": "quaero :manner intendo，aspect state",
+  "text": "intentus（专注于某事）是伴随 quaerit 的状态，:manner 或作 is 的定语都可；它是状态，标 performance 不合 guideline 4.1。a2/r2 的 :cause 把伴随状态读成原因，也略差。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 13,
+  "topic": "fama 与属格 praeclari facinoris aut artis bonae",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "fama :mod or",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "fama :topic or",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "fama :possessor or",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "fama :poss or（AMR 旧名）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "「高尚事业或正当技艺的名声」是名声的来由，不是领有者，:mod 或 :topic 都可，:possessor 不贴切。s1f（以及 s0）全篇用 AMR 旧角色名 :poss 代替 :possessor，之后不再逐句写。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 14,
+  "topic": "fruor 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "泛指意义上的「享受人生」，activity 和 state 都说得通（guideline 4.1 未然、泛指事件不硬判）。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 15,
+  "topic": "本句事件的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "videtur、vivo 都挂 DCT :overlap；fruor、quaero、intendo 挂在 vivo 下",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "DCT :overlap videtur；vivo、fruor 挂在 videtur 下；quaero、intendo 挂 DCT 或 vivo / quaero / videtur",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "同上，另加 (quaero :after facinus)，把名词 facinus 当事件",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":after"
+   },
+   {
+    "label": "同上，但 (quaero :before intendo)：intendo 在 quaero 之前",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":before"
+   },
+   {
+    "label": "全部挂 present-reference",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "present-reference"
+   }
+  ],
+  "best": "DCT :overlap videtur；vivo、fruor 挂在 videtur 下；quaero、intendo 挂 DCT 或 vivo / quaero / videtur",
+  "text": "vivere、frui 是 videtur 的补语，guideline 5.1 补语事件以主句事件为参照；gold 把 vivo 挂到 DCT，少了与 videtur 的关系。present-reference 是给模糊时间词用的，现在的状态应挂 DCT :overlap。intentus 是伴随状态，a2/r2 标成先于 quaerit 不贴切。",
+  "fix": {
+   "title": "vivere 以 videtur 为时间参照",
+   "conf": "low",
+   "why": "vivere 是 videtur 的补语，guideline 5.1 补语事件以主句事件为参照，应为 (videtur :overlap vivere)，不直接挂 DCT。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s22v2"
+     ],
+     "to": [
+      "s22v",
+      "overlap",
+      "s22v2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 16,
+  "topic": "vivere / frui 的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :partial-affirmative vivo / fruor)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(videtur :partial-affirmative vivo / fruor)",
+    "systems": [
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(ego :partial-affirmative vivo / fruor)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(videtur :unspecified vivo / fruor)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "full-affirmative（videtur 或 ego 作父节点）",
+    "systems": [
+     "s0/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "videtur 的体验者 mihi 就是作者，「在我看来他才算活着」：作者对 vivere 是 partial 把握，gold 直接挂 author 或系统挂在 videtur / 说话人下都对；guideline 5.2 也允许补语用 unspecified。标 full-affirmative 忽略了 videtur 的不确定。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 17,
+  "topic": "mihi 与上文第一人称的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有共指",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第 21 句的 ego（aestumo 的 ARG0）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "s21"
+   },
+   {
+    "label": "连到第 5 句的 ego（不是最近的提及）",
+    "systems": [
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "s5"
+   }
+  ],
+  "best": "连到第 21 句的 ego（aestumo 的 ARG0）",
+  "text": "mihi 与第 21 句的 ego 都是作者本人，guideline 5.3 代词要连到最近的前一个提及；gold 本句没有任何 coref，漏了。连到第 5 句同指不错，但跳过了最近的提及。",
+  "fix": {
+   "title": "mihi 与第 21 句 ego 共指",
+   "conf": "mid",
+   "why": "mihi（第 22 句）和第 21 句的 ego 都是作者本人，gold 漏了共指；按 guideline 5.3 连到最近的前一个提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s21p",
+      "same-entity",
+      "s22p2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "句首 Sed",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "but-91 作根，:ARG1 是本句",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "but-91"
+   }
+  ],
+  "best": "but-91 作根，:ARG1 是本句",
+  "text": "句首 Sed 是承上文的转折，gold 第 7 句句首 Sed 写成 but-91（:ARG1 event :ARG2 本句），本句漏标；拉丁训练数据句首 sed 也写 but-91（sallust-training 87）。gold 第 18、22 句同样漏标，前后不一，fix 只给 low。",
+  "fix": {
+   "title": "句首 Sed：加 but-91 作根",
+   "conf": "low",
+   "why": "句首 Sed 是转折连接词，gold 第 7 句同样的 Sed 写成 but-91，本句照同一写法加 but-91，原句作 :ARG2。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s23o",
+     "role": "mod",
+     "var": "s23z1",
+     "concept": "but-91",
+     "align": "1-1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s23z1",
+     "r": "ARG2",
+     "t": "s23o"
+    },
+    {
+     "op": "set_root",
+     "var": "s23z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s23o",
+     "r": "mod",
+     "t": "s23z1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "「alii」（给各人）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "ostendo :ARG2 person :mod alius",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   },
+   {
+    "label": "ostendo :ARG2 alius（代词词元）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ alius"
+   }
+  ],
+  "best": null,
+  "text": "aliud alii 是「给这个人这条路、给那个人那条路」的分配结构，alii 是接受者。gold 照 guideline 2.4 写成 person :mod alius，系统照训练数据把 alius 直接作代词节点，两种都可以；分配义两边都没有表达。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "copia 与属格 rerum",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "copia :mod res",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "copia :possessor res",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "copia :poss res（AMR 旧名）",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "copia :ARG1 res",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ res"
+   }
+  ],
+  "best": "copia :mod res",
+  "text": "magna copia rerum（大量的事务）里 rerum 是数量名词 copia 的内容，不是领有者，:mod 合适，:possessor 不贴切；s0/r1 给非谓词的 copia 加编号论元也不合 guideline 3。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "ostendit 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   }
+  ],
+  "best": null,
+  "text": "「自然给不同的人指出不同的路」是泛指的常理，guideline 4.1 泛指陈述可用 activity，也可读作反复发生的 habitual，都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 5,
+  "topic": "ostendit 的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap ostendo)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :overlap"
+   },
+   {
+    "label": "挂 present-reference",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "present-reference"
+   }
+  ],
+  "best": "(document-creation-time :overlap ostendo)",
+  "text": "现在时的泛指陈述按 guideline 5.1 挂 DCT :overlap；present-reference 是给「现今」一类模糊时间词作参照的。s0 全篇都这样写，之后不再逐句写。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 6,
+  "topic": "alii 的 coref",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(alii :subset-of 第 22 句 mihi)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "alius :subset-of 第 1 句的 homo（全人类）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 的 (s23p :subset-of s22p2) 把「各人」连到第 22 句的 mihi（作者本人），意思不通；alii 是泛指的众人，s0/r2 连到第 1 句 omnis homines 作子集说得通，不标也可以。",
+  "fix": {
+   "title": "删去 alii ⊂ mihi 的错误 coref",
+   "conf": "mid",
+   "why": "s22p2 是第 22 句的 mihi（作者本人），alii（各人、不同的人）不可能是作者的子集；这条 coref 应删去（也可以改连到泛指的人，但 gold 前文没有现成的节点）。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s23p",
+      "subset-of",
+      "s22p2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 7,
+  "topic": "natura 与第 20 句 naturam 共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(第 20 句 natura :same-entity natura)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "(第 20 句 natura :same-entity natura)",
+  "text": "本句给人指路的 natura 与第 20 句 contra naturam（违背自然的本意）、第 1 句塑造万物的 natura 是同一个拟人化的「自然」，guideline 5.3 应连共指。非中文 gold 改动从严，fix 给 low。",
+  "fix": {
+   "title": "natura 与第 20 句 natura 共指",
+   "conf": "low",
+   "why": "第 20 句 contra naturam 与本句 natura … ostendit 指同一个拟人化的「自然」，gold 漏了共指。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s20n",
+      "same-entity",
+      "s23n"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "根节点「and+contrast」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "and+contrast",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "and+contrast"
+   },
+   {
+    "label": "and",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ and"
+   }
+  ],
+  "best": "and",
+  "text": "and+contrast 不是 UMR 概念（guideline 2.5 只有 and、contrast-91 等），是格式错误。两个分句是「做得好是高尚的，甚至说得好也不坏」的递进并列，用 and 合适。",
+  "fix": {
+   "title": "根节点 and+contrast → and",
+   "conf": "mid",
+   "why": "and+contrast 不是合法的 UMR 概念；两个分句（pulchrum est … etiam … haud absurdum est）是递进并列，改为 and。也可以读作 contrast-91，所以给 mid。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s24a",
+     "concept": "and"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "系词句 pulchrum est / absurdum est 的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG1 不定式 :ARG2 形容词",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "zona-07 :ARG1 不定式 :ARG2 形容词（训练数据的系词写法）",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "zona-07"
+   },
+   {
+    "label": "sum :ARG0 不定式 :ARG1 形容词",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ sum"
+   },
+   {
+    "label": "形容词 pulcher / absurdus 本身作谓词，:ARG1 不定式",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ pulcher"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.3：X 是形容词用 have-mod-91；拉丁训练数据把系词 sum 一律转成 zona-07（173 处，have-mod-91 一处也没有），s3/r2、a2/r2 照训练数据写也算对。a2/r1 把系词留作 sum 并给出 ARG0，s0 让没有框架的形容词带编号论元，都不合两种写法。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "系词的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "state",
+  "text": "「做得好是高尚的」是性质判断，guideline 4.1 非动词谓词标 state；a2 两次都给系词标 activity。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "bene facere 的 bene",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "facio :ARG1 bene",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "facio :manner bene",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "facio :manner bene",
+  "text": "bene 是副词，修饰 facere 的方式；gold 同一句里 bene dicere 的 bene 用 :manner，bene facere 的却作 ARG1，前后不一。",
+  "fix": {
+   "title": "bene facere：:ARG1 bene → :manner bene",
+   "conf": "mid",
+   "why": "bene 是副词，表示 facere 的方式；gold 同一句的 bene dicere 写成 :manner，这里应一致。若把 bene facere 读作「行善」，ARG1 也可勉强说通，所以给 mid。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24f",
+     "r": "ARG1",
+     "t": "s24b",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "与格 rei publicae（为国家）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "facio :affectee res",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":affectee (s"
+   },
+   {
+    "label": "facio :ARG2 res",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "facio :ARG1 res",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "rei publicae 是受益的与格，gold 和 a2 照训练数据写 :affectee，系统写 ARG2（受益者）也说得通；s3/r1 写成 ARG1，成了「做国家」这件被做的事，错。s1f/r2 把 res publica 合成一个概念 res-publica，按 guideline 2.6 固定表达也可。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "dicere 的词元",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "dico2（gold 带框架号 dico2-18）",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dico2"
+   },
+   {
+    "label": "dico",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ dico"
+   },
+   {
+    "label": "dico-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "dico-01"
+   }
+  ],
+  "best": "dico2（gold 带框架号 dico2-18）",
+  "text": "拉丁训练数据和 gold 都用 dico2 表示 dicere（说），与第一变位的 dicare（献给）区分；写成 dico 混同了两个同形词。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 7,
+  "topic": "haud absurdum 的否定",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 :polarity -（文档级却标 full-negative）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "系词（have-mod-91 / zona-07）:polarity -",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   },
+   {
+    "label": "absurdus :polarity -",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": "系词（have-mod-91 / zona-07）:polarity -",
+  "text": "haud 是否定词，guideline 4.2 否定概念要有 :polarity -；gold 把 absurdus 对到 haud absurdum、文档级写了 (author :full-negative s24h2)，句子图里却漏了 :polarity -。否定放在系词或形容词上都可以。",
+  "fix": {
+   "title": "haud absurdum：加 :polarity -",
+   "conf": "high",
+   "why": "haud 是否定词，gold 文档级已标 (author :full-negative s24h2)，句子图缺 :polarity -（guideline 4.2）；加在 have-mod-91（s24h2）上与文档级一致。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s24h2",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 8,
+  "topic": "facio / dico 的隐含参与者",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不补",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "补一个泛指施事 :ARG0 entity（两个动词共用）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ entity"
+   },
+   {
+    "label": "补 :ARG0 entity，还补 :ARG1 entity",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ entity"
+   }
+  ],
+  "best": null,
+  "text": "泛指的不定式主语可以不补，也可以补一个泛指施事。a2 另给 facere / dicere 补一个空的 ARG1 entity：bene facere、bene dicere 是不及物的「做得好」「说得好」，没有受事，多余。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 9,
+  "topic": "facere / dicere 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "facere 没有 modal 父节点（(author :full-affirmative s24h) 写了两遍），dicere 是 author full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两者都 (author :full-affirmative …)",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "两者 neutral-affirmative（author 或系词作父节点）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "两者挂在系词下 unspecified",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "泛指的不定式主语可以看作作者肯定的、也可以看作不定（unspecified / neutral），几种都说得通。gold 的问题是 facere（s24f）完全没有 modal 父节点，而 (author :full-affirmative s24h) 重复了一次，显然是把 s24f 误写成了 s24h（guideline 5.2 每个事件都要有 modal 父节点）。",
+  "fix": {
+   "title": "facere 的 modal：重复的 s24h 三元组改为 s24f",
+   "conf": "mid",
+   "why": "gold 本句 (author :full-affirmative s24h) 写了两遍，facere（s24f）却没有 modal 父节点；照 gold 对 dicere（s24d）的处理，把重复的一条改为 (author :full-affirmative s24f)。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s24h"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s24f"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 10,
+  "topic": "否定分句的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "否定的系词 full-negative",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "full-negative"
+   },
+   {
+    "label": "absurdus 带 :polarity -，却标 (author :full-affirmative absurdus)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "否定的系词 full-negative",
+  "text": "guideline 5.2：否定的事件是 full-negative。s0 把 absurdus 当作本分句的事件并标了 :polarity -，文档级却给 full-affirmative，自相矛盾。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 11,
+  "topic": "本句事件的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "系词挂 DCT :overlap；facere / dicere 挂 DCT 或系词 :overlap",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :overlap"
+   },
+   {
+    "label": "present-reference，另有事件之间的 :depends-on",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":depends-on"
+   },
+   {
+    "label": "present-reference :overlap",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "present-reference :overlap"
+   }
+  ],
+  "best": null,
+  "text": "现在时的泛指判断挂 DCT :overlap 即可；:depends-on 只用于时间表达之间（guideline 5.1），s0/r1 用在事件之间不对。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 12,
+  "topic": "iter 与 facere / dicere 的 :subset-of",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 23 句 iter :subset-of facere) (iter :subset-of dicere)",
+    "systems": [
+     "gold"
+    ],
+    "status": "open",
+    "grep": "subset-of"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 把「做得好」「说得好」看作上一句「不同的路」中的两条，这层关系说得通，但写成 iter :subset-of 事件，方向按精简版是「路属于 facere」，与意思相反；:subset-of 方向尚无定规，按说明不判错，status 写 open。系统不标也可以。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 1,
+  "topic": "licet 是否作节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不作节点，可能性写进 fio 的 neutral-affirmative",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "licet 作根，fio 作其论元",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ licet"
+   }
+  ],
+  "best": "不作节点，可能性写进 fio 的 neutral-affirmative",
+  "text": "licet（可以、得以）在这里表可能，guideline 2.1 情态动词不作节点，只影响 modal 强度；拉丁训练数据也把 possum 去掉、只留主动词（如 ferre non potuit → fero）。a2 还把 fio 写成 licet 的 ARG0，角色也不自然。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 2,
+  "topic": "clarum fieri 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "fio :ARG1 clarus（不补变成者）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "fio-01"
+   },
+   {
+    "label": "fio :ARG2 clarus（不补变成者）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "fio :ARG1 person :ARG2 clarus",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   },
+   {
+    "label": "fio :ARG0 entity :ARG1 entity :effect clarus",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "have-mod-91 :ARG1 person :ARG2 clarus（丢了「变成」）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-mod-91"
+   }
+  ],
+  "best": null,
+  "text": "没有框架词典，fio（成为）的编号无从核对，gold、s0、s1f/r1、s3/r1 几种写法都说得通，泛指的变成者可补可不补。s3/r2、a2 照训练数据把表语写成 :effect 可以，但「成为」没有施事，另补 ARG0 entity 多余。s1f/r2 用 have-mod-91 把「成为有名的」变成了「是有名的」。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 3,
+  "topic": "vel pace vel bello 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "fio :temporal or(pax, bellum)",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": ":place or(pax, bellum)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": ":instrument or(pax, bellum)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":instrument (s"
+   }
+  ],
+  "best": "fio :temporal or(pax, bellum)",
+  "text": "pace、bello 是表时间、处境的夺格（在和平时或战争时），:temporal 合适；:place 勉强，:instrument（凭和平、凭战争）意思不对。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 4,
+  "topic": "bellum 是否作事件",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "实体名词，不标 aspect",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "事件名词，aspect process，文档级标 author full-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "bellum 与 pax 并列，指「战时」这种处境，作实体或按 guideline 2.1 作事件名词都可以。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 5,
+  "topic": "fieri 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "process",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect performance"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "performance（标在 have-mod-91 上）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": null,
+  "text": "「可以成名」是可能的、未然的事件，guideline 说明未然事件几种合理取值都给 ok。s1f/r2 的谓词是状态性的 have-mod-91，标 performance 不合 4.1。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 6,
+  "topic": "fieri 的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "DCT :overlap（fio 或 licet），fio 挂 DCT 或 licet",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :overlap"
+   },
+   {
+    "label": "(licet :after fio)：成名在 licet 之后",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "(document-creation-time :after have-mod-91)：将来",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :after"
+   },
+   {
+    "label": "fio 以 bellum 为参照（bellum :contained fio），bellum 挂 DCT",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "present-reference（s0/r1 另有事件间 :depends-on）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "present-reference"
+   }
+  ],
+  "best": null,
+  "text": "泛指的可能性挂 DCT :overlap，或把成名看作之后的事都说得通。s3/r1 把泛指的「战时」当作成名的时间框架并让它与 DCT 重叠，过于具体；s0 的问题同第 23 句。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 7,
+  "topic": "pax / bellum 与第 14 句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "与第 14 句 in pace … in bello 的 pax / bellum 连 same-entity",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": null,
+  "text": "第 14 句与本句的「和平」「战争」都是泛指的处境，连不连共指都可以，guideline 对泛指概念的共指没有要求。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 1,
+  "topic": "multi 与两个关系从句的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and(person :ARG0-of facio, person :ARG0-of scribo)，multus 作 :quant",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "同上，但 multus 作 :mod",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "multus 挂在 laudo 上（:quant / :extent）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": "/ multus"
+   },
+   {
+    "label": "laudo :ARG1 multus :mod and(facio, scribo)，multus 作两事件的 ARG0",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "laudo :ARG1 multus :mod and(facio, scribo)，两事件另建 entity 作 ARG0",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "/ entity"
+   }
+  ],
+  "best": "and(person :ARG0-of facio, person :ARG0-of scribo)，multus 作 :quant",
+  "text": "multi 是两类人（做事的人、记述别人事迹的人）的数量，guideline 4.2 数量词用 :quant；挂在 laudo 上成了「被称赞得多」，错。a2 把两个事件作 multus 的 :mod，r1 还靠 ARG0 回指 multus 说得通，r2 另建与 multus 无关的 entity 作施事，丢了「被称赞的就是做事的人」。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 2,
+  "topic": "facta aliorum",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "thing :ARG1-of facio :ARG0 person :mod alius",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "facio-23"
+   },
+   {
+    "label": "事件 facio :ARG0 alius",
+    "systems": [
+     "s0/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ alius"
+   },
+   {
+    "label": "名词 factum :poss / :possessor alius",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ factum"
+   }
+  ],
+  "best": null,
+  "text": "facta（事迹）可以按分词「别人做的事」谓词化，也可以作名词 factum 加领有者，都说得通。s1f/r2 给名词 factum 标了 aspect，属小瑕疵，不另写。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 3,
+  "topic": "laudantur 的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "activity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   }
+  ],
+  "best": null,
+  "text": "「许多人受到称赞」是泛指的常情，activity（泛指陈述）和 habitual（反复发生）都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 4,
+  "topic": "做事、写作先于受称赞",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(laudo :before facio)(laudo :before scribo)(scribo :before facio2)，或用 DCT :before 表示过去",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(facio :before laudo)(facio2 :before scribo) 等，方向写反，并套 past- / present-reference",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "past-reference"
+   }
+  ],
+  "best": null,
+  "text": "(A :before B) 是 B 在 A 之前：做事、记述在前，受称赞在后，gold 和多数系统写法正确。s0 写成 (facio :before laudo)，意思成了称赞先于做事，记述与被记述的事也反了。",
+  "fix": null
+ },
+ {
+  "sent": 26,
+  "n": 5,
+  "topic": "fecere 与第 24 句 facere 的 same-event",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 24 句 facere :same-event fecere)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "same-event"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "不标事件共指，把两类人连到第 1 句 homo 作 :subset-of",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "同上，另在句内用 :coref 把 alius 与做事的人连 same-entity",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "不标",
+  "text": "第 24 句的 bene facere 是泛指的「为国做好事」，本句 qui fecere 是一类人做过的事，不是同一个事件；gold 自己也给两处用了不同框架（facio-01、facio-02）。same-event 不成立，gold 判 minor、fix 给 low。句内的同指应写成再入（guideline 5.3），s0/r2 写成 :coref 不合格式。",
+  "fix": {
+   "title": "删去 fecere 与第 24 句 facere 的 same-event",
+   "conf": "low",
+   "why": "第 24 句 bene facere 是泛指的行为，本句 qui fecere 是一类人做过的事，不是同一事件，gold 两处框架号也不同（facio-01 / facio-02）。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s24f",
+      "same-event",
+      "s26f"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 1,
+  "topic": "haudquaquam par 的否定范围",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "否定放在 sequor 上：句子图无 :polarity，文档级 (author :full-negative sequor)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "sequor :polarity -，full-negative",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":modal-strength full-negative"
+   },
+   {
+    "label": "par :polarity -，sequor 是 full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": "par :polarity -，sequor 是 full-affirmative",
+  "text": "haudquaquam par gloria sequitur 是「随之而来的荣誉绝不相等」：荣誉确实随之而来，被否定的是 par（相等）。gold 把整个 sequor 判为 full-negative，句子图里又没有 :polarity -（guideline 4.2），与文档级不一致。",
+  "fix": {
+   "title": "haudquaquam 否定 par：par 加 :polarity -，sequor 改 full-affirmative",
+   "conf": "mid",
+   "why": "「绝不相等的荣誉随之而来」被否定的是 par（相等），不是 sequor；gold 句子图缺 :polarity -，文档级把 sequor 标成 full-negative。改为 par :polarity -、sequor full-affirmative。也可读作「荣誉不同等地随之而来」，所以给 mid。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s27p2",
+     "attr": "polarity",
+     "value": "-"
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-negative",
+      "s27s2"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s27s2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 2,
+  "topic": "videtur 与 arduom 的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "video :ARG1 scribo :ARG2 have-mod-91(scribo, arduus)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "video-10"
+   },
+   {
+    "label": "videtur :ARG1 have-mod-91(scribo, arduus)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "video :ARG1 scribo :effect arduus（训练数据写法）",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "形容词 arduus 作谓词，:ARG1 / :domain scribo",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ arduus"
+   }
+  ],
+  "best": null,
+  "text": "与第 22 句同类：gold 照人称结构分出主语与表语，系统用 have-mod-91 或训练数据的 :effect 都表达了「写史在我看来是困难的」。s0 让没有框架的形容词带编号论元，:domain 也是 AMR 旧角色。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 3,
+  "topic": "in primis（尤其）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "arduus（或其 have-mod-91）:degree primus",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ primus"
+   },
+   {
+    "label": "arduus :degree intensifier（常量）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": "video :extent primus",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":extent (s"
+   },
+   {
+    "label": "video :clausal-marker unus（照抄训练数据）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ unus"
+   }
+  ],
+  "best": "arduus（或其 have-mod-91）:degree primus",
+  "text": "in primis arduom 是「格外困难」，程度修饰 arduus，guideline 4.2 用 :degree 加概念。s1f/r2 写成常量 intensifier 不是概念；s3/r2 挂到 video 上成了「格外地看来」；a2 照训练数据（sallust-training 90 把 in primis 转成 :clausal-marker unus）写，丢了程度义。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 4,
+  "topic": "scriptorem et auctorem rerum 的 rerum",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "scriptor、auctor 共用 :ARG1 res",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只有 auctor :ARG1 res",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s"
+   },
+   {
+    "label": "auctor :poss / :possessor res",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ auctor"
+   },
+   {
+    "label": "scriptor :ARG1 entity，auctor :mod res",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ entity"
+   }
+  ],
+  "best": null,
+  "text": "rerum 是「事迹的记述者和行为者」两者共同的宾语，共用最好，只挂在近的 auctor 上也可以；事迹不是 auctor 的领有者，:possessor 不贴切。a2/r2 给 scriptor 另造一个空 entity，丢了共同宾语。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 5,
+  "topic": "本句事件的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "videtur、scribo、sequor 都以第 26 句 laudantur 为参照 :overlap；(scribo :before gero)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "DCT :overlap videtur / sequor；补语挂 videtur；(scribo :before gero)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":before"
+   },
+   {
+    "label": "present- / past-reference，(gero :before scribo) 方向反了",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "past-reference"
+   }
+  ],
+  "best": "DCT :overlap videtur / sequor；补语挂 videtur；(scribo :before gero)",
+  "text": "以上句的泛指现在事件作参照不算错，但 scribere 是 videtur 的补语，guideline 5.1 应以 videtur 为参照，gold 没有这条（同第 22 句，不再单独提修改）。(A :before B) 是 B 在 A 之前：事迹先发生、记述在后，s0 写成 (gero :before scribo) 意思反了。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 6,
+  "topic": "arduum / scribere 的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :partial-affirmative have-mod-91)，scribo full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "have-mod-91 挂 videtur（unspecified / partial），scribo 挂系词或 author",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(videtur :unspecified scribo)，无单独系词节点",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "(ego :partial-affirmative arduus)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "(ego :full-affirmative arduus)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "与第 22 句同类：「在我看来困难」，作者兼体验者，partial 或挂在 videtur 下的 unspecified 都说得通；s0/r1 标 full-affirmative 忽略了 videtur。",
+  "fix": null
+ },
+ {
+  "sent": 27,
+  "n": 7,
+  "topic": "mihi 与上文第一人称共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第 22 句的 mihi",
+    "systems": [
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "s22"
+   },
+   {
+    "label": "连到第 5 句",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "s5e"
+   }
+  ],
+  "best": "连到第 22 句的 mihi",
+  "text": "mihi 是作者本人，guideline 5.3 应连到最近的前一个提及（第 22 句 mihi），gold 本句的 coref 里没有这条。",
+  "fix": {
+   "title": "mihi 与第 22 句 mihi 共指",
+   "conf": "mid",
+   "why": "第 27 句的 mihi 和第 22 句的 mihi 都是作者本人，gold 漏了共指（guideline 5.3）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s22p2",
+      "same-entity",
+      "s27p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 27,
+  "n": 8,
+  "topic": "scriptor / auctor 与第 26 句两类人的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "只连 auctor ↔ qui fecere，另有 facta ↔ res gestae 的 same-event",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "auctor ↔ qui fecere、scriptor ↔ qui scripsere 都连",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "只连 facta ↔ res（same-entity）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "auctor ↔ qui fecere、scriptor ↔ qui scripsere 都连",
+  "text": "scriptorem et auctorem rerum 正是上句 qui facta aliorum scripsere 与 qui fecere 两类人的泛指说法。gold 连了 auctor 却漏了 scriptor，同一处前后不一；系统不标泛指的类也说得过去。",
+  "fix": {
+   "title": "scriptor 与第 26 句 qui scripsere 共指",
+   "conf": "low",
+   "why": "gold 已把本句 auctor 连到第 26 句 qui fecere（s26p），同理 scriptor 应连到第 26 句 qui … scripsere（s26p3）；两处都是泛指的类，可商榷，给 low。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s26p3",
+      "same-entity",
+      "s27s3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 1,
+  "topic": "quod（因为）引出的原因关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-reason-91 :ARG1 event（上句所说的事）:ARG2 exaequo",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "不标，exaequo 作根",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "have-reason-91 :ARG1 event（上句所说的事）:ARG2 exaequo",
+  "text": "本句是上句「写史困难」的第一条理由（primum quod …，下句 dehinc quia …）。gold 用 have-reason-91 加占位的 event 表达这层因果，与第 7 句 but-91 :ARG1 event 的写法一致；系统全丢了 quod 的原因义。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 2,
+  "topic": "primum（第一）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "exaequo :mod primum",
+    "systems": [
+     "s0/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ primum"
+   },
+   {
+    "label": "exaequo :clausal-marker primum",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ primum"
+   },
+   {
+    "label": "exaequo :ord ordinal-entity :value 1",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "ordinal-entity"
+   },
+   {
+    "label": "exaequo :clausal-marker unus（照抄训练数据）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ unus"
+   }
+  ],
+  "best": null,
+  "text": "primum … dehinc 列举理由，primum 有实义，gold 漏了。:mod、:ord ordinal-entity 都可以；a2 把 primum 转成 unus，是照训练数据把 in primis 一类转成 unus 的写法，词义不对。",
+  "fix": {
+   "title": "补上 primum",
+   "conf": "low",
+   "why": "primum（第一）与下句 dehinc（其次）列举理由，gold 漏了这个节点；照系统多数写成原因关系上的 :mod primum。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s28h",
+     "role": "mod",
+     "var": "s28z1",
+     "concept": "primum",
+     "align": "1-1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 28,
+  "n": 3,
+  "topic": "dictis 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "exaequo :ARG2 dicta（thing / dictum / dico）",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "exaequo :instrument dico",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":instrument (s"
+   },
+   {
+    "label": "exaequo :affectee dico",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":affectee (s"
+   }
+  ],
+  "best": null,
+  "text": "facta dictis exaequanda：事迹要用言辞来与之相称，dictis 是相比照的另一方，作 ARG2 最自然；a2/r2 照训练数据把与格转成 :affectee 也可以；:instrument 把相比的对象读成工具，不贴切。facta、dicta 写成 thing :ARG1-of、名词或事件都可以，不另写。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 4,
+  "topic": "gerundive（必须）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :partial-affirmative exaequo)",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "partial-affirmative"
+   },
+   {
+    "label": "(author :neutral-affirmative exaequo)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "另建 obligate-01 节点（:modal-predicate），exaequo neutral-affirmative",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "obligate-01"
+   }
+  ],
+  "best": "(author :partial-affirmative exaequo)",
+  "text": "exaequanda sunt 是 gerundive 表义务（必须），guideline 5.2 must / should 是 partial-affirmative；情态不作节点（2.1），s0/r2 另建英文 obligate-01 不合，:modal-predicate 也不是 UMR 角色名。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 5,
+  "topic": "exaequo 的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "以第 26 句 laudantur 为参照 :overlap",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "DCT :overlap / DCT :after（将来）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time"
+   },
+   {
+    "label": "(exaequo :depends-on 上句 scriptor)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":depends-on"
+   },
+   {
+    "label": "present-reference",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "present-reference"
+   }
+  ],
+  "best": null,
+  "text": "义务是泛指的现在或将来，挂 DCT 或上文泛指的现在事件都可以。:depends-on 只用于时间表达之间（guideline 5.1），s0/r1 还把它连到一个实体名词上。",
+  "fix": null
+ },
+ {
+  "sent": 28,
+  "n": 6,
+  "topic": "exaequo 与第 27 句 videtur 的 same-event",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(第 27 句 videtur :same-event exaequo)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "s27v 是第 27 句的 videtur（在我看来），本句 exaequanda 是「事迹须与言辞相称」，不是同一事件。gold 第 29 句同样的结构写的是 (s27v :same-event s29e)，连的是 have-reason-91 下占位的 event（「写史困难」这件事），本句应是笔误把 s28e 写成了 s28e2。系统没有这个占位节点，不标不算错。facta 与第 27 句 res gestae 的 same-event（gold 和多数系统都标了）是对的，不另写。",
+  "fix": {
+   "title": "videtur 的 same-event 改连占位 event（s28e2 → s28e）",
+   "conf": "high",
+   "why": "s28e2 是本句的 exaequo（使相称），不可能与第 27 句的 videtur 同一事件；gold 第 29 句同一结构连的是 have-reason-91 的占位 event（s29e），这里应为 (s27v :same-event s28e)。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s27v",
+      "same-event",
+      "s28e2"
+     ],
+     "to": [
+      "s27v",
+      "same-event",
+      "s28e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 1,
+  "topic": "quia（因为）引出的原因关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-reason-91 :ARG1 event（上文「写史困难」）:ARG2 本句",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "不标，and 并列三个分句作根",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   }
+  ],
+  "best": "have-reason-91 :ARG1 event（上文「写史困难」）:ARG2 本句",
+  "text": "dehinc quia … 是第 27 句「写史困难」的第二条理由，gold 与第 28 句一样用 have-reason-91 加占位 event，并用 coref 把 event 连到第 27 句；系统都丢了 quia 的原因义。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 2,
+  "topic": "dehinc（其次）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "dehinc 作 :mod",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ dehinc"
+   },
+   {
+    "label": "dehinc 作 :clausal-marker",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ dehinc"
+   },
+   {
+    "label": "puto :ord ordinal-entity :value 2",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":value 2"
+   }
+  ],
+  "best": null,
+  "text": "dehinc 与上句 primum 呼应，列举第二条理由，有实义；gold 漏了（同第 28 句的 primum）。",
+  "fix": {
+   "title": "补上 dehinc",
+   "conf": "low",
+   "why": "dehinc（其次）与第 28 句 primum 呼应列举理由，gold 漏了这个节点；照系统写成原因关系上的 :mod dehinc。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s29h",
+     "role": "mod",
+     "var": "s29z1",
+     "concept": "dehinc",
+     "align": "1-1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 3,
+  "topic": "前后两部分及 accipit / ducit 之间的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "but-91：ARG1 plerique putant，ARG2 contrast-91(accipio, duco)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "contrast-91"
+   },
+   {
+    "label": "and 平列 puto、accipio、duco（或 and(puto, and(accipio, duco))）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   }
+  ],
+  "best": "but-91：ARG1 plerique putant，ARG2 contrast-91(accipio, duco)",
+  "text": "原文是对照：指摘过失被看作出于恶意；而讲到好人的德行，人人只平心接受自己觉得能做到的，超出的就当作虚构。accipit 与 supra ea … ducit 也是对照。guideline 2.5 转折、对照用 but-91 / contrast-91，系统一律平列 and，丢了对照。s1f/r1 是 and(puto, and(accipio, duco))，没有 :op3，同样平列。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 4,
+  "topic": "ubi … memores 的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "memoro 作 but-91 的 :temporal（连 plerique putant 也管到）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "memoro 作根 and 的 :temporal（同样管到 puto）",
+    "systems": [
+     "s0/r1",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "memoro 只作 accipio 的 :temporal",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "memoro 作 accipio、duco 两者的 :temporal",
+    "systems": [
+     "s0/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "memoro 作 accipio、duco 两者的 :temporal",
+  "text": "ubi … memores（每当你讲到好人的德行与荣誉）只是后半 accipit、ducit 的时间条件，与前半「指摘过失被看作出于恶意」无关；挂在 but-91 或全句的 and 上范围太大。",
+  "fix": {
+   "title": "memores 改挂到 contrast-91 下",
+   "conf": "low",
+   "why": "ubi … memores 只限定后半的 accipit 与 ducit，gold 挂在 but-91 上连前半 plerique putant 也管到了；改为 contrast-91（s29c）的 :temporal。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s29b",
+     "r": "temporal",
+     "t": "s29m2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29c",
+     "r": "temporal",
+     "t": "s29m2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 5,
+  "topic": "bonorum 的挂接",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and(virtus, gloria) :possessor bonus（一次管两个）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "virtus、gloria 各带 :poss / :possessor bonus",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ bonus"
+   },
+   {
+    "label": "只有 gloria :poss bonus",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "bonus 作 memoro 的 :ARG1",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "de magna virtute atque gloria bonorum 是「好人的德行与荣誉」，bonorum 管两个名词；只挂 gloria 少了一半。s3/r1 把 bonus 拆出来当成 memoro 的对象（讲到好人），与 :topic and 重复，结构错。memoro 的对象写 ARG1、:topic 或 a2 的 :regard 都可以，不另写。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 6,
+  "topic": "quisque 的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "person :quant quisque",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ quisque"
+   },
+   {
+    "label": "quisque（代词词元）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ quisque"
+   },
+   {
+    "label": "quis",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ quis"
+   }
+  ],
+  "best": null,
+  "text": "quisque（每个人）作 person :quant quisque 或直接作代词词元都可以；a2 的 quis 丢了 -que，成了「某人 / 谁」，失去了「每个人」的周遍义。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 7,
+  "topic": "veluti ficta（当作虚构的）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "resemble-91 挂在 duco 上（:ARG1-of），像虚构的是 ducit 这个事件",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "resemble-91"
+   },
+   {
+    "label": "duco :comparison fingo（s3/r1 另有 thing :ARG1-of fingo）",
+    "systems": [
+     "s0/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":comparison"
+   },
+   {
+    "label": "duco :manner fingo / velut",
+    "systems": [
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": null,
+  "text": "veluti ficta 说的是「超出的那些事」被当作虚构的，比较的是事物而不是 ducit 这个行为；gold 把 resemble-91 作 duco 的 ARG1-of，ARG1 就成了 ducit。系统作 duco 的 :comparison / :manner，虽然也挂在事件上，但没有声称事件本身相似，可接受。",
+  "fix": {
+   "title": "veluti ficta：resemble-91 改挂到被比较的 thing 上",
+   "conf": "low",
+   "why": "veluti ficta 比较的是「超出的那些事」（s29t2）与虚构之物，不是 ducit 这个事件；把 resemble-91（s29r2）从 duco 的 :ARG1-of 改为 s29t2 的 :ARG1-of。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s29d3",
+     "r": "ARG1-of",
+     "t": "s29r2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29t2",
+     "r": "ARG1-of",
+     "t": "s29r2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 8,
+  "topic": "pro falsis 与 supra ea 的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "duco :ARG2 falsus，ARG1 thing :mod supra",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "duco :effect falsus，ARG1 entity :mod supra",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":effect (s"
+   },
+   {
+    "label": "duco :substitute falsus，supra / is 作 :place",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":substitute (s"
+   }
+  ],
+  "best": null,
+  "text": "pro falsis ducit 是「视为虚假」，falsus 是认定的结果，作 ARG2 或训练数据式的 :effect 都可以；a2 把 pro 读成「代替」（:substitute）错了意思，supra ea（超出这些的）也被写成处所 :place。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 9,
+  "topic": "accipit / ducit 等的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state（gold）或 activity / habitual",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "accipio 标 performance",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect performance"
+   }
+  ],
+  "best": null,
+  "text": "「每个人平心接受……、把其余的视为虚构」是泛指的常态，state、activity、habitual 都说得通；s0/r2 给 accipio 标 performance（完成的事件）不合。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 10,
+  "topic": "dicta（plerique 所想的内容）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative dico)：作者直接断言内容",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "dico 挂在 puto 或 plerique 下（full-affirmative / unspecified）",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "dico 挂在 puto 或 plerique 下（full-affirmative / unspecified）",
+  "text": "「（过失）是出于恶意和嫉妒才被说出来的」是 plerique putant 所想的内容，guideline 5.2：作者确定思考者，思考者确定内容；gold 已有 (author :full-affirmative plerique)(plerique :full-affirmative puto)，内容 dico 却直接挂在 author 下，成了作者自己的断言。",
+  "fix": {
+   "title": "dicta 的 modal 父节点：author → plerique",
+   "conf": "mid",
+   "why": "dico（s29d）是 plerique putant 的思想内容，按 guideline 5.2 应以思考者 plerique（s29p2，gold 已作 conceiver）为父节点，而不是作者直接断言。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29d"
+     ],
+     "to": [
+      "s29p2",
+      "full-affirmative",
+      "s29d"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 11,
+  "topic": "ficta（被当作虚构）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative fingo)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(duco :unspecified fingo)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "duco 或 quisque 作父节点，full-affirmative",
+    "systems": [
+     "s0/r1",
+     "s0/r2",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(duco :unspecified fingo)",
+  "text": "veluti ficta 是「当作是虚构的」，作者并不断言这些事真被虚构，fingo 是 ducit 之下的比拟内容，unspecified 合适；作者直接 full-affirmative 不对，挂在 duco / quisque 下但给 full-affirmative 也略差。",
+  "fix": {
+   "title": "ficta 的 modal：(author :full-affirmative) → (ducit :unspecified)",
+   "conf": "low",
+   "why": "veluti ficta（当作虚构）只是 ducit 的比拟，作者并不断言这些事真被虚构；fingo（s29f2）应挂在 duco（s29d3）之下作 unspecified。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29f2"
+     ],
+     "to": [
+      "s29d3",
+      "unspecified",
+      "s29f2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 12,
+  "topic": "本句事件的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "以第 26 句 laudantur 或 DCT 为参照，memoro 作 accipio / duco 的参照",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "present- / past-reference，事件之间用 :depends-on",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":depends-on"
+   },
+   {
+    "label": "present- / past-reference",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "past-reference"
+   }
+  ],
+  "best": null,
+  "text": "泛指的现在常态，挂 DCT 或上文泛指的现在事件都可以；s0 的问题同前几句。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 13,
+  "topic": "本句的 coref",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(quisque :subset-of plerique)，(第 27 句 videtur :same-event 占位 event)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "plerique ⊂ 第 1 句 homo、quisque ⊂ plerique，另把 gloria 连到第 27 句的 par gloria",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "(supra 的 thing :subset-of 句内 and(virtus, gloria))",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":subset-of"
+   },
+   {
+    "label": "句内用 :coref 连 thing 与 is",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "把第 28 句的泛指 entity 连到本句的 2nd person",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "gold 的两条都说得通（:subset-of 方向按精简版）。第 27 句的 gloria 是记述者得到的荣誉，与本句好人的荣誉不是同一个，s0/r1 连错；s0/r2 让「超出的那些事」作德行与荣誉的子集，意思不通；句内同指应写成再入（guideline 5.3），s1f/r1 不合格式。",
+  "fix": null
+ }
+]

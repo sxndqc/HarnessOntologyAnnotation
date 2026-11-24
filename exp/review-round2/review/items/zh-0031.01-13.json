@@ -1,0 +1,7163 @@
+[
+ {
+  "sent": 1,
+  "n": 1,
+  "topic": "「自…起」时间的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "影响 :start date-entity",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":start (s"
+   },
+   {
+    "label": "影响 :temporal (自 :op1 date-entity)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 自"
+   },
+   {
+    "label": "影响 :temporal (起 :op1 date-entity)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 起"
+   },
+   {
+    "label": "影响 :temporal (since :op1 date-entity)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ since"
+   },
+   {
+    "label": "影响 :temporal (date-interval :start date-entity)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "date-interval"
+   },
+   {
+    "label": "影响 :temporal date-entity（丢了「起始」义）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":temporal (s"
+   }
+  ],
+  "best": "影响 :temporal (自 :op1 date-entity)",
+  "text": "完整 guideline 3-2-1-1：:start、:goal、:source 只用于位移事件，:start 是位移起点的处所，不表示起始时间。「自 1 月 7 日起」是时间，应走 :temporal，用介词节点（自 / 起 / since）带 :op1 日期保留「起始」义。",
+  "fix": {
+   "title": "「自…起」：:start → :temporal (自 :op1 日期)",
+   "conf": "mid",
+   "why": "guideline 3-2-1-1 规定 :start 只用于位移事件的起点处所；「自 2025 年 1 月 7 日起」是起始时间，应为 :temporal (自 :op1 date-entity)。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s1x",
+     "r": "start",
+     "t": "s1d"
+    },
+    {
+     "op": "add_node",
+     "parent": "s1x",
+     "role": "temporal",
+     "var": "s1z1",
+     "concept": "自",
+     "align": "1-1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s1z1",
+     "r": "op1",
+     "t": "s1d"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 2,
+  "topic": "「持续」与野火的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "野火 :mod 持续-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 持续-01"
+   },
+   {
+    "label": "野火 :ARG0-of 持续-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":ARG0-of (s",
+     "/ 持续-01"
+    ]
+   },
+   {
+    "label": "没有「持续」节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "野火 :ARG1-of 持续-01（ARG1 是 duration）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG1-of (s",
+     "/ 持续-01"
+    ]
+   }
+  ],
+  "best": "野火 :ARG0-of 持续-01",
+  "text": "PropBank 持续-01 的 ARG0 是 thing described，「持续的野火」是关系从句式修饰，guideline 2.1/3：关系从句动词用 :ARGn-of，不用 :mod。s1f 两次漏掉了「持续」。",
+  "fix": {
+   "title": "持续：野火 :mod → :ARG0-of 持续-01",
+   "conf": "mid",
+   "why": "持续-01 的 ARG0 是 thing described；修饰名词的谓词按 guideline 用 :ARG0-of 连到名词，而不是 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s1x2",
+     "r": "mod",
+     "t": "s1x3",
+     "r2": "ARG0-of"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 3,
+  "topic": "「持续」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "持续-01 :aspect state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "持续-01 :aspect activity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "持续-01 :aspect activity",
+  "text": "「持续的野火」是正在进行、没有终点的过程，abridged 4.1 归 activity；state 也说得通（描述野火的性质），但略差。",
+  "fix": {
+   "title": "持续 aspect：state → activity",
+   "conf": "low",
+   "why": "野火持续燃烧是没有终点的进行中过程，按 abridged 4.1 更宜标 activity。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s1x3",
+     "attr": "aspect",
+     "value": "activity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 4,
+  "topic": "「一系列」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "野火 :mod 一系列",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 一系列"
+   },
+   {
+    "label": "野火 :quant 一系列",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":quant (s",
+     "/ 一系列"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "「一系列」介于数量词与修饰语之间，:quant（abridged 4.2 量词）和 :mod 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 5,
+  "topic": "「加利福尼亚州」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "region",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ region"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ state"
+   }
+  ],
+  "best": "state",
+  "text": "完整 guideline 表 5：region 是上位类（下分 local-region 等），美国的州属 geo-political-entity 下的 state。",
+  "fix": {
+   "title": "加利福尼亚州：region → state",
+   "conf": "high",
+   "why": "加利福尼亚州是美国的州，guideline 命名实体类型表里对应 state；region 是 local-region 等的上位类。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s1r",
+     "concept": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 6,
+  "topic": "「洛杉矶都会区」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region :name 洛杉矶 都会区",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "都会区 :mod (city 洛杉矶)",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 都会区",
+     "/ city"
+    ]
+   },
+   {
+    "label": "都会区 :place (city 洛杉矶)",
+    "systems": [
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "/ 都会区",
+     ":place (s"
+    ]
+   },
+   {
+    "label": "都会区 :poss (city 洛杉矶)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":poss (s"
+   },
+   {
+    "label": "都会区 :location (city 洛杉矶)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "/ 都会区",
+     ":location (s"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "整体作 local-region 专名（guideline 表 5 有 local-region）或「都会区 :mod 洛杉矶市」都可以。:place 表示都会区位于洛杉矶市内，略不准；:poss 不是 UMR 角色（应为 :possessor），且领属义也不对。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 7,
+  "topic": "地名层级（洛杉矶—加州—美国）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":part-of",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": ":place",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": ":location（不是 UMR 角色，应为 :place）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":location (s"
+   }
+  ],
+  "best": null,
+  "text": "地名的包含关系用 :part-of 或 :place 都常见，方向都对。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 8,
+  "topic": "「周边地区」与都会区的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "地区 :part-of 都会区 + :mod 周边",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":part-of s"
+   },
+   {
+    "label": "地区 :mod 周边",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 周边"
+   },
+   {
+    "label": "地区 :mod 周边 + :poss 都会区",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":poss s"
+   },
+   {
+    "label": "地区 :place (周边 :op1 都会区)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":place (s",
+     ":op1 s"
+    ]
+   },
+   {
+    "label": "地区 :location (周边 :op1 都会区)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":location (s",
+     ":op1 s"
+    ]
+   }
+  ],
+  "best": "地区 :mod 周边",
+  "text": "「周边地区」是都会区以外、与之相邻的地区，不是都会区的一部分，gold 的 :part-of 意思错了。s1f/r1 用了非 UMR 角色 :poss；s1f/r2 把周边当成带 :op1 的方位词，意思对但写法不规范。",
+  "fix": {
+   "title": "周边地区：删去 :part-of 洛杉矶都会区",
+   "conf": "mid",
+   "why": "「周边地区」在都会区之外，:part-of 把它说成都会区的一部分，意思反了；保留 :mod 周边即可。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s1x1",
+     "r": "part-of",
+     "t": "s1l"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 1,
+  "n": 9,
+  "topic": "「野火」是否当事件（aspect、modal）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "实体，不标 aspect、不进 modal",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "野火 :aspect process + modal-strength，进 modal 树",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     ":aspect process",
+     ":modal-strength full-affirmative"
+    ]
+   },
+   {
+    "label": "野火 :aspect activity，进 modal 树",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "实体，不标 aspect、不进 modal",
+  "text": "「野火」在这里是被指称的事物（影响的施事），作实体更自然；s1f 两次把野火（以及第 2、3 句的火灾）都当事件标 aspect、进 modal 树，和其余标注不一致。",
+  "fix": null
+ },
+ {
+  "sent": 1,
+  "n": 10,
+  "topic": "日期与「影响」「持续」的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期不进时间树；影响只挂在持续下（持续 :overlap 影响）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :after 影响；影响 :overlap 持续",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     ":after",
+     "root :depends-on"
+    ]
+   },
+   {
+    "label": "root :depends-on 日期；日期 :after 影响；另加 root :depends-on past-reference",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":after",
+     "past-reference"
+    ]
+   },
+   {
+    "label": "root :depends-on 日期；日期 :overlap 影响、野火；另加 past/present-reference",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "present-reference",
+     "past-reference"
+    ]
+   },
+   {
+    "label": "日期 :depends-on 自；自 :contained 影响",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "DCT :before 影响；影响 :overlap 起；日期不进树",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "日期不挂 root；(date-interval :contained 影响) (日期 :overlap 影响) (影响 :overlap DCT)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "日期挂 DCT 且方向写反：(DCT :after 日期)（成了日期在 DCT 之后）；日期 :overlap 影响",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "(document-creation-time :after"
+   }
+  ],
+  "best": "root :depends-on 日期；日期 :after 影响；影响 :overlap 持续",
+  "text": "abridged 5.1：绝对日期挂 root，本句事件以该日期为参照；主事件「影响」应是「持续」的参照而不是反过来。gold 日期不在时间树里，影响也没有锚定。「自…起」用 :after 或 :overlap 都说得通；s3/r2、a2 把介词节点当时间节点放进树里，s1f 另加了无用的 reference 常量。",
+  "fix": {
+   "title": "第 1 句时间：日期挂 root、影响挂日期、持续挂影响",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root，事件以本句的时间表达为参照；「影响」是主事件，「持续」应以它为参照。gold 日期不在树里，影响只作为持续的子节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s1d"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s1d",
+      "after",
+      "s1x"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s1x3",
+      "overlap",
+      "s1x"
+     ],
+     "to": [
+      "s1x",
+      "overlap",
+      "s1x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 1,
+  "topic": "「这些」有没有节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有「这些」",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "火灾 :mod 这些",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 这"
+   }
+  ],
+  "best": "火灾 :mod 这些",
+  "text": "指示词是 :mod（abridged 3 的 :mod 包括 demonstrative），gold 漏掉了「这些」；第 3 句 gold 自己就标了 野火 :mod 这些。",
+  "fix": {
+   "title": "补「这些」：火灾 :mod 这些",
+   "conf": "high",
+   "why": "「这些火灾」的指示词应作 :mod 节点（guideline 的 :mod 包括指示词），gold 漏标；第 3 句 gold 同样结构标了 :mod 这些。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s2x2",
+     "role": "mod",
+     "var": "s2z1",
+     "concept": "这些",
+     "align": "1-1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 2,
+  "topic": "「这些火灾」的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "火灾 :refer-number plural",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   },
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "火灾 :refer-number plural",
+  "text": "「这些火灾」明确是复数（下文列了四场），abridged 2.4：复数名词加 :refer-number plural。中文 gold 普通名词一般不标数，只算略差。",
+  "fix": {
+   "title": "这些火灾：加 :refer-number plural",
+   "conf": "low",
+   "why": "「这些火灾」是复数（四场火灾），guideline 2.4 复数名词标 :refer-number plural。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s2x2",
+     "attr": "refer-number",
+     "value": "plural"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 3,
+  "topic": "四场火灾专名的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "fire",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ fire"
+   },
+   {
+    "label": "natural-disaster",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ natural-disaster"
+   },
+   {
+    "label": "火灾（中文词作类型）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"火灾\""
+   }
+  ],
+  "best": "natural-disaster",
+  "text": "完整 guideline 表 5 的命名实体类型里没有 fire；有名字的野火属 event 类下的 natural-disaster。",
+  "fix": {
+   "title": "帕利塞兹 / 伊顿 / 赫斯特 / 日落火灾：fire → natural-disaster",
+   "conf": "mid",
+   "why": "命名实体类型表（guideline 表 5）没有 fire，具名野火对应 event 类的 natural-disaster。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s2x4",
+     "concept": "natural-disaster"
+    },
+    {
+     "op": "rename",
+     "var": "s2x5",
+     "concept": "natural-disaster"
+    },
+    {
+     "op": "rename",
+     "var": "s2x6",
+     "concept": "natural-disaster"
+    },
+    {
+     "op": "rename",
+     "var": "s2x7",
+     "concept": "natural-disaster"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 4,
+  "topic": "火灾专名是否当事件（aspect、modal）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "实体，不标 aspect",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "火灾、四个专名、风都标 :aspect process 并进 modal 树",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "实体，不标 aspect",
+  "text": "专名实体（natural-disaster 等）作为被列举的事物，不需要 aspect 和 modal 强度；s1f 两次连「圣塔安那风」也标了 aspect process，并在时间树里把专名挂成 火灾 :contained 专名。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 5,
+  "topic": "「加剧」的原因：ARG0 还是 :cause",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "加剧 :ARG0 (and 湿度 干旱 风)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "加剧 :cause (and 湿度 干旱 风)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":cause (s"
+   }
+  ],
+  "best": "加剧 :ARG0 (and 湿度 干旱 风)",
+  "text": "PropBank 加剧-01 的 ARG0 是 cause, agent，「因……加剧」的原因能由核心论元表达，按说明优先用 ARG0 而不是 :cause。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 6,
+  "topic": "「加剧」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "directed-activity",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "directed-activity"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": null,
+  "text": "「火势加剧」是程度变化，directed-activity（完整 guideline 的细值）贴切；当作已完成的变化标 performance 也可以。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 7,
+  "topic": "「极低」中「极」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "低 :mod 极",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "低 :degree 极",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "低 :degree 极",
+  "text": "abridged 4.2：强化副词（很、非常、太、最）用 :degree；「极」是程度副词。",
+  "fix": {
+   "title": "极低：低 :mod 极 → :degree 极",
+   "conf": "high",
+   "why": "「极」是程度副词，guideline 4.2 规定强化词用 :degree。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s2x11",
+     "r": "mod",
+     "t": "s2x12",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 8,
+  "topic": "「低」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "湿度 :mod 低",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 低"
+   },
+   {
+    "label": "湿度 :ARG1-of 低-01",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "低-01"
+   }
+  ],
+  "best": "湿度 :mod 低",
+  "text": "定语形容词作 :mod 即可（abridged 2.1）。s1f/r2 用 低-01 且把湿度作 ARG1，PropBank 低-01 的 ARG1 是比较对象，被描述者是 ARG0，论元错。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 9,
+  "topic": "「长期」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "干旱 :temporal 长期",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": "干旱 :mod 长期",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 长期"
+   },
+   {
+    "label": "干旱 :duration 长期",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":duration (s"
+   }
+  ],
+  "best": "干旱 :mod 长期",
+  "text": "「长期」说的是干旱持续时间长，不是时间点，:temporal 不贴切；:duration 最精确，:mod 也可以。",
+  "fix": {
+   "title": "长期干旱：:temporal → :mod",
+   "conf": "low",
+   "why": "「长期」表示持续时间长，不是时间定位，:temporal 不合适，改作 :mod（或 :duration）。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s2x8",
+     "r": "temporal",
+     "t": "s2x13",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 10,
+  "topic": "「飓风块别（级别）」的概念和角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "风 :manner 飓风-块别",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "风 :mod (块别 :mod 飓风)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 块别"
+   }
+  ],
+  "best": "风 :mod (块别 :mod 飓风)",
+  "text": "「飓风块别（级别）的圣塔安那风」是名词性定语，abridged：名词性修饰用 :mod，:manner 只修饰事件；gold 的风节点是实体。拆不拆成两个节点都可以。",
+  "fix": {
+   "title": "飓风块别：:manner → :mod",
+   "conf": "mid",
+   "why": "「飓风级别」修饰名词「风」（实体），名词性修饰应为 :mod，:manner 只用于事件的方式。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s2e",
+     "r": "manner",
+     "t": "s2x14",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 11,
+  "topic": "「圣塔安那风」的类型与名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "event :name 圣塔 安那 风",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ event"
+   },
+   {
+    "label": "natural-disaster :name 圣塔 安那 风",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":op3 \"风\""
+   },
+   {
+    "label": "风 :name 圣塔 安那 风",
+    "systems": [
+     "s1f/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 风",
+     ":op3 \"风\""
+    ]
+   },
+   {
+    "label": "风 :name 圣塔 安那",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 风"
+   }
+  ],
+  "best": null,
+  "text": "表 5 没有现成的风的类型，用 event 或用「风」作类型词都说得通；圣塔安那风是季节性下坡风，不是灾害，natural-disaster 不贴切。名字含不含「风」两可。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 12,
+  "topic": "「超过」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "超过-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "超过-02"
+   },
+   {
+    "label": "超过-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "超过-01"
+   }
+  ],
+  "best": "超过-01",
+  "text": "PropBank 超过-01：ARG0 thing described、ARG1 thing compared with；超过-02 没有论元。gold 用 超过-02 却带 ARG0、ARG1。",
+  "fix": {
+   "title": "超过：超过-02 → 超过-01",
+   "conf": "high",
+   "why": "PropBank 超过-02 没有论元，超过-01 的 ARG0 是被描述者（风速）、ARG1 是比较对象（每小时 80 英里），与 gold 的论元一致。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s2x9",
+     "concept": "超过-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 13,
+  "topic": "80 英里与 130 公里（括注换算）的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "(or 80 英里/时 130 公里/时)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ or"
+   },
+   {
+    "label": "80 英里/时 :ARG1-of (identity-91 :ARG2 130 公里/时)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "80 英里/时 :ARG1-of (等于-01 :ARG2 130 公里/时)（等于-01 只有 ARG0、ARG1）",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "等于-01"
+   },
+   {
+    "label": "80 英里/时 :mod 130 公里/时",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":mod (s",
+     ":quant 130"
+    ]
+   }
+  ],
+  "best": "80 英里/时 :ARG1-of (identity-91 :ARG2 130 公里/时)",
+  "text": "括号里的是同一速度的换算，不是二选一；or 意思不对，identity-91 表达等值更准确。gold 的写法不影响主要语义，不出方案。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 14,
+  "topic": "速度单位「每小时…英里」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "speed-quantity :unit mile-per-hour / kilometer-per-hour",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "mile-per-hour"
+   },
+   {
+    "label": "rate-entity-91 :ARG1 distance-quantity :ARG2 1 小时",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "distance-quantity"
+   },
+   {
+    "label": "speed-quantity :unit 英里 :ARG1-of (rate-entity-91 :ARG2 1 小时)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ rate-entity-91"
+   },
+   {
+    "label": "speed-quantity :unit (英里 :per 1 小时)",
+    "systems": [
+     "s3/r2",
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":per (s"
+   },
+   {
+    "label": "speed-quantity :unit 英里 :frequency 每小时",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":frequency (s"
+   },
+   {
+    "label": "speed-quantity :unit (per :ARG1 英里 :ARG2 1 小时)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ per"
+   }
+  ],
+  "best": null,
+  "text": "AMR 惯例是 speed-quantity 带复合单位（mile-per-hour），或用 rate-entity-91；:frequency 是频率角色，用来表示「每小时」的速度分母是误用；:per 不是 UMR 角色。",
+  "fix": null
+ },
+ {
+  "sent": 2,
+  "n": 15,
+  "topic": "「加剧」「超过」的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "超过 :before 加剧；加剧不锚定",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 1 句影响 :overlap 加剧；加剧 :overlap 超过",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 1 句野火 :overlap 加剧；加剧 :overlap 超过；风 :after 加剧",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "加剧不锚定；第 1 句影响 :overlap 超过；风 :after 加剧",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第 1 句影响 :overlap 加剧；加剧 :overlap 超过",
+  "text": "风速超过 80 英里与火势加剧同时，没有证据说在加剧之前；加剧应以上句的影响事件为参照（abridged 5.1 第 2 条）。gold 只给了一条可疑的 :before，加剧没有父节点。s1f 把风这一实体放进时间树。",
+  "fix": {
+   "title": "第 2 句时间：加剧挂第 1 句影响，超过与加剧 :overlap",
+   "conf": "mid",
+   "why": "加剧没有时间父节点；风速超过与火势加剧同时发生，gold 的「超过在加剧之前」没有依据。按 guideline 5.1 以上句事件为参照。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s2x9",
+      "before",
+      "s2x1"
+     ],
+     "to": [
+      "s2x1",
+      "overlap",
+      "s2x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s1x",
+      "overlap",
+      "s2x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 16,
+  "topic": "「包括」的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第 1 句影响 :overlap 包括",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "DCT :overlap 包括",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :overlap"
+   },
+   {
+    "label": "火灾 :overlap 包括",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "abridged 7：每个事件都要有时间父节点。「包括」是状态，挂上句事件或 DCT（:overlap）都可以；s1f/r2 以实体「火灾」为参照不合适。",
+  "fix": {
+   "title": "包括：加时间父节点（第 1 句影响 :overlap 包括）",
+   "conf": "mid",
+   "why": "guideline 要求每个事件有时间父节点；状态「包括」与上句的影响同时成立。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s1x",
+      "overlap",
+      "s2x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 17,
+  "topic": "「包括」「超过」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "只有加剧挂 author",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "包括、加剧、超过都 author :full-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "包括、加剧、超过都 author :full-affirmative",
+  "text": "abridged 5.2：作者断言的每个事件都要 (author :full-affirmative e)。gold 漏了包括、超过。",
+  "fix": {
+   "title": "补 modal：author :full-affirmative 包括、超过",
+   "conf": "high",
+   "why": "包括、超过都是作者直接断言的事件，guideline 5.2 要求每个事件有 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s2x"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s2x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 2,
+  "n": 18,
+  "topic": "第 1 句野火与「这些火灾」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "野火 :same-event 火灾（两端都是实体节点）",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-event"
+   },
+   {
+    "label": "野火 :same-entity 火灾",
+    "systems": [
+     "s3/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "野火 :same-event 火灾（两端标成事件）+ 四个专名 :subset-of 火灾",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":same-event",
+     ":subset-of"
+    ]
+   }
+  ],
+  "best": "野火 :same-entity 火灾",
+  "text": "共指本身都对。gold 和多数系统把野火、火灾标成实体（无 aspect），那就该用 :same-entity；s1f 把它们标成事件，用 :same-event 自洽。s1f 句内的 :subset-of 也说得通。",
+  "fix": {
+   "title": "野火—火灾共指：:same-event → :same-entity",
+   "conf": "low",
+   "why": "gold 的野火、火灾都是实体节点（没有 aspect），共指应为 :same-entity。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s1x2",
+      "same-event",
+      "s2x2"
+     ],
+     "to": [
+      "s1x2",
+      "same-entity",
+      "s2x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 1,
+  "topic": "「造成」的结果范围（死亡、受损）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "造成 :ARG1 死亡；受损是并列的另一项",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "造成 :ARG1 (and 死亡 受损)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "造成 :ARG1 (and 死亡 受损)",
+  "text": "「已造成 25 人死亡，超过 1.3 万栋建筑物受损，并迫使……」：「受损」与「死亡」同为「造成」的宾语（PropBank 造成-01 ARG1 result），「并」连接的才是「迫使」。gold 把受损提成与造成并列的独立事件。",
+  "fix": {
+   "title": "造成的 ARG1 改为 (and 死亡 受损)",
+   "conf": "mid",
+   "why": "受损和死亡都是野火「造成」的结果（造成-01 ARG1 result），「并」连接的是「迫使」；gold 把受损当作和造成并列的事件。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s3a",
+     "r": "op2",
+     "t": "s3x2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s3a",
+     "r": "op3",
+     "t": "s3x5",
+     "r2": "op2"
+    },
+    {
+     "op": "del_rel",
+     "s": "s3x",
+     "r": "ARG1",
+     "t": "s3x6"
+    },
+    {
+     "op": "add_node",
+     "parent": "s3x",
+     "role": "ARG1",
+     "var": "s3z1",
+     "concept": "and"
+    },
+    {
+     "op": "add_rel",
+     "s": "s3z1",
+     "r": "op1",
+     "t": "s3x6"
+    },
+    {
+     "op": "add_rel",
+     "s": "s3z1",
+     "r": "op2",
+     "t": "s3x2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 2,
+  "topic": "「死亡」中「人」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "死亡 :ARG1 人",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "死亡 :ARG0 人",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "死亡 :ARG1 人",
+  "text": "PropBank 死亡-01：ARG0 cause、ARG1 entity who die。死者是 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 3,
+  "topic": "「受损」中「建筑物」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "受损 :ARG0 建筑物",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "受损 :ARG1 建筑物",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "受损 :ARG0 建筑物",
+  "text": "PropBank 受损-01 只有 ARG0（entity damaged）。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 4,
+  "topic": "「超过 1.3 万」「超过 20 万」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": ":quant (超过 :op1 N)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 超过"
+   },
+   {
+    "label": ":quant (more-than :op1 N)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "more-than"
+   },
+   {
+    "label": ":quant (N :mod 超过)，数字当概念节点",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 13000"
+   }
+  ],
+  "best": null,
+  "text": "AMR 惯例 :quant (more-than :op1 N)，中文 gold 用「超过」作概念同样可以。把数字写成带 :mod 子节点的概念不合格式：数字是常量，不能有子节点。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 5,
+  "topic": "量词「栋」作 :unit",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "建筑物 :unit 栋",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 栋"
+   },
+   {
+    "label": "不标量词",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "建筑物 :unit 栋",
+  "text": "【更正】量词按规则保留为 :unit。「1.3万栋建筑物」的「栋」是量词，挂在被计数的「建筑物」上作 :unit、和 :quant 并列是对的；不标量词漏了一个节点，判 minor。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok"
+   ],
+   "best": "不标量词",
+   "fix": {
+    "title": "删去量词「栋」",
+    "conf": "mid",
+    "why": "「栋」是普通个体量词，guideline 2.2 规定这类量词不建节点，只有真正的度量单位才作 :unit。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s3x10"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 3,
+  "n": 6,
+  "topic": "「已」有没有节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不建节点",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "造成 :mod 已",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 已"
+   }
+  ],
+  "best": null,
+  "text": "「已」主要表示完成体，体现在 aspect performance 上；作副词节点 :mod 也有先例。两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 7,
+  "topic": "野火、人、建筑物的 refer-number",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "三者都 plural",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   },
+   {
+    "label": "只有野火 plural",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-number plural"
+   },
+   {
+    "label": "都不标",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "都有 :quant 或「这些」，复数已经表达；按 abridged 2.4 标 plural 更完整，不标也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 8,
+  "topic": "「截至 1 月 15 日」与造成、迫使的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期不进时间树；迫使挂造成（造成 :after 迫使），造成不锚定",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "日期挂 root 或上句日期；日期 :before 造成、迫使",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":before"
+   },
+   {
+    "label": "日期 :depends-on 截至；截至 :contained 造成、迫使",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "日期 :depends-on 截至；截至 :before 造成、迫使",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":before"
+   },
+   {
+    "label": "(date-interval :end 1 月 15 日) :contained 造成、迫使；日期挂第 1 句日期和 DCT 时方向写反",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "date-interval",
+     ":contained"
+    ]
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1 句）(日期 :after 造成、迫使…)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": ":after"
+   }
+  ],
+  "best": "日期挂 root 或上句日期；日期 :before 造成、迫使",
+  "text": "abridged 5.1：日期挂 root，本句事件以日期为参照；「截至 15 日」的事件都在该日之前发生（:before）。gold 的日期不在树里，造成没有父节点，「迫使在造成之后」也没有依据（「并」只是并列）。s3/r2、a2/r1 把介词节点「截至」当时间节点。",
+  "fix": {
+   "title": "第 3 句时间：日期挂 root，造成、迫使在日期之前",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root，事件以本句日期为参照；「截至 1 月 15 日」已发生的造成、迫使都在该日之前。gold 日期不在时间树里，造成没有父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s3d2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s3d2",
+      "before",
+      "s3x"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s3x",
+      "after",
+      "s3x5"
+     ],
+     "to": [
+      "s3d2",
+      "before",
+      "s3x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 9,
+  "topic": "死亡、受损相对「造成」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "死亡、受损 :contained 造成",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "死亡、受损在造成之后（造成 :after …）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "造成 :overlap 死亡（及受损）",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":overlap"
+   },
+   {
+    "label": "死亡、受损 只挂日期区间 :contained，不以 造成 为参照",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   }
+  ],
+  "best": null,
+  "text": "结果事件与致使事件的关系 guideline 没有定规，包含、之后、重叠都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 3,
+  "n": 10,
+  "topic": "「撤离」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "迫使 :after 撤离",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(迫使 :before 撤离)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "迫使 :after 撤离",
+  "text": "abridged 7：每个事件要有时间父节点；被迫撤离发生在「迫使」之后，以迫使为参照。",
+  "fix": {
+   "title": "撤离：加 迫使 :after 撤离",
+   "conf": "mid",
+   "why": "撤离是迫使的补足事件，guideline 5.1 补足语事件以主事件为参照；撤离在迫使之后。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s3x5",
+      "after",
+      "s3x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 3,
+  "n": 11,
+  "topic": "「这些野火」与上句「这些火灾」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(野火 :same-event 上句火灾)，后者在前",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(火灾 :same-entity 野火)",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "(火灾 :same-event 野火)，两端标成事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   },
+   {
+    "label": "(火灾 :same-event 野火)，两端是实体",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-event"
+   },
+   {
+    "label": "(第 1 句野火 :same-entity 本句野火)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "(火灾 :same-entity 野火)",
+  "text": "abridged 5.3：(earlier :same-entity later)，先写前面的提及；gold 把本句的野火写在前面，顺序反了。实体节点之间应用 :same-entity。",
+  "fix": {
+   "title": "第 3 句共指：改成 (s2 火灾 :same-event s3 野火)，前者在先",
+   "conf": "mid",
+   "why": "guideline 5.3 规定共指三元组先写前面的提及；gold 把第 3 句的野火写成父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s3x3",
+      "same-event",
+      "s2x2"
+     ],
+     "to": [
+      "s2x2",
+      "same-event",
+      "s3x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 1,
+  "topic": "「有」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-03 :ARG0 (风暴、危险) :ARG1 预兆",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-03"
+   },
+   {
+    "label": "have-91 :ARG1 (风暴、危险) :ARG2 预兆",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ have-91"
+   },
+   {
+    "label": "（没有「有」节点，预兆-01 作根谓词，见下条）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": "预兆-01"
+   }
+  ],
+  "best": "have-91 :ARG1 (风暴、危险) :ARG2 预兆",
+  "text": "have-03 是英文 PropBank 的义项，中文既不用它，也不是 UMR 抽象谓词；中文训练数据里「有」作 have-91 或 有-03。abridged 2.3：X 有 Y 用 have-91（ARG1 possessor、ARG2 possessum）。",
+  "fix": {
+   "title": "有：have-03 → have-91（ARG0/ARG1 → ARG1/ARG2）",
+   "conf": "high",
+   "why": "have-03 是英文 PropBank 义项，不能用于中文；按 guideline 2.3「X 有 Y」用 have-91，ARG1 是拥有者、ARG2 是所有物。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s4e1",
+     "concept": "have-91"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s4e1",
+     "r": "ARG1",
+     "t": "s4x",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s4e1",
+     "r": "ARG0",
+     "t": "s4a",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 2,
+  "topic": "「预兆」是事件还是实体（含 modal 挂点）",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "预兆-01（事件，aspect state），author :full-affirmative 预兆",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "预兆-01"
+   },
+   {
+    "label": "实体 预兆，author :full-affirmative have-91",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 预兆"
+   }
+  ],
+  "best": "实体 预兆，author :full-affirmative have-91",
+  "text": "PropBank 没有「预兆」，不能写 -01（谓词化也只能是 预兆-00）；这里「有预兆」的「预兆」是名词宾语，作实体即可，句子的事件是「有」。gold 的 modal 和时间关系都挂在预兆上，「有」本身没有 modal 父节点。",
+  "fix": {
+   "title": "预兆：预兆-01 → 实体 预兆；modal、时间关系移到「有」",
+   "conf": "mid",
+   "why": "PropBank 没有 预兆-01；「早有预兆」的预兆是名词宾语，事件是「有」。gold 把 modal 和时间关系挂在预兆上，「有」没有 modal 父节点。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s4x",
+     "concept": "预兆"
+    },
+    {
+     "op": "del_attr",
+     "var": "s4x",
+     "attr": "aspect"
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s4x"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s4e1"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s4x1",
+      "before",
+      "s4x"
+     ],
+     "to": [
+      "s4x1",
+      "before",
+      "s4e1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 3,
+  "topic": "「其引发的火灾危险」中引发的结果",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "危险 :ARG1-of 引发",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "火灾 :ARG1-of 引发（危险 :mod 火灾）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「其引发的火灾危险」可以切成「其引发的 | 火灾危险」或「其引发的火灾 | 危险」，PropBank 引发-01 ARG1 result 两种都合适。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 4,
+  "topic": "「早」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "有 :temporal 早",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": "有 :mod 早",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「早有」的「早」是时间副词，:temporal 或 :mod 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 5,
+  "topic": "「风暴」「火灾」是否当事件",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "实体，不标 aspect",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "风暴、火灾 :aspect process，进 modal 和时间树",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "实体，不标 aspect",
+  "text": "风暴、火灾在这里是「有预兆」的主体，作实体更自然（风暴作事件名词也说得通）；s1f 两次一贯把这类名词当事件，并把它们放进时间树。",
+  "fix": null
+ },
+ {
+  "sent": 4,
+  "n": 6,
+  "topic": "第 4 句事件的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "引发 :before 预兆，引发没有父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "DCT :before 有；有 :after 引发",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "第 1 句影响 :before 有；影响 :overlap 引发",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":before"
+   },
+   {
+    "label": "past-reference :depends-on 早；早 :contained 有；影响 :overlap 引发",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "past-reference"
+   },
+   {
+    "label": "早 :contained 有，另把风暴、火灾等实体放进树",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "past-reference"
+   },
+   {
+    "label": "预兆 没有父节点；(预兆 :before 引发)（方向写反）；第 1 句影响 :overlap 引发",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "预兆 没有父节点；(预兆 :before 引发) (预兆 :before 第 1 句日期)（方向写反）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "DCT :before 有；有 :after 引发",
+  "text": "gold 唯一的时间关系以引发为父节点，引发本身没有参照，整句没有锚定到 DCT 或前文。「有预兆」在引发之前，系统的几种锚法都合理。",
+  "fix": {
+   "title": "第 4 句时间：引发锚定到 DCT 之前",
+   "conf": "mid",
+   "why": "gold 的引发没有时间父节点，整句不连到 DCT 或前文；按 guideline 5.1 第 3 条，过去事件挂 (document-creation-time :before e)。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s4x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 7,
+  "topic": "「此次风暴」与圣塔安那风的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "圣塔安那风 :same-entity 风暴",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "圣塔安那风 :same-event 风暴（两端标成事件）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "圣塔安那风 :same-entity 风暴",
+  "text": "「此次风暴」的「此次」是回指，前文唯一的风暴就是第 2 句飓风级别的圣塔安那风；abridged 5.3 定指描述也要连共指。",
+  "fix": {
+   "title": "共指：第 2 句圣塔安那风 :same-entity 此次风暴",
+   "conf": "mid",
+   "why": "「此次风暴」回指上文飓风级别的圣塔安那风（第 2 句），guideline 5.3 定指描述要连共指。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s2e",
+      "same-entity",
+      "s4x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 4,
+  "n": 8,
+  "topic": "「火灾」与前文野火的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "野火 :same-entity 火灾",
+    "systems": [
+     "s3/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "野火 :same-event 火灾",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": null,
+  "text": "「火灾危险」里的火灾可以理解为泛指的火灾风险，也可以指前文的野火，连不连都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 1,
+  "topic": "「警告」的内容论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "警告 :ARG1 出现",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "警告 :ARG2 出现",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "警告 :ARG2 出现",
+  "text": "PropBank 警告-01：ARG0 warner、ARG1 warned person、ARG2 warning。警告的内容是 ARG2。",
+  "fix": {
+   "title": "警告内容：:ARG1 → :ARG2",
+   "conf": "high",
+   "why": "PropBank 警告-01 的 ARG1 是被警告的人，ARG2 才是警告内容；「南加州将出现……」是警告内容。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s5x",
+     "r": "ARG1",
+     "t": "s5x2",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 2,
+  "topic": "「出现」的处所论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "出现 :ARG1 潜力 :place 南加州",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "出现 :ARG0 南加州 :ARG1 潜力",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "出现 :ARG0 潜力 :place 南加州",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "出现 :ARG0 南加州 :ARG1 潜力",
+  "text": "PropBank 出现-01：ARG0 possessor, location，ARG1 theme（例：香港出现……）。处所能由 ARG0 表达，按说明优先用核心论元；s1f/r1 把出现的事物当 ARG0，错。",
+  "fix": {
+   "title": "出现的处所：:place 南加州 → :ARG0",
+   "conf": "mid",
+   "why": "PropBank 出现-01 的 ARG0 是 possessor, location（例「香港出现……」），南加州是出现的处所，应为核心论元 ARG0。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s5x2",
+     "r": "place",
+     "t": "s5c",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 3,
+  "topic": "「南加州」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "country-region",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ country-region"
+   },
+   {
+    "label": "world-region",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ world-region"
+   },
+   {
+    "label": "region",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ region"
+   }
+  ],
+  "best": null,
+  "text": "南加州是州内的非行政区域，guideline 表 5 的 region 类下 local-region、country-region 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 4,
+  "topic": "「早在 1 月 2 日」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "警告 :temporal (早在 :op1 date-entity)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 早在"
+   },
+   {
+    "label": "警告 :temporal date-entity + 警告 :mod 早",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 早"
+   },
+   {
+    "label": "警告 :temporal (date-entity :mod 早)",
+    "systems": [
+     "s3/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 早"
+   }
+  ],
+  "best": null,
+  "text": "「早在」表示说话人认为时间早，介词节点带 :op1 或把「早」作修饰都可以。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 5,
+  "topic": "「即」有没有节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "警告 :mod 即",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 即"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「即」是与「早在」呼应的副词（就），信息量小，标或不标都可以。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 6,
+  "topic": "引号内容的 :quote",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标 :quote",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "出现（及/或高于、火灾）:quote 警告",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quote s"
+   }
+  ],
+  "best": null,
+  "text": "引号里只是警告内容中的一个名词短语，是否标 :quote（abridged 3 的 release data 做法）两可；挂在出现还是高于上各系统不同。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 7,
+  "topic": "「高于」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "高于-01 :aspect state",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "没有 aspect",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "高于-01 :aspect state",
+  "text": "abridged 7：每个事件都要有 aspect；比较谓词是状态。",
+  "fix": null
+ },
+ {
+  "sent": 5,
+  "n": 8,
+  "topic": "警告内容（将出现）的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "中心 :neutral-affirmative 出现、高于",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "中心 :full-affirmative 出现、高于",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "中心 :full-affirmative 出现、高于，另 :neutral-affirmative 火灾",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "中心 :full-affirmative 出现，高于没有 modal",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "中心 :full-affirmative 出现、高于，但没有 (author :full-affirmative 中心)，conceiver 不挂在 author 下",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "中心 :full-affirmative 出现、高于",
+  "text": "「警告南加州将出现……」是带「将」的预测，按 guideline 5.2，predictive future 是 full-affirmative，引述内容的 conceiver 是警告者。「潜力」的不确定性在名词词义里，不降低「出现」的强度。",
+  "fix": {
+   "title": "警告内容的 modal：neutral-affirmative → full-affirmative",
+   "conf": "mid",
+   "why": "「将出现」是预测性将来，guideline 5.2 规定 predictive future 为 full-affirmative，conceiver 是发出警告的消防中心。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s5g",
+      "neutral-affirmative",
+      "s5x2"
+     ],
+     "to": [
+      "s5g",
+      "full-affirmative",
+      "s5x2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s5g",
+      "neutral-affirmative",
+      "s5x7"
+     ],
+     "to": [
+      "s5g",
+      "full-affirmative",
+      "s5x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 9,
+  "topic": "「出现」相对「警告」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "出现 :contained 警告（警告在出现之内）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "警告 :after 出现（出现在警告之后）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(警告 :before 出现)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "警告 :after 出现（出现在警告之后）",
+  "text": "「将出现」是警告时的将来事件，abridged 5.1：补足语事件以主事件为参照，将来的标 :after。gold 的父子关系和关系值都不对。",
+  "fix": {
+   "title": "出现与警告：改为 (警告 :after 出现)",
+   "conf": "high",
+   "why": "「将出现」在警告之后发生；按 guideline 5.1，补足语事件以主事件为父节点，用 :after。gold 写成出现包含警告。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s5x2",
+      "contained",
+      "s5x"
+     ],
+     "to": [
+      "s5x",
+      "after",
+      "s5x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 10,
+  "topic": "1 月 2 日与「警告」的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期不进树，警告没有父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :contained 警告",
+    "systems": [
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   },
+   {
+    "label": "第 1 句日期 :depends-on 本句日期；日期 :contained 警告",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "DCT :before 日期；日期 :overlap 警告",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "日期不挂 root；日期 :contained 警告",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   }
+  ],
+  "best": "root :depends-on 日期；日期 :contained 警告",
+  "text": "abridged 5.1：绝对日期挂 root（或另一日期），事件 :contained 在日期里。gold 的日期不在树里，警告没有锚定；a2/r2 把绝对日期挂在 DCT 下，略差。",
+  "fix": {
+   "title": "第 5 句时间：日期挂 root，警告 :contained 在日期内",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root，本句事件以其为参照（:contained）；gold 的日期和警告都不在时间树里。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s5d"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s5d",
+      "contained",
+      "s5x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 5,
+  "n": 11,
+  "topic": "「高于」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间关系",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "出现 :overlap 高于",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":overlap"
+   },
+   {
+    "label": "（同一习惯：父子写反）(高于 :overlap 出现)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": ":overlap"
+   }
+  ],
+  "best": "出现 :overlap 高于",
+  "text": "abridged 7：每个事件都要有时间父节点；高于是「潜力」的状态，与出现同时。",
+  "fix": {
+   "title": "高于：加 (出现 :overlap 高于)",
+   "conf": "low",
+   "why": "guideline 要求每个事件有时间父节点；高于描述出现的潜力，与出现同时。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s5x2",
+      "overlap",
+      "s5x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 1,
+  "topic": "「在地方预报中」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "提及 :topic 预报-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "提及 :ARG2 预报-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "提及 :medium 预报",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":medium (s"
+   }
+  ],
+  "best": "提及 :ARG2 预报-01",
+  "text": "PropBank 提及-01 的 ARG2 是 place arg1 is mentioned（例「在〈自序〉里」提及），「在地方预报中提及」正是 ARG2。:topic 是提及的内容话题，意思不对；:medium 意思接近，但核心论元能表达时应用 ARGn。",
+  "fix": {
+   "title": "地方预报：提及 :topic → :ARG2",
+   "conf": "high",
+   "why": "PropBank 提及-01 的 ARG2 是提及的场合（例：在〈自序〉里提及），「在地方预报中」应为 ARG2，不是 :topic。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s6x",
+     "r": "topic",
+     "t": "s6x8",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 2,
+  "topic": "「预报」是否事件及其 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "预报-01 :aspect performance",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "预报-01"
+   },
+   {
+    "label": "预报-01 :aspect process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "实体 预报",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 预报"
+   }
+  ],
+  "best": "预报-01 :aspect process",
+  "text": "「在地方预报中」的预报是事件名词（或作为发布物的实体），abridged 4.1：事件名词用 process；标 performance 略差。",
+  "fix": {
+   "title": "预报 aspect：performance → process",
+   "conf": "low",
+   "why": "「地方预报」是事件名词，abridged 4.1 规定事件名词标 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s6x8",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 3,
+  "topic": "「发生」中火灾的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "发生 :ARG0 火灾",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "发生 :ARG1 火灾",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "发生 :ARG0 火灾",
+  "text": "PropBank 发生-01：ARG0 accident, event（发生的事情），ARG1 happening to。火灾是 ARG0。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 4,
+  "topic": "「火灾」是否当事件",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "实体",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "火灾 :aspect process，进 modal、时间树",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "实体",
+  "text": "火灾是「发生」的论元，事件由「发生」表达；s1f 两次又给火灾标 aspect、neutral-affirmative，重复了同一个事件。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 5,
+  "topic": "无引号内容上的 :quote",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "发生（或火灾）:quote 提及",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":quote s"
+   }
+  ],
+  "best": "不标",
+  "text": "abridged 3：:quote 只在内容是引语时标；本句没有引号，是间接转述。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 6,
+  "topic": "「发生」相对「提及」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(发生 :contained 提及)：提及在发生之内",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(提及 :after 发生)：发生在提及之后",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(提及 :before 发生)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(提及 :after 发生)：发生在提及之后",
+  "text": "「提及可能发生强烈火灾」，发生是提及时的可能将来事件；补足语事件以主事件为父节点（abridged 5.1），关系是 :after。",
+  "fix": {
+   "title": "发生与提及：改为 (提及 :after 发生)",
+   "conf": "high",
+   "why": "「可能发生」是提及时所说的将来事件，按 guideline 5.1 以提及为父节点、用 :after；gold 写成提及在发生之内。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s6x2",
+      "contained",
+      "s6x"
+     ],
+     "to": [
+      "s6x",
+      "after",
+      "s6x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 7,
+  "topic": "「同日」与提及的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "同日不进树；DCT :before 提及",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "上句日期 :depends-on 同日；同日 :contained 提及",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":depends-on"
+   },
+   {
+    "label": "同日 不进时间树（只用 coref 连上句日期）；同日 :contained 提及",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   }
+  ],
+  "best": "上句日期 :depends-on 同日；同日 :contained 提及",
+  "text": "abridged 5.1：本句有时间表达时，事件先以它为参照；「同日」是相对时间，依附于上句的 1 月 2 日。gold 跳过了同日直接挂 DCT。",
+  "fix": {
+   "title": "第 6 句时间：同日依附第 5 句日期，提及 :contained 在同日",
+   "conf": "mid",
+   "why": "按 guideline 5.1，事件以本句的时间表达为参照；「同日」是相对于第 5 句 1 月 2 日的时间，应 :depends-on 那个日期。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s5d",
+      "depends-on",
+      "s6x6"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s6x"
+     ],
+     "to": [
+      "s6x6",
+      "contained",
+      "s6x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 6,
+  "n": 8,
+  "topic": "「提及」与「预报」的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "提及 :contained 预报",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "提及 :overlap 预报",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":overlap"
+   },
+   {
+    "label": "（预报不是事件）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "（同一习惯：父子写反）(预报 :overlap 提及)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": ":overlap"
+   }
+  ],
+  "best": null,
+  "text": "提及发生在预报中，二者同时，:contained 或 :overlap 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 6,
+  "n": 9,
+  "topic": "「同日」与上句日期的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "上句日期 :same-entity 同日",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": null,
+  "text": "同日与 1 月 2 日指同一天，时间树里的 :depends-on 已经表达了这层关系，再连共指也说得通。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 1,
+  "topic": "「提升」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "提升-02（带 ARG2 达到的级别）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "提升-02"
+   },
+   {
+    "label": "提升-01（带 ARG2）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "提升-01"
+   }
+  ],
+  "best": "提升-02（带 ARG2 达到的级别）",
+  "text": "PropBank 提升-02 有 ARG2 level achieved，提升-01 只有 ARG0、ARG1；「提升至『极端关键』」要用 -02。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 2,
+  "topic": "引号里的等级名「严重风险」「极端关键」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "合成一个概念：严重-风险、极端-关键",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": [
+     "严重-风险",
+     "极端-关键"
+    ]
+   },
+   {
+    "label": "拆开：风险 :mod 严重；关键 :degree 极端",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 风险",
+     ":degree (s"
+    ]
+   }
+  ],
+  "best": "拆开：风险 :mod 严重；关键 :degree 极端",
+  "text": "这两个是预报等级的标签，当作固定说法合成一个概念也说得通；但 guideline 2.6 只对成语、固定短语合成，按词切分、「极端」作 :degree（abridged 4.2）更规范。",
+  "fix": {
+   "title": "等级名拆开：风险 :mod 严重；关键 :degree 极端",
+   "conf": "low",
+   "why": "「严重风险」「极端关键」不是成语，按词切分；「极端」是程度词，用 :degree。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s7x6",
+     "concept": "风险"
+    },
+    {
+     "op": "add_node",
+     "parent": "s7x6",
+     "role": "mod",
+     "var": "s7z3",
+     "concept": "严重",
+     "align": "22-22"
+    },
+    {
+     "op": "rename",
+     "var": "s7x9",
+     "concept": "关键"
+    },
+    {
+     "op": "add_node",
+     "parent": "s7x9",
+     "role": "degree",
+     "var": "s7z4",
+     "concept": "极端",
+     "align": "52-52"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 3,
+  "topic": "「1 月 7 日——首个关键火灾天气日」的同位关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "日期 :ARG1-of (identity-91 :ARG2 日)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ identity-91"
+   },
+   {
+    "label": "日期 :ARG1-of (have-role-91 :ARG3 日)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "日期 直接带 :ord 1 :mod 关键 :topic 天气",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "日期 :ARG1-of (have-mod-91 :ARG2 日)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "have-mod-91"
+   }
+  ],
+  "best": null,
+  "text": "破折号里的同位语说明 1 月 7 日是哪一天，identity-91（它就是首个关键火灾天气日）或 have-role-91 都可以。s1f/r1 把「关键」「天气」直接挂在日期上，:topic 天气 没有意义。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 4,
+  "topic": "「首个」与「天气日」的内部结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "天气-日 :mod 首个 :mod 关键 :mod 火灾",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "天气-日"
+   },
+   {
+    "label": "日 :ord (ordinal-entity :value 1) :mod (天气 :mod 火灾 …)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "ordinal-entity"
+   }
+  ],
+  "best": "日 :ord (ordinal-entity :value 1) :mod (天气 :mod 火灾 …)",
+  "text": "abridged 2.2：序数用 (ordinal-entity :value N)，经 :ord 挂上；「首个」不应作 :mod。gold 把「天气日」合成一个概念 天气-日 也不合按词切分的做法（只提示）。",
+  "fix": {
+   "title": "首个：:mod 首个 → :ord (ordinal-entity :value 1)",
+   "conf": "mid",
+   "why": "序数按 guideline 2.2 写成 (ordinal-entity :value 1)、用 :ord 连接，「首个」不是普通修饰语。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s7x13"
+    },
+    {
+     "op": "add_node",
+     "parent": "s7x10",
+     "role": "ord",
+     "var": "s7z1",
+     "concept": "ordinal-entity",
+     "attrs": {
+      "value": "1"
+     },
+     "align": "35-35"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 5,
+  "topic": "「进一步」有没有节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "预测 :manner 进一步",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "预测 :degree 进一步",
+    "systems": [
+     "a2/r1",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "预测 :mod 进一步",
+    "systems": [
+     "s1f/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 进一步"
+   }
+  ],
+  "best": "预测 :manner 进一步",
+  "text": "「进一步」是修饰事件的副词，有实义（在前一天警告基础上更进一步），应建节点；副词修饰事件用 :manner，:degree、:mod 也说得通。",
+  "fix": {
+   "title": "补「进一步」：预测 :manner 进一步",
+   "conf": "mid",
+   "why": "「进一步预测」的副词有实义，gold 漏标；副词性修饰事件用 :manner。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s7x",
+     "role": "manner",
+     "var": "s7z2",
+     "concept": "进一步",
+     "align": "10-10"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 6,
+  "topic": "「到 1 月 3 日」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "预测 :temporal date-entity",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "预测 :temporal (到 :op1 date-entity)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 到"
+   },
+   {
+    "label": "预测 :temporal (by / as-of :op1 date-entity)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「到 1 月 3 日」在这里就是那一天，直接 :temporal 日期或经介词节点都可以。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 7,
+  "topic": "两个「1 月 8 日」是不是同一个节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个独立 date-entity，不相连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "风险级别 :temporal 复用同一日期节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":temporal s"
+   },
+   {
+    "label": "两个 date-entity + 句内 :same-entity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "风险级别 :temporal 复用同一日期节点",
+  "text": "abridged 5.3：句内共指用重入（同一变量），不用 :coref 三元组；gold 两个 1 月 8 日既不重入也不连。",
+  "fix": {
+   "title": "1 月 8 日：风险级别复用火灾天气的日期节点",
+   "conf": "mid",
+   "why": "句中两个「1 月 8 日」是同一天，guideline 5.3 规定句内共指用重入；gold 建了两个互不相连的日期节点。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s7d1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s7x8",
+     "r": "temporal",
+     "t": "s7d"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 8,
+  "topic": "「风暴预测中心」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   },
+   {
+    "label": "organization",
+    "systems": [
+     "a2/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ organization"
+   }
+  ],
+  "best": "government-organization",
+  "text": "风暴预测中心是美国国家气象局下属的政府机构，用 government-organization 更具体。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 9,
+  "topic": "达到上的 :quote / :modpred",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "达到 :quote 预测",
+    "systems": [
+     "s1f/r1",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":quote s"
+   },
+   {
+    "label": "达到 :modpred 预测",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":modpred"
+   }
+  ],
+  "best": null,
+  "text": "引号里只是等级名，标不标 :quote 两可（s3/r2 把 :quote 挂在关键上，也可以）。:modpred 不是 UMR 关系，句子图里不该出现。",
+  "fix": null
+ },
+ {
+  "sent": 7,
+  "n": 10,
+  "topic": "预测内容（将达到）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "中心 :neutral-affirmative 达到",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "中心 :full-affirmative 达到",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "中心 :full-affirmative 预测；预测 :unspecified 达到",
+    "systems": [
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "（同一习惯：conceiver 不挂在 author 下，见第 5 句）中心 :full-affirmative 达到",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "中心 :full-affirmative 达到",
+  "text": "「预测……将达到」是带「将」的预测性将来，guideline 5.2：predictive future 为 full-affirmative，转述内容的 conceiver 是说话者（中心）。s1f/r2、a2/r2 把预测本身挂在中心下、内容 unspecified，不符合转述的写法，且预测不再由作者断言。",
+  "fix": {
+   "title": "达到的 modal：neutral-affirmative → full-affirmative",
+   "conf": "mid",
+   "why": "「将达到」是预测性将来，guideline 5.2 规定 predictive future 为 full-affirmative，conceiver 是作出预测的风暴预测中心。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s7o",
+      "neutral-affirmative",
+      "s7x1"
+     ],
+     "to": [
+      "s7o",
+      "full-affirmative",
+      "s7x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 11,
+  "topic": "「达到」相对「预测」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(达到 :contained 预测)：预测在达到之内",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(预测 :after 达到)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after"
+   },
+   {
+    "label": "达到只挂 1 月 8 日，不与预测相连",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(预测 :before 达到)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(预测 :after 达到)",
+  "text": "1 月 3 日预测的是 1 月 8 日的事，达到在预测之后；gold 的父子方向和关系值都错了。s3/r1 只让达到依附 1 月 8 日，也足够。",
+  "fix": {
+   "title": "达到与预测：改为 (预测 :after 达到)",
+   "conf": "high",
+   "why": "1 月 3 日预测的是 1 月 8 日将达到的级别，达到在预测之后；按 guideline 5.1 补足语事件以主事件为父节点，用 :after。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s7x1",
+      "contained",
+      "s7x"
+     ],
+     "to": [
+      "s7x",
+      "after",
+      "s7x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 12,
+  "topic": "1 月 8 日、1 月 7 日与达到、提升的锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "两个日期都不进树；提升没有父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "日期挂 root 或第 1 句日期；1/8 :contained 达到；1/7 :contained 提升",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   },
+   {
+    "label": "日期挂 root；1/7 :contained 提升；达到不挂 1/8",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "（同一习惯：日期之间的 :before 方向写反）1/8 :contained 达到；1/7 :contained 提升",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": ":contained"
+   }
+  ],
+  "best": "日期挂 root 或第 1 句日期；1/8 :contained 达到；1/7 :contained 提升",
+  "text": "abridged 5.1：日期挂 root，事件以本句时间表达为参照。gold 只锚了 1 月 3 日；提升只作为（预测 :before）的父节点出现，自己没有参照，1 月 7、8 日都不在树里。",
+  "fix": {
+   "title": "第 7 句时间：1/8 挂 root 并包含达到，1/7 挂 root 并包含提升",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root，事件以本句的日期为参照；gold 的提升没有时间父节点，1 月 7 日、8 日都不在时间树里。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s7d"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s7d",
+      "contained",
+      "s7x1"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s7d2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s7d2",
+      "contained",
+      "s7x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 13,
+  "topic": "同位 identity-91 的 modal 和时间",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "identity-91 不进 modal、时间树",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :full-affirmative identity-91；1/7 :overlap 或 :contained identity-91",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（没有 identity-91 节点）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "author :full-affirmative identity-91；1/7 :overlap 或 :contained identity-91",
+  "text": "abridged 7：每个事件（含抽象谓词）要有 modal 和时间父节点；同位语的 identity-91 是作者断言的状态。影响很小。",
+  "fix": {
+   "title": "identity-91：加 author :full-affirmative",
+   "conf": "low",
+   "why": "identity-91 有 aspect，是事件节点，guideline 要求有 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s7i"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 7,
+  "n": 14,
+  "topic": "本句的跨句、句内共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 1 句日期 :same-entity 1 月 7 日（及句内日期）",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "同上，另连 级别—风险级别、第 4 句危险—风险",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": null,
+  "text": "第 1 句的 2025 年 1 月 7 日与这里的 1 月 7 日确是同一天，连不连都可以；「严重风险」级别与提升前的「风险级别」、第 4 句的「火灾危险」不是同一实体，s1f/r1 连错了。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 1,
+  "topic": "「针对洛杉矶及文图拉县」的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "发布 :place (and 洛杉矶 文图拉县)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "发布 / 警告 :topic (and …)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "针对-01 :ARG0 警告 :ARG1 (and …)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "针对-01"
+   },
+   {
+    "label": "发布 :beneficiary (and …)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":beneficiary"
+   }
+  ],
+  "best": "针对-01 :ARG0 警告 :ARG1 (and …)",
+  "text": "两县是警告的适用对象，不是发布的地点，也不是话题；PropBank 针对-01（ARG0 entity described、ARG1 directed against）能直接表达。gold 的 :place、系统的 :topic 意思都偏，但没有更好的现成角色，不出方案。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 2,
+  "topic": "洛杉矶、文图拉县的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country-partition",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "country-partition"
+   },
+   {
+    "label": "county",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ county"
+   }
+  ],
+  "best": "county",
+  "text": "「洛杉矶及文图拉县」是两个县，guideline 表 5 的 geo-political-entity 下有 county；country-partition 不在类型表里。名字里含不含「县」各系统不同，无关紧要。",
+  "fix": {
+   "title": "洛杉矶、文图拉县：country-partition → county",
+   "conf": "high",
+   "why": "两地是县（洛杉矶县、文图拉县），guideline 表 5 有 county 类型；country-partition 不是 UMR 的命名实体类型。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s8c",
+     "concept": "county"
+    },
+    {
+     "op": "rename",
+     "var": "s8c2",
+     "concept": "county"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 3,
+  "topic": "「红旗警告」是实体还是事件",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "实体 警告 :mod 红旗",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 警告"
+   },
+   {
+    "label": "警告-01 :aspect process",
+    "systems": [
+     "s1f/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "警告-01"
+   }
+  ],
+  "best": null,
+  "text": "「发布了红旗警告」的警告是发布物，作实体最自然；当事件名词 警告-01（process）也可以。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 4,
+  "topic": "「极高」的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "高-01 :mod 极",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "高-01 :degree 极",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "have-mod-91 :ARG1 风险 :ARG2 极高",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "极高-01",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "极高-01"
+   }
+  ],
+  "best": "高-01 :degree 极",
+  "text": "abridged 4.2：程度副词「极」用 :degree。PropBank 没有「极高」，s1f/r1 的 极高-01 是不存在的义项。",
+  "fix": {
+   "title": "极高：高 :mod 极 → :degree 极",
+   "conf": "high",
+   "why": "「极」是程度副词，guideline 4.2 规定强化词用 :degree，不用 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s8x8",
+     "r": "mod",
+     "t": "s8x4",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 5,
+  "topic": "「形容这是一种…情况」的义项与论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "形容-01 :ARG1 (identity-91 :ARG1 风险 :ARG2 情况)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": [
+     "形容-01",
+     "/ identity-91"
+    ]
+   },
+   {
+    "label": "形容-01 :ARG1 (identity-91 :ARG1 thing :ARG2 情况)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     "形容-01",
+     "/ identity-91"
+    ]
+   },
+   {
+    "label": "形容-03 :ARG1 thing :ARG2 情况",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "形容-03"
+   },
+   {
+    "label": "形容-01 :ARG1 (have-role-91 :ARG1 这 :ARG3 情况)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "形容-01 :ARG1 这 :ARG2 情况（形容-01 没有 ARG2，应为 -03）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     "形容-01",
+     ":ARG2 (s"
+    ]
+   }
+  ],
+  "best": "形容-03 :ARG1 thing :ARG2 情况",
+  "text": "PropBank 形容-03：ARG1 entity depicted、ARG2 depicted as，正合「把这形容为一种特别危险的情况」；用 形容-01 再套 identity-91 / have-role-91 能表达但绕。gold 还把「这」直接解析成「火灾风险」节点，「这」更像指前面整个局面。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 6,
+  "topic": "「特别危险」中「特别」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "危险 :mod 特别",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "危险 :degree 特别",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "危险 :degree 特别",
+  "text": "abridged 4.2：程度副词（很、非常、特别）用 :degree。",
+  "fix": {
+   "title": "特别危险：:mod 特别 → :degree 特别",
+   "conf": "high",
+   "why": "「特别」是程度副词，guideline 4.2 规定强化词用 :degree。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s8x6",
+     "r": "mod",
+     "t": "s8x16",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 7,
+  "topic": "「危险」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "情况 :ARG0-of 危险-01",
+    "systems": [
+     "gold",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "危险-01"
+   },
+   {
+    "label": "情况 :mod 危险",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 危险"
+   },
+   {
+    "label": "情况 :ARG1-of 危险-01（危险-01 只有 ARG0）",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     "危险-01",
+     ":ARG1-of (s"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "定语形容词作 :mod 或作 危险-01（ARG0 entity described）的关系从句都可以。gold 在 :ARG0-of 之外又在 危险-01、构成-01 里写了一遍 :ARG0 情况，同一条边重复，只提示。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 8,
+  "topic": "「构成威胁」：轻动词「构成」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "构成-01 :ARG1 威胁-01",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "构成-01"
+   },
+   {
+    "label": "只有 威胁-01",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "威胁-01"
+   }
+  ],
+  "best": "只有 威胁-01",
+  "text": "abridged 2.1：轻动词不是事件（进行访问 → 访问-01）；「构成威胁」即「威胁」，构成没有独立语义。不影响主要意思，不出方案。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 9,
+  "topic": "「对生命及财产构成重大威胁」挂在哪里",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "作「情况」的关系从句（在形容的内容里）",
+    "systems": [
+     "gold",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "作形容 ARG1 的并列项",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "作根并列的第四项",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":op4 (s"
+   }
+  ],
+  "best": null,
+  "text": "逗号后的「对生命及财产构成重大威胁」可以理解为对情况的进一步描述（仍是气象局的话），也可以是并列的另一个断言，几种挂法都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 8,
+  "n": 10,
+  "topic": "「一种」的处理",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "情况 :quant 1",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":quant 1"
+   },
+   {
+    "label": "情况 :quant 1 :unit 种",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":unit (s"
+   }
+  ],
+  "best": "情况 :quant 1 :unit 种",
+  "text": "【更正】量词按规则保留为 :unit。原文「这是一种“特别危险的情况”」，「一种」是数词加量词。按规则应写成 情况 :quant 1 :unit 种；gold 既没有 :quant 也没有 :unit，只写 :quant 1 的漏了量词节点，都判 minor。",
+  "fix": {
+   "title": "「一种」：情况 :quant 1 :unit 种",
+   "conf": "mid",
+   "why": "量词按规则保留：「一种特别危险的情况」是数词加量词，应在「情况」上写 :quant 1 和 :unit 种；gold 两者都没有。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s8x7",
+     "attr": "quant",
+     "value": "1"
+    },
+    {
+     "op": "add_node",
+     "parent": "s8x7",
+     "role": "unit",
+     "var": "s8u1",
+     "concept": "种",
+     "align": "23-23"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "ok",
+    "ok",
+    "minor"
+   ],
+   "best": null,
+   "fix": null
+  }
+ },
+ {
+  "sent": 8,
+  "n": 11,
+  "topic": "第 8 句事件的时间锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "只有句内关系（发布 :contained 在指出内、发布在形容之前），整句不锚定",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "DCT :before 发布；发布 :overlap 指出、形容",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "第 7 句提升 :overlap 发布；发布 :overlap 指出、形容",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 7 句 1 月 7 日 :contained 发布；警告 :contained 指出、形容",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "past-reference :contained 发布；发布 :overlap 指出、形容",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "past-reference"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(发布 :before 第 1 句影响)；发布 :overlap 指出、形容",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "发布 没有父节点，只有句内 (发布 :overlap 指出、形容…)，整句不锚定",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "DCT :before 发布；发布 :overlap 指出、形容",
+  "text": "发布、指出、形容是同一次警告行为，彼此 :overlap，主事件发布要锚到 DCT 或前文（abridged 5.1）。gold 的父节点是指出和形容，二者自己没有参照；「发布在形容之前」也没有依据。",
+  "fix": {
+   "title": "第 8 句时间：发布挂 DCT，指出、形容与发布 :overlap",
+   "conf": "mid",
+   "why": "发布、指出、形容是同一次警告，应以主事件发布为参照、彼此重叠；gold 的整串关系不连到 DCT 或前文，按 guideline 5.1 过去事件挂 DCT :before。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s8x3",
+      "contained",
+      "s8x"
+     ],
+     "to": [
+      "s8x",
+      "overlap",
+      "s8x3"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s8x5",
+      "before",
+      "s8x"
+     ],
+     "to": [
+      "s8x",
+      "overlap",
+      "s8x5"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s8x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 12,
+  "topic": "指出、形容的内容的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "内容（高、构成、威胁）都挂 author；气象局不作 conceiver",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 气象局；气象局 :full-affirmative 高、构成/威胁等",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "内容都挂 author",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "形容的内容挂气象局，指出的内容和威胁挂 author",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "（同一习惯：conceiver 不挂在 author 下，见第 5 句）气象局 :full-affirmative 高、危险、构成、威胁",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "author :full-affirmative 气象局；气象局 :full-affirmative 高、构成/威胁等",
+  "text": "abridged 5.2：转述内容由说话者作 conceiver，(author :full-affirmative 说话者)(说话者 :full-affirmative 内容)。「火灾风险极高」「特别危险的情况…构成威胁」是气象局指出、形容的内容。gold 第 5、6 句都用了机构作 conceiver，这里却没有。",
+  "fix": {
+   "title": "第 8 句 modal：指出、形容的内容改由国家气象局作 conceiver",
+   "conf": "mid",
+   "why": "「火灾风险极高」「特别危险的情况，对生命财产构成威胁」是国家气象局指出和形容的内容，guideline 5.2 规定转述内容的 conceiver 是说话者，作者只对说话者 full-affirmative。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s8a2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s8x8"
+     ],
+     "to": [
+      "s8a2",
+      "full-affirmative",
+      "s8x8"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s8x10"
+     ],
+     "to": [
+      "s8a2",
+      "full-affirmative",
+      "s8x10"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s8x11"
+     ],
+     "to": [
+      "s8a2",
+      "full-affirmative",
+      "s8x11"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s8a2",
+      "full-affirmative",
+      "s8i"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 13,
+  "topic": "国家气象局与第 6 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 6 句国家气象局 :same-entity 本句国家气象局",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "第 6 句国家气象局 :same-entity 本句国家气象局",
+  "text": "abridged 5.3：重复出现的专名要连共指，连到最近的前一次提及（第 6 句）。",
+  "fix": {
+   "title": "共指：第 6 句国家气象局 :same-entity 第 8 句国家气象局",
+   "conf": "high",
+   "why": "第 6 句和第 8 句的「国家气象局」是同一机构，guideline 5.3 规定重复的专名连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s6a",
+      "same-entity",
+      "s8a2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 8,
+  "n": 14,
+  "topic": "「火灾风险」与第 7 句「风险」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 7 句风险 :same-entity 火灾风险",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "不连",
+  "text": "第 7 句的「风险」是等级名「严重风险」的一部分，与这里的「火灾风险」不是同一个实体。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 1,
+  "topic": "「该警告」是实体还是事件",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "实体 警告 :mod 该",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 警告"
+   },
+   {
+    "label": "警告-01 :aspect process",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "警告-01"
+   }
+  ],
+  "best": "实体 警告 :mod 该",
+  "text": "「该警告强调」里警告是回指上句的发布物，作强调的 ARG0，实体更自然；s1f/r1 作事件并给它标 aspect、modal。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 2,
+  "topic": "「低湿度」中「低」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "湿度 :mod (低-01 :ARG0 湿度)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "低-01"
+   },
+   {
+    "label": "湿度 :mod 低",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 低"
+   },
+   {
+    "label": "湿度 :ARG1-of 低-01",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "低-01"
+   }
+  ],
+  "best": "湿度 :mod 低",
+  "text": "定语形容词作 :mod 即可（abridged 2.1），gold 第 2 句也这样标。gold 这里 :mod 一个谓词、谓词再以 :ARG0 指回湿度，同一关系写了两遍；s1f/r2 的 低-01 :ARG1 不合 PropBank（被描述者是 ARG0）。",
+  "fix": {
+   "title": "低湿度：低-01 → :mod 低",
+   "conf": "mid",
+   "why": "定语形容词按 guideline 作 :mod 修饰语（gold 第 2 句的「极低的湿度」就是 :mod 低）；这里 :mod 一个带 :ARG0 指回湿度的谓词，关系重复。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s9x5",
+     "concept": "低"
+    },
+    {
+     "op": "del_rel",
+     "s": "s9x5",
+     "r": "ARG0",
+     "t": "s9x4"
+    },
+    {
+     "op": "del_attr",
+     "var": "s9x5",
+     "attr": "aspect"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 3,
+  "topic": "「结合」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "结合-02 :ARG1 (and 强风 湿度)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "结合-02"
+   },
+   {
+    "label": "结合-01 :ARG1 (and 强风 湿度)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "结合-01"
+   },
+   {
+    "label": "结合-01 :ARG0 强风 :ARG1 湿度",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "结合-01"
+   },
+   {
+    "label": "结合-01 :ARG1 强风 :ARG2 湿度",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     "结合-01",
+     ":ARG2 (s"
+    ]
+   }
+  ],
+  "best": "结合-02 :ARG1 (and 强风 湿度)",
+  "text": "PropBank 结合-02：ARG1 entities combined；结合-01 是「结合（考虑）某事」，ARG1 thing taken into consideration，义项不对。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 4,
+  "topic": "「结合」「蔓延」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "结合 state；蔓延 process",
+    "systems": [
+     "gold",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "结合 process；蔓延 activity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "「强风与低湿度的结合」是事件名词（process）也可看作状态；「将……迅速蔓延」是未然事件，process、activity 都说得通（说明：未然事件不硬判）。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 5,
+  "topic": "「蔓延」中火灾的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "蔓延 :ARG0 火灾",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "蔓延 :ARG1 火灾",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "蔓延 :ARG0 火灾",
+  "text": "PropBank 蔓延-01 只有 ARG0（thing described）。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 6,
+  "topic": "无引号内容上的 :quote",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "导致（及强风、结合、火灾、蔓延）:quote 强调",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":quote s"
+   }
+  ],
+  "best": "不标",
+  "text": "本句是间接转述，没有引号；:quote 只用于引语。s1f/r1 还给多个实体节点都加了 :quote。",
+  "fix": null
+ },
+ {
+  "sent": 9,
+  "n": 7,
+  "topic": "强调与其内容事件的时间连接",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "结合 → 导致 → 蔓延 一串与强调不相连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "强调 :after 结合；结合 :after 导致",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "强调 :after 导致",
+    "systems": [
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(强调 :before 导致)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "强调 :after 结合；结合 :after 导致",
+  "text": "abridged 5.1：补足语中的事件以主事件为父节点；「将导致」的内容在强调之后。gold 的结合没有父节点，整串内容事件和强调断开。",
+  "fix": {
+   "title": "第 9 句时间：结合挂在强调下（强调 :after 结合）",
+   "conf": "mid",
+   "why": "强调的内容（结合将导致蔓延）应以强调为参照，guideline 5.1 补足语事件以主事件为父节点；gold 的结合没有父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s9x1",
+      "after",
+      "s9x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 8,
+  "topic": "警告内容（将导致）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 结合；警告 :neutral-affirmative 导致、蔓延",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "警告 :full-affirmative 结合、导致、蔓延",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "内容都挂 author",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "（同一习惯：conceiver 不挂在 author 下，见第 5 句）警告 :full-affirmative 结合、导致、蔓延",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "（同一习惯：conceiver 不挂在 author 下，见第 5 句）第 8 句气象局 :full-affirmative 结合、导致、蔓延",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "警告 :full-affirmative 结合、导致、蔓延",
+  "text": "guideline 5.2：转述内容的 conceiver 是说话者（这里是警告），predictive future（将导致）是 full-affirmative。gold 把结合挂 author、导致和蔓延用 neutral；a2/r2 整个绕过了警告。s1f 另把强风、火灾等实体也挂在警告下。",
+  "fix": {
+   "title": "第 9 句 modal：结合、导致、蔓延都由警告 :full-affirmative",
+   "conf": "mid",
+   "why": "「强风与低湿度的结合将导致火灾迅速蔓延」是警告强调的内容，guideline 5.2 规定转述内容的 conceiver 是说话者，预测性将来为 full-affirmative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s9x2"
+     ],
+     "to": [
+      "s9x",
+      "full-affirmative",
+      "s9x2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s9x",
+      "neutral-affirmative",
+      "s9x6"
+     ],
+     "to": [
+      "s9x",
+      "full-affirmative",
+      "s9x6"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s9x",
+      "neutral-affirmative",
+      "s9x7"
+     ],
+     "to": [
+      "s9x",
+      "full-affirmative",
+      "s9x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 9,
+  "topic": "「该警告」与第 8 句红旗警告的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 8 句警告 :same-entity 该警告",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "第 8 句警告 :same-event 该警告",
+    "systems": [
+     "s1f/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "第 8 句警告 :same-entity 该警告",
+  "text": "「该警告」明确回指第 8 句的红旗警告，abridged 5.3 定指描述要连共指；两边都标实体的用 :same-entity，都标事件的用 :same-event。",
+  "fix": {
+   "title": "共指：第 8 句红旗警告 :same-entity 该警告",
+   "conf": "high",
+   "why": "「该警告」回指第 8 句国家气象局发布的红旗警告，guideline 5.3 规定定指描述连到前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s8x2",
+      "same-entity",
+      "s9x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 9,
+  "n": 10,
+  "topic": "湿度、强风的跨句共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 2 句湿度 :same-entity 湿度",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "第 2 句湿度 :same-entity 湿度；第 4 句风暴 :same-event 强风",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-event"
+   },
+   {
+    "label": "第 2 句湿度 :same-entity 湿度；第 2 句圣塔安那风 :same-entity 强风",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": null,
+  "text": "这里的强风、低湿度是警告中的一般条件，连到第 2 句的湿度可以；把「强风」与第 4 句「此次风暴」连成同一事件就过了。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 1,
+  "topic": "「因为」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-cause-91 :ARG1 进入 :ARG2 (and 影响 带来)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-cause-91"
+   },
+   {
+    "label": "have-reason-91 :ARG1 进入 :ARG2 (and …)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "进入 :cause (and 影响 带来)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "进入 :ARG1-of (cause-01 :ARG0 (and 影响 带来))",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ cause-01"
+   }
+  ],
+  "best": null,
+  "text": "abridged 2.5：因为 → :cause（或 have-cause-91）；中文训练数据里 have-reason-91 也常见。几种写法等价。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 2,
+  "topic": "「自 2024 年夏末以来」的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "进入 :start (夏末 :year 2024)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":start (s"
+   },
+   {
+    "label": "进入 :temporal (以来 :op1 (date-entity :year 2024 :season 夏末))",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 以来"
+   },
+   {
+    "label": "进入 :temporal (since :op1 date-entity …)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "/ since"
+   },
+   {
+    "label": "进入 :temporal (date-interval :start (date-entity :year 2024 :season 夏 :mod 末))",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": "date-interval"
+   },
+   {
+    "label": "进入 :temporal (date-entity :year 2024 :season 夏)（丢了「以来」）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":season (s"
+   }
+  ],
+  "best": "进入 :temporal (以来 :op1 (date-entity :year 2024 :season 夏末))",
+  "text": "同第 1 句：guideline 3-2-1-1 的 :start 只用于位移起点，时间起点用 :temporal 加「以来 / since」节点。gold 还把 :year 直接加在普通概念「夏末」上，日期应写成 date-entity（只提示）。",
+  "fix": {
+   "title": "「自…以来」：:start → :temporal (以来 :op1 夏末)",
+   "conf": "mid",
+   "why": "guideline 3-2-1-1 规定 :start 只用于位移事件的起点处所；「自 2024 年夏末以来」是起始时间，应为 :temporal (以来 :op1 …)。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s10x1",
+     "r": "start",
+     "t": "s10x11"
+    },
+    {
+     "op": "add_node",
+     "parent": "s10x1",
+     "role": "temporal",
+     "var": "s10z1",
+     "concept": "以来",
+     "align": "5-5"
+    },
+    {
+     "op": "add_rel",
+     "s": "s10z1",
+     "r": "op1",
+     "t": "s10x11"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 3,
+  "topic": "「逐渐」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "进入 :mod 逐渐",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "进入 :manner 逐渐",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "进入 :manner 逐渐",
+  "text": "「逐渐」是修饰事件的方式副词，按说明副词性修饰事件用 :manner。",
+  "fix": {
+   "title": "逐渐：:mod → :manner",
+   "conf": "mid",
+   "why": "「逐渐进入」的「逐渐」是修饰事件的方式副词，副词性修饰事件用 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s10x1",
+     "r": "mod",
+     "t": "s10x10",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 4,
+  "topic": "南加州、北加州、太平洋西北部的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "local-region ×2 + world-region",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ local-region",
+     "/ world-region"
+    ]
+   },
+   {
+    "label": "country-region ×2 + world-region",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ country-region",
+     "/ world-region"
+    ]
+   },
+   {
+    "label": "country-region ×3",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ country-region"
+   },
+   {
+    "label": "local-region ×3",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ local-region"
+   },
+   {
+    "label": "world-region ×2，太平洋西北部拆成 world-region :mod 西北部 :part-of (ocean 太平洋)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": "/ ocean"
+   },
+   {
+    "label": "region ×3",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ region"
+   }
+  ],
+  "best": null,
+  "text": "三者都是非行政区域，guideline 表 5 region 类下的 local-region、country-region、world-region 都说得通（太平洋西北部跨美加两国，world-region 或 country-region 均可）。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 5,
+  "topic": "「影响」「带来」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "影响 performance；带来 state",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "影响 activity；带来 performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": "影响 activity；带来 performance",
+  "text": "「风暴系统主要影响西北部」说的是一段时间内持续的情况，activity（或 habitual）比 performance 合适；「带来降雨」是过程动词，标 state 不对，被否定的事件仍按其本身的类型标。",
+  "fix": {
+   "title": "第 10 句 aspect：影响 → activity，带来 → performance",
+   "conf": "low",
+   "why": "影响描述持续一段时间的情况（activity）；带来是过程动词，不是状态。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s10x",
+     "attr": "aspect",
+     "value": "activity"
+    },
+    {
+     "op": "set_attr",
+     "var": "s10x2",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 6,
+  "topic": "「降雨」是实体还是事件，及其 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "实体 降雨，不进 modal",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 降雨"
+   },
+   {
+    "label": "降雨-01；author :full-negative 降雨",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "降雨-01"
+   },
+   {
+    "label": "降雨-01；带来 :unspecified 降雨",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "降雨-01；author :full-affirmative 降雨",
+    "systems": [
+     "a2/r1",
+     "a2/r2",
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": "降雨-01"
+   },
+   {
+    "label": "降雨-01；author :neutral-affirmative 降雨",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "降雨-01",
+     ":neutral-affirmative"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "「未带来有效降雨」：降雨作带来的 ARG1 实体，或作事件名词 降雨-01 都可以。作事件时它没有发生，应是 full-negative；a2 两次把没下的雨标成作者 full-affirmative，错。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 7,
+  "topic": "日期与「进入」的锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "夏末不进树，进入没有父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :after 进入",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :after / :overlap 进入、影响、带来",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   },
+   {
+    "label": "日期 :depends-on 以来；以来 :contained 进入",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "DCT :before 日期；日期 :after 进入",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "日期不挂 root；(date-interval :contained 进入)",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     "date-interval",
+     ":contained"
+    ]
+   },
+   {
+    "label": "日期不挂 root；(日期 :overlap 进入)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "root :depends-on 日期；日期 :after 进入",
+  "text": "abridged 5.1：绝对日期挂 root，事件以本句时间表达为参照；「自夏末以来逐渐进入」在夏末之后。gold 的时间表达不在树里，进入只作为影响的父节点，自身没有参照。",
+  "fix": {
+   "title": "第 10 句时间：夏末挂 root，进入在其后",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root，事件以本句时间表达为参照；gold 的「2024 年夏末」不在时间树里，进入没有父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s10x11"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s10x11",
+      "after",
+      "s10x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 10,
+  "n": 8,
+  "topic": "进入与原因事件（影响、带来）的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "进入 :before 影响（影响在先）；带来 :contained 影响",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "进入 :before 影响、带来",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "影响 / 带来 :after 进入（进入在后）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "进入 :overlap 影响（及带来）",
+    "systems": [
+     "s3/r2",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":overlap"
+   },
+   {
+    "label": "（同一习惯：父子写反）(影响 :overlap 进入) (带来 :overlap 进入)",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": ":overlap"
+   }
+  ],
+  "best": null,
+  "text": "原因（降雨落在别处）与结果（南加州变干）大体同时，也可以说原因在先；各种写法都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 10,
+  "n": 9,
+  "topic": "南加州与第 5 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 5 句南加州 :same-entity 本句南加州",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "第 5 句南加州 :same-entity 本句南加州",
+  "text": "abridged 5.3：重复出现的专名要连共指，连到最近的前一次提及（第 5 句）。",
+  "fix": {
+   "title": "共指：第 5 句南加州 :same-entity 第 10 句南加州",
+   "conf": "high",
+   "why": "第 5 句和第 10 句的「南加州」是同一地区，guideline 5.3 规定重复的专名连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s5c",
+      "same-entity",
+      "s10l2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 1,
+  "topic": "「A 是 B 的结果」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "根 过渡 :result 现象",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":result (s"
+   },
+   {
+    "label": "have-cause-91 :ARG1 现象 :ARG2 过渡",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-cause-91"
+   },
+   {
+    "label": "cause-01 :ARG0 过渡 :ARG1 现象",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "cause-01"
+   },
+   {
+    "label": "identity-91 :ARG1 现象 :ARG2 (结果 :mod 过渡)",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": "/ identity-91"
+   }
+  ],
+  "best": "have-cause-91 :ARG1 现象 :ARG2 过渡",
+  "text": ":result 不在 UMR 的非论元角色表里（abridged 3）；因果用 have-cause-91 或 :cause（abridged 2.3/2.5）。a2/r1 把「结果」当实体再用 identity-91，意思能懂但没有表达因果。",
+  "fix": {
+   "title": "第 11 句：过渡 :result 现象 → have-cause-91 :ARG1 现象 :ARG2 过渡",
+   "conf": "mid",
+   "why": ":result 不是 UMR 角色；「这一现象是……过渡的结果」是因果关系，guideline 用 have-cause-91（或 :cause）表达，并补上它的 modal。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s11x1",
+     "r": "result",
+     "t": "s11x"
+    },
+    {
+     "op": "add_node",
+     "parent": "s11x1",
+     "role": "ARG2-of",
+     "var": "s11z1",
+     "concept": "have-cause-91",
+     "attrs": {
+      "aspect": "state"
+     }
+    },
+    {
+     "op": "del_rel",
+     "s": "s11x1",
+     "r": "ARG2-of",
+     "t": "s11z1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s11z1",
+     "r": "ARG2",
+     "t": "s11x1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s11z1",
+     "r": "ARG1",
+     "t": "s11x"
+    },
+    {
+     "op": "set_root",
+     "var": "s11z1"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s11z1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 2,
+  "topic": "「从圣婴向拉尼娜过渡」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "过渡 :source 圣婴 :goal 拉尼娜",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s0/r1"
+    ],
+    "status": "bad",
+    "grep": [
+     ":source (s",
+     ":goal (s"
+    ]
+   },
+   {
+    "label": "过渡 :start 圣婴 :goal 拉尼娜",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     ":start (s",
+     ":goal (s"
+    ]
+   },
+   {
+    "label": "过渡 :ARG1 圣婴 :ARG2 拉尼娜",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "过渡 :ARG3 圣婴 :ARG4 拉尼娜（过渡-01 没有 ARG3、ARG4）",
+    "systems": [
+     "s0/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG3 (s",
+     ":ARG4 (s"
+    ]
+   }
+  ],
+  "best": "过渡 :ARG1 圣婴 :ARG2 拉尼娜",
+  "text": "PropBank 过渡-01：ARG0 theme、ARG1 initial state、ARG2 end state。起止状态是核心论元，不用 :source / :goal / :start（这些只用于位移，guideline 3-2-1-1）。",
+  "fix": {
+   "title": "过渡：:source 圣婴 → :ARG1，:goal 拉尼娜 → :ARG2",
+   "conf": "high",
+   "why": "PropBank 过渡-01 的 ARG1 是起始状态、ARG2 是终止状态，圣婴、拉尼娜应是核心论元。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s11x1",
+     "r": "source",
+     "t": "s11e1",
+     "r2": "ARG1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s11x1",
+     "r": "goal",
+     "t": "s11e2",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 3,
+  "topic": "ENSO、圣婴、拉尼娜的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "event",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ event"
+   },
+   {
+    "label": "现象",
+    "systems": [
+     "s1f/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 现象"
+   },
+   {
+    "label": "phenomenon",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ phenomenon"
+   },
+   {
+    "label": "natural-phenomenon",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "natural-phenomenon"
+   }
+  ],
+  "best": "event",
+  "text": "guideline 表 5 没有 phenomenon / natural-phenomenon 类型，气候现象作 event 最接近；用中文「现象」作类型词也不合「类型用英文」的规定（abridged 2.1）。s1f/r2 还给三个专名标了 aspect。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 4,
+  "topic": "「这一现象」的 :quant 1",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "不标",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "现象 :quant 1",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":quant 1"
+   }
+  ],
+  "best": null,
+  "text": "「这一」的「一」只是指示词的搭配，标不标 :quant 1 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 5,
+  "topic": "第 11 句事件的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有时间关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "DCT :before 过渡（或 DCT :overlap 系动词）",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time"
+   },
+   {
+    "label": "have-cause-91 :before 过渡；DCT / 第 10 句进入 :overlap have-cause-91",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 10 句进入 :before 过渡",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "过渡挂第 10 句日期或 past-reference，另把现象、专名等实体放进树",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）(过渡 :before 第 10 句进入)；cause-01 :overlap 第 10 句进入",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "DCT :before 过渡（或 DCT :overlap 系动词）",
+  "text": "abridged 7：每个事件要有时间父节点。gold 的 :temporal 是空的；过渡是过去发生的事件，至少要 (document-creation-time :before 过渡)。s1f 把「现象」和三个专名也当事件放进时间树。",
+  "fix": {
+   "title": "第 11 句时间：DCT :before 过渡",
+   "conf": "mid",
+   "why": "gold 的过渡没有时间父节点；ENSO 的过渡已经发生，按 guideline 5.1 第 3 条挂 (document-creation-time :before 过渡)。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s11x1"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 1,
+  "topic": "「形成」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "形成 :ARG0 拉尼娜 :ARG1 模式",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "形成 :ARG1 拉尼娜（现象）:ARG2 模式",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 形成-01：ARG0 cause/agent、ARG1 entity described、ARG2 entity formed。「拉尼娜已形成弱势模式」可读作拉尼娜（ARG1）形成为弱势模式（ARG2），也可读作拉尼娜造成弱势模式形成（ARG0、ARG1），两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 2,
+  "topic": "「拉尼娜现象」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "event :name 拉尼娜 现象",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"现象\""
+   },
+   {
+    "label": "拉尼娜专名（event / phenomenon 等）+ 现象",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "现象 :mod 拉尼娜（普通概念，不作专名）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 拉尼娜"
+   }
+  ],
+  "best": null,
+  "text": "拉尼娜是专名，abridged 2.2：专名整体作命名实体；「现象」放进名字或另作中心词都可以。a2 两次把拉尼娜写成普通概念，和第 11 句自己的专名标法不一致。类型的选择同第 11 句。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 3,
+  "topic": "2025 年 1 月与「形成」的锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "past-reference :contained 形成；日期不进树",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "past-reference :contained"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :contained 形成",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   },
+   {
+    "label": "日期不挂 root（反把第 1、3 句日期挂在它下面）；日期 :contained 形成",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   }
+  ],
+  "best": "root :depends-on 日期；日期 :contained 形成",
+  "text": "abridged 5.1：句中有绝对日期时，日期挂 root，事件 :contained 在日期里；gold 跳过了日期，用了模糊的 past-reference。",
+  "fix": {
+   "title": "第 12 句时间：日期挂 root，形成 :contained 在 2025 年 1 月",
+   "conf": "high",
+   "why": "按 guideline 5.1，绝对日期挂 root，本句事件先以本句的时间表达为参照；gold 用 past-reference 而不用句中的 2025 年 1 月。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s12d"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "contained",
+      "s12x6"
+     ],
+     "to": [
+      "s12d",
+      "contained",
+      "s12x6"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 1,
+  "topic": "「这种情况导致…」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "导致 :ARG0 陷入（不建「这种情况」）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "导致-01"
+   },
+   {
+    "label": "and(陷入, 导致 :ARG0 (情况 :mod 这种))，不连共指",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 情况"
+   },
+   {
+    "label": "同上，句内用 :coref 连 陷入 / 干旱 与 情况",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 情况"
+   }
+  ],
+  "best": "and(陷入, 导致 :ARG0 (情况 :mod 这种))，不连共指",
+  "text": "「这种情况」回指前一小句，gold 直接把陷入作导致的 ARG0，省掉了词语对应的节点，意思不错但不合按词标注。abridged 5.3：句内共指用重入，不用 :coref 三元组，s1f、s3 的句内 :same-event / :same-entity 不合规定。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 2,
+  "topic": "「洛杉矶县」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country-partition",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "country-partition"
+   },
+   {
+    "label": "county",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ county"
+   }
+  ],
+  "best": "county",
+  "text": "同第 8 句：guideline 表 5 有 county，country-partition 不是 UMR 类型。",
+  "fix": {
+   "title": "洛杉矶县：country-partition → county",
+   "conf": "high",
+   "why": "洛杉矶县是县，guideline 表 5 有 county 类型；country-partition 不是 UMR 的命名实体类型。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s13c2",
+     "concept": "county"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 3,
+  "topic": "「洛杉矶县大部分地区」中地区与县的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "地区 :part-of 洛杉矶县",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "地区 :place 洛杉矶县",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "地区 :part 洛杉矶县（方向反）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":part (s"
+   }
+  ],
+  "best": "地区 :part-of 洛杉矶县",
+  "text": "地区是县的一部分，应为 地区 :part-of 县；s1f 两次写成 :part，意思成了县是地区的一部分。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 4,
+  "topic": "「中度」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "干旱 :mod 中度",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "干旱 :degree 中度",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": null,
+  "text": "「中度干旱」的中度是干旱等级的定语，:mod 或 :degree 都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 5,
+  "topic": "「2024 年 12 月下旬」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "下旬 :year 2024 :month 12（普通概念带日期属性）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 下旬"
+   },
+   {
+    "label": "date-entity :year 2024 :month 12 :mod 下旬（经 到 / by / as-of）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": "/ date-entity"
+   },
+   {
+    "label": "date-entity :part-of 下旬",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":part-of (s"
+   }
+  ],
+  "best": "date-entity :year 2024 :month 12 :mod 下旬（经 到 / by / as-of）",
+  "text": "abridged 2.2：日期写成 date-entity，:year、:month 是它的属性；gold 把它们加在普通概念「下旬」上。a2/r2 写成 日期 :part-of 下旬，方向反了（下旬是 12 月的一部分）。",
+  "fix": {
+   "title": "12 月下旬：下旬 → date-entity :mod 下旬",
+   "conf": "low",
+   "why": "按 guideline 2.2，:year、:month 是 date-entity 的属性，不能加在普通概念「下旬」上。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s13x5",
+     "concept": "date-entity"
+    },
+    {
+     "op": "add_node",
+     "parent": "s13x5",
+     "role": "mod",
+     "var": "s13z1",
+     "concept": "下旬",
+     "align": "6-6"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 6,
+  "topic": "「持续攀升」中「持续」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "攀升 :mod 持续",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 持续"
+   },
+   {
+    "label": "持续-01 :ARG0 攀升（持续进 modal）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "持续-01"
+   },
+   {
+    "label": "不建节点（体现在 aspect activity）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（同一习惯：持续-01 用 ARG1 挂被描述者，见第 1 句）攀升 :ARG1-of 持续-01",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open",
+    "grep": "持续-01"
+   }
+  ],
+  "best": null,
+  "text": "「持续」可作 持续-01（ARG0 thing described）的谓词，也可只由 aspect activity 表达；作修饰副词时应是 :manner 而不是 :mod，gold 略差。",
+  "fix": {
+   "title": "持续攀升：:mod 持续 → :manner",
+   "conf": "low",
+   "why": "「持续」修饰事件「攀升」，副词性修饰事件用 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13x7",
+     "r": "mod",
+     "t": "s13x12",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 7,
+  "topic": "「导致」「攀升」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "导致 state；攀升 process",
+    "systems": [
+     "gold",
+     "s0/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "导致 performance；攀升 activity",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "导致 performance；攀升 process",
+    "systems": [
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   }
+  ],
+  "best": "导致 performance；攀升 activity",
+  "text": "「持续攀升」是进行中、没有终点的过程，abridged 4.1 为 activity；「导致」是致使事件，不是状态。",
+  "fix": {
+   "title": "第 13 句 aspect：导致 → performance，攀升 → activity",
+   "conf": "low",
+   "why": "「持续攀升」是没有终点的进行中过程（activity）；导致是致使事件，不宜标 state。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s13x6",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s13x7",
+     "attr": "aspect",
+     "value": "activity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 8,
+  "topic": "「攀升」中风险的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "攀升 :ARG0 风险",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "攀升 :ARG1 风险",
+    "systems": [
+     "s1f/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "攀升 :ARG0 风险",
+  "text": "PropBank 攀升-01 只有 ARG0（thing described）。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 9,
+  "topic": "12 月下旬与「陷入」的锚定",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "past-reference :contained 陷入；日期不进树",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "past-reference :contained"
+   },
+   {
+    "label": "root :depends-on 日期；日期 :before 陷入",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":before"
+   },
+   {
+    "label": "日期 :depends-on 到；到 :contained 陷入",
+    "systems": [
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":contained"
+   },
+   {
+    "label": "（同一习惯：方向写反，见第 1、3 句）r1 (陷入 :before 日期)，r2 (日期 :after 陷入)",
+    "systems": [
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "root :depends-on 日期；日期 :before 陷入",
+  "text": "abridged 5.1：句中有绝对日期时以它为参照；「到 12 月下旬已陷入」是到那时为止已经发生（:before）。gold 用了 past-reference，日期不在树里；s3/r2、a2/r2 把介词节点放进树。",
+  "fix": {
+   "title": "第 13 句时间：日期挂 root，陷入在 12 月下旬之前",
+   "conf": "mid",
+   "why": "按 guideline 5.1，绝对日期挂 root、事件以本句时间表达为参照；「到 12 月下旬已陷入」表示在那之前已发生。gold 用 past-reference，没有用句中的日期。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s13x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "contained",
+      "s13x"
+     ],
+     "to": [
+      "s13x5",
+      "before",
+      "s13x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 10,
+  "topic": "「雨季」与攀升的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "雨季不进时间树",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "雨季 :contained 攀升（雨季挂 past-reference / DCT / 日期）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":contained"
+   }
+  ],
+  "best": "雨季 :contained 攀升（雨季挂 past-reference / DCT / 日期）",
+  "text": "「在雨季中持续攀升」：攀升以本句的时间表达「雨季」为参照（abridged 5.1）。gold 只把攀升挂在导致下。s1f 让日期 :depends-on 雨季，方向别扭，但关系大体对。",
+  "fix": {
+   "title": "雨季：加 (雨季 :contained 攀升)",
+   "conf": "low",
+   "why": "攀升发生在雨季之中，guideline 5.1 规定事件以本句时间表达为参照。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s13x11",
+      "contained",
+      "s13x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 11,
+  "topic": "洛杉矶县与第 8 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 8 句洛杉矶（县）:same-entity 本句洛杉矶县",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1",
+     "s0/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": "第 8 句洛杉矶（县）:same-entity 本句洛杉矶县",
+  "text": "第 8 句「洛杉矶及文图拉县」里的洛杉矶就是洛杉矶县，abridged 5.3：重复的专名连到最近的前一次提及。",
+  "fix": {
+   "title": "共指：第 8 句洛杉矶 :same-entity 第 13 句洛杉矶县",
+   "conf": "high",
+   "why": "第 8 句的「洛杉矶（县）」与第 13 句的「洛杉矶县」是同一个县，guideline 5.3 规定重复的专名连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s8c",
+      "same-entity",
+      "s13c2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 12,
+  "topic": "「火灾风险」与第 8 句火灾风险的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "不连",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s0/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 8 句风险 :same-entity 风险（a2 另连第 9 句火灾）",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2",
+     "s0/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   }
+  ],
+  "best": null,
+  "text": "第 8 句说的是 1 月 7、8 日的火灾风险，这里是雨季里逐步上升的火灾风险，可以看作同一个（该地区的）火灾风险，也可以不连。",
+  "fix": null
+ }
+]

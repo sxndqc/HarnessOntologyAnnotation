@@ -1,0 +1,8161 @@
+[
+ {
+  "sent": 29,
+  "n": 1,
+  "topic": "「还有」与根节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "exist-91 :ARG2 人 :mod 还",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "exist-91",
+     "/ 还)"
+    ]
+   },
+   {
+    "label": "根为 作出-01，「还有」没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "根为只有 :op1 的 and，「还有」没有标",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ and"
+   }
+  ],
+  "best": "exist-91 :ARG2 人 :mod 还",
+  "text": "「还有一些人……」是存在句，exist-91 :ARG2 人 加 :mod 还 能保留「还」的追加义。gold 以作出为根可以接受，但漏掉了「还」；a2/r2 的 and 只有一个 op，也没有「还」。",
+  "fix": {
+   "title": "补上「还」：作出 :mod 还",
+   "conf": "mid",
+   "why": "「还有」里的「还」表示在上一句所列乱象之外追加，gold 没有任何节点表达它。保留作出为根，只给作出加 :mod 还。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s29x",
+     "role": "mod",
+     "var": "s29z1",
+     "concept": "还",
+     "align": "1-1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 2,
+  "topic": "「作出…行为」的处理",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "作出-01 :ARG1 行为",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "作出-01"
+   },
+   {
+    "label": "不要作出，行为-01 作谓词",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "行为-01"
+   },
+   {
+    "label": "没有作出、行为节点，三个行为词直接 :mod 人",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "作出-01 :ARG1 行为",
+  "text": "PropBank 作出-01 是 ARG0 agent / ARG1 thing made，「作出…行为」照字面标即可。「行为」不在 PropBank，s1f/r1 的 行为-01 是编出来的编号；s3/r2 把作出和行为都丢了，三个行为词变成人的修饰语。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 3,
+  "topic": "不尊重 / 亵渎 / 侮辱 是否谓词化及其论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "尊重-01 :polarity -、亵渎-01、侮辱-01，各带 :ARG0 人 :ARG1 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "尊重-01",
+     "亵渎-01",
+     "侮辱-01"
+    ]
+   },
+   {
+    "label": "不尊重-00（无 polarity）、亵渎-01、侮辱-01",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "不尊重-00"
+   },
+   {
+    "label": "不谓词化：尊重 :polarity -、亵渎、侮辱；国歌作 作出 :affectee",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     "/ 亵渎)",
+     ":affectee"
+    ]
+   }
+  ],
+  "best": "尊重-01 :polarity -、亵渎-01、侮辱-01，各带 :ARG0 人 :ARG1 国歌",
+  "text": "三个词都在 PropBank（尊重-01、亵渎-01、侮辱-01，ARG1 都是对象），guideline 2.1 规定修饰用的过程也是事件，应谓词化并带 aspect，国歌是它们的 ARG1；作出-01 没有能容纳「对国歌」的论元，gold 用 :affectee 挂在作出上不对。gold 还给非事件的「尊重」写了 modal 三元组、亵渎和侮辱却没有。a2/r2 的 不尊重-00 能用 尊重-01 + :polarity - 表达，又给它标 full-negative，否定被算了两次。",
+  "fix": {
+   "title": "不尊重 / 亵渎 / 侮辱 谓词化，国歌改为它们的 ARG1",
+   "conf": "high",
+   "why": "PropBank 有 尊重-01、亵渎-01、侮辱-01（ARG0 施事 / ARG1 对象），修饰「行为」的过程按 guideline 2.1 是事件。作出-01 只有 ARG0/ARG1，「对国歌」应是三个行为词的 ARG1，不是作出的 :affectee。补 aspect 和文档级父节点。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s29x5",
+     "concept": "尊重-01"
+    },
+    {
+     "op": "rename",
+     "var": "s29x6",
+     "concept": "亵渎-01"
+    },
+    {
+     "op": "rename",
+     "var": "s29x7",
+     "concept": "侮辱-01"
+    },
+    {
+     "op": "set_attr",
+     "var": "s29x5",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s29x6",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "set_attr",
+     "var": "s29x7",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "del_rel",
+     "s": "s29x",
+     "r": "affectee",
+     "t": "s29x12"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x5",
+     "r": "ARG0",
+     "t": "s29x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x5",
+     "r": "ARG1",
+     "t": "s29x12"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x6",
+     "r": "ARG0",
+     "t": "s29x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x6",
+     "r": "ARG1",
+     "t": "s29x12"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x7",
+     "r": "ARG0",
+     "t": "s29x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s29x7",
+     "r": "ARG1",
+     "t": "s29x12"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s29x7"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s29x",
+      "overlap",
+      "s29x5"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s29x",
+      "overlap",
+      "s29x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s29x",
+      "overlap",
+      "s29x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 4,
+  "topic": "三个行为词的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "三个都是 habitual",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   },
+   {
+    "label": "三个都是 process",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect process"
+   },
+   {
+    "label": "不尊重 state，亵渎 / 侮辱 process",
+    "systems": [
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     ":aspect state",
+     ":aspect process"
+    ]
+   },
+   {
+    "label": "不尊重 state，亵渎 / 侮辱 performance",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":aspect state",
+     ":aspect performance"
+    ]
+   },
+   {
+    "label": "（没有谓词化，无 aspect）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "修饰「行为」的泛指行为，habitual、process、state（不尊重是态度）都说得通；a2/r2 把亵渎、侮辱标成完成的 performance，和它们作为泛指修饰语的用法不太合。gold 的问题已在谓词化一条里算过。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 5,
+  "topic": "「作出」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（没有作出节点）",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「还有一些人对国歌作出……的行为」是对近年现象的概括，看作反复发生的 habitual 或已发生的 performance 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 6,
+  "topic": "「例如」：篡改作为谁的例子",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "行为 :example 篡改",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":example (s"
+   },
+   {
+    "label": "have-example-91 :ARG1 行为 :ARG2 篡改",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "have-example-91"
+   },
+   {
+    "label": "作出 :example 篡改",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":example (s"
+   },
+   {
+    "label": "人 :example 篡改",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":example (s"
+   },
+   {
+    "label": "exist-91 :example 篡改",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":example (s"
+   }
+  ],
+  "best": "行为 :example 篡改",
+  "text": "「例如被一些人篡改为……」举的是不尊重国歌的行为的例子，:example 应挂在「行为」上（guideline 3.2.2.6 的 :example 用于类别的例示）；挂在作出、人或 exist-91 上意思偏了。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 7,
+  "topic": "「篡改为 X 歌」的结果角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "篡改 :end-state have-example-91（只有 :ARG2 and）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":end-state"
+   },
+   {
+    "label": "篡改 :ARG2 and",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "篡改 :result and",
+    "systems": [
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":result"
+   },
+   {
+    "label": "篡改 :goal and",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":goal"
+   }
+  ],
+  "best": "篡改 :result and",
+  "text": "PropBank 篡改-01 只有 ARG0 / ARG1，没有 ARG2。「改为 X」的结果状态在训练数据里用 :end-state（zh-0003 第 12、15 句 改组为 / 转型为、zh-0007 第 48 句 更改为），:result 也有先例；:goal 是位移终点，略差。gold 的角色对，但中间插了一个只有 :ARG2、没有 :ARG1 的 have-example-91，「例如」已经由 行为 :example 表达，这个节点多余。",
+  "fix": {
+   "title": "篡改为的结果：去掉多余的 have-example-91，:end-state 直接指向 and",
+   "conf": "high",
+   "why": "「篡改为二奶歌、炒股歌」的结果直接作 :end-state（训练数据 改组为 / 更改为 的写法）。gold 在中间插了一个缺 ARG1 的 have-example-91，「例如」已由 行为 :example 篡改 表达。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s29x9",
+     "r": "end-state",
+     "t": "s29a"
+    },
+    {
+     "op": "del_node",
+     "var": "s29h"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 8,
+  "topic": "「等」与 and 的 op 编号",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :op1 歌 :op2 歌 :op2 等（op2 重复）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "and :op1 歌 :op2 歌 :op3 等",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":op3 (s"
+   },
+   {
+    "label": "没有「等」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "and :op1 歌 :op2 歌 :op3 等",
+  "text": "gold 的 and 有两个 :op2，「等」应是 :op3。不标「等」丢了列举未完的信息，算小问题。",
+  "fix": {
+   "title": "「等」的 op 编号：:op2 → :op3",
+   "conf": "high",
+   "why": "gold 的 and 有两个 :op2（炒股歌和等），等应为 :op3。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s29a",
+     "r": "op2",
+     "t": "s29x13",
+     "r2": "op3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 29,
+  "n": 9,
+  "topic": "「二奶歌」「炒股歌」的修饰角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "歌 :topic 二奶 / 炒股",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "歌 :mod 二奶 / 炒股",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": null,
+  "text": "「二奶歌」「炒股歌」是以二奶、炒股为内容的歌，:topic 和泛修饰 :mod 都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 10,
+  "topic": "「炒股」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "炒股（名词修饰）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 炒股)"
+   },
+   {
+    "label": "炒股-01（带 aspect）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "炒股-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 炒股-01（ARG0 agent）。作「歌」的定语时可以按修饰用的过程谓词化，也可以当普通修饰语，两种都不违反 guideline。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 11,
+  "topic": "「篡改」的施事「一些人」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "另立 人 :quant 一些",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "复用前面「一些人」",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "另立 人 :quant 一些",
+  "text": "「被一些人篡改」的一些人不一定就是前面作出不尊重行为的那些人，另立节点更稳。gold 这个节点对齐到了第 3 词（应为 17–18），属对齐问题。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 12,
+  "topic": "本句事件的 modal 来源",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author 直接断言",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂在第 28 句「表示」的说话人下",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "第 28 句是于海「表示」的转述，本句以「还有」接着列举乱象，可以读成转述的延续，也可以读成作者的叙述；没有引号，两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 13,
+  "topic": "本句事件的时间参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "document-creation-time :before 作出",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 28 句「近年来」:contained 本句事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "document-creation-time :before exist-91",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "第 28 句「出现」:overlap 本句事件",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "document-creation-time :overlap exist-91，exist-91 :before 作出",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "本句承接第 28 句「近年来……出现了一些乱象」，挂在「近年来」下最贴切，挂 DCT 之前或与「出现」重叠也都合理。gold 里三个行为词因为没有谓词化，没有时间父节点（谓词化的 fix 里一并补了）。",
+  "fix": null
+ },
+ {
+  "sent": 29,
+  "n": 14,
+  "topic": "国歌与第 28 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s28 国歌 :same-entity s29 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity s29"
+   }
+  ],
+  "best": "s28 国歌 :same-entity s29 国歌",
+  "text": "两句的「国歌」是同一实体，guideline 5.3 要求连到最近的前一次提及（第 28 句的国歌）。",
+  "fix": {
+   "title": "补国歌共指：s28 国歌 → s29 国歌",
+   "conf": "high",
+   "why": "第 28、29 句的「国歌」是同一实体，应按 guideline 5.3 连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s28x4",
+      "same-entity",
+      "s29x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 1,
+  "topic": "「在历史上」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "经历 :place 历史",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":place"
+   },
+   {
+    "label": "经历 :temporal 历史",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":temporal (s",
+     "/ 历史)"
+    ]
+   },
+   {
+    "label": "经历 :temporal 上 :op1 历史",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 上"
+   }
+  ],
+  "best": "经历 :temporal 历史",
+  "text": "「在历史上」是时间状语（历史上曾经），不是处所，应为 :temporal。",
+  "fix": {
+   "title": "「在历史上」：:place → :temporal",
+   "conf": "high",
+   "why": "「在历史上」意为过去、历来，是时间状语，不是处所。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s30x",
+     "r": "place",
+     "t": "s30x6",
+     "r2": "temporal"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 2,
+  "topic": "「变动」是否谓词化及其 ARG1",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "变动（不谓词化）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 变动"
+   },
+   {
+    "label": "变动-01 :ARG1 国歌",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "变动-01"
+   },
+   {
+    "label": "变动-01，没有 ARG1",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "变动-01"
+   }
+  ],
+  "best": "变动-01 :ARG1 国歌",
+  "text": "「经历了几次变动」的变动是事件名词，guideline 2.1 要求标成事件；PropBank 变动-01 的 ARG1 是发生变化的实体，即国歌。",
+  "fix": {
+   "title": "变动谓词化：变动-01 :ARG1 国歌",
+   "conf": "high",
+   "why": "「几次变动」是事件名词，按 guideline 2.1 标成事件 变动-01（PropBank：ARG1 entity undergoing change），ARG1 是国歌；补 aspect 和文档级父节点。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s30x3",
+     "concept": "变动-01"
+    },
+    {
+     "op": "set_attr",
+     "var": "s30x3",
+     "attr": "aspect",
+     "value": "process"
+    },
+    {
+     "op": "add_rel",
+     "s": "s30x3",
+     "r": "ARG1",
+     "t": "s30x2"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s30x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s30x",
+      "overlap",
+      "s30x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 3,
+  "topic": "「几次」的表示",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "变动 :quant 几 :unit 次",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":unit"
+   },
+   {
+    "label": "变动 :frequency 几次",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 几次)"
+   },
+   {
+    "label": "变动 :frequency 几（没有「次」）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 几)"
+   }
+  ],
+  "best": "变动 :frequency 几次",
+  "text": "【更正】量词按规则保留为 :unit。「几次」数的是事件发生的次数，AMR/UMR 用 :frequency，gold 用 :quant 是角色问题（minor）。「几次」整词作一个概念或拆成 几 + :unit 次 都可以；s3/r1 只写「几」，丢了「次」（minor）。",
+  "fix": {
+   "title": "「几次」：:quant 几 → :frequency 几（保留 :unit 次）",
+   "conf": "mid",
+   "why": "「几次变动」数的是事件次数，应为 :frequency；量词「次」按规则保留为 :unit。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s30x3",
+     "r": "quant",
+     "t": "s30x4",
+     "r2": "frequency"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok"
+   ],
+   "best": "变动 :frequency 几次 / 几",
+   "fix": {
+    "title": "「几次」：:quant 几 :unit 次 → :frequency 几",
+    "conf": "mid",
+    "why": "「几次变动」数的是事件次数，应为 :frequency；次 是动量词，不作 :unit。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s30x5"
+     },
+     {
+      "op": "mod_rel",
+      "s": "s30x3",
+      "r": "quant",
+      "t": "s30x4",
+      "r2": "frequency"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 30,
+  "n": 4,
+  "topic": "「乐谱版本不统一」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG0 版本 :ARG1 统一 :polarity -",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "统一-01 :ARG1 版本 :polarity -",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "统一-01"
+   }
+  ],
+  "best": "统一-01 :ARG1 版本 :polarity -",
+  "text": "「统一」在 PropBank 里是动词 统一-01（ARG1 theme），有词汇谓词时不用抽象谓词；而且 have-mod-91 的论元是 :ARG1 主体 / :ARG2 属性，gold 的 :ARG0 / :ARG1 编号也错了。",
+  "fix": {
+   "title": "「版本不统一」：have-mod-91 → 统一-01 :ARG1 版本",
+   "conf": "high",
+   "why": "「统一」有 PropBank 谓词 统一-01（ARG1 theme），不必用 have-mod-91；gold 的 have-mod-91 论元又写成了 ARG0/ARG1。改名、把版本改为 ARG1、删掉多余的「统一」名词节点，polarity 和文档级三元组保留。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s30h",
+     "concept": "统一-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s30h",
+     "r": "ARG0",
+     "t": "s30x7",
+     "r2": "ARG1"
+    },
+    {
+     "op": "del_node",
+     "var": "s30x9"
+    },
+    {
+     "op": "align",
+     "var": "s30h",
+     "span": "15-15"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 5,
+  "topic": "「没有统一标准」用哪个抽象谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "exist-91 :ARG2 标准 :polarity -",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "have-91 :ARG2 标准 :polarity -",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "have-91"
+   }
+  ],
+  "best": "exist-91 :ARG2 标准 :polarity -",
+  "text": "「在……方面没有统一标准」是存在句（在 L 有 X），guideline 2.3 用 exist-91；have-91 是领有，句中没有领有者（s3/r2 干脆没有 ARG1）。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 6,
+  "topic": "「在速度、力度等方面」的挂法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "exist-91 :ARG1 方面 :example and",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 方面"
+   },
+   {
+    "label": "exist-91 :topic 方面 :example and",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     ":topic (s",
+     ":example (s"
+    ]
+   },
+   {
+    "label": "have-91 :topic 方面 :example and",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     ":topic (s",
+     ":example (s"
+    ]
+   },
+   {
+    "label": "have-91 :ARG1 方面 :topic and",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "标准 :topic 方面 :mod and",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "没有方面节点，exist-91 :topic and(速度, 力度, 等)",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": null,
+  "text": "「方面」是存在的范围，作 exist-91 的 :ARG1（location）或 :topic 都可以，速度、力度是它的例示（:example）。s1f/r1 把它作 have-91 的领有者、s1f/r2 用 :mod 连速度力度、a2 丢了「方面」，都略差。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 7,
+  "topic": "「唱奏」是否谓词化",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "唱奏（名词修饰）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 唱奏)"
+   },
+   {
+    "label": "唱奏-00 :ARG1 国歌",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "唱奏-00"
+   },
+   {
+    "label": "唱奏-01 :ARG1 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "唱奏-01"
+   }
+  ],
+  "best": null,
+  "text": "「唱奏」不在 PropBank，谓词化时应为 唱奏-00，s1f 的 -01 是编出来的。作「速度、力度」的定语，不谓词化也可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 8,
+  "topic": "「历史上」进时间树、「经历」的参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "document-creation-time :before 经历，历史不进时间树",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "past-reference :depends-on 历史，历史 :contained 经历",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "past-reference :depends-on"
+   },
+   {
+    "label": "document-creation-time :depends-on 历史，历史 :contained 经历",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "document-creation-time :depends-on"
+   },
+   {
+    "label": "past-reference :depends-on 上，上 :contained 经历",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "past-reference :depends-on"
+   }
+  ],
+  "best": "past-reference :depends-on 历史，历史 :contained 经历",
+  "text": "guideline 5.1：先给时间词定位（模糊的过去时间挂 past-reference），事件再以本小句的时间词为参照。gold 方向没错但没用「历史上」；s3/r2 用了相对时间的 depends-on DCT，对「历史」这种模糊时间不太合适。",
+  "fix": {
+   "title": "「历史上」进时间树，经历挂在它下面",
+   "conf": "mid",
+   "why": "guideline 5.1：模糊的过去时间词挂 past-reference，事件优先以本小句的时间词为参照。gold 没有把「历史上」放进时间树，经历直接挂在 DCT 之前。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s30x6"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s30x"
+     ],
+     "to": [
+      "s30x6",
+      "contained",
+      "s30x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 9,
+  "topic": "两个否定状态（版本不统一、没有标准）的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "版本不统一 :overlap 经历；没有标准没有时间父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "第 28 句「表示」:overlap 两个状态",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "document-creation-time :before 两个状态",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "两个状态都在经历之后（经历 :after）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "document-creation-time :overlap 两个状态",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「在历史上」管到整句，版本不统一、没有统一标准是 2017 年立法之前的状态，应在过去（与经历重叠或在 DCT 之前）；a2 两次把它们放在现在，s3/r2 说它们在变动之后，都没有依据。gold 的 exist-91（没有统一标准）既没有时间父节点也没有 modal 父节点。",
+  "fix": {
+   "title": "补「没有统一标准」的时间父节点",
+   "conf": "high",
+   "why": "guideline 7：每个事件都要有时间父节点。gold 的 exist-91（没有统一标准）漏了，按同句「版本不统一」的写法挂为与「经历」重叠。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s30x",
+      "overlap",
+      "s30e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 10,
+  "topic": "「没有统一标准」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 三元组",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":full-negative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":full-negative"
+   }
+  ],
+  "best": ":full-negative",
+  "text": "否定的事件是 full-negative（guideline 5.2）；gold 给「版本不统一」标了，漏了「没有统一标准」。",
+  "fix": {
+   "title": "补「没有统一标准」的 modal：author :full-negative",
+   "conf": "high",
+   "why": "否定事件按 guideline 5.2 是 full-negative，gold 漏了 exist-91 的 modal 三元组。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-negative",
+      "s30e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 11,
+  "topic": "本句事件的 modal 来源",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author 直接断言",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "挂在第 28 句「表示」的说话人下",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "author 直接断言",
+  "text": "「而在历史上……」转入国歌的历史背景，读成作者的叙述更自然；继续算作第 28 句于海的转述有些勉强，但拿不准。",
+  "fix": null
+ },
+ {
+  "sent": 30,
+  "n": 12,
+  "topic": "国歌与上一句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s29 国歌 :same-entity s30 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-entity s30"
+   }
+  ],
+  "best": "s29 国歌 :same-entity s30 国歌",
+  "text": "同一个国歌，按 guideline 5.3 连到最近的前一次提及。",
+  "fix": {
+   "title": "补国歌共指：s29 国歌 → s30 国歌",
+   "conf": "high",
+   "why": "第 29、30 句的「国歌」是同一实体，应连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s29x12",
+      "same-entity",
+      "s30x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 30,
+  "n": 13,
+  "topic": "「速度」与第 28 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s28 速度 :same-entity s30 速度",
+    "systems": [
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity s30"
+   }
+  ],
+  "best": null,
+  "text": "第 28 句「国歌的速度」被随意改变，第 30 句是「唱奏速度」缺乏统一标准，指的都是国歌的速度这一属性，连不连都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。本段各句同此。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 2,
+  "topic": "「新闻」与「发现」的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "新闻 :ARG1-of identity-91，identity-91 又以 发现 作 :ARG1（两个 ARG1）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "identity-91"
+   },
+   {
+    "label": "identity-91 :ARG1 新闻 :ARG2 发现",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "新闻 :topic 发现",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": "新闻 :topic 发现",
+  "text": "「老音乐家发现……的新闻」是关于这一发现的新闻，:topic 最直接；用 identity-91 也可以，但 gold 的 identity-91 有两个 :ARG1（新闻经 :ARG1-of，发现又是 :ARG1），缺 :ARG2。",
+  "fix": {
+   "title": "新闻＝发现：identity-91 的第二个 :ARG1 改为 :ARG2",
+   "conf": "high",
+   "why": "gold 的 identity-91 有两个 :ARG1（新闻经 :ARG1-of 进来，发现又写成 :ARG1）。guideline 2.3：identity-91 是 :ARG1 X、:ARG2 Y。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s31i3",
+     "r": "ARG1",
+     "t": "s31x2",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 3,
+  "topic": "「版本有几十处错误」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "exist-91 :ARG1 版本 :ARG2 错误",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "have-91 :ARG1 版本 :ARG2 错误",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "have-91"
+   },
+   {
+    "label": "有-03 :ARG0 版本 :ARG1 错误",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "有-03"
+   }
+  ],
+  "best": null,
+  "text": "「版本有错误」可以看作领有（have-91）、存在（exist-91，版本作处所 ARG1）或 PropBank 有-03（ARG0 location/domain，ARG1 存在的实体），三种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 4,
+  "topic": "「发现」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "老音乐家「发现」错误是已经完成的一次性事件，应为 performance；state 只用于状态谓词（guideline 4.1）。",
+  "fix": {
+   "title": "「发现」的 aspect：state → performance",
+   "conf": "high",
+   "why": "发现是完成的事件，不是状态（guideline 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s31x2",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 5,
+  "topic": "「看到了」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「看到了……新闻」带「了」，是完成的感知事件，应为 performance（guideline 4.1：了 → performance）。",
+  "fix": {
+   "title": "「看到」的 aspect：state → performance",
+   "conf": "high",
+   "why": "「看到了」带完成体标记「了」，是完成事件（guideline 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s31x",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 6,
+  "topic": "「报道」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「媒体报道中」的报道是事件名词，标 process（guideline 4.1 事件名词）或看作已完成的 performance 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 7,
+  "topic": "「初审」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "初审-00，无论元、无 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "初审-00"
+   },
+   {
+    "label": "初审-01 :ARG0 常委会 :ARG1 草案",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "初审-01"
+   }
+  ],
+  "best": "初审-01 :ARG0 常委会 :ARG1 草案",
+  "text": "PropBank 有 初审-01（ARG0 agent / ARG1 patient），不该用 -00；初审的施事是人大常委会，对象是草案；gold 的事件节点也没有 aspect。",
+  "fix": {
+   "title": "「初审」：初审-00 → 初审-01，补论元和 aspect",
+   "conf": "high",
+   "why": "PropBank 有 初审-01（ARG0 agent / ARG1 patient）。常委会初审草案，补 ARG0、ARG1 和 aspect。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s31x3",
+     "concept": "初审-01"
+    },
+    {
+     "op": "add_rel",
+     "s": "s31x3",
+     "r": "ARG0",
+     "t": "s31g"
+    },
+    {
+     "op": "add_rel",
+     "s": "s31x3",
+     "r": "ARG1",
+     "t": "s31x23"
+    },
+    {
+     "op": "set_attr",
+     "var": "s31x3",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 8,
+  "topic": "「初审」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "（无 aspect）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "提交的目的「初审」作 :purpose，process 稳妥；从后文看初审确实进行了，performance 也说得通。gold 缺 aspect 已在义项一条里算过。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 9,
+  "topic": "「初审」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 三元组",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 初审",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "提交 :partial-affirmative 初审",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   }
+  ],
+  "best": "author :full-affirmative 初审",
+  "text": "每个事件都要有 modal 父节点（guideline 7）。「提交常委会初审时」说明初审确实在进行，作者断言它发生，full-affirmative；目的小句也可以挂在主事件下，但 partial-affirmative 没有依据。",
+  "fix": {
+   "title": "补「初审」的 modal：author :full-affirmative",
+   "conf": "high",
+   "why": "gold 的初审有 temporal 三元组却没有 modal 父节点；「提交初审时」表明初审确实进行，作者断言。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s31x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 10,
+  "topic": "「提交」与「初审」的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "提交 :overlap 初审",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "提交 :after 初审（初审在提交之后）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after s"
+   },
+   {
+    "label": "没有直接关系（日期 :contained 初审）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "提交 :after 初审（初审在提交之后）",
+  "text": "guideline 5.1：目的事件在主事件之后（a purpose is :after its main event）。草案先提交，再初审。",
+  "fix": {
+   "title": "「初审」在「提交」之后：:overlap → :after",
+   "conf": "mid",
+   "why": "初审是提交的目的，guideline 5.1 规定目的在主事件之后；也可以把「提交初审时」读成同一时段，故为 mid。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s31x22",
+      "overlap",
+      "s31x3"
+     ],
+     "to": [
+      "s31x22",
+      "after",
+      "s31x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 11,
+  "topic": "「70 多岁」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":age (多 :op1 70)，没有「岁」",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":age temporal-quantity :quant (more-than :op1 70) :unit 岁",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "more-than"
+   },
+   {
+    "label": ":age temporal-quantity :quant (多 :op1 70) :unit 岁",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "temporal-quantity"
+   }
+  ],
+  "best": ":age temporal-quantity :quant (多 :op1 70) :unit 岁",
+  "text": "【更正】量词按规则保留为 :unit。年龄是时长，guideline 2.2 用 temporal-quantity :quant … :unit 岁；gold 和 a2 只写「多 :op1 70」，漏了量词「岁」（minor）。「多」与 more-than 两种写法都可以。",
+  "fix": {
+   "title": "「70 多岁」：:age (多 :op1 70) → :age (temporal-quantity :quant (多 :op1 70) :unit 岁)",
+   "conf": "mid",
+   "why": "年龄按 guideline 2.2 写成 temporal-quantity :quant … :unit 岁；gold 漏了量词「岁」。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s31x14",
+     "role": "age",
+     "var": "s31t1",
+     "concept": "temporal-quantity"
+    },
+    {
+     "op": "del_rel",
+     "s": "s31x14",
+     "r": "age",
+     "t": "s31x15"
+    },
+    {
+     "op": "add_rel",
+     "s": "s31t1",
+     "r": "quant",
+     "t": "s31x15"
+    },
+    {
+     "op": "add_node",
+     "parent": "s31t1",
+     "role": "unit",
+     "var": "s31u1",
+     "concept": "岁",
+     "align": "23-23"
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "minor",
+    "ok",
+    "ok"
+   ],
+   "best": null,
+   "fix": null
+  }
+ },
+ {
+  "sent": 31,
+  "n": 12,
+  "topic": "量词「位」「个」作 :unit",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "音乐家 :unit 位、版本 :unit 个",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 位)",
+     "/ 个)"
+    ]
+   },
+   {
+    "label": "省掉「位」「个」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "音乐家 :unit 位、版本 :unit 个",
+  "text": "【更正】量词按规则保留为 :unit。「一位 70 多岁的老音乐家」「一个国歌曲谱版本」的量词「位」「个」应作 :unit 挂在被计数的名词上，gold 有；6 个系统都省了（minor）。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "量词不立节点",
+   "fix": {
+    "title": "删去个体量词「位」「个」",
+    "conf": "high",
+    "why": "guideline 2.2：个、位这类普通量词不立节点（三本书 → 书 :quant 3）。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s31x16"
+     },
+     {
+      "op": "del_node",
+      "var": "s31x13"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 31,
+  "n": 13,
+  "topic": "非事件节点进了 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 位 / 多岁",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "【更正】量词按规则保留为 :unit。modal 依存结构的子节点是事件（和作 conceiver 的实体），量词「位」、年龄「多」不是事件也不是 conceiver。「位」的节点保留，但它的 modal 三元组仍要删。",
+  "fix": {
+   "title": "删去「位」「多岁」的 modal 三元组",
+   "conf": "high",
+   "why": "modal 依存结构的子节点是事件（和作 conceiver 的实体），量词「位」和「70 多岁」的「多」都不是，不应有 modal 三元组。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s31x15"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s31x16"
+     ]
+    }
+   ]
+  },
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "没有",
+   "fix": {
+    "title": "删去「多岁」的 modal 三元组",
+    "conf": "high",
+    "why": "「70 多岁」的「多」不是事件，不应有 modal 三元组（「位」的那条随删除量词一并去掉）。",
+    "ops": [
+     {
+      "op": "doc_del",
+      "kind": "modal",
+      "triple": [
+       "author",
+       "full-affirmative",
+       "s31x15"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 31,
+  "n": 14,
+  "topic": "「媒体报道中」与「引用」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "引用 :ARG0 报道",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "引用 :medium 报道",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":medium"
+   },
+   {
+    "label": "引用 :place 报道",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":place"
+   },
+   {
+    "label": "引用 :place 报道，另加 :ARG0 媒体",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":place"
+   }
+  ],
+  "best": null,
+  "text": "「媒体报道中引用的版本」：报道是引用出现的场合，:medium 或 :place 都可以；把报道当引用的施事（ARG0 agent）是转喻，真正的引用者是媒体（a2/r1 的做法）。",
+  "fix": {
+   "title": "「报道」：引用 :ARG0 → :medium",
+   "conf": "low",
+   "why": "「报道中」是引用出现的媒介，施事应是媒体；gold 把报道当 ARG0 属转喻，可接受但不准确。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s31x8",
+     "r": "ARG0",
+     "t": "s31x9",
+     "r2": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 15,
+  "topic": "「国歌曲谱」的修饰关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "曲谱 :part 国歌",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":part"
+   },
+   {
+    "label": "曲谱 :mod 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「A :part B」表示 B 是 A 的一部分；gold 的写法等于说国歌是曲谱的一部分，方向反了。「国歌曲谱」是国歌的曲谱，:mod（或 :poss）即可。",
+  "fix": {
+   "title": "「国歌曲谱」：:part → :mod",
+   "conf": "low",
+   "why": "曲谱 :part 国歌 的意思是国歌是曲谱的一部分，与原意不合；「国歌曲谱」是国歌的曲谱，用 :mod。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s31x11",
+     "r": "part",
+     "t": "s31x12",
+     "r2": "mod"
+    }
+   ]
+  },
+  "before_part_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "曲谱 :mod 国歌",
+   "conf": "mid"
+  }
+ },
+ {
+  "sent": 31,
+  "n": 16,
+  "topic": "指示词「这些」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "现象 :quant 这些",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "现象 :mod 这些",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 这些)"
+   }
+  ],
+  "best": "现象 :mod 这些",
+  "text": "guideline 第 3 节：指示词用 :mod；「这些」不是数量。",
+  "fix": {
+   "title": "「这些」：:quant → :mod",
+   "conf": "high",
+   "why": "指示词按 guideline 第 3 节用 :mod，不是 :quant。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s31x19",
+     "r": "quant",
+     "t": "s31x20",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 17,
+  "topic": "日期「2017 年 6 月」挂在哪个事件上",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "提交 :temporal 日期",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "看到 :temporal 日期",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "句首的「2017 年 6 月」和「在……初审时」都是主句的时间，提交也发生在这个月；挂在提交或看到上都可以。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 18,
+  "topic": "「表示」:temporal 提交",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "表示 :temporal 提交（与看到共用）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「在……提交……初审时」的时间状语管到并列的「看到」和「表示」，gold 让两者共用是准确的；系统只挂在看到上也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 19,
+  "topic": "「这些现象都太不应该了」的谓词",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "have-mod-91 :ARG0 现象 :ARG1 应该（:degree intensifier）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "应该-02 :ARG0 现象 :degree 太",
+    "systems": [
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "应该-02"
+   },
+   {
+    "label": "应该-01 :ARG0 现象 :degree 太",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "应该-01"
+   },
+   {
+    "label": "应该-01 :ARG1 现象 :degree 太",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "应该-01"
+   }
+  ],
+  "best": "应该-02 :ARG0 现象 :degree 太",
+  "text": "「不应该」在这里是谓语（这些现象不应当），PropBank 应该-02 的 ARG0 是 action described，正合；应该-01 只有一个空 ARG0，带 ARG1 更是越出框架。gold 的 have-mod-91 有词汇谓词可用时不必用，论元又写成 ARG0/ARG1（应为 ARG1/ARG2），程度词也没有对应「太」的节点。",
+  "fix": {
+   "title": "「不应该」：have-mod-91 → 应该-02 :ARG0 现象 :degree 太",
+   "conf": "high",
+   "why": "PropBank 应该-02（ARG0 action described）可以直接表达「这些现象不应该」；gold 的 have-mod-91 论元编号错（ARG0/ARG1），程度词写成常量。把 have-mod-91 改成 应该-02，删去多余的「应该」名词节点，加 :degree 太。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s31h2",
+     "concept": "应该-02"
+    },
+    {
+     "op": "del_node",
+     "var": "s31x21"
+    },
+    {
+     "op": "add_node",
+     "parent": "s31h2",
+     "role": "degree",
+     "var": "s31z1",
+     "concept": "太",
+     "align": "49-49"
+    },
+    {
+     "op": "align",
+     "var": "s31h2",
+     "span": "51-51"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 20,
+  "topic": "「不」的 polarity",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 :polarity -",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":polarity -",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": ":polarity -",
+  "text": "guideline 4.2：否定词「不」在被否定的概念上标 :polarity -。gold 只在文档级标了 full-negative，句子图里没有 polarity。",
+  "fix": {
+   "title": "补「不应该」的 :polarity -",
+   "conf": "high",
+   "why": "「不」应在被否定的谓词上标 :polarity -（guideline 4.2），gold 只在文档级写了 full-negative。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s31h2",
+     "attr": "polarity",
+     "value": "-"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 21,
+  "topic": "「都」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "应该 :mod 都",
+    "systems": [
+     "s1f/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 都)"
+   },
+   {
+    "label": "现象 :quant 都",
+    "systems": [
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 都)"
+   }
+  ],
+  "best": null,
+  "text": "「这些现象都」的「都」是全称量化，挂在谓词上作 :mod 或在现象上作 :quant 都可以；gold 漏了。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 22,
+  "topic": "引语的 :quote",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "应该 :quote 表示",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":quote"
+   },
+   {
+    "label": "没有 :quote",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "应该 :quote 表示",
+  "text": "「这些现象都太不应该了」在引号里，精简版 guideline 第 3 节说发布数据对引语另加 :quote 指向说话事件；不加只算略差。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 23,
+  "topic": "引语「不应该」的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-negative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "于海 :full-negative",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "于海 :partial-negative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":partial-negative"
+   }
+  ],
+  "best": "于海 :full-negative",
+  "text": "guideline 5.2：转述内容的 conceiver 是说话人，author 对说话人 full-affirmative，说话人对内容给强度。「太不应该」是很确定的否定判断，full-negative 比 partial-negative 合适。",
+  "fix": {
+   "title": "「不应该」改挂在于海下：author → 于海",
+   "conf": "high",
+   "why": "引号里的「这些现象都太不应该了」是于海的话，按 guideline 5.2 conceiver 是于海（author :full-affirmative 于海，于海 :full-negative 内容）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s31i2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-negative",
+      "s31h2"
+     ],
+     "to": [
+      "s31i2",
+      "full-negative",
+      "s31h2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 24,
+  "topic": "日期进时间树、事件 :contained 日期",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期没有父节点，日期 :overlap 看到 / 表示 / 提交",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期，日期 :contained 事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   }
+  ],
+  "best": "root :depends-on 日期，日期 :contained 事件",
+  "text": "guideline 5.1：绝对日期挂 root，同一个月内的事件是 :contained 在日期里，不是 :overlap。",
+  "fix": {
+   "title": "「2017 年 6 月」进时间树，事件改为 :contained",
+   "conf": "high",
+   "why": "guideline 5.1：绝对日期依存于 root，事件以本小句的时间词为参照，落在这个月之内用 :contained。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s31d"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s31d",
+      "overlap",
+      "s31x"
+     ],
+     "to": [
+      "s31d",
+      "contained",
+      "s31x"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s31d",
+      "overlap",
+      "s31x18"
+     ],
+     "to": [
+      "s31d",
+      "contained",
+      "s31x18"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s31d",
+      "overlap",
+      "s31x22"
+     ],
+     "to": [
+      "s31d",
+      "contained",
+      "s31x22"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 25,
+  "topic": "「版本有错误」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有 modal 三元组",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "音乐家 :full-affirmative（发现者作 conceiver）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author :full-affirmative",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「发现」是事实性动词，内容可以由作者直接断言，也可以以发现者为 conceiver；gold 的 exist-91 两种都没有，违反 guideline 7。",
+  "fix": {
+   "title": "补「版本有错误」的 modal：author :full-affirmative",
+   "conf": "high",
+   "why": "gold 的 exist-91（版本有几十处错误）没有 modal 父节点；发现是事实性动词，作者断言其内容。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s31e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 26,
+  "topic": "发现 / 引用 / 报道 的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "新闻 作 conceiver",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "于海是从新闻里得知老音乐家的发现的，以新闻为这些内容的 conceiver 有道理；作者直接断言也可以。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 27,
+  "topic": "国歌与上一句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s30 国歌 :same-entity s31 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s30 国歌 :same-entity s31 国歌",
+  "text": "同一国歌，按 guideline 5.3 连到最近的前一次提及（第 30 句）。",
+  "fix": {
+   "title": "补国歌共指：s30 国歌 → s31 国歌",
+   "conf": "high",
+   "why": "第 30、31 句的「国歌」是同一实体，应连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s30x2",
+      "same-entity",
+      "s31x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 31,
+  "n": 28,
+  "topic": "「曲谱」与第 30 句「乐谱」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s30 乐谱 :same-entity s31 曲谱",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "两处都指国歌的谱子（a2/r1 还把版本标成 s30 版本的 subset-of），连上说得通；不连也不算漏，第 30 句的乐谱是泛指。",
+  "fix": null
+ },
+ {
+  "sent": 31,
+  "n": 29,
+  "topic": "「这些现象」与第 28 句「乱象」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s28 乱象 :same-entity s31 现象",
+    "systems": [
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "没有连",
+  "text": "「这些现象」指的是本句说的曲谱版本错误（以及媒体引用错误版本），不是第 28 句于海在政协会上列举的使用乱象。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 2,
+  "topic": "「还」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "表示 :mod 还",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 还)"
+   }
+  ],
+  "best": "表示 :mod 还",
+  "text": "「还表示」的「还」表示在第 31 句的表态之外追加，gold 漏了。",
+  "fix": {
+   "title": "补「还」：表示 :mod 还",
+   "conf": "mid",
+   "why": "「还表示」的「还」表示追加，gold 没有节点表达它。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s32x",
+     "role": "mod",
+     "var": "s32z1",
+     "concept": "还",
+     "align": "11-11"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 3,
+  "topic": "「表示」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「在……发表文章时还表示」是一次已完成的言语事件，应为 performance；表示不是状态谓词。",
+  "fix": {
+   "title": "「表示」的 aspect：state → performance",
+   "conf": "high",
+   "why": "表示是已经完成的言语事件，不是状态（guideline 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s32x",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 4,
+  "topic": "「存在问题」的谓词和论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "存在-01 :ARG0 意识 :ARG1 问题",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "存在-01"
+   },
+   {
+    "label": "存在-01 :ARG0 问题 :place 意识",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":place"
+   },
+   {
+    "label": "exist-91 :ARG1 意识 :ARG2 问题",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "exist-91"
+   }
+  ],
+  "best": "存在-01 :ARG0 意识 :ARG1 问题",
+  "text": "PropBank 存在-01：ARG0 location、ARG1 theme（例句「国内也存在不少问题」ARG0 国内），意识是问题所在，问题是 ARG1。s1f/r1 把问题当 ARG0；s1f/r2 有词汇谓词却用了 exist-91。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 5,
+  "topic": "「国歌的教育」：教育是否谓词化、国歌的角色",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "教育（名词）:mod 国歌",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "教育（名词）:topic 国歌",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "教育-01 :ARG2 国歌",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "教育-01"
+   },
+   {
+    "label": "教育-01 :ARG1 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "教育-01"
+   }
+  ],
+  "best": null,
+  "text": "「国歌的教育意识」里教育作意识的修饰语，不谓词化可以；谓词化时 PropBank 教育-01 的 ARG1 是被教育的人、ARG2 是科目，国歌是科目，应为 ARG2，s1f 的 ARG1 错。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 6,
+  "topic": "报纸名称和「发表」的角色",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "newspaper「中国 艺术 报」，发表 :place",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   },
+   {
+    "label": "newspaper「中国 艺术 报」，发表 :medium",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":medium"
+   },
+   {
+    "label": "名称里带书名号「《」「》」",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "\"《\""
+   }
+  ],
+  "best": null,
+  "text": "在报上发表文章，报纸作 :place 或 :medium 都可以；书名号是标点，不是名称的一部分。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 7,
+  "topic": "「表示」内容的 :quote",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "没有 :quote",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "存在 :quote 表示",
+    "systems": [
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":quote"
+   }
+  ],
+  "best": "没有 :quote",
+  "text": "本句是间接引语，没有引号，按精简版 guideline 第 3 节 :quote 只用于直接引语。",
+  "fix": null
+ },
+ {
+  "sent": 32,
+  "n": 8,
+  "topic": "转述内容「存在问题」的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 存在",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "他（于海）:full-affirmative 存在",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "他（于海）:full-affirmative 存在",
+  "text": "guideline 5.2：转述内容的 conceiver 是说话人，author 对说话人 full-affirmative，说话人对内容 full-affirmative。",
+  "fix": {
+   "title": "「存在问题」改挂在于海下",
+   "conf": "high",
+   "why": "「表示当时……存在问题」是于海的转述内容，按 guideline 5.2 conceiver 是于海：author :full-affirmative 于海，于海 :full-affirmative 存在。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s32i2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s32x4"
+     ],
+     "to": [
+      "s32i2",
+      "full-affirmative",
+      "s32x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 9,
+  "topic": "「当时」进时间树、存在的参照",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "「当时」不进时间树，表示 :overlap 存在",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "表示 :overlap 当时、表示 :overlap 存在",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "past-reference :depends-on 当时，当时 :contained 存在",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "past-reference :depends-on"
+   },
+   {
+    "label": "document-creation-time :depends-on 当时，当时 :contained 存在",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :depends-on"
+   },
+   {
+    "label": "第 31 句日期 :depends-on 当时，当时 :contained 存在",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "发表 :depends-on 当时（事件作时间父节点）",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "past-reference :depends-on 当时，当时 :contained 存在",
+  "text": "guideline 5.1：时间词先定位，事件再以本小句的时间词为参照。「当时」指上文 2017 年前后，挂 past-reference、DCT 或第 31 句的日期都可以；:depends-on 只用于时间节点之间，s1f/r2 让事件当时间词的父节点不对。",
+  "fix": {
+   "title": "「当时」进时间树，存在挂在它下面",
+   "conf": "mid",
+   "why": "guideline 5.1：时间词先进时间树，事件以本小句的时间词为参照。「当时」是模糊的过去时间。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s32x9"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s32x",
+      "overlap",
+      "s32x4"
+     ],
+     "to": [
+      "s32x9",
+      "contained",
+      "s32x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 32,
+  "n": 10,
+  "topic": "国歌与上一句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s31 国歌 :same-entity s32 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s31 国歌 :same-entity s32 国歌",
+  "text": "同一国歌，按 guideline 5.3 连到最近的前一次提及。",
+  "fix": {
+   "title": "补国歌共指：s31 国歌 → s32 国歌",
+   "conf": "high",
+   "why": "第 31、32 句的「国歌」是同一实体，应连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s31x12",
+      "same-entity",
+      "s32x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 2,
+  "topic": "「认为」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "认为-02",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "认为-02"
+   },
+   {
+    "label": "认为-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "认为-01"
+   }
+  ],
+  "best": "认为-01",
+  "text": "PropBank 认为-01 是「认为（命题）」（ARG1 thing regarded as true），认为-02 是「把 X 认为是 Y」（ARG1 entity、ARG2 regarded as）。本句宾语是一串小句，应为 认为-01。",
+  "fix": {
+   "title": "「认为」：认为-02 → 认为-01",
+   "conf": "high",
+   "why": "PropBank 认为-01 的 ARG1 是命题；认为-02 是「把 X 当作 Y」，带 ARG1 实体 + ARG2。本句宾语是小句。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s33x",
+     "concept": "认为-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 3,
+  "topic": "「为此」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "认为 :reason thing",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":reason"
+   },
+   {
+    "label": "认为 :cause 此 / thing :mod 此",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "认为 :purpose thing",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": null,
+  "text": "「为此」承上句「教育意识存在问题」，是原因（因此），:reason 或 :cause 都可以；理解成目的（为了这个）不合上下文。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 4,
+  "topic": "「为此」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "s32 存在（问题）:same-event",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s32 问题 :same-entity",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s31 现象 :same-entity",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有连",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「此」指第 32 句的「教育意识存在问题」，连到那个事件或「问题」都可以；连到第 31 句的「现象」隔得太远。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 5,
+  "topic": "未然事件（立法、保护）相对「认为」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "立法 / 目的保护 与认为重叠，受到 / 保护 没有时间父节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "立法、保护在认为之后，目的保护在立法之后",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "立法、两个保护都直接在认为之后",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "保护与认为重叠，立法在保护之后",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "受到在认为之后，立法在受到之后",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "立法、保护在认为之后，目的保护在立法之后",
+  "text": "「必须要立法」「理应受到保护」在于海发表看法时还没有实现，是将来事件，应在「认为」之后；目的在主事件之后（guideline 5.1）。gold 让立法与「必须」重叠、目的保护与立法重叠，受到和法律保护没有时间父节点。",
+  "fix": {
+   "title": "未然的立法、保护放在认为之后",
+   "conf": "high",
+   "why": "「必须立法」「理应受保护」在说话时尚未发生，应在认为之后；目的保护在立法之后（guideline 5.1）；补受到、法律保护的时间父节点。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s33x11",
+      "overlap",
+      "s33x12"
+     ],
+     "to": [
+      "s33x11",
+      "after",
+      "s33x12"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s33x12",
+      "overlap",
+      "s33x13"
+     ],
+     "to": [
+      "s33x12",
+      "after",
+      "s33x13"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s33x",
+      "after",
+      "s33x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s33x3",
+      "overlap",
+      "s33x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 6,
+  "topic": "「理应」「必须」作节点还是 modal 强度",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "理应-00、必须-01 作节点（have-reason-91 套在外面）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     "理应-00",
+     "必须-01"
+    ]
+   },
+   {
+    "label": "不立节点，内容事件标 partial-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":modal-strength partial-affirmative"
+   }
+  ],
+  "best": "不立节点，内容事件标 partial-affirmative",
+  "text": "guideline 2.1：情态动词（应该、能、必须等）不是节点，只影响 modal 强度；5.2 把 must / should / 应该 归为 partial-affirmative。何况 PropBank 有 理应-01，gold 的 理应-00 编号也不对。",
+  "fix": {
+   "title": "删去「理应」「必须」节点，事件直接挂在 have-reason-91 下",
+   "conf": "mid",
+   "why": "guideline 2.1：情态动词不立节点，其意义由 modal 强度表达（5.2：must / should 是 partial-affirmative，见另一条 modal 方案）。gold 的 理应-00 也与 PropBank 的 理应-01 不符。保留 have-reason-91 的因果结构，只把被情态动词管着的事件上提。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s33h",
+     "r": "ARG1",
+     "t": "s33x12"
+    },
+    {
+     "op": "del_node",
+     "var": "s33x11"
+    },
+    {
+     "op": "add_rel",
+     "s": "s33h2",
+     "r": "ARG1",
+     "t": "s33x3"
+    },
+    {
+     "op": "del_node",
+     "var": "s33x17"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s33x",
+      "after",
+      "s33x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 7,
+  "topic": "「受到…保护」是否保留受到",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "受到-01 :ARG1 保护",
+    "systems": [
+     "gold",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "受到-01"
+   },
+   {
+    "label": "保护-01 :ARG0 法律 :ARG1 国歌 直接作事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "保护-01 :ARG0 法律 :ARG1 国歌 直接作事件",
+  "text": "「受到法律的保护」是被动表达，受到 近于轻动词，意义由 保护-01 :ARG0 法律 :ARG1 国歌 表达即可；保留受到不算错，但 gold 的受到连经历者 ARG0 都没有。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 8,
+  "topic": "「所以」的因果结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-reason-91 套两层：必须立法 ← 理应受保护 ← 国歌是……",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "and 并列，立法 :cause 保护",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":cause"
+   },
+   {
+    "label": "and 并列，立法 :cause 受到",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "and 并列，立法 :cause and(两个 identity, 保护)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   }
+  ],
+  "best": null,
+  "text": "「所以」表示「理应受到保护」是「必须立法」的原因，各家都表达了这一层；gold 另外把国歌的身份作为「理应受保护」的理由，系统用 and 并列，都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 9,
+  "topic": "「立法」与国歌",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "立法 不带国歌（国歌由目的 保护 :ARG1 表达）",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "立法 :ARG1 国歌",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "立法 :beneficiary 国歌",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":beneficiary"
+   }
+  ],
+  "best": "立法 不带国歌（国歌由目的 保护 :ARG1 表达）",
+  "text": "PropBank 立法-01 的 ARG1 是所立的法（law arg0 sets up），国歌不是法；「立法保护国歌」里国歌是保护的 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 10,
+  "topic": "立法、目的「保护」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 aspect",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "立法 process、保护 process",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "立法 performance、保护 process",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "立法 performance、保护 performance",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "立法 performance、保护 activity",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "guideline 7：每个事件都要有 aspect。未然的立法和保护取 process、performance 都说得通（guideline 4.1 对未然事件不硬判）。",
+  "fix": {
+   "title": "补立法、目的保护的 aspect",
+   "conf": "high",
+   "why": "gold 的 立法-01 和目的 保护-01 没有 aspect（guideline 7：每个事件都要有）。取 立法 performance、保护 process。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s33x12",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "set_attr",
+     "var": "s33x13",
+     "attr": "aspect",
+     "value": "process"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 11,
+  "topic": "「国家的声音」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "声音 :mod 国家",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "声音 :possessor 国家",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": "声音 :poss 国家",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss"
+   }
+  ],
+  "best": null,
+  "text": "「国家的声音」作领属或修饰都可以；:poss 是 AMR 的旧名，UMR 的角色表里是 :possessor。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 12,
+  "topic": "s1f/r2 的非法角色 :modpred",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "四个内容事件带 :modpred 认为",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": ":modpred"
+   }
+  ],
+  "best": "没有",
+  "text": ":modpred 不在 UMR 的角色表里；认为的内容已经由 :ARG1 表达，modal 依存放在文档级。",
+  "fix": null
+ },
+ {
+  "sent": 33,
+  "n": 13,
+  "topic": "认为的内容和情态的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "全挂 author，立法 / 受到 / 保护 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "于海 :full-affirmative 两个判断句，于海 :partial-affirmative 保护 / 立法",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "同上，但 认为 挂在于海下、判断句是 认为 :unspecified",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "判断句挂于海，保护 / 立法 挂 author :partial-affirmative",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "判断句挂于海，受到 / 立法 挂 author :partial-affirmative，两个保护 author :full-affirmative",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "于海 :full-affirmative 两个判断句，于海 :partial-affirmative 保护 / 立法",
+  "text": "guideline 5.2：「认为」的内容以于海为 conceiver；「理应」「必须」是 should / must，partial-affirmative；认为本身由作者断言。s1f 把「认为」挂在于海下并给内容 unspecified，a2 把于海的判断挂到作者名下。",
+  "fix": {
+   "title": "认为的内容挂在于海下，情态事件 partial-affirmative",
+   "conf": "high",
+   "why": "guideline 5.2：思想内容的 conceiver 是思想者；理应、必须（should / must）是 partial-affirmative；目的事件挂在主事件下 unspecified。gold 把于海的判断全挂在 author 下，立法、受到、保护都没有 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s33i2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s33i3"
+     ],
+     "to": [
+      "s33i2",
+      "full-affirmative",
+      "s33i3"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s33i4"
+     ],
+     "to": [
+      "s33i2",
+      "full-affirmative",
+      "s33i4"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s33h"
+     ],
+     "to": [
+      "s33i2",
+      "full-affirmative",
+      "s33h"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s33i2",
+      "partial-affirmative",
+      "s33x12"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s33i2",
+      "partial-affirmative",
+      "s33x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s33i2",
+      "partial-affirmative",
+      "s33x5"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s33x12",
+      "unspecified",
+      "s33x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 14,
+  "topic": "非事件「国家」「声音」进了 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 声音、author :strong-partial-affirmative 国家",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":strong-partial-affirmative"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "国家、声音是实体，不是事件，不该出现在 modal 依存里；strong-partial-affirmative 也不是 guideline 5.2 的取值。",
+  "fix": {
+   "title": "删去「国家」「声音」的 modal 三元组",
+   "conf": "high",
+   "why": "国家、声音不是事件也不是 conceiver，不应有 modal 三元组；strong-partial-affirmative 不是合法取值。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s33x9"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "strong-partial-affirmative",
+      "s33x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 15,
+  "topic": "非事件「国家」「声音」进了 temporal",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "认为 :overlap 国家，国家 :overlap 声音",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "时间依存只连事件和时间词，国家、声音都不是。",
+  "fix": {
+   "title": "删去「国家」「声音」的 temporal 三元组",
+   "conf": "high",
+   "why": "国家、声音不是事件也不是时间词，不应出现在时间依存里。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s33x",
+      "overlap",
+      "s33x8"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s33x8",
+      "overlap",
+      "s33x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 16,
+  "topic": "国歌与上一句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s32 国歌 :same-entity s33 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s32 国歌 :same-entity s33 国歌",
+  "text": "同一国歌，按 guideline 5.3 连到最近的前一次提及。",
+  "fix": {
+   "title": "补国歌共指：s32 国歌 → s33 国歌",
+   "conf": "high",
+   "why": "第 32、33 句的「国歌」是同一实体，应连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s32x8",
+      "same-entity",
+      "s33x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 33,
+  "n": 17,
+  "topic": "「立法」与第 27 句「为国歌立法」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s27 立法 :same-event s33 立法",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": null,
+  "text": "第 27 句的提案和本句于海主张的都是「为国歌立法」这件事，连成同一事件说得通；两处都是未然的设想，不连也可以。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 2,
+  "topic": "「希望」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "希望-01",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "希望-01"
+   },
+   {
+    "label": "希望-02",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "希望-02"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 希望-01 和 希望-02 的论元完全相同（ARG0 hoper / ARG1 thing hoped for），区别只在例句，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 3,
+  "topic": "「反映出来」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "反映-02",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "反映-02"
+   },
+   {
+    "label": "反映-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "反映-01"
+   }
+  ],
+  "best": "反映-02",
+  "text": "PropBank 反映-01 是「向上级反映、报告」（ARG2 reporting to），反映-02 是「体现、反映出」（ARG0 indicator / ARG1 thing reflected），本句是后者。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 4,
+  "topic": "「出来」是否立节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不立节点",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "反映 :direction 出来",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":direction"
+   }
+  ],
+  "best": "不立节点",
+  "text": "「反映出来」的「出来」是趋向补语，并入谓词 反映-02，不是实际的方向。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 5,
+  "topic": "「通过立法」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "反映 :medium 立法",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":medium"
+   },
+   {
+    "label": "反映 :manner 立法",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": ":manner"
+   },
+   {
+    "label": "反映 :instrument 立法",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":instrument"
+   },
+   {
+    "label": "反映 :means 立法",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":means"
+   },
+   {
+    "label": "反映 :manner 通过-04 :ARG1 立法",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "通过-04"
+   }
+  ],
+  "best": "反映 :manner 立法",
+  "text": "「通过立法」是手段：AMR / UMR 把「通过做某事」标为 :manner（也可 :instrument）。:medium 用于语言、渠道之类的媒介；:means 不在 UMR 的角色表里；介词「通过」不必谓词化。",
+  "fix": {
+   "title": "「通过立法」：:medium → :manner",
+   "conf": "mid",
+   "why": "「通过立法」表示手段，按 AMR / UMR 惯例「通过做某事」标 :manner；:medium 是语言、渠道一类的媒介。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s34x2",
+     "r": "medium",
+     "t": "s34x11",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 6,
+  "topic": "「国歌中渗透的…」：渗透的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "渗透-01 :ARG0 精神等 :ARG1 国歌",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "渗透-01 :ARG1 精神等 :ARG2 国歌",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "渗透-01 :ARG0 精神等 :ARG1 国歌",
+  "text": "PropBank 渗透-01：ARG0 是渗透者（entity described），ARG1 是被渗透的对象（例句「在黄春明的小说里」）；没有 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 7,
+  "topic": "「渗透」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "state",
+  "text": "「国歌中渗透的民族精神」描述精神存在于国歌中的状态，不是一次完成的事件，state 更合适。",
+  "fix": {
+   "title": "「渗透」的 aspect：performance → state",
+   "conf": "mid",
+   "why": "「国歌中渗透的精神」描述的是状态，不是完成的事件（guideline 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s34x3",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 8,
+  "topic": "「爱国主义情结」的切分与修饰",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "情结 :mod (主义 :topic 爱国)",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "情结 :mod (主义 :mod 爱国)",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "情结 :mod 爱国主义（一个概念）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "爱国主义"
+   },
+   {
+    "label": "情结 :mod (爱国 :mod 主义)",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "情结 :mod (主义 :topic 爱国-01)",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "爱国-01"
+   }
+  ],
+  "best": null,
+  "text": "「爱国主义」可以作一个概念，也可以拆成 主义 + 爱国 的修饰；s1f/r2 让「主义」修饰「爱国」，中心词反了。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 9,
+  "topic": "「中国故事」的修饰角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "故事 :topic 中国",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "故事 :mod 中国",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「中国故事」是关于中国的故事，:topic 和 :mod 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 34,
+  "n": 10,
+  "topic": "「希望」本身的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :neutral-affirmative 希望",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":neutral-affirmative"
+   },
+   {
+    "label": "author :full-affirmative 希望",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "他 :full-affirmative 希望（author → 他 → 希望）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "author :full-affirmative 希望",
+  "text": "guideline 5.2：补足语谓词（希望、想、打算）本身由作者断言，full-affirmative；不确定性落在它的补足语上。gold 把 neutral 标在了希望本身。",
+  "fix": {
+   "title": "「希望」本身改为 author :full-affirmative",
+   "conf": "high",
+   "why": "guideline 5.2：希望这类补足语谓词本身由作者断言（author :full-affirmative），neutral 属于被希望的事件。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "neutral-affirmative",
+      "s34x"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s34x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 11,
+  "topic": "被希望的事件（反映、立法）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 反映 / 立法",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "希望 :neutral-affirmative 反映 / 立法",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "希望 :unspecified 反映 / 立法",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "希望 :neutral-affirmative 反映，立法 挂 author :full-affirmative",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "希望 :neutral-affirmative 反映 / 立法",
+  "text": "guideline 5.2：补足语事件以补足语谓词为父节点，取 unspecified 或谓词蕴含的强度（desire / hope 为 neutral-affirmative）。gold 把尚未实现的反映、立法当作作者断言的事实。立法当时正在进行（第 31 句草案初审），a2 把它挂 author 也有一点道理，但「通过立法」是希望内容的一部分。",
+  "fix": {
+   "title": "被希望的反映、立法挂在「希望」下，neutral-affirmative",
+   "conf": "high",
+   "why": "guideline 5.2：希望的补足语以「希望」为 conceiver 父节点，hope 对应 neutral-affirmative；gold 把未实现的反映和立法当成作者断言的事实。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s34x2"
+     ],
+     "to": [
+      "s34x",
+      "neutral-affirmative",
+      "s34x2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s34x11"
+     ],
+     "to": [
+      "s34x",
+      "neutral-affirmative",
+      "s34x11"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 12,
+  "topic": "被希望的「反映」相对「希望」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "希望 :overlap 反映",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "希望 :after 反映（反映在希望之后）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after s"
+   }
+  ],
+  "best": "希望 :after 反映（反映在希望之后）",
+  "text": "被希望的事件在希望之后（guideline 5.1：补足语事件以主事件为参照，希望的内容是将来）。立法当时已在进行，gold 的 希望 :overlap 立法 可以保留。",
+  "fix": {
+   "title": "「反映」在「希望」之后：:overlap → :after",
+   "conf": "high",
+   "why": "被希望的事件在希望之后，gold 写成同时。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s34x",
+      "overlap",
+      "s34x2"
+     ],
+     "to": [
+      "s34x",
+      "after",
+      "s34x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 13,
+  "topic": "国歌与上一句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s33 国歌 :same-entity s34 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s33 国歌 :same-entity s34 国歌",
+  "text": "同一国歌，按 guideline 5.3 连到最近的前一次提及。",
+  "fix": {
+   "title": "补国歌共指：s33 国歌 → s34 国歌",
+   "conf": "high",
+   "why": "第 33、34 句的「国歌」是同一实体，应连到最近的前一次提及。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s33x14",
+      "same-entity",
+      "s34x10"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 14,
+  "topic": "「立法」与第 33 句「立法」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "s33 立法 :same-event s34 立法",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "s33 立法 :same-event s34 立法",
+  "text": "第 33 句「必须要立法保护国歌」和本句「通过立法」说的是同一项国歌立法，guideline 5.3 的 :same-event。",
+  "fix": {
+   "title": "补立法的事件共指：s33 立法 → s34 立法",
+   "conf": "mid",
+   "why": "第 33、34 句都是于海主张的同一项国歌立法；两处都是设想中的事件，也可以不连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s33x12",
+      "same-event",
+      "s34x11"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 34,
+  "n": 15,
+  "topic": "「中国」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s1 中华人民共和国 :same-entity",
+    "systems": [
+     "s1f/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s33 国家 :same-entity",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「中国故事」的中国和前文的国家指同一个国家，连上是好的；第 33 句的「国家」是泛说，不连也不算错。",
+  "fix": null
+ },
+ {
+  "sent": 35,
+  "n": 1,
+  "topic": "「表决通过」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "表决-01 为根，:ARG1 通过-01（通过没有 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "通过-01 为根，:ARG0 会议 :ARG1 国歌法 :manner 表决-01",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   }
+  ],
+  "best": "通过-01 为根，:ARG0 会议 :ARG1 国歌法 :manner 表决-01",
+  "text": "PropBank 表决-01 的 ARG1 是被表决的东西（议案），「表决通过《国歌法》」是以表决的方式通过法律，系统的写法与 PropBank 一致。gold 让表决的 ARG1 是「通过」这个事件，通过也没有施事；也能理解成「表决（决定）通过」，所以只算略差。",
+  "fix": {
+   "title": "「表决通过」：通过-01 为根，表决作 :manner",
+   "conf": "low",
+   "why": "表决-01 的 ARG1 应是议案；「表决通过」是以表决的方式通过。gold 的 表决 :ARG1 通过 也可理解，只作提示。",
+   "ops": [
+    {
+     "op": "set_root",
+     "var": "s35x2"
+    },
+    {
+     "op": "del_rel",
+     "s": "s35x",
+     "r": "ARG1",
+     "t": "s35x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35x2",
+     "r": "manner",
+     "t": "s35x"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35x",
+     "r": "ARG1",
+     "t": "s35l"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35x2",
+     "r": "ARG0",
+     "t": "s35x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 2,
+  "topic": "两个「会议」：第二十九次会议和第三次全体会议",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "只有一个会议（第 29 次）；「全体」「第三次」挂在表决上",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "全体会议（第 3 次）:part-of 会议（第 29 次）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":part-of"
+   },
+   {
+    "label": "全体会议（第 3 次）:part 会议（第 29 次）（方向反）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「第二十九次会议第三次全体会议」是第 29 次会议中的第 3 次全体会议，两个会议节点、后者 :part-of 前者；表决的是全体会议。gold 漏了第二个「会议」，把「全体」和「第三次」误挂到表决上。s1f 用 :part 方向反了（A :part B 表示 B 是 A 的一部分）。",
+  "fix": {
+   "title": "补「第三次全体会议」节点，作表决的 ARG0 并 :part-of 第 29 次会议",
+   "conf": "high",
+   "why": "「第二十九次会议第三次全体会议」是两个会议；表决由第三次全体会议进行，它是第 29 次会议的一部分。gold 只有一个会议节点，「全体」「第三次」误挂在表决上。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s35x",
+     "role": "ARG0",
+     "var": "s35z1",
+     "concept": "会议",
+     "align": "19-19"
+    },
+    {
+     "op": "del_rel",
+     "s": "s35x",
+     "r": "ARG0",
+     "t": "s35x4"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35z1",
+     "r": "part-of",
+     "t": "s35x4"
+    },
+    {
+     "op": "del_rel",
+     "s": "s35x",
+     "r": "mod",
+     "t": "s35x3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35z1",
+     "r": "mod",
+     "t": "s35x3"
+    },
+    {
+     "op": "del_rel",
+     "s": "s35x",
+     "r": "ord",
+     "t": "s35o"
+    },
+    {
+     "op": "add_rel",
+     "s": "s35z1",
+     "r": "ord",
+     "t": "s35o"
+    }
+   ]
+  },
+  "before_part_correction": {
+   "status": [
+    "bad",
+    "ok",
+    "minor"
+   ],
+   "best": "全体会议（第 3 次）:part-of 会议（第 29 次）",
+   "conf": "high"
+  }
+ },
+ {
+  "sent": 35,
+  "n": 3,
+  "topic": "序数里的量词「次」「届」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "ordinal-entity :unit 次 / 届",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 届)"
+   },
+   {
+    "label": "ordinal-entity 只有 :value，省掉「次」「届」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "ordinal-entity :unit 次 / 届",
+  "text": "【更正】量词按规则保留为 :unit。「第十二届」「第二十九次」「第三次」的量词「届」「次」挂在 ordinal-entity 上作 :unit，gold 有；6 个系统都省了（minor）。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "ordinal-entity 只有 :value",
+   "fix": {
+    "title": "删去序数里的量词「次」「届」",
+    "conf": "high",
+    "why": "guideline 2.2：序数是 ordinal-entity :value n，普通量词（次、届）不立节点。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s35x5"
+     },
+     {
+      "op": "del_node",
+      "var": "s35x6"
+     },
+     {
+      "op": "del_node",
+      "var": "s35x7"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 35,
+  "n": 4,
+  "topic": "「全国人民代表大会常务委员会」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "political-organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "political-organization"
+   },
+   {
+    "label": "government-organization",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   }
+  ],
+  "best": "government-organization",
+  "text": "人大常委会是国家立法机关，属 government-organization；gold 在第 31 句也把它（全国人大常委会）标成 government-organization，这里前后不一致。",
+  "fix": {
+   "title": "人大常委会：political-organization → government-organization",
+   "conf": "mid",
+   "why": "人大常委会是国家机关，类型表里对应 government-organization；gold 第 31 句同一机构也用 government-organization。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s35p",
+     "concept": "government-organization"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 5,
+  "topic": "会议与人大常委会的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "会议 :part 常委会",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":part (s"
+   },
+   {
+    "label": "会议 :possessor 常委会",
+    "systems": [
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":possessor"
+   },
+   {
+    "label": "会议 :mod 常委会",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "会议 :poss 常委会",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":poss"
+   }
+  ],
+  "best": "会议 :possessor 常委会",
+  "text": "「会议 :part 常委会」的意思是常委会是会议的一部分，不对；常委会的会议用 :possessor 或 :mod。:poss 是 AMR 的旧名。",
+  "fix": {
+   "title": "会议与常委会：:part → :possessor",
+   "conf": "mid",
+   "why": "A :part B 表示 B 是 A 的一部分，常委会不是会议的一部分；「常委会的会议」用 :possessor。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s35x4",
+     "r": "part",
+     "t": "s35p",
+     "r2": "possessor"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 6,
+  "topic": "「会议」作事件名词（aspect）",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有 aspect",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "会议 :aspect process",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "会议-00 :aspect process",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "会议-00"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.1 明确把「会议」这类事件名词标成事件（aspect process，带 modal / temporal 父节点）；不当事件只算略差。",
+  "fix": null
+ },
+ {
+  "sent": 35,
+  "n": 7,
+  "topic": "「表决」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "performance",
+  "text": "表决已完成并通过了法律，是 performance。",
+  "fix": null
+ },
+ {
+  "sent": 35,
+  "n": 8,
+  "topic": "日期进时间树、事件 :contained 日期",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期没有父节点，日期 :overlap 表决",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期，日期 :contained 通过",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   }
+  ],
+  "best": "root :depends-on 日期，日期 :contained 通过",
+  "text": "guideline 5.1：绝对日期挂 root；当天发生的事件 :contained 在日期里。",
+  "fix": {
+   "title": "「2017 年 9 月 1 日」进时间树，表决 :contained 日期",
+   "conf": "high",
+   "why": "guideline 5.1：绝对日期依存于 root，当天的事件是 :contained。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s35d"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s35d",
+      "overlap",
+      "s35x"
+     ],
+     "to": [
+      "s35d",
+      "contained",
+      "s35x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 9,
+  "topic": "《国歌法》与第 31 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s31 国歌法 :same-entity s35 国歌法",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s31 国歌法 :same-entity s35 国歌法",
+  "text": "第 31 句《国歌法》草案的国歌法和本句通过的《中华人民共和国国歌法》是同一部法律。",
+  "fix": {
+   "title": "补国歌法共指：s31 → s35",
+   "conf": "high",
+   "why": "第 31 句的《国歌法》和本句的《中华人民共和国国歌法》是同一部法律。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s31l",
+      "same-entity",
+      "s35l"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 35,
+  "n": 10,
+  "topic": "人大常委会与第 31 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s31 全国人大常委会 :same-entity s35 全国人民代表大会常务委员会",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s31 全国人大常委会 :same-entity s35 全国人民代表大会常务委员会",
+  "text": "第 31 句「全国人大常委会」和本句全称是同一机构，名称重复也要连（guideline 5.3）。",
+  "fix": {
+   "title": "补人大常委会共指：s31 → s35",
+   "conf": "high",
+   "why": "「全国人大常委会」与「全国人民代表大会常务委员会」是同一机构。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s31g",
+      "same-entity",
+      "s35p"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 2,
+  "topic": "「也」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "写下 :mod 也",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 也)"
+   }
+  ],
+  "best": "写下 :mod 也",
+  "text": "「于海也为此写下了感慨」的「也」gold 漏了。",
+  "fix": {
+   "title": "补「也」：写下 :mod 也",
+   "conf": "mid",
+   "why": "「也为此写下了感慨」的「也」表示追加，gold 没有节点表达它。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s36x",
+     "role": "mod",
+     "var": "s36z1",
+     "concept": "也",
+     "align": "7-7"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 3,
+  "topic": "「为此」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "写下 :reason thing（与「通过」共指）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":reason"
+   },
+   {
+    "label": "写下 :reason 通过",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":reason"
+   },
+   {
+    "label": "写下 :cause 此",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "写下 :cause 通过 :mod 此",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": ":cause (s"
+   }
+  ],
+  "best": null,
+  "text": "「为此」指《国歌法》通过这件事，作原因（:reason / :cause）都可以；直接用「通过」事件或用代词节点再连共指也都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 4,
+  "topic": "「感慨」的处理",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "感慨（名词）:ARG1-of identity-91 :ARG2 引语内容",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "感慨（名词）:topic 引语内容",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 感慨"
+   },
+   {
+    "label": "感慨-01 :ARG0 于海 :ARG1 引语内容",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "感慨-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 感慨-01（ARG0 experiencer / ARG1 experience）。「写下了感慨」的感慨既可看作所写的东西（名词，内容由引语给出），也可看作事件名词谓词化；几种写法都表达了「感慨的内容是引语」。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 5,
+  "topic": "「喝彩」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "喝彩-01",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "喝彩-01"
+   },
+   {
+    "label": "喝彩-00",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "喝彩-00"
+   }
+  ],
+  "best": "喝彩-00",
+  "text": "「喝彩」不在 PropBank，按 guideline 2.1 写 喝彩-00，-01 是编出来的编号。",
+  "fix": {
+   "title": "「喝彩」：喝彩-01 → 喝彩-00",
+   "conf": "high",
+   "why": "「喝彩」不在中文 PropBank，按 guideline 2.1 应为 喝彩-00。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s36x11",
+     "concept": "喝彩-00"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 6,
+  "topic": "「为国歌立法」里国歌的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "立法 :affectee 国歌",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":affectee"
+   },
+   {
+    "label": "立法 :beneficiary 国歌",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":beneficiary"
+   },
+   {
+    "label": "立法 :ARG1 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 立法-01 的 ARG1 是所立的法（law arg0 sets up），国歌不是法，作 ARG1 不准确；国歌是立法关涉、受益的对象，:affectee 或 :beneficiary 都可以。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 7,
+  "topic": "「终于」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "立法 :temporal 终于",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":temporal (s"
+   },
+   {
+    "label": "立法 :mod 终于",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "立法 :mod 终于",
+  "text": "「终于」表示期待已久的事终于发生，是评价性副词，不是时间表达；作 :temporal 会让它进时间依存。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 8,
+  "topic": "句中两次「国歌」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个国歌节点，互不相连",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "两个国歌节点，用 :coref 连起来",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "一个国歌节点（重入）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "一个国歌节点（重入）",
+  "text": "引语里「国歌中有……」「我们的国歌」是同一个国歌；guideline 5.3：同一句里的共指写成重入，不用 :coref 三元组。",
+  "fix": {
+   "title": "合并句中两个「国歌」节点",
+   "conf": "mid",
+   "why": "引语里两次「国歌」是同一实体，句内共指应是重入（guideline 5.3）。把立法的 :affectee 和「我们的」领属挂到第一个国歌上，删去第二个节点。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s36x12",
+     "r": "affectee",
+     "t": "s36x15"
+    },
+    {
+     "op": "add_rel",
+     "s": "s36x15",
+     "r": "possessor",
+     "t": "s36p"
+    },
+    {
+     "op": "del_node",
+     "var": "s36x14"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 9,
+  "topic": "「国歌中有…」的处所",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "exist-91 :ARG1 (中 :op1 国歌)",
+    "systems": [
+     "gold",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 中"
+   },
+   {
+    "label": "exist-91 :ARG1 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "exist-91 :ARG1 国歌，国歌 :direction 中",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": ":direction"
+   }
+  ],
+  "best": null,
+  "text": "exist-91 的 ARG1 是处所；保留方位词「中」或直接用国歌都可以。a2/r2 把「中」当方向不对。",
+  "fix": null
+ },
+ {
+  "sent": 36,
+  "n": 10,
+  "topic": "引语内容的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative（存在 ×2、喝彩、立法）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "于海 :full-affirmative",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "于海 :full-affirmative",
+  "text": "引号里是于海写下的话，guideline 5.2：转述内容的 conceiver 是说话人（author → 于海 → 内容）。",
+  "fix": {
+   "title": "引语内容改挂在于海下",
+   "conf": "high",
+   "why": "「国歌中有中国故事……为……立法喝彩」是于海写下的话，按 guideline 5.2 内容的 conceiver 是于海。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s36i2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s36e"
+     ],
+     "to": [
+      "s36i2",
+      "full-affirmative",
+      "s36e"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s36e2"
+     ],
+     "to": [
+      "s36i2",
+      "full-affirmative",
+      "s36e2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s36x11"
+     ],
+     "to": [
+      "s36i2",
+      "full-affirmative",
+      "s36x11"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s36x12"
+     ],
+     "to": [
+      "s36i2",
+      "full-affirmative",
+      "s36x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 11,
+  "topic": "国歌与第 34 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s34 国歌 :same-entity s36 国歌",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s34 国歌 :same-entity s36 国歌",
+  "text": "同一国歌，按 guideline 5.3 连到最近的前一次提及（第 35 句只有《国歌法》，没有单独的国歌）。",
+  "fix": {
+   "title": "补国歌共指：s34 国歌 → s36 国歌",
+   "conf": "high",
+   "why": "第 34、36 句的「国歌」是同一实体，第 35 句没有单独提到国歌。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s34x10",
+      "same-entity",
+      "s36x15"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 12,
+  "topic": "「中国」与第 34 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s34 中国 :same-entity s36 中国",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s34 中国 :same-entity s36 中国",
+  "text": "重复出现的名称是同一实体（guideline 5.3）。",
+  "fix": {
+   "title": "补中国共指：s34 → s36",
+   "conf": "high",
+   "why": "两句的「中国」是同一个国家，重复的名称应连共指。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s34c",
+      "same-entity",
+      "s36c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 13,
+  "topic": "「民族精神」「中国故事」与第 34 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "s34 精神、故事 :same-entity s36 精神、故事",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s34 精神、故事 :same-entity s36 精神、故事",
+  "text": "第 34 句于海希望反映出国歌中的「民族精神……中国故事」，本句他说「国歌中有中国故事……有民族精神」，是同样的东西。",
+  "fix": {
+   "title": "补民族精神、中国故事的共指：s34 → s36",
+   "conf": "mid",
+   "why": "第 34 句和本句都说国歌里的「民族精神」「中国故事」，指的是同样的东西；它们是抽象名词，也可以不连，故为 mid。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s34x8",
+      "same-entity",
+      "s36x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s34x4",
+      "same-entity",
+      "s36x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 36,
+  "n": 14,
+  "topic": "「立法」与第 34 句「立法」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "s1f/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "s34 立法 :same-event s36 立法",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":same-event"
+   }
+  ],
+  "best": "s34 立法 :same-event s36 立法",
+  "text": "本句「终于立法」实现的正是第 34 句于海希望的国歌立法。s1f/r1 把立法连到了句内的「通过」上。",
+  "fix": {
+   "title": "补立法的事件共指：s34 立法 → s36 立法",
+   "conf": "mid",
+   "why": "本句「终于立法」就是第 34 句希望通过的国歌立法；一个是设想、一个是实现，也可以不连，故为 mid。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s34x11",
+      "same-event",
+      "s36x12"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 37,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 37,
+  "n": 2,
+  "topic": "「呼吁」的义项和内容论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "呼吁-01 :ARG2 让（action）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "呼吁-01"
+   },
+   {
+    "label": "呼吁-02 :ARG1 让（content of the appeal）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "呼吁-02"
+   },
+   {
+    "label": "呼吁-01 :ARG1 让",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "呼吁-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 呼吁-01：ARG1 是被呼吁的一方（party appealed to），ARG2 是呼吁做的事；呼吁-02：ARG1 是呼吁的内容。gold 和 s3 各自与所选义项一致；s1f、a2 用 -01 却把内容放在 ARG1（被呼吁者）上。",
+  "fix": null
+ },
+ {
+  "sent": 37,
+  "n": 3,
+  "topic": "「也」「曾」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "都没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "呼吁 :mod 也 :temporal 曾",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 曾)"
+   },
+   {
+    "label": "呼吁 :mod 也 :mod 曾（另有 :mod 另外）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 另外)"
+   }
+  ],
+  "best": null,
+  "text": "「于海也曾在会上呼吁」的「也」「曾」gold 都漏了；训练数据里「曾」作 :mod 和 :temporal 都有。",
+  "fix": {
+   "title": "补「也」「曾」",
+   "conf": "mid",
+   "why": "「也曾」表示追加和过去曾经，gold 没有节点表达；训练数据里「曾」有 :temporal 也有 :mod。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s37x",
+     "role": "mod",
+     "var": "s37z1",
+     "concept": "也",
+     "align": "4-4"
+    },
+    {
+     "op": "add_node",
+     "parent": "s37x",
+     "role": "temporal",
+     "var": "s37z2",
+     "concept": "曾",
+     "align": "5-5"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 37,
+  "n": 4,
+  "topic": "「让」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "让-02 :ARG1 孩子 :ARG2 喜欢",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "让-02"
+   },
+   {
+    "label": "让-02 :ARG1 喜欢（孩子只作喜欢的 ARG0）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "让-02"
+   },
+   {
+    "label": "让-01 :ARG1 喜欢",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "让-01"
+   }
+  ],
+  "best": "让-02 :ARG1 孩子 :ARG2 喜欢",
+  "text": "PropBank 让-02：ARG1 是被致使的一方，ARG2 是谓词（他做的事）；让-01 是「让步、让出」。",
+  "fix": null
+ },
+ {
+  "sent": 37,
+  "n": 5,
+  "topic": "「让」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "endeavor",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "process",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「让」是被呼吁的未然事件，process 或 performance 都可以（guideline 4.1 对未然事件不硬判）；endeavor 表示「做了但没达到结果」，句中没有这方面的依据。",
+  "fix": null
+ },
+ {
+  "sent": 37,
+  "n": 6,
+  "topic": "被呼吁事件（让、喜欢）的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 让 / 喜欢",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "呼吁 :unspecified 让，让 :unspecified / :neutral-affirmative 喜欢",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":unspecified"
+   },
+   {
+    "label": "于海 :partial-affirmative 让，让 :unspecified 喜欢",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "author :partial-affirmative 让，让 :unspecified 喜欢",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative"
+   },
+   {
+    "label": "author :partial-affirmative 让，author :full-affirmative 喜欢",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": ":partial-affirmative"
+   }
+  ],
+  "best": "呼吁 :unspecified 让，让 :unspecified / :neutral-affirmative 喜欢",
+  "text": "guideline 5.2：补足语谓词（呼吁、希望、要求）的内容以谓词为父节点，取 unspecified；被呼吁的事还没发生，不是作者断言的事实。「要」也可读成 should（partial），但 conceiver 应是呼吁者而不是作者。",
+  "fix": {
+   "title": "被呼吁的让、喜欢挂在「呼吁」下，unspecified",
+   "conf": "high",
+   "why": "guideline 5.2：呼吁的内容以「呼吁」为父节点（unspecified），「喜欢」又以「让」为父节点；gold 把未实现的事当作作者断言的事实。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s37x2"
+     ],
+     "to": [
+      "s37x",
+      "unspecified",
+      "s37x2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s37x3"
+     ],
+     "to": [
+      "s37x2",
+      "unspecified",
+      "s37x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 37,
+  "n": 7,
+  "topic": "被呼吁的「让」相对「呼吁」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "呼吁 :overlap 让",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "呼吁 :after 让（让在呼吁之后）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":after s"
+   }
+  ],
+  "best": "呼吁 :after 让（让在呼吁之后）",
+  "text": "被呼吁的事在呼吁之后（guideline 5.1）。",
+  "fix": {
+   "title": "「让」在「呼吁」之后：:overlap → :after",
+   "conf": "high",
+   "why": "呼吁的内容是将来的事，应在呼吁之后。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s37x",
+      "overlap",
+      "s37x2"
+     ],
+     "to": [
+      "s37x",
+      "after",
+      "s37x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 37,
+  "n": 8,
+  "topic": "「会上」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "s35 会议（人大常委会第 29 次会议）:same-entity",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s28 会上（政协会议）:same-entity",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s27 会议 :same-entity",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有连",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "s28 会上（政协会议）:same-entity",
+  "text": "于海是全国政协委员（第 26–28 句），「也曾在会上呼吁」的会是他参加的政协会议，不是第 35 句通过国歌法的人大常委会会议；gold 连错了。连到第 27、28 句的政协会议说得通，不连也可以。",
+  "fix": {
+   "title": "删去「会上」与第 35 句人大常委会会议的错误共指",
+   "conf": "high",
+   "why": "于海是政协委员，第 37 句的「会上」是政协会议，不是第 35 句人大常委会第 29 次会议。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s35x4",
+      "same-entity",
+      "s37x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 37,
+  "n": 9,
+  "topic": "「管乐」与第 24 句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "s24 管乐 :same-entity s37 管乐",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「管乐」是一种艺术类别，前后两处可以看作同一所指，也可以看作泛指不连。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 2,
+  "topic": "「获评为」的谓词和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "评为-01 :ARG1 于海 :ARG2 奖项",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "评为-01"
+   },
+   {
+    "label": "评-01 :ARG1 于海 :ARG2 奖项",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "ok",
+    "grep": "评-01"
+   },
+   {
+    "label": "获评-00 :ARG0 于海 :ARG1 奖项",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "获评-00"
+   },
+   {
+    "label": "获评-01 :ARG1 于海 :ARG2 奖项",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "获评-01"
+   }
+  ],
+  "best": null,
+  "text": "「获评」不在 PropBank；gold 用 评为-01（ARG1 entity evaluated / ARG2 entity elected to be）、s1f/r1 用 评-01 都对得上「被评为」的意思（gold 的节点对齐到了「为」，属对齐问题）。获评-00 也可以；获评-01 是编出来的编号。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 3,
+  "topic": "「第四届北京十大杰出青年」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "award 命名实体（「第四届」在名称内或作 :ord）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ award"
+   },
+   {
+    "label": "拆成 青年 :ord 4 :place 北京 :quant 10 :mod 杰出（+ have-degree-91 大）",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 青年"
+   }
+  ],
+  "best": "award 命名实体（「第四届」在名称内或作 :ord）",
+  "text": "引号里的「北京十大杰出青年」是评选称号，guideline 2.2：专名整体作命名实体（award）。a2 把它拆开，「十大」还被拆成 have-degree-91 + 大，意思走样。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 4,
+  "topic": "序数里的量词「届」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "ordinal-entity :unit 届",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 届)"
+   },
+   {
+    "label": "没有「届」节点",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "ordinal-entity :unit 届",
+  "text": "【更正】量词按规则保留为 :unit。「第四届」的量词「届」挂在 ordinal-entity 上作 :unit，gold 有；6 个系统都省了（minor）。",
+  "fix": null,
+  "before_unit_correction": {
+   "status": [
+    "bad",
+    "ok"
+   ],
+   "best": "没有「届」节点",
+   "fix": {
+    "title": "删去序数里的量词「届」",
+    "conf": "high",
+    "why": "guideline 2.2：序数是 ordinal-entity :value n，「届」是普通量词，不立节点。",
+    "ops": [
+     {
+      "op": "del_node",
+      "var": "s38x6"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "sent": 38,
+  "n": 5,
+  "topic": "《音乐周报》的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "magazine",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ magazine"
+   },
+   {
+    "label": "newspaper「音乐 周报」",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ newspaper"
+   },
+   {
+    "label": "newspaper，名称带书名号",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "\"《\""
+   }
+  ],
+  "best": "newspaper「音乐 周报」",
+  "text": "《音乐周报》是周报（报纸），类型表里是 newspaper；书名号是标点，不是名称的一部分。",
+  "fix": {
+   "title": "《音乐周报》：magazine → newspaper",
+   "conf": "mid",
+   "why": "《音乐周报》是报纸（周报），对应类型 newspaper。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s38m",
+     "concept": "newspaper"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 38,
+  "n": 6,
+  "topic": "「评选为」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "评选-01 :ARG1 称号 :ARG2 于海",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "评选-01"
+   },
+   {
+    "label": "评选-01 :ARG1 于海 :ARG2 称号",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "评选-01"
+   }
+  ],
+  "best": "评选-01 :ARG1 称号 :ARG2 于海",
+  "text": "PropBank 评选-01：ARG1 是称号（title, honor），ARG2 是当选的人。s1f 两次都标反了。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 7,
+  "topic": "「2009 中国音乐年度人物」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "拆开：人物 :mod 年度 :temporal 2009 :place 中国（+ 音乐）",
+    "systems": [
+     "gold",
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 人物"
+   },
+   {
+    "label": "award 命名实体",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ award"
+   }
+  ],
+  "best": null,
+  "text": "「2009 中国音乐年度人物」可以看作评选称号（award），也可以拆开表示；两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 38,
+  "n": 8,
+  "topic": "日期、事件的时间依存",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "2000 年没有父节点、:overlap 评为；评选没有时间父节点；年度（实体）进了时间树",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期，日期 :contained 事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   }
+  ],
+  "best": "root :depends-on 日期，日期 :contained 事件",
+  "text": "guideline 5.1：绝对日期挂 root，事件 :contained 在日期里；每个事件都要有时间父节点。gold 的「评选」没有时间父节点，反而把「年度」这个实体放进了时间树（评为 :after 年度）。",
+  "fix": {
+   "title": "2000 年进时间树；评选补父节点；去掉「年度」的时间三元组",
+   "conf": "high",
+   "why": "guideline 5.1：绝对日期挂 root，事件 :contained 在日期里；「年度」不是事件也不是独立的时间词；「评选」缺时间父节点（放在 DCT 之前）。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s38d2"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s38d2",
+      "overlap",
+      "s38x5"
+     ],
+     "to": [
+      "s38d2",
+      "contained",
+      "s38x5"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s38x5",
+      "after",
+      "s38x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s38x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 38,
+  "n": 9,
+  "topic": "事件的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 人物、年度（实体）；评选没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 两个事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author :full-affirmative 两个事件",
+  "text": "modal 依存的子节点是事件；「人物」「年度」是实体，而事件「评选」反而没有 modal 父节点。",
+  "fix": {
+   "title": "modal：删去实体的三元组，补「评选」",
+   "conf": "high",
+   "why": "「人物」「年度」不是事件，不应有 modal 三元组；事件「评选」缺 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s38x2"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s38x3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s38x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 38,
+  "n": 10,
+  "topic": "「中国」与第 36 句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有连",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s36 中国 :same-entity s38 中国",
+    "systems": [
+     "s1f/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（中国在称号名称里，没有单独节点）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "s36 中国 :same-entity s38 中国",
+  "text": "重复出现的国名是同一实体，guideline 5.3 要连到最近的前一次提及（第 36 句）。",
+  "fix": {
+   "title": "补中国共指：s36 → s38",
+   "conf": "high",
+   "why": "第 36、38 句的「中国」是同一个国家，应连共指。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s36c",
+      "same-entity",
+      "s38c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 39,
+  "n": 1,
+  "topic": "「解放军总政治部」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "政治部 :mod 总 :part 解放军（armed-organization）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":part (s"
+   },
+   {
+    "label": "government-organization「解放军 总 政治部」",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   },
+   {
+    "label": "military「解放军 总 政治部」",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": "/ military"
+   },
+   {
+    "label": "organization「解放军 总 政治部」",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "/ organization"
+   }
+  ],
+  "best": null,
+  "text": "【更正】完整 guideline 3-2-2-1 规定 :part 以部分为父节点、整体为子节点（string :part guitar），「部分 :part 整体」符合 guideline；原审阅按 AMR 的习惯判为方向反，此处已改判为可接受。原说明：「解放军总政治部」是机构专名，guideline 2.2 要求整体作命名实体；类型以 government-organization（军队的政治机关）最贴切，military 指军队本身，organization 太泛。gold 拆开写，而且 政治部 :part 解放军 的意思是解放军是政治部的一部分，方向反了。整体改写需要重画子图，这里只给方向的修正。",
+  "fix": {
+   "title": "「政治部」与「解放军」：:part → :part-of",
+   "conf": "low",
+   "why": "A :part B 表示 B 是 A 的一部分；总政治部是解放军的一部分，应为 政治部 :part-of 解放军。更好的做法是整体作 government-organization 命名实体，但需要重画子图。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s39x5",
+     "r": "part",
+     "t": "s39a2",
+     "r2": "part-of"
+    }
+   ]
+  },
+  "before_part_correction": {
+   "status": [
+    "bad",
+    "ok",
+    "minor",
+    "minor"
+   ],
+   "best": "government-organization「解放军 总 政治部」",
+   "conf": "mid"
+  }
+ },
+ {
+  "sent": 39,
+  "n": 2,
+  "topic": "称号「德艺双馨的名师名家」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "and(名师, 名家) :mod 德艺双馨",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 名家"
+   },
+   {
+    "label": "award 命名实体",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ award"
+   }
+  ],
+  "best": null,
+  "text": "引号里的「德艺双馨的名师名家」是授予的荣誉称号，作 award 命名实体说得通；拆开表示也可以。",
+  "fix": null
+ },
+ {
+  "sent": 39,
+  "n": 3,
+  "topic": "授予的对象（省略的于海）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "implicit-argument",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "implicit-argument"
+   },
+   {
+    "label": "person :refer-person 3rd :refer-number singular",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 3rd"
+   }
+  ],
+  "best": null,
+  "text": "省略的受事于海，guideline 2.4 用 person 加人称数；UMR 发布数据的中文部分也用 implicit-argument。两者都连了共指。",
+  "fix": null
+ },
+ {
+  "sent": 39,
+  "n": 4,
+  "topic": "日期进时间树、授予 :contained 日期",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期没有父节点，日期 :overlap 授予",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期，日期 :contained 授予",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   }
+  ],
+  "best": "root :depends-on 日期，日期 :contained 授予",
+  "text": "guideline 5.1：绝对日期挂 root，事件 :contained 在日期里。",
+  "fix": {
+   "title": "「2011 年」进时间树，授予 :contained 日期",
+   "conf": "high",
+   "why": "guideline 5.1：绝对日期依存于 root，年内发生的事件是 :contained。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s39d"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s39d",
+      "overlap",
+      "s39x"
+     ],
+     "to": [
+      "s39d",
+      "contained",
+      "s39x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 39,
+  "n": 5,
+  "topic": "于海共指连到哪一句",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第 37 句（跳过第 38 句）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第 38 句",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "连到第 38 句",
+  "text": "guideline 5.3：每次提及连到最近的前一次提及；第 38 句就有于海。",
+  "fix": {
+   "title": "于海共指改连最近的第 38 句",
+   "conf": "mid",
+   "why": "guideline 5.3：连到最近的前一次提及，第 38 句已经提到于海。链本身没错，只是跳了一句。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s37i2",
+      "same-entity",
+      "s39i2"
+     ],
+     "to": [
+      "s38i3",
+      "same-entity",
+      "s39i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 1,
+  "topic": "「于海」的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "individual-person",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "individual-person"
+   },
+   {
+    "label": "person",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ person"
+   }
+  ],
+  "best": null,
+  "text": "guideline 的类型表用 person，UMR 发布数据的中文部分常用 individual-person，两者都可以接受。",
+  "fix": null
+ },
+ {
+  "sent": 40,
+  "n": 2,
+  "topic": "「评价」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "评价-02 :ARG1 于海",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "评价-02"
+   },
+   {
+    "label": "评价-01 :ARG1 于海",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "评价-01"
+   }
+  ],
+  "best": "评价-01 :ARG1 于海",
+  "text": "PropBank 评价-01：ARG1 thing evaluated；评价-02：ARG1 是所作的评语、ARG2 是被评论的对象。gold 用 -02 却把于海放在 ARG1（评语）上；于海是被评价者，应为 评价-01 :ARG1。",
+  "fix": {
+   "title": "「评价」：评价-02 → 评价-01",
+   "conf": "high",
+   "why": "于海是被评价的对象，对应 评价-01 的 ARG1；评价-02 的 ARG1 是评语。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s40x",
+     "concept": "评价-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 3,
+  "topic": "「以《军中第一青年指挥》为题」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "评价 :instrument 题 :ARG0-of 为-01 :ARG1 (指挥 :mod 青年 :place 军中 :ord 1)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":instrument"
+   },
+   {
+    "label": "评价 :manner 题（命名实体「军中 第一 青年 指挥」）",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "评价 :manner 题-02 :ARG1 publication「军中第一青年指挥」",
+    "systems": [
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "题-02"
+   },
+   {
+    "label": "评价 :manner have-role-91 :ARG1 publication :ARG3 题",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   },
+   {
+    "label": "评价 :manner 为题-01 :ARG1 题（命名实体）",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "bad",
+    "grep": "为题-01"
+   },
+   {
+    "label": "评价 :topic publication「军中第一青年指挥」",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor",
+    "grep": ":topic (s"
+   }
+  ],
+  "best": "评价 :manner 题（命名实体「军中 第一 青年 指挥」）",
+  "text": "书名号里的文章标题是专名，应整体作命名实体（guideline 2.2）；「以……为题」表示评价的方式（:manner）。gold 把标题拆成「指挥 :mod 青年 :place 军中」，又造了一个 为-01 节点；「为题」不在 PropBank，s1f/r1 的 为题-01 是编的编号。gold 需要重画这一块，没法用小的编辑表达，这里不给 fix。",
+  "fix": null
+ },
+ {
+  "sent": 40,
+  "n": 4,
+  "topic": "「曾」挂在哪里",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "挂在 为-01 上（:mod）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "评价 :temporal 曾",
+    "systems": [
+     "s1f/r1",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 曾)"
+   },
+   {
+    "label": "评价 :mod 曾",
+    "systems": [
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "/ 曾)"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "s1f/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "评价 :temporal 曾",
+  "text": "「曾以……为题评价于海」的「曾」修饰评价，不是修饰「为题」。",
+  "fix": {
+   "title": "「曾」改挂到评价上",
+   "conf": "mid",
+   "why": "「曾以……为题评价」里「曾」修饰的是评价。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s40x14",
+     "r": "mod",
+     "t": "s40x18"
+    },
+    {
+     "op": "add_rel",
+     "s": "s40x",
+     "r": "mod",
+     "t": "s40x18"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 5,
+  "topic": "「称其…」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "称-01 :ARG1 于海 :ARG2 内容",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "称-01"
+   },
+   {
+    "label": "称-02 :ARG1 内容",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "称-02"
+   },
+   {
+    "label": "称-01 :ARG1 内容，且作 评价-01 的 :ARG2",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "称-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 称-01：ARG1 被称呼者、ARG2 名称（称其「……」）；称-02：ARG1 所声称的内容。gold 和 s3 / a2 各自与义项相符。s1f 用 -01 却把内容放在 ARG1（被称呼者）上，又把「称」作 评价-01 的 ARG2，评价-01 没有 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 40,
+  "n": 6,
+  "topic": "「指挥动作」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "动作 :ARG1-of identity-91 :ARG2 指挥-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "identity-91"
+   },
+   {
+    "label": "动作 :mod 指挥-01 :ARG0 于海",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "动作 :mod 指挥-01 :ARG0 于海",
+  "text": "「指挥动作」是指挥时的动作，指挥修饰动作即可；identity-91 说动作「就是」指挥，过度了。",
+  "fix": null
+ },
+ {
+  "sent": 40,
+  "n": 7,
+  "topic": "引语里各事件的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "朴实 / 大方 / 适度 / 严谨 / 两个 exist-91 / 运行 没有 aspect，闪烁 state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "状态谓词 state，运行、闪烁 activity（s1f/r1 运行 process）",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "状态谓词 state，运行、闪烁 activity（s1f/r1 运行 process）",
+  "text": "guideline 7：每个事件都要有 aspect。朴实、大方、适度、严谨和「柔中有刚」是状态；「运行」「闪烁着」带「着」，是持续的 activity（guideline 4.1）。",
+  "fix": {
+   "title": "补引语里各事件的 aspect",
+   "conf": "high",
+   "why": "guideline 7 要求每个事件都有 aspect：形容词谓语和 exist-91 是 state；「闪烁着」带「着」，与「运行」都是 activity（guideline 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s40x34",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40x35",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40x22",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40x36",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40e",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40e2",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40x29",
+     "attr": "aspect",
+     "value": "activity"
+    },
+    {
+     "op": "set_attr",
+     "var": "s40x26",
+     "attr": "aspect",
+     "value": "activity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 8,
+  "topic": "「适度严谨」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "适度-01、严谨-01 并列",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "适度-01"
+   },
+   {
+    "label": "严谨-01 :degree 适度",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": null,
+  "text": "「朴实大方，适度严谨」可以读成四个并列的形容词，也可以读成「适度地严谨」，两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 40,
+  "n": 9,
+  "topic": "「柔中有刚，刚中有柔」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "两个 exist-91，第二个有两个 :ARG2（刚、柔）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "两个 exist-91（ARG1 处所、ARG2 存在物）",
+    "systems": [
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "两个 have-91",
+    "systems": [
+     "s1f/r1"
+    ],
+    "status": "minor",
+    "grep": "have-91"
+   },
+   {
+    "label": "柔中有刚-00、刚中有柔-00 各作一个概念",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "柔中有刚-00"
+   }
+  ],
+  "best": "两个 exist-91（ARG1 处所、ARG2 存在物）",
+  "text": "「刚中有柔」是 exist-91：ARG1 处所（刚）、ARG2 存在物（柔）。gold 第二个 exist-91 有两个 :ARG2。四字格当作固定说法（guideline 2.6）整体立概念也可以；have-91 是领有，不太贴切。",
+  "fix": {
+   "title": "「刚中有柔」：第一个 :ARG2（刚）改为 :ARG1",
+   "conf": "high",
+   "why": "exist-91 是 ARG1 处所、ARG2 存在物；gold「刚中有柔」的 exist-91 有两个 ARG2，刚应为 ARG1。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s40e2",
+     "r": "ARG2",
+     "t": "s40x24",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 10,
+  "topic": "「指挥棒运行」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "运行-01 :ARG1 指挥棒",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "运行-01"
+   },
+   {
+    "label": "运行-01 :ARG0 指挥棒",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "运行-01"
+   },
+   {
+    "label": "运行-02 :ARG0 指挥棒",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "运行-02"
+   }
+  ],
+  "best": "运行-02 :ARG0 指挥棒",
+  "text": "PropBank 运行-01：ARG0 thing in operation、ARG1 agent；运行-02：ARG0 thing described（移动的东西）。指挥棒是运行的东西，两个义项下都是 ARG0；gold 写成 ARG1（施事）不对。指挥棒划过点和线，-02 更贴切。",
+  "fix": {
+   "title": "「运行」：指挥棒 :ARG1 → :ARG0",
+   "conf": "high",
+   "why": "PropBank 运行-01 的 ARG1 是施事、ARG0 是运行的东西；指挥棒是运行的东西，应为 ARG0。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s40x29",
+     "r": "ARG1",
+     "t": "s40x30",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 11,
+  "topic": "「点和线之间闪烁着…活力与光彩」",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "闪烁-00 :ARG0 点和线 :ARG1 活力和光彩",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "闪烁-00"
+   },
+   {
+    "label": "闪烁-01 :ARG0 活力和光彩 :place 之间(点和线)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "闪烁-01"
+   },
+   {
+    "label": "闪烁-01 :ARG1 活力和光彩 :place between(点, 线)",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "bad",
+    "grep": "闪烁-01"
+   }
+  ],
+  "best": "闪烁-01 :ARG0 活力和光彩 :place 之间(点和线)",
+  "text": "PropBank 有 闪烁-01，只有 ARG0（entity described，即闪烁的东西）。闪烁的是活力和光彩，「点和线之间」是处所。gold 用了 -00，又让点线作 ARG0、活力作 ARG1；s1f 也带了不存在的 ARG1。",
+  "fix": {
+   "title": "「闪烁」：-00 → -01，活力光彩作 ARG0，点线作 :place",
+   "conf": "high",
+   "why": "PropBank 闪烁-01 只有 ARG0（闪烁的东西）。闪烁的是活力与光彩，点和线之间是处所。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s40x26",
+     "concept": "闪烁-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s40x26",
+     "r": "ARG0",
+     "t": "s40a5",
+     "r2": "place"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s40x26",
+     "r": "ARG1",
+     "t": "s40a6",
+     "r2": "ARG0"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 12,
+  "topic": "「运行的点和线」：线的修饰",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "点 :mod 运行，线 :mod 点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "点、线都由运行修饰",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "点、线都由运行修饰",
+  "text": "「指挥棒运行的点和线」是运行划出的点和线，gold 让线修饰点，偏了。",
+  "fix": {
+   "title": "「线」改为由「运行」修饰",
+   "conf": "mid",
+   "why": "「运行的点和线」里运行同时修饰点和线，gold 写成 线 :mod 点。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s40x28",
+     "r": "mod",
+     "t": "s40x27"
+    },
+    {
+     "op": "add_rel",
+     "s": "s40x28",
+     "r": "mod",
+     "t": "s40x29"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 13,
+  "topic": "「最具人气和影响力」的「最」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "没有标「最」",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "具 :degree 最",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 最)"
+   },
+   {
+    "label": "have-degree-91 :ARG2 / :ARG3 最具",
+    "systems": [
+     "a2/r2"
+    ],
+    "status": "minor",
+    "grep": "have-degree-91"
+   }
+  ],
+  "best": "具 :degree 最",
+  "text": "guideline 4.2：「最」是 :degree；gold 漏了，丢了最高级的意思。a2/r2 的 have-degree-91 把同一个概念同时当 ARG2 和 ARG3，不对。",
+  "fix": {
+   "title": "补「最」：具 :degree 最",
+   "conf": "high",
+   "why": "「最具人气」的「最」按 guideline 4.2 作 :degree，gold 漏了。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s40x9",
+     "role": "degree",
+     "var": "s40z1",
+     "concept": "最",
+     "align": "63-63"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 14,
+  "topic": "「称其」引语内容的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "闪烁挂 author，其余引语事件没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "解放军报 :full-affirmative 引语事件",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "解放军报 :full-affirmative 引语事件",
+  "text": "guideline 5.2：引语内容的 conceiver 是说话人（这里是《解放军报》）；gold 只给了闪烁、而且挂在 author 下，朴实、大方、适度、严谨、两个 exist-91、运行、指挥都没有 modal 父节点。",
+  "fix": {
+   "title": "引语内容挂在《解放军报》下",
+   "conf": "high",
+   "why": "「称其……」引号里是《解放军报》的话，按 guideline 5.2 conceiver 是解放军报；gold 只给闪烁标了 author，其余引语事件没有 modal 父节点。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s40n"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s40x26"
+     ],
+     "to": [
+      "s40n",
+      "full-affirmative",
+      "s40x26"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x34"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x35"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x22"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x36"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40e"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40e2"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x29"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s40n",
+      "full-affirmative",
+      "s40x20"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 15,
+  "topic": "「誉为」内容（最具人气）的 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 具",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "a2/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "乐评界 :full-affirmative 具",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "a2/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "乐评界 :full-affirmative 具",
+  "text": "「被乐评界誉为……最具人气和影响力的指挥家」是乐评界的评价，「最具人气」的判断者是乐评界；作者只断言「誉为」这件事。",
+  "fix": {
+   "title": "「最具人气」改挂在乐评界下",
+   "conf": "mid",
+   "why": "「誉为」的内容是乐评界的评价，conceiver 应是乐评界；也可以把它当作作者对指挥家的描述，故为 mid。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s40x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s40x9"
+     ],
+     "to": [
+      "s40x5",
+      "full-affirmative",
+      "s40x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 16,
+  "topic": "日期进时间树、出版 :contained 日期",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期没有父节点，日期 :overlap 出版",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "root :depends-on 日期，日期 :contained 出版",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2",
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "root :depends-on"
+   }
+  ],
+  "best": "root :depends-on 日期，日期 :contained 出版",
+  "text": "guideline 5.1：绝对日期挂 root，当天的事件 :contained 在日期里。",
+  "fix": {
+   "title": "「1995 年 11 月 20 日」进时间树，出版 :contained 日期",
+   "conf": "high",
+   "why": "guideline 5.1：绝对日期依存于 root，当天的事件是 :contained。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "root",
+      "depends-on",
+      "s40d"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s40d",
+      "overlap",
+      "s40x4"
+     ],
+     "to": [
+      "s40d",
+      "contained",
+      "s40x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 40,
+  "n": 17,
+  "topic": "「被乐评界誉为」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "称 :overlap 誉为（与 1995 年的报道同时）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "document-creation-time :before 誉为",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "a2/r1",
+     "a2/r2"
+    ],
+    "status": "ok",
+    "grep": "document-creation-time :before"
+   },
+   {
+    "label": "past-reference :contained 誉为",
+    "systems": [
+     "s1f/r1",
+     "s1f/r2"
+    ],
+    "status": "ok",
+    "grep": "past-reference :contained"
+   }
+  ],
+  "best": "document-creation-time :before 誉为",
+  "text": "「被乐评界誉为」是另一件事，没有依据说它和 1995 年的那篇报道同时；放在 DCT 之前即可。",
+  "fix": {
+   "title": "「誉为」改挂在 DCT 之前",
+   "conf": "mid",
+   "why": "「被乐评界誉为」与 1995 年《解放军报》的评价没有同时的依据，只能确定在过去。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s40x2",
+      "overlap",
+      "s40x3"
+     ],
+     "to": [
+      "document-creation-time",
+      "before",
+      "s40x3"
+     ]
+    }
+   ]
+  }
+ }
+]
