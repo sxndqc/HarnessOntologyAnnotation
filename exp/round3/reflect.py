@@ -30,13 +30,15 @@ sys.path.insert(0, os.path.join(R2, "vendor", "umrancast"))
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "judges"))
 CONFIG = json.load(open(os.path.join(HERE, "config.json"), encoding="utf-8"))
 BASE = "s3-full-two-tool"
-LIMIT = 120000          # characters of evidence given to the reflecting model
+LIMIT = 300000          # characters of evidence given to the reflecting model
 
 HEAD = """You are improving an annotator of Uniform Meaning Representation (UMR). The annotator is a language model \
 that gets a one-sentence description of UMR, two lookup tools (the full UMR guidelines and PropBank) and a whole \
 document, and writes the sentence-level graph of every sentence and the document-level temporal, modal and \
 coreference relations. Below are the errors it made on four Chinese training documents, found by comparing its \
-annotations (five runs) with the corrected gold annotation.
+annotations (five runs) with the corrected gold annotation. In round 1 the errors are the reviewers' notes on the \
+annotator's choices; in a later round they are the mechanical differences from the corrected gold that at least \
+three of the five runs share.
 
 Write a "parse skill" for this annotator: a text that will be added to its instructions for every later document.
 
@@ -112,13 +114,13 @@ def evidence(tag, with_review):
                 units[u.get("sent", 0)][key] += 1
         out += ["## Document %s (%d runs)" % (doc, n), ""]
         for s in sorted(sents):
-            rows = [(k, c) for k, c in units.get(s, {}).items() if c >= 2]
+            rows = [(k, c) for k, c in units.get(s, {}).items() if c >= 3]
             if not rows and not notes.get((doc, s)):
                 continue
             out += ["### Sentence %d: %s" % (s, sents[s]["words"]), ""]
             if notes.get((doc, s)):
                 out += ["Reviewer's notes on the annotator's choices:"] + notes[(doc, s)] + [""]
-            if rows:
+            if rows and not with_review:
                 out += ["Differences from the corrected gold (check | kind | gold | annotator | runs):"]
                 for (check, verdict, g, p), c in sorted(rows, key=lambda x: (x[0][0], -x[1])):
                     out.append("- %s | %s | %s | %s | %d" % (check, verdict, g, p, c))

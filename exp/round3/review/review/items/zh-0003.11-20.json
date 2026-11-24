@@ -1,0 +1,4928 @@
+[
+ {
+  "sent": 11,
+  "n": 1,
+  "topic": "「于1992年」的时间节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有 date-entity 节点，宣布也没有时间锚点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": ":temporal (date-entity :year 1992)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":year 1992"
+   }
+  ],
+  "best": ":temporal (date-entity :year 1992)",
+  "text": "「于1992年宣布」明说了时间，gold 整个漏掉了这个时间表达，文档级里宣布也没有任何时间父节点（abridged 5.1：每个事件和时间表达都要有时间父节点）。",
+  "fix": {
+   "title": "补上 1992 年的 date-entity 并把宣布放进去",
+   "conf": "high",
+   "why": "原句「于1992年宣布」，gold 漏了这个时间节点，宣布在文档级也没有时间父节点。补 date-entity，挂到元节点上，宣布 :contained 于它。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s11x",
+     "role": "temporal",
+     "var": "s11z1",
+     "concept": "date-entity",
+     "attrs": {
+      "year": "1992"
+     },
+     "align": "17-18"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "depends-on",
+      "s11z1"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s11z1",
+      "contained",
+      "s11x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 2,
+  "topic": "「联同」的另一家公司",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and 作宣布的 ARG0",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "宣布 :companion 电视广播国际",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":companion (s"
+   },
+   {
+    "label": "宣布 :accompanier 电视广播国际",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":accompanier (s"
+   }
+  ],
+  "best": null,
+  "text": "「联同」两家公司一起宣布；guideline 3-1-1（:companion）说分开表达的同伴可以用 :companion，合在一起的作单一施事，两种都说得通。:accompanier 是 AMR 的旧名，UMR 用 :companion。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 3,
+  "topic": "「斥资」是否作谓词",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "斥资-01 :ARG1 收购 :ARG2 金额",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 斥资-01"
+   },
+   {
+    "label": "收购 :ARG2 斥资-01，斥资 :ARG1 金额",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": [
+     "/ 斥资-01",
+     ":ARG2 (s11m / 斥资-01"
+    ]
+   },
+   {
+    "label": "没有斥资节点，金额直接挂在收购上",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "斥资-01 :ARG1 收购 :ARG2 金额",
+  "text": "PropBank 斥资-01：ARG0 invester、ARG1 project、ARG2 fund，gold 的写法正好符合框架。s3/r3 把金额作 ARG1（应为 ARG2），又给收购-01 加了框架里没有的 ARG2。省掉斥资保住了金额，但丢了一个谓词。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 4,
+  "topic": "收购的金额（以380万元）的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":instrument monetary-quantity",
+    "systems": [
+     "gold",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":instrument (s"
+   },
+   {
+    "label": ":manner monetary-quantity",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":manner (s"
+   },
+   {
+    "label": ":cost monetary-quantity",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":cost (s"
+   },
+   {
+    "label": "收购 :ARG3 monetary-quantity",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":ARG3 (s"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 收购-01 只有 ARG0、ARG1，没有价格论元，ARG3 不能用；:cost 不在 UMR 的角色表里（3-2-2）。「以X元」是凭借的手段，:instrument 可以，:manner 勉强。系统对 925 万加元（没有斥资节点时）也是同样的角色。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 5,
+  "topic": "380万元的 :unit",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "monetary-quantity :quant 3800000，没有 :unit",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": ":quant 3800000 :unit 元",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": [
+     ":quant 3800000",
+     "/ 元)"
+    ]
+   }
+  ],
+  "best": ":quant 3800000 :unit 元",
+  "text": "「380万元」的货币单位「元」是 monetary-quantity 的 :unit（abridged 2.2：monetary-quantity :quant :unit）；gold 第一笔写了 :unit 加元，这一笔漏了。",
+  "fix": {
+   "title": "380万元补 :unit 元",
+   "conf": "high",
+   "why": "monetary-quantity 要有货币单位（guideline 2.2 的 monetary-quantity :quant :unit）；原文「380万元」，同句前一笔 925 万加元 gold 写了 :unit。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s11m2",
+     "role": "unit",
+     "var": "s11z2",
+     "concept": "元",
+     "align": "34-34"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 6,
+  "topic": "「商人」与冯永发的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "冯永发 :ARG1-of (identity-91 :ARG2 商人)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "冯永发 :mod 商人",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 商人)"
+   },
+   {
+    "label": "冯永发 :ARG0-of (have-org-role-92 :ARG2 商人)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": [
+     "have-org-role-92",
+     ":ARG2 (s11sh / 商人)"
+    ]
+   },
+   {
+    "label": "冯永发 :ARG0-of 商人",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s11sh / 商人)"
+   }
+  ],
+  "best": null,
+  "text": "同位语「商人冯永发」：训练数据（chinese_umr-0001 第7句「小报《国家询问报》」）用 identity-91，作 :mod 也能表达。have-org-role-92 的人是 ARG1、头衔是 ARG3（abridged 2.3），s3/r1 用了 ARG0-of 和 ARG2，两处都错；商人不是谓词，s3/r5 的 :ARG0-of 没有意义。华裔、温哥华挂在商人还是人名上是位置差别，不另记。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 7,
+  "topic": "「旗下」的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "集团 :mod 旗下（另有 :possessor 冯永发）",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 旗下)"
+   },
+   {
+    "label": "旗下-01 谓词",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "旗下-01"
+   },
+   {
+    "label": "没有旗下节点，只用 :possessor/:poss",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "集团 :mod 旗下（另有 :possessor 冯永发）",
+  "text": "PropBank 没有「旗下」，不能编 -01；训练数据 chinese_umr-0001 第7句「旗下的八卦小报」写 :mod 旗下 加 :possessor。只用领属关系意思也在，略差。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 8,
+  "topic": "集团与冯永发的领属方向",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "集团 :possessor/:poss 冯永发",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "集团 :poss-of 冯永发（成了集团领有冯永发）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":poss-of (s"
+   },
+   {
+    "label": "（用旗下-01 表达）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": "旗下-01"
+   }
+  ],
+  "best": null,
+  "text": "冯永发旗下的集团：集团是领属物，冯永发是领有者，应为 (集团 :possessor 冯永发)（guideline 3-2-2-2）。s3/r3 用反向 :poss-of，方向反了。s3/r4 的问题记在「旗下」一条。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 9,
+  "topic": "领有者的角色名 :poss",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":possessor",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": ":poss（旧名）",
+    "systems": [
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": ":possessor",
+  "text": "按发布数据写 :possessor，不是 AMR 的 :poss（Conventions 一节）。s3/r3 全篇如此（第2–21句大多数句子都有），s3/r1 只在本句。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 10,
+  "topic": "新时代集团的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "company",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "organization",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "集团（中文词作类型）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 集团"
+   }
+  ],
+  "best": null,
+  "text": "命名实体的类型用英文类型词（abridged 2.1、2.2：entity types 用英文），company 或 organization 都可以；「集团」是中文普通名词，不是实体类型。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 11,
+  "topic": "电视广播国际有限公司的名字切分",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": ":op1 电视 :op2 广播 :op3 国际 :op4 有限 :op5 公司",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op5 \"公司\""
+   },
+   {
+    "label": ":op1 \"电视广播国际\" 不拆",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"电视广播国际\""
+   }
+  ],
+  "best": null,
+  "text": "中文名字按词拆成 :opN（abridged 2.2：欧洲议会 → 欧洲 / 议会），「电视广播国际」是三个词。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 12,
+  "topic": "「同时」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "第二次收购 :temporal 同时",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "/ 同时)"
+   },
+   {
+    "label": "没有同时节点",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "第二次收购 :temporal 同时",
+  "text": "原文有「同时」，应作节点；漏了丢掉一个时间修饰（两笔收购同时）。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 13,
+  "topic": "第二笔收购是否在宣布之下",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "宣布 :ARG1 (and 收购1 收购2)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "根为 and(宣布, 收购2)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "宣布 :ARG1 (and 收购1 收购2)",
+  "text": "「宣布斥资……收购……，并同时以……收购……」，「并同时」连接的是宣布的两项内容，读成和宣布并列的事件较勉强。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 14,
+  "topic": "两笔收购的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "收购1 process、收购2 performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "两笔都 performance",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "宣布时收购尚未完成（第12句 1993 年才获批），未然事件 process 或 performance 都可以（REVIEWER：未然事件不硬判）。gold 两笔取值不一致，不算错。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 15,
+  "topic": "宣布与收购的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "宣布 :overlap 斥资/收购",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "宣布 :before 收购（收购在宣布之前）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "收购没有时间父节点",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "(A :before B) 是 B 在 A 之前；宣布的是将要进行的收购（第12句 1993 年才获批），收购在宣布之后，应为 (宣布 :after 收购)。s3/r1、r2、r5 方向写反：5 个系统全篇都把 (A :before B) 当成「A 在 B 之前」，这里是本段第一次出现，之后记 open。overlap 太粗但不算错。",
+  "fix": {
+   "title": "宣布与收购：overlap → after",
+   "conf": "low",
+   "why": "宣布的是计划中的收购，1993 年才获 CRTC 批准，收购在宣布之后；overlap 可以理解为签约与宣布同时，所以只作提示。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s11x",
+      "overlap",
+      "s11x5"
+     ],
+     "to": [
+      "s11x",
+      "after",
+      "s11x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s11x",
+      "overlap",
+      "s11x9"
+     ],
+     "to": [
+      "s11x",
+      "after",
+      "s11x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 16,
+  "topic": "宣布相对第10句事件",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(s10 加入 :before 宣布)：宣布在 1984 年的加入条款之前",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "不和前句事件相连",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不和前句事件相连",
+  "text": "(A :before B) 是 B 在 A 之前；1992 年的宣布在第10句（1984 年前后）加入条款之后，s3/r2、r4 读反了 :before 的方向。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 17,
+  "topic": "收购的模态 conceiver",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 收购",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "宣布 :full-affirmative 收购",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "新时代集团 :partial-affirmative 收购",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":partial-affirmative"
+   }
+  ],
+  "best": null,
+  "text": "宣布的内容可以以宣布事件为 conceiver（abridged 5.2 报道内容），训练数据 chinese_umr-0002 第42句两种都有；作者也把收购当事实陈述（第12句获批）。公司作 conceiver 再给 partial 没有依据。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 18,
+  "topic": "实体节点的模态三元组",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 华裔/旗下（实体）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "author :full-affirmative 新时代集团（实体）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "只给事件模态",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2 说模态依存连事件，华裔、旗下不是事件；但训练数据（chinese_umr-0002 第43句 author :full-affirmative 党派）也给实体节点写模态。规则未定，记 open。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 19,
+  "topic": "新时代集团与第2句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有共指",
+    "systems": [
+     "gold",
+     "s3/r3"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "s2 新时代集团 :same-entity 新时代集团",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "另把 s2 的子公司也连进来",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": "(s2s :same-entity s11g)"
+   }
+  ],
+  "best": "s2 新时代集团 :same-entity 新时代集团",
+  "text": "第2句「新时代集团子公司新时代传媒集团」里有新时代集团（gold s2c5），本句是同一实体，应连到最近的前一处提及（abridged 5.3）。子公司是新时代传媒集团，另一个实体。",
+  "fix": {
+   "title": "新时代集团连到第2句的提及",
+   "conf": "high",
+   "why": "第2句 s2c5 是新时代集团，本句 s11c 是同一家，中间没有别的提及；abridged 5.3 要求连到最近的前一处。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s2c5",
+      "same-entity",
+      "s11c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 11,
+  "n": 20,
+  "topic": "中文电视的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第10句的中文电视",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连到第9句的加拿大中文电视有限公司",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连到第9句，另把 name 节点也连上",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "(s9n4 :same-entity s11k)"
+   },
+   {
+    "label": "方向写反（本句在前）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "(s11l :same-entity s9m)"
+   }
+  ],
+  "best": null,
+  "text": "共指连实体节点、不连 name 节点，前一处提及在前（abridged 5.3）。gold 的 s10c 在第10句标成了「加拿大中文电视广播」，但它在 gold 里和第9句的公司是同一条链，本句连它是一致的。",
+  "fix": null
+ },
+ {
+  "sent": 11,
+  "n": 21,
+  "topic": "温哥华的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "s5 温哥华 :same-entity 温哥华",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有共指",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "s5 温哥华 :same-entity 温哥华",
+  "text": "温哥华在前文多次出现（第5、7句），系统都没有连。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 1,
+  "topic": "「两项交易」的量词",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "交易 :quant 2 :unit 项",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 项)"
+   },
+   {
+    "label": "交易 :quant 2，没有 :unit",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "交易 :quant 2 :unit 项",
+  "text": "项目规则：量词都保留为 :unit，省掉判 minor。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 2,
+  "topic": "「分别」「亦」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "批准 :mod 分别、改组 :mod 亦",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 分别)",
+     "/ 亦)"
+    ]
+   },
+   {
+    "label": "两个都没有节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "批准 :mod 分别、改组 :mod 亦",
+  "text": "「分别」说明两项交易各在一个月份获批，「亦」表示两台也改组；系统都略去了，丢了一点意思。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 3,
+  "topic": "「两台随后亦进行改组」的表示",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "单独的改组-01（两台），与两项具体改组并列",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "改组-01（两台）:subevent 两项具体改组",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":subevent (s"
+   },
+   {
+    "label": "没有这个总的改组，「两台」没有节点",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "进行-01 :ARG1 (and 改组 改组)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "/ 进行-01"
+   }
+  ],
+  "best": null,
+  "text": "冒号后的两项是对「两台进行改组」的说明，用 :subevent 最贴切，平列加文档级关系也可以。「进行」是轻动词，应直接用改组-01（abridged 2.1：进行访问 → 访问-01）。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 4,
+  "topic": "「两台」的写法",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "台 :quant 2",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 台"
+   },
+   {
+    "label": "电视台 :quant 2 :unit 台",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":unit (s12v / 台)"
+   },
+   {
+    "label": "电视台 :quant 2",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "/ 电视台"
+   },
+   {
+    "label": "台 :quant 2 :unit 两",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": "/ 两)"
+   },
+   {
+    "label": "（没有这个节点）",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「两台」是数词加「台」（这里兼指电视台）；把数词「两」当作 :unit 是错的。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 5,
+  "topic": "改组的施事还是受事（两台）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "改组 :ARG0 两台",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "改组 :ARG1 两台",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（没有这个节点或改用进行-01）",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 改组-01：ARG0 cause/agent、ARG1 theme。「两台进行改组」可以理解为两台主持改组（ARG0），也可以是两台被改组（ARG1），两种都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 6,
+  "topic": "「改组为X」的结果",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "改组 :end-state 城市电视/新时代电视",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":end-state (s"
+   },
+   {
+    "label": "改组 :ARG2 城市电视/新时代电视",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "改组 :end-state 城市电视/新时代电视",
+  "text": "PropBank 改组-01 只有 ARG0、ARG1，没有 ARG2（REVIEWER：带了义项没有的论元是错）。训练数据里框架没有结果论元的「X为Y」用 :end-state（chinese_umr-0007 第48句「更改为夕闇岛」、chinese_umr-0005 第29句「篡改为」）。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 7,
+  "topic": "「原属」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "牌照 :ARG0-of (属-02 :ARG1 公司)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 属-02"
+   },
+   {
+    "label": "牌照 :ARG1-of (属-01 :ARG2 公司)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 属-01"
+   },
+   {
+    "label": "牌照 :ARG1-of (属于-01 :ARG2 公司)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 属于-01"
+   },
+   {
+    "label": "牌照 :poss 公司",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":poss (s12o / 电视台"
+   }
+  ],
+  "best": "牌照 :ARG0-of (属-02 :ARG1 公司)",
+  "text": "PropBank 属-01 是「属于某类」（ARG0 entity predicated、ARG1 predicative），没有 ARG2；属-02 是归属（ARG0 被描述的东西、ARG1 它所属的一方），gold 正确。属于-01 同样是 ARG0 被描述者、ARG1 所属，s3/r5 的 ARG1/ARG2 都错。:poss 丢了「原」的时间意义；s3/r1、r2、r4 的属-01 也没有 :aspect。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 8,
+  "topic": "「原」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "属 :mod 原",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 原)"
+   },
+   {
+    "label": "没有原节点",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "属 :mod 原",
+  "text": "「原属」说明牌照原来属于国泰电视、改组后不再属于，「原」是有意义的修饰。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 9,
+  "topic": "电视台名的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "company",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "company/organization 混用",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ organization"
+   },
+   {
+    "label": "电视台（中文词作类型）",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 电视台"
+   }
+  ],
+  "best": null,
+  "text": "命名实体的类型用英文类型词（abridged 2.1/2.2），「电视台」不是实体类型；company、organization、broadcast 类都可以。s3/r3、s3/r4 从本句起多数电视台名都写成 电视台 类型（全篇如此，之后不再记）。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 10,
+  "topic": "批准与改组的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(批准 :after 改组)：改组在批准之后",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(批准 :before 改组/进行)：改组在批准之前",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(批准 :after 改组)：改组在批准之后",
+  "text": "abridged 5.1：(A :before B) 表示 B 在 A 之前。「随后」改组在批准之后，应写 (批准 :after 改组)。5 个系统都把 :before 当成「A 在 B 之前」，方向全反；同一习惯，见第11句，这里记 open。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 11,
+  "topic": "批准相对第11句",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "不和第11句相连",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(第11句收购 :before 批准)：批准在收购之前",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "(第11句宣布 :before 批准)：批准在宣布之前",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "不和第11句相连",
+  "text": "1993 年的批准在 1992 年的宣布之后；按 (A :before B) = B 在 A 之前，系统的三元组说的是批准在先，方向反了（同一习惯，见第11句，记 open）。批准有日期，不连前句也可以。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 12,
+  "topic": "两个日期的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "日期挂元节点或 :contained 批准，两个日期都有",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只连了一个日期",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "两个日期都没有时间关系",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "每个时间表达都要有时间父节点（abridged 5.1）；gold 用 and 节点 :overlap 批准，日期挂在 document-creation-time 下，可以。",
+  "fix": null
+ },
+ {
+  "sent": 12,
+  "n": 13,
+  "topic": "两项交易的成员（subset-of）",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s11 华裔 :subset-of 交易)、(s11 收购2 :subset-of 交易)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "两项交易是第11句的两笔收购；gold 的第一条用了 s11x4（华裔），应是第一笔收购 s11x7，是变量写错。",
+  "fix": {
+   "title": "交易的成员：s11x4（华裔）→ s11x7（收购）",
+   "conf": "high",
+   "why": "第11句 s11x4 是「华裔」，两项交易应是两笔收购 s11x7 和 s11x9；s11x9 已经写对，s11x4 是笔误。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s11x4",
+      "subset-of",
+      "s12x2"
+     ],
+     "to": [
+      "s11x7",
+      "subset-of",
+      "s12x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 14,
+  "topic": "两台的成员（subset-of）",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s11 温哥华 :subset-of 两台)、(s11 国泰电视 :subset-of 两台)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "两台是中文电视和国泰电视；gold 的 s11c2 是温哥华，应是中文电视 s11c3。",
+  "fix": {
+   "title": "两台的成员：s11c2（温哥华）→ s11c3（中文电视）",
+   "conf": "high",
+   "why": "第11句 s11c2 是温哥华，两台是中文电视（s11c3）和国泰电视（s11c4）；s11c2 是笔误。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s11c2",
+      "subset-of",
+      "s12x9"
+     ],
+     "to": [
+      "s11c3",
+      "subset-of",
+      "s12x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 15,
+  "topic": "国泰电视、中文电视与第11句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "连到第11句的同名公司",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "国泰连第11句但方向反，中文电视跳到第9句",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "(s12o :same-entity s11s)"
+   }
+  ],
+  "best": "连到第11句的同名公司",
+  "text": "本句「原属国泰电视」「原属中文电视」与第11句是同一实体，应连到最近的前一处（abridged 5.3），前一处在前。gold 只有 subset-of，缺 same-entity。",
+  "fix": {
+   "title": "国泰电视、中文电视连到第11句",
+   "conf": "high",
+   "why": "第11句 s11c4 国泰电视、s11c3 中文电视与本句 s12c、s12c2 是同一实体，gold 没有连。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s11c4",
+      "same-entity",
+      "s12c"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s11c3",
+      "same-entity",
+      "s12c2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 16,
+  "topic": "城市电视、新时代电视与前文的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "城市电视连第1句、新时代电视连第4句",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "新时代电视连第4句（方向反），城市电视没有",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "(s12w :same-entity s4w)"
+   },
+   {
+    "label": "城市电视连第1句（方向反），新时代电视没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "(s12p :same-entity s1c)"
+   },
+   {
+    "label": "城市电视连到第6句的「电视」",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "(s6c :same-entity s12x)"
+   }
+  ],
+  "best": null,
+  "text": "改组成的城市电视、新时代电视就是第4、5句提到的两台（gold s5c、s4c）；应连最近的前一处，前一处在前（abridged 5.3）。s3/r4 连到第6句的普通名词「电视」，不是同一实体。",
+  "fix": {
+   "title": "城市电视、新时代电视连到前文",
+   "conf": "mid",
+   "why": "改组成的「城市电视」「新时代电视」就是第4、5句的两台（s5c、s4c）。也可以说改组时这两台才成立，所以给 mid。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s5c",
+      "same-entity",
+      "s12c3"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s4c",
+      "same-entity",
+      "s12c4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 12,
+  "n": 17,
+  "topic": "CRTC 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连第6句的 CRTC",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连第9句的 CRTC",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "第9句的 CRTC 更近，连最近的更好；gold 连第6句也能形成链，差别不大。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 1,
+  "topic": "「限于」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "限于-02 :ARG0 城市电视 :ARG1 以内 :ARG2 广播",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 限于-02"
+   },
+   {
+    "label": "限于-01 :ARG0 广播 :ARG1 卑诗省",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 限于-01",
+     ":ARG0 (s13b / 广播-01"
+    ]
+   },
+   {
+    "label": "限于-01 :ARG1 广播 :ARG2 以内/卑诗省",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 限于-01"
+   },
+   {
+    "label": "限-01 :ARG1 广播 :ARG2 卑诗省",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "/ 限-01"
+   },
+   {
+    "label": "广播 :ARG1-of 限-01，范围只作 :place",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":ARG1-of (s13l / 限-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 限于-01：ARG0 theme、ARG1 range；限于-02：ARG0 thing limited、ARG1 theme、ARG2 predicate。gold 和 s3/r1 各按一个义项写对了；限于-01 没有 ARG2，s3/r3、r5 编号错。原词是「限于」，用 限-01 换了词条（限-01 的 ARG1/ARG2 本身对）；s3/r4 的限-01 没有限制范围。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 2,
+  "topic": "「继续」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "继续-01 谓词",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 继续-01"
+   },
+   {
+    "label": ":mod 继续（非谓词）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s13j / 继续)"
+   },
+   {
+    "label": "没有继续节点",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有继续-01（ARG1 thing that continues），应作谓词；作 :mod 或省掉都丢了「继续」的事件结构。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 3,
+  "topic": "「卑诗省以内」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "province 命名实体（可带 以内）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"卑诗省\""
+   },
+   {
+    "label": "一个普通概念 卑诗省以内",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 卑诗省以内)"
+   }
+  ],
+  "best": null,
+  "text": "卑诗省是地名，应作 province 命名实体（abridged 2.2）；「以内」是方位词，项目规则可建节点。s3/r4 把专名和方位词合成一个普通概念。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 4,
+  "topic": "「改组后」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "后 :op1 改组",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 后"
+   },
+   {
+    "label": "after :op1 改组",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ after"
+   }
+  ],
+  "best": null,
+  "text": "项目规则：时间方位词「后」建节点是对的；抽象的 after 也能表达同样的意思。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 5,
+  "topic": "「改组后」与第12句改组的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第12句第一项具体改组（国泰→城市电视）",
+    "systems": [
+     "gold",
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第12句总的改组（方向反）",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "第12句两项改组 :subset-of 本句改组",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「改组后」指第12句「两台随后亦进行改组」的整体，gold 应连 s12x6，而不是其中一项 s12x10；s3/r1、r4 连对了节点但前一处应在前（abridged 5.3）。",
+  "fix": {
+   "title": "改组后的改组：连第12句总的改组 s12x6",
+   "conf": "mid",
+   "why": "「改组后」指两台的整体改组（第12句 s12x6），不是其中一项（s12x10 是国泰牌照改组为城市电视）。也可读成城市电视自己的那项改组，所以给 mid。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s12x10",
+      "same-event",
+      "s13x18"
+     ],
+     "to": [
+      "s12x6",
+      "same-event",
+      "s13x18"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 6,
+  "topic": "「为」（服务语言为粤语和普通话）",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "为-01 :ARG1 :ARG2",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "/ 为-01"
+   },
+   {
+    "label": "是-01",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 是-01"
+   }
+  ],
+  "best": "identity-91",
+  "text": "系词「为/是」不是事件节点，X 为 Y 用 identity-91（abridged 2.1、2.3）；s3/r3 的为-01 还用了框架没有的 ARG2（为-01 只有 ARG0、ARG1）。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 7,
+  "topic": "「服务语言」里服务与语言的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "语言 :medium-of 服务-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":medium-of (s"
+   },
+   {
+    "label": "语言 :ARG1-of 服务-01",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s13"
+   },
+   {
+    "label": "语言 :mod 服务（非谓词）",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 服务)"
+   }
+  ],
+  "best": "语言 :medium-of 服务-01",
+  "text": "PropBank 服务-01 的 ARG1 是接受服务的一方，语言不是；语言是服务所用的媒介，:medium 合适（UMR 3-2-2 非参与者角色）。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 8,
+  "topic": "粤语、普通话的表示",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "language 命名实体",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ language"
+   },
+   {
+    "label": "普通概念 粤语、普通话",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 粤语)"
+   }
+  ],
+  "best": null,
+  "text": "语言名是命名实体，类型 language（abridged 2.2 的类型表）。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 9,
+  "topic": "开始/播放/制作的施事",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "新建一个无名 company 节点作施事",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ company)"
+   },
+   {
+    "label": "重入城市电视",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "重入城市电视（开始作 :mod，没有 ARG0）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "重入城市电视",
+  "text": "后几个分句的主语都是城市电视，同一句里应重入已有节点（abridged 5.3：句内共指用重入）；gold 另建了一个没有名字的 company，和城市电视断开了。",
+  "fix": {
+   "title": "开始/播放/制作的 ARG0 改为城市电视 s13c3",
+   "conf": "high",
+   "why": "第13句后几个分句的施事就是句首的城市电视（s13c3）；gold 另建的 s13c 是无名 company，应删去并改用重入。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s13c"
+    },
+    {
+     "op": "add_rel",
+     "s": "s13x9",
+     "r": "ARG0",
+     "t": "s13c3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s13x10",
+     "r": "ARG0",
+     "t": "s13c3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s13x12",
+     "r": "ARG0",
+     "t": "s13c3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 10,
+  "topic": "「开始」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "开始-01 :ARG1 播放",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 开始-01"
+   },
+   {
+    "label": "播放 :mod 开始（非谓词）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s13k / 开始)"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 开始-01：ARG0 entity described、ARG1 thing started，「开始播放」应以开始-01 为谓词。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 11,
+  "topic": "「但也会制作」的转折",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and 的第四项 but-91，只有 :ARG1 制作",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "but-91"
+   },
+   {
+    "label": "contrast-91 :ARG1 (and …) :ARG2 制作",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "contrast-91"
+   },
+   {
+    "label": "contrast-01 :ARG1 (and …) :ARG2 制作",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "contrast-01"
+   },
+   {
+    "label": "have-concession-91 :ARG1 (and …) :ARG2 制作",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "have-concession-91"
+   },
+   {
+    "label": "平列 and，没有转折",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "contrast-91 :ARG1 (and …) :ARG2 制作",
+  "text": "guideline 3-3（话语关系）：but-91 用 :ARG1、:ARG2 连接两个对比项；gold 的 but-91 只有一个论元，没有和前面的分句相连。英语 contrast-01 不是抽象谓词，应写 contrast-91。",
+  "fix": {
+   "title": "but-91 连接前面的分句和「制作」",
+   "conf": "mid",
+   "why": "but-91 应有 ARG1、ARG2 两个对比项（guideline 3-3 adversative）；gold 的 but-91 只挂在 and 下、只有 ARG1。改为 but-91 作根，ARG1 是前面的 and，ARG2 是制作。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13b",
+     "r": "ARG1",
+     "t": "s13x12",
+     "r2": "ARG2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s13b",
+     "r": "ARG1",
+     "t": "s13a"
+    },
+    {
+     "op": "del_rel",
+     "s": "s13a",
+     "r": "op4",
+     "t": "s13b"
+    },
+    {
+     "op": "set_root",
+     "var": "s13b"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 12,
+  "topic": "「开始」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "（开始不是事件节点）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "performance",
+  "text": "「开始播放」是一个已经发生、达到结果的起始事件，不是状态（abridged 4.1：state 用于状态谓词）。",
+  "fix": {
+   "title": "开始-01 的 aspect：state → performance",
+   "conf": "high",
+   "why": "开始-01 是已发生的起始事件，不是状态（abridged 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s13x9",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 13,
+  "topic": "「也会制作」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "habitual",
+  "text": "「也会制作一些本地节目」的「会」表示经常性的做法，是 habitual（abridged 4.1），不是一次完成的事件。",
+  "fix": {
+   "title": "制作-01 的 aspect：performance → habitual",
+   "conf": "high",
+   "why": "「也会制作一些本地节目」说的是电视台经常的做法，是 habitual，不是一次完成的 performance（abridged 4.1）。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s13x12",
+     "attr": "aspect",
+     "value": "habitual"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 14,
+  "topic": "广播、播放的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "habitual / process / activity",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "广播 state",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "持续的播出可以是 habitual、activity 或 process；广播是过程不是状态（abridged 4.1）。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 15,
+  "topic": "改组与改组后事件的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(继续 :before 改组)：改组在继续之前",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(改组 :before 继续/限于)：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "(s12 进行 :before 让步) 和 (限于 :after s12 进行)：都反",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(继续 :before 改组)：改组在继续之前",
+  "text": "(A :before B) 是 B 在 A 之前。系统把方向写反，同一习惯，见第11句，记 open。s3/r2 另有 (document-creation-time :after 继续)，说继续在文档时间之后，也反了。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 16,
+  "topic": "卑诗省的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "s10 卑诗省 :same-entity 卑诗省",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "s10 卑诗省 :same-entity 卑诗省",
+  "text": "卑诗省第10句出现过，应连到最近的前一处（abridged 5.3）。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 1,
+  "topic": "「售予」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "售-01 :ARG2 罗渣士",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 售-01"
+   },
+   {
+    "label": "售予-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": "/ 售予-01"
+   }
+  ],
+  "best": "售-01 :ARG2 罗渣士",
+  "text": "PropBank 没有「售予」，不能编 -01；售-01 的 ARG2 是 entity sold to，「售予X」正好用售-01 表达（否则写 售予-00）。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 2,
+  "topic": "「发展」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "发展-05",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 发展-05"
+   },
+   {
+    "label": "发展-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 发展-01"
+   }
+  ],
+  "best": "发展-01",
+  "text": "PropBank 发展-05 没有论元（no roles），gold 却给了 ARG0、ARG1；「发展新时代电视」是发展-01（ARG0 cause/agent、ARG1 theme）。",
+  "fix": {
+   "title": "发展-05 → 发展-01",
+   "conf": "high",
+   "why": "PropBank 发展-05 没有任何论元，gold 带了 ARG0、ARG1；这里是使某事业发展，发展-01（ARG0 agent、ARG1 theme）。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s14x5",
+     "concept": "发展-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 3,
+  "topic": "「集中发展」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "发展 :manner 集中",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ 集中)"
+   },
+   {
+    "label": "集中-01 :ARG1 发展",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 集中-01"
+   }
+  ],
+  "best": null,
+  "text": "「集中发展」可以读成状语（集中地发展），也可以读成集中-01（ARG0 agent、ARG1 theme、ARG2 focused on）带发展；PropBank 例句「把发展重点集中在…」里发展是 ARG2 所指的领域，两种读法都说得通。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 4,
+  "topic": "目的从句挂在哪里",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "计划 :purpose 发展",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "售 :purpose 集中/发展",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   }
+  ],
+  "best": null,
+  "text": "「计划将城市电视售予罗渣士，以集中发展新时代电视」，目的可以理解为出售的目的，也可以是整个计划的目的，两种都可以。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 5,
+  "topic": "被计划的「售」的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 售",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "计划 :unspecified 售",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "计划 :partial-affirmative 售",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":partial-affirmative s14"
+   }
+  ],
+  "best": "计划 :unspecified 售",
+  "text": "abridged 5.2：计划、打算一类谓词的补足事件以该谓词为父节点，强度 unspecified（或谓词蕴含的强度）；第16句说这个计划告吹，出售没有发生，gold 写成作者确认的事实是错的。计划并不蕴含「很可能」，partial-affirmative 略差。",
+  "fix": {
+   "title": "售：author :full-affirmative → 计划 :unspecified",
+   "conf": "high",
+   "why": "出售是被计划的事件（第16句计划告吹，没有发生），按 abridged 5.2 应挂在计划下、强度 unspecified，不能是作者确认的事实。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s14x2"
+     ],
+     "to": [
+      "s14x",
+      "unspecified",
+      "s14x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 6,
+  "topic": "目的「发展」的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 发展",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "售 :unspecified 集中",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "售 :partial-affirmative 发展",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "author :partial-affirmative 集中/发展",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有模态",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "目的事件是没有实现的意图，应挂在主事件或 purpose 下，不是作者确认的事实（abridged 5.2：Purpose 从句可用常量 purpose）。",
+  "fix": {
+   "title": "发展：author :full-affirmative → 计划 :unspecified",
+   "conf": "mid",
+   "why": "「以集中发展新时代电视」是计划的目的，没有被断言为已发生；按 abridged 5.2 不应是 author full-affirmative。挂在计划下（gold 的目的挂在计划上），也可以用 purpose 常量，所以给 mid。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s14x5"
+     ],
+     "to": [
+      "s14x",
+      "unspecified",
+      "s14x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 7,
+  "topic": "计划与售的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(计划 :overlap 售)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(计划 :before 售)：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "售没有时间关系",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "计划中的出售在计划之后，应为 (计划 :after 售)（训练数据 chinese_umr-0018 第29句 (计划 :after 被计划事件)）。系统的 :before 方向反，同一习惯，见第11句；s3/r2、r4、r5 另把计划挂在第13句事件下也用了反向的 :before。",
+  "fix": {
+   "title": "计划与售：overlap → after",
+   "conf": "low",
+   "why": "被计划的出售在计划之后（训练数据 chinese_umr-0018 第29句写 (计划 :after …)）；overlap 也可以理解为计划期间，所以只作提示。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s14x",
+      "overlap",
+      "s14x2"
+     ],
+     "to": [
+      "s14x",
+      "after",
+      "s14x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 8,
+  "topic": "1995年与计划",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(date :overlap 计划)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(date :contained 计划)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "日期没有时间关系",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "事件在日期之内用 :contained 更准确，overlap 也可接受；每个时间表达都要有时间父节点（abridged 5.1）。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 9,
+  "topic": "计划的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "endeavor",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「计划」可以看作打算的状态（state），也可以是没有实现的努力（endeavor，计划后来告吹）或一次完成的决定；未然和心理事件不硬判。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 1,
+  "topic": "根节点只有一项的 and",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "根 and 只有 :op1 计划",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "(s15a / and"
+   },
+   {
+    "label": "计划-01 作根",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 计划-01"
+   }
+  ],
+  "best": "计划-01 作根",
+  "text": "整句只有一个主事件「计划」，只带一个 :op1 的 and 没有意义（abridged 2.5：and 连接并列的项）。",
+  "fix": {
+   "title": "去掉只有一项的根 and",
+   "conf": "mid",
+   "why": "根 and 只有一个 :op1（计划），不表达任何并列；计划-01 直接作根。",
+   "ops": [
+    {
+     "op": "set_root",
+     "var": "s15x"
+    },
+    {
+     "op": "del_node",
+     "var": "s15a"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 2,
+  "topic": "「转型」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "转型-01 :ARG0 之 :source 电视台 :end-state 频道",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 转型-01"
+   },
+   {
+    "label": "转型-03 :ARG0 罗渣士 :ARG1 之 :ARG2 频道 :ARG3 电视台",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 转型-03"
+   }
+  ],
+  "best": "转型-03 :ARG0 罗渣士 :ARG1 之 :ARG2 频道 :ARG3 电视台",
+  "text": "PropBank 转型-01 只有 ARG0（thing described）；「将之从有线电视台转型为地面广播频道」是使动转变，转型-03：ARG0 agent/cause、ARG1 entity undergoing transition、ARG2 final state、ARG3 original state，核心论元能表达，不该用 :source/:end-state。",
+  "fix": {
+   "title": "转型-01 → 转型-03，论元按框架重排",
+   "conf": "high",
+   "why": "PropBank 转型-03：ARG0 施事、ARG1 转变的实体、ARG2 最终状态、ARG3 原状态。罗渣士是施事，「之」（城市电视）是 ARG1，地面广播频道是 ARG2，有线电视台是 ARG3；转型-01 只有一个论元。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s15x7",
+     "concept": "转型-03"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s15x7",
+     "r": "ARG0",
+     "t": "s15t",
+     "r2": "ARG1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s15x7",
+     "r": "ARG0",
+     "t": "s15c"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s15x7",
+     "r": "source",
+     "t": "s15x11",
+     "r2": "ARG3"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s15x7",
+     "r": "end-state",
+     "t": "s15x8",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 3,
+  "topic": "代词「之」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "thing（带人称、数）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ thing"
+   },
+   {
+    "label": "organization 带人称、数",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":refer-person 3rd"
+   },
+   {
+    "label": "普通概念 之",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "/ 之)"
+   }
+  ],
+  "best": null,
+  "text": "代词作 thing（或相应的实体类型）加 :refer-person / :refer-number（abridged 2.4），不能把「之」当概念。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 4,
+  "topic": "「加入」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "加入-02 :ARG2 节目",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 加入-02"
+   },
+   {
+    "label": "加入-01 :ARG1 电视节目",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 加入-01"
+   }
+  ],
+  "best": null,
+  "text": "「加入11种语言的电视节目」是把节目加进频道：PropBank 加入-02（ARG0 agent、ARG1 theme、ARG2 entity arg0 adds arg1 into），节目是 ARG1。加入-01 是加入组织（joiner、organization joined），义项错；gold 义项对但节目写成了 ARG2。",
+  "fix": {
+   "title": "加入-02：节目 ARG2 → ARG1",
+   "conf": "high",
+   "why": "PropBank 加入-02：ARG1 是被加入的东西（theme），ARG2 是加入到的对象；「加入……电视节目」里节目是 ARG1。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s15x2",
+     "r": "ARG2",
+     "t": "s15x3",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 5,
+  "topic": "「11种语言」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "语言 :quant 11 :unit 种",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":unit (s15"
+   },
+   {
+    "label": "language（英文）:quant 11 :unit 种",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "(s15l / language"
+   },
+   {
+    "label": "语言 :quant 11，没有 :unit",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "种 :quant 11 :mod language",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "(s15m / 种"
+   }
+  ],
+  "best": "语言 :quant 11 :unit 种",
+  "text": "量词保留为 :unit（项目规则）。普通名词用中文词（abridged 2.1），没有名字的 language 是把实体类型当普通名词用；s3/r3 把量词当中心语，结构颠倒。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 6,
+  "topic": "被计划的转型、加入的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 转型/加入",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "计划 :unspecified 转型/加入",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "计划 :partial-affirmative 转型/加入",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "计划 :unspecified 转型/加入",
+  "text": "abridged 5.2：计划的内容以计划为父节点、强度 unspecified；这个计划没有实现（第16句告吹），不能写作者确认。partial 没有依据，略差（同第14句）。",
+  "fix": {
+   "title": "转型、加入：author :full-affirmative → 计划 :unspecified",
+   "conf": "high",
+   "why": "转型和加入是罗渣士计划的内容，计划后来告吹（第16句），按 abridged 5.2 应挂在计划下、强度 unspecified。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s15x7"
+     ],
+     "to": [
+      "s15x",
+      "unspecified",
+      "s15x7"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s15x2"
+     ],
+     "to": [
+      "s15x",
+      "unspecified",
+      "s15x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 7,
+  "topic": "计划与被计划事件的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(计划 :overlap 转型/加入)",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(计划 :before 转型)：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "被计划事件没有时间关系",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "被计划的事件在计划之后，应写 (计划 :after 转型)（训练数据 chinese_umr-0018 第29句）；系统的 :before 是方向反的习惯，见第11句。",
+  "fix": {
+   "title": "计划与转型、加入：overlap → after",
+   "conf": "low",
+   "why": "被计划的事件在计划之后（训练数据 chinese_umr-0018 第29句 (计划 :after …)），overlap 不准确；但也可以理解为计划时段，所以只作提示。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s15x",
+      "overlap",
+      "s15x7"
+     ],
+     "to": [
+      "s15x",
+      "after",
+      "s15x7"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s15x",
+      "overlap",
+      "s15x2"
+     ],
+     "to": [
+      "s15x",
+      "after",
+      "s15x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 8,
+  "topic": "「之」「罗渣士」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "之 → s14 城市电视，罗渣士 → s14 罗渣士通讯集团",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "两个都连了，另把本句计划和第14句的计划连成同一事件",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "(s14p :same-event s15p)"
+   },
+   {
+    "label": "只连了之",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "(s14c :same-entity s15z)"
+   },
+   {
+    "label": "都没有",
+    "systems": [
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「之」指第14句的城市电视，罗渣士就是第14句的罗渣士通讯集团（abridged 5.3）。第14句是新时代集团的出售计划，本句是罗渣士自己的计划，不是同一事件。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 1,
+  "topic": "「告吹」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "告吹-00 :ARG0 计划",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 告吹-00"
+   },
+   {
+    "label": "告吹-01 :ARG0 计划",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 告吹-01",
+     ":ARG0 (s16pl / 计划"
+    ]
+   },
+   {
+    "label": "告吹-01 :ARG1 计划",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 告吹-01"
+   }
+  ],
+  "best": "告吹-01 :ARG0 计划",
+  "text": "PropBank 有告吹-01，只有 ARG0（theme），不该写 -00；计划是 ARG0，告吹-01 没有 ARG1。",
+  "fix": {
+   "title": "告吹-00 → 告吹-01",
+   "conf": "high",
+   "why": "PropBank 有告吹-01（ARG0 theme），gold 的论元 ARG0 计划已经符合，只是义项写成了 -00。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s16x9",
+     "concept": "告吹-01"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 2,
+  "topic": "「告吹」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "state",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "performance",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "performance",
+  "text": "「计划因此告吹」是已经发生、有结果的事件，不是状态（abridged 4.1）。",
+  "fix": {
+   "title": "告吹 aspect：state → performance",
+   "conf": "high",
+   "why": "计划告吹是一个已完成的事件（abridged 4.1 performance），不是状态。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s16x9",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 3,
+  "topic": "「因此」的因果关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-reason-91 :ARG1 告吹 :ARG2 (and 改变 表示)",
+    "systems": [
+     "gold"
+    ],
+    "status": "open",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "cause-01 :ARG0 原因 :ARG1 告吹",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "cause-01"
+   },
+   {
+    "label": "告吹 :cause 表示",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":cause s16"
+   },
+   {
+    "label": "cause-01 :ARG1 原因 :ARG2 告吹",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": [
+     "cause-01",
+     ":ARG2 (s16g / 告吹-01"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "新时代表示不放弃牌照，造成计划告吹，是原因（项目规则 :cause）；guideline 3-3 因果关系用 cause-01（ARG0 原因、ARG1 结果）或 :cause。训练数据「因此」却常写 have-reason-91（chinese_umr-0007 第50句），两者冲突，gold 一侧记 open。s3/r2 的 cause-01 原因、结果论元错位，ARG2 不存在。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 4,
+  "topic": "「无意」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "无意-01 :ARG1 放弃",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "/ 无意-01"
+   },
+   {
+    "label": "有意-01 :polarity -",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 有意-01"
+   },
+   {
+    "label": "没有无意，放弃 :polarity -",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有无意-01（ARG0 entity described、ARG1 thing arg0 doesn't intend to do），用有意-01 加否定也能表达；s3/r1 把「无意放弃」改成「不放弃」，丢了意愿。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 5,
+  "topic": "无意、放弃的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "计划 :full-affirmative 无意，另有 author :full-affirmative 放弃",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "表示 :full-affirmative 无意 / 表示 :full-negative 有意",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "author :full-negative 有意，有意 :unspecified 放弃",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "表示 :unspecified 无意",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "新时代 :partial-negative 放弃",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「计划」不是说话者，不能作无意的 conceiver；新时代无意放弃牌照，放弃没有发生，不能是作者确认的 full-affirmative（abridged 5.2：意愿谓词的补足事件挂在谓词下）。gold 同时有 (无意 :unspecified 放弃)，放弃有两个互相矛盾的父节点。gold 还把 (author :full-affirmative 计划) 重复写了四遍。",
+  "fix": {
+   "title": "删掉 计划→无意 和 author→放弃 两条模态",
+   "conf": "high",
+   "why": "「计划」不是 conceiver；放弃是新时代无意去做的事，已有 (无意 :unspecified 放弃)，再写作者 full-affirmative 互相矛盾。删去这两条，保留 author→无意 和 无意→放弃。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "s16x10",
+      "full-affirmative",
+      "s16x5"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s16x6"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 6,
+  "topic": "告吹的计划与第14句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第14句新时代的出售计划",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连到第15句罗渣士的计划",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "(s15p :same-event s16p)"
+   }
+  ],
+  "best": null,
+  "text": "告吹的就是第14句出售城市电视的计划（连带第15句罗渣士的计划），应有共指（abridged 5.3）。gold 的「计划」是名词节点，连事件的方式拿不准，只作提示。",
+  "fix": {
+   "title": "告吹的计划连到第14句的计划",
+   "conf": "low",
+   "why": "「计划因此告吹」指第14句新时代出售城市电视的计划；gold 的计划是名词节点，用 same-event 还是 same-entity 不定，只作提示。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s14x",
+      "same-event",
+      "s16x10"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 7,
+  "topic": "改变、表示、告吹的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(告吹 :before 改变)、(改变 :overlap 表示)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(改变 :before 表示)、(表示 :before 告吹)：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(告吹 :before 改变)、(改变 :overlap 表示)",
+  "text": "(A :before B) 是 B 在 A 之前；改变初衷、表示不放弃在先，告吹在后，gold 对。系统的方向反，同一习惯，见第11句。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 8,
+  "topic": "CRTC 的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第9句",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第12句",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连到第6句",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "应连最近的前一处提及（abridged 5.3），第12句就有 CRTC；连得更远也能成链，差别小，不写 fix。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 1,
+  "topic": "「有见于」的因果关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-reason-91 :ARG1 (and …) :ARG2 增加",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-reason-91"
+   },
+   {
+    "label": "改革 :reason 增加",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":reason (s17i / 增加-01"
+   },
+   {
+    "label": "有见于-01 谓词 + :reason",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "有见于-01"
+   },
+   {
+    "label": "改革 :cause 增加",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":cause (s17i / 增加-01"
+   },
+   {
+    "label": "cause-01 :ARG0 增加 :ARG1 (and …)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":ARG0 (s17i / 增加-01"
+   },
+   {
+    "label": "cause-01 :ARG1 增加 :ARG2 (and …)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s17i / 增加-01"
+   }
+  ],
+  "best": null,
+  "text": "「有见于移民增加」是城市电视改革给出的依据，是理由（项目规则 :reason），have-reason-91 或 :reason 都合适，:cause 略差。PropBank 没有「有见于」，不能编 -01。cause-01 是 ARG0 原因、ARG1 结果，s3/r2 把原因放在 ARG1、结果放在不存在的 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 2,
+  "topic": "「来自中国和台湾」的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "操 :reason (来自-01 :ARG0 移民 :ARG1 中国和台湾)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":reason (s17x4 / 来自-01"
+   },
+   {
+    "label": "移民 :ARG1-of (来自-01 :ARG2 中国和台湾)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG1-of (s17",
+     "/ 来自-01"
+    ]
+   },
+   {
+    "label": "移民 :source (and 中国 台湾)",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":source (s17"
+   }
+  ],
+  "best": null,
+  "text": "「来自中国和台湾而操普通话的移民」，「来自…」和「操普通话」是并列的两个定语，都修饰移民；gold 把来自当成「操」的理由。PropBank 来自-01：ARG0 entity described（移民）、ARG1 source（中国、台湾），系统的 ARG1/ARG2 编号错；用 :source 意思在但没用框架。",
+  "fix": {
+   "title": "来自-01 改挂到移民上",
+   "conf": "high",
+   "why": "「来自中国和台湾而操普通话的移民」里来自是移民的定语，与「操普通话」并列，不是「操」的理由；来自-01 的 ARG0 就是移民，改成移民 :ARG0-of 来自-01。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s17x5",
+     "r": "reason",
+     "t": "s17x4"
+    },
+    {
+     "op": "del_rel",
+     "s": "s17x4",
+     "r": "ARG0",
+     "t": "s17x3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s17x3",
+     "r": "ARG0-of",
+     "t": "s17x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 3,
+  "topic": "移民下的空 and 节点",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "移民 :ARG0-of (and)，没有 op",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "(s17a2 / and)"
+   },
+   {
+    "label": "没有这个节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有这个节点",
+  "text": "gold 里有一个没有任何 :op 的 and，挂成移民的 :ARG0-of，是残留的空节点。",
+  "fix": {
+   "title": "删除空的 and 节点 s17a2",
+   "conf": "high",
+   "why": "s17a2 是没有任何 :op 的 and，用 :ARG0-of 挂在移民下，没有意义，是残留节点。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s17a2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 4,
+  "topic": "「改革」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "改革-01 :ARG1 城市电视",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 改革-01"
+   },
+   {
+    "label": "改革-01 :ARG0 城市电视",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 改革-01"
+   },
+   {
+    "label": "进行-01 :ARG1 改革（名词）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "/ 进行-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 改革-01：ARG0 cause/agent、ARG1 theme，城市电视改革自身，作 ARG0 或 ARG1 都说得通。「进行」是轻动词，应直接用改革-01（abridged 2.1）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 5,
+  "topic": "「转型为」的义项和论元",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "转型-01 :ARG0 城市电视 :end-state 频道",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 转型-01"
+   },
+   {
+    "label": "转型-03 :ARG1 城市电视 :ARG2 频道",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 转型-03"
+   }
+  ],
+  "best": "转型-03 :ARG1 城市电视 :ARG2 频道",
+  "text": "同第15句：PropBank 转型-01 只有 ARG0（thing described），「转型为…频道」是转型-03（ARG1 entity undergoing transition、ARG2 final state）。",
+  "fix": {
+   "title": "转型-01 → 转型-03，城市电视 ARG1、频道 ARG2",
+   "conf": "high",
+   "why": "PropBank 转型-03：ARG1 是转变的实体，ARG2 是最终状态；转型-01 只有一个论元，没有结果论元。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17x7",
+     "concept": "转型-03"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17x7",
+     "r": "ARG0",
+     "t": "s17c3",
+     "r2": "ARG1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17x7",
+     "r": "end-state",
+     "t": "s17x11",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 6,
+  "topic": "「一个全普通话频道」的量词",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "频道 :quant 1 :unit 个",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 个)"
+   },
+   {
+    "label": "频道 :quant 1，没有 :unit",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "频道 :quant 1 :unit 个",
+  "text": "项目规则：量词都保留为 :unit。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 7,
+  "topic": "「转移」的来源和目标",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "转移-01 :ARG2 香港移民 :ARG3 中国/台湾移民",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "转移-01 :ARG2 中国/台湾移民 :ARG3 香港移民",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "转移-01 :ARG2 中国/台湾移民 :ARG3 香港移民",
+  "text": "PropBank 转移-01：ARG2 goal、ARG3 source。「由讲粤语的香港移民转移为讲普通话的中国移民和台湾移民」，香港移民是来源（ARG3），中国、台湾移民是目标（ARG2），gold 写反了。",
+  "fix": {
+   "title": "转移：来源与目标对调",
+   "conf": "high",
+   "why": "PropBank 转移-01 的 ARG2 是 goal、ARG3 是 source；「由香港移民转移为中国移民和台湾移民」，gold 把两者写反了。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s17x8",
+     "r": "ARG2",
+     "t": "s17x15",
+     "r2": "ARG3"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s17x8",
+     "r": "ARG3",
+     "t": "s17a4",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 8,
+  "topic": "「改为播放」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "改为-01 :ARG2 播放",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": [
+     "/ 改为-01",
+     ":ARG2 (s17x20 / 播放-01"
+    ]
+   },
+   {
+    "label": "改为-01 :ARG1 播放",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 改为-01"
+   },
+   {
+    "label": "改-01 :ARG1 播放",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 改-01"
+   },
+   {
+    "label": "只有播放，没有改为",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "改为-01 :ARG2 播放",
+  "text": "PropBank 改为-01：ARG1 thing changed、ARG2 changing to；改为播放的新节目是变成的状态，应是 ARG2（改-01 同样是 ARG2 entity arg1 is changed into）。省掉改为丢了「改变」的意思。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 9,
+  "topic": "「中国大陆」「台湾」作地点",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "country-region 命名实体",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"大陆\""
+   },
+   {
+    "label": "中国大陆 作普通概念",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ 中国大陆)"
+   }
+  ],
+  "best": null,
+  "text": "中国大陆是地名，应作命名实体（abridged 2.2：专名整体作命名实体），不是普通概念；系统里台湾也有时写成普通概念（s3/r1、r4）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 10,
+  "topic": "「普通话」等语言名",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "language 命名实体",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ language"
+   },
+   {
+    "label": "普通概念 普通话、粤语",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 普通话)"
+   }
+  ],
+  "best": null,
+  "text": "语言名作 language 命名实体（abridged 2.2），s3/r4 第13句起就这样写（全篇如此）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 11,
+  "topic": "句内共指写成 :coref",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "句内重复提及用三元组 :same-entity",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "(s17pt :same-entity s17pt2)"
+   },
+   {
+    "label": "没有句内 :coref",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "abridged 5.3：同一句里的共指用重入（一个变量），不写 :coref 三元组。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 12,
+  "topic": "本句事件的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "只有 author→城市电视（两次）、城市电视→改为，其他事件没有模态",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "author :full-affirmative 各个事件",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "author :full-affirmative 各个事件",
+  "text": "abridged 5.2：作者陈述的每个事件都要有 (author :full-affirmative 事件)；gold 只给了实体和改为，改革、转型、转移、增加都没有模态父节点，改为又以公司作 conceiver，没有依据。",
+  "fix": {
+   "title": "补上主要事件的作者模态",
+   "conf": "high",
+   "why": "本句是作者直接陈述的事实，改革、转型、转移、增加和改为都应是 (author :full-affirmative …)（abridged 5.2）；gold 漏了这些，又把改为挂在公司下。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "s17c3",
+      "full-affirmative",
+      "s17x9"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s17x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s17x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s17x7"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s17x8"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s17x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 13,
+  "topic": "日期与转型",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(转型 :overlap date)：日期是子节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(date :contained 转型)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "日期没有时间关系",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(date :contained 转型)",
+  "text": "abridged 5.1：有时间表达时它是事件的参照时间（父节点），(date :contained 事件)；gold 把日期写成转型的子节点。",
+  "fix": {
+   "title": "日期作转型的父节点",
+   "conf": "mid",
+   "why": "1998年6月1日是转型的参照时间，应为 (date :contained 转型)（abridged 5.1）；gold 写成 (转型 :overlap date)，方向和关系都不合常规。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s17x7",
+      "overlap",
+      "s17d"
+     ],
+     "to": [
+      "s17d",
+      "contained",
+      "s17x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 14,
+  "topic": "增加与改革等的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(改为 :before 增加)：增加在前",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(增加 :before 改革) 等：方向反",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "(增加 :overlap 改革)",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "增加没有时间关系",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "移民增加在改革之前，gold 对。s3/r1 的 :before 方向反（同一习惯，见第11句）。s3/r2 另有 (document-creation-time :after 转型)，把 1998 年的转型放到文档时间之后，是错的。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 1,
+  "topic": "「顶替」中新时代电视的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "顶替-01 :ARG1 新时代电视",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s18"
+   },
+   {
+    "label": "顶替-01 :ARG0 新时代电视",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG0 (s18"
+   }
+  ],
+  "best": "顶替-01 :ARG1 新时代电视",
+  "text": "PropBank 顶替-01：ARG0 inducer、ARG1 replacer、ARG2 party replaced。「由新时代电视顶替」，新时代电视是顶替者 ARG1，不是促成者 ARG0。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 2,
+  "topic": "「电视市场」与被顶替方",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "顶替 :ARG2 市场",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":ARG2 (s18"
+   },
+   {
+    "label": "顶替 :ARG2 城市电视，市场作 :place",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":place (s18m / 市场"
+   },
+   {
+    "label": "顶替 :ARG1 市场",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s18"
+   }
+  ],
+  "best": "顶替 :ARG2 城市电视，市场作 :place",
+  "text": "顶替-01 的 ARG2 是被顶替的一方，句意是新时代电视在这个市场里顶替了城市电视（上一句城市电视改为普通话）；市场不是被顶替者，ARG1（顶替者）更不对。s3/r1 补出城市电视最贴切。",
+  "fix": {
+   "title": "市场：顶替 :ARG2 → :place",
+   "conf": "low",
+   "why": "顶替-01 的 ARG2 是被顶替的一方（城市电视，隐含），市场是顶替发生的范围；把市场当被顶替者是勉强的读法，但补出城市电视要另加节点，只作提示。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s18x",
+     "r": "ARG2",
+     "t": "s18x3",
+     "r2": "place"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 3,
+  "topic": "「掉往」（调往）的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "调往-01 :ARG1 节目 :ARG2 新时代电视",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 调往-01"
+   },
+   {
+    "label": "掉-01",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 掉-01"
+   },
+   {
+    "label": "调-01 :ARG2 新时代电视",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "/ 调-01"
+   },
+   {
+    "label": "掉往-01 :ARG2 播放",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "/ 掉往-01"
+   },
+   {
+    "label": "没有这个事件，只有播放",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "调往-01 :ARG1 节目 :ARG2 新时代电视",
+  "text": "「掉往」是「调往」的错字，PropBank 调往-01：ARG1 被调的东西、ARG2 destination。掉-01 是丢失（entity described / entity drops），调-01 是调整，都没有目的地论元；PropBank 没有「掉往」，不能编 -01，目的地也不是播放。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 4,
+  "topic": "新时代电视的第二次提及",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "另建节点，再用句内 :coref 相连",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "重入同一个节点",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "重入同一个节点",
+  "text": "abridged 5.3：同一句里的共指用重入，不写 :coref 三元组。",
+  "fix": {
+   "title": "新时代电视的两个节点合并为重入",
+   "conf": "mid",
+   "why": "同一句里两次提到新时代电视，按 abridged 5.3 应重入 s18c，而不是另建 s18c4 再写 (s18c :same-entity s18c4)；删 s18c4 时这条三元组随之删除。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s18c",
+     "r": "ARG0-of",
+     "t": "s18x10"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18x2",
+     "r": "ARG2",
+     "t": "s18c"
+    },
+    {
+     "op": "del_node",
+     "var": "s18c4",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 5,
+  "topic": "播放与调往的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "新时代电视 :ARG0-of 播放",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "调往/掉 :purpose 播放",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s18"
+   },
+   {
+    "label": "掉往 :ARG2 播放",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "open",
+    "grep": ":ARG2 (s18l / 播放-01"
+   },
+   {
+    "label": "（只有播放）",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「调往新时代电视播放」，播放可以看作调往的目的，也可以是新时代电视的定语，两种都可以。s3/r3 的问题记在义项一条。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 6,
+  "topic": "市场的领有者写 :poss",
+  "cat": "role",
+  "choices": [
+   {
+    "label": ":poss",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":poss (s18"
+   },
+   {
+    "label": ":possessor 或 :mod",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": ":poss（同一习惯）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "open",
+    "grep": ":poss (s18"
+   }
+  ],
+  "best": null,
+  "text": "按发布数据写 :possessor（Conventions）。s3/r3 全篇如此，见第11句；s3/r4、r5 只在本句。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 7,
+  "topic": "亚洲电视的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第13句的亚洲电视",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "连到第13句的亚洲电视",
+  "text": "第13句「播放亚洲电视的节目」与本句的香港亚洲电视是同一实体（abridged 5.3）。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 8,
+  "topic": "顶替的时间锚点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "本句事件没有连到前文或文档时间",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(s17 转型 :before 顶替)：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "abridged 5.1：每个事件都要有时间父节点；gold 本句只有句内的 overlap，顶替没有父节点。顶替是 1998 年城市电视转型的结果，在转型之后（或同时）。系统的 :before 方向反，同一习惯，见第11句。",
+  "fix": {
+   "title": "顶替挂到第17句转型之后",
+   "conf": "mid",
+   "why": "gold 第18句的事件没有任何时间父节点（abridged 5.1）。粤语市场由新时代电视顶替，是第17句城市电视转为普通话频道（s17x7）之后的事；也可写 overlap，所以给 mid。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s17x7",
+      "after",
+      "s18x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 1,
+  "topic": "CRTC 下多出的「牌照」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "CRTC :ARG2 (牌照)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s19x3 / 牌照)"
+   },
+   {
+    "label": "没有这个节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有这个节点",
+  "text": "命名实体节点不带 ARG 论元；「牌照」已经是改为的 ARG1（s19x9），这里多出的 s19x3 挂在 CRTC 下没有意义。",
+  "fix": {
+   "title": "删除 CRTC 下多余的牌照节点",
+   "conf": "high",
+   "why": "s19x3 牌照用 :ARG2 挂在 government-organization CRTC 下，实体没有论元结构，牌照在改为-01 下已经有了（s19x9），这是多余的节点。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s19x3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 2,
+  "topic": "「改为」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "改为-01",
+    "systems": [
+     "gold",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 改为-01"
+   },
+   {
+    "label": "改-01",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 改-01"
+   },
+   {
+    "label": "改变-01",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "/ 改变-01"
+   }
+  ],
+  "best": "改为-01",
+  "text": "原词是「改为」，PropBank 有改为-01（ARG0 agent、ARG1 thing changed、ARG2 changing to），不必换成别的词条。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 3,
+  "topic": "原来的牌照类型（从地区性收费电视）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "改为 :source 地区性收费电视",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":source (s19x8 / 电视"
+   },
+   {
+    "label": ":ARG3 地区性收费电视",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG3 (s19"
+   }
+  ],
+  "best": "改为 :source 地区性收费电视",
+  "text": "PropBank 改为-01、改-01、改变-01 都只有 ARG0–ARG2，没有 ARG3（REVIEWER：带了义项没有的论元是错）；「从…」的原状态框架里没有论元，用 :source。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 4,
+  "topic": "被申请的「改为」的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 改为",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "申请 :unspecified 改",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "改为没有模态",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "申请 :unspecified 改",
+  "text": "申请的内容在申请时还没有实现（第20句 2001 年才获批），是申请事件下的未然事件（abridged 5.2：补足事件以谓词为父节点，unspecified）。",
+  "fix": {
+   "title": "改为：author :full-affirmative → 申请 :unspecified",
+   "conf": "high",
+   "why": "牌照改为全国性是城市电视申请的内容，2000 年申请时尚未实现，应挂在申请下、强度 unspecified（abridged 5.2）。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s19x2"
+     ],
+     "to": [
+      "s19x",
+      "unspecified",
+      "s19x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 5,
+  "topic": "申请与改为的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(申请 :overlap 改为)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(申请 :before 改)：方向反",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "改为没有时间关系",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "申请的改变在申请之后，应写 (申请 :after 改为)；系统的 :before 方向反，同一习惯，见第11句。",
+  "fix": {
+   "title": "申请与改为：overlap → after",
+   "conf": "low",
+   "why": "改为全国性牌照是申请之后（获批之后）才发生的事，(申请 :after 改为) 更准确；overlap 只是不精确，所以只作提示。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s19x",
+      "overlap",
+      "s19x2"
+     ],
+     "to": [
+      "s19x",
+      "after",
+      "s19x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 6,
+  "topic": "城市电视的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "连到第16句",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "连到第17或18句",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "连到第1句，方向反",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "(s19b :same-entity s1c)"
+   }
+  ],
+  "best": null,
+  "text": "应连最近的前一处（abridged 5.3）；第17句就有城市电视（gold s17c3），gold 跳过了它，但链条仍然连通，只作提示。",
+  "fix": {
+   "title": "城市电视连到第17句",
+   "conf": "low",
+   "why": "第17句 s17c3 是城市电视，比第16句近；gold 的链仍连通，所以只作提示。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s16c2",
+      "same-entity",
+      "s19c"
+     ],
+     "to": [
+      "s17c3",
+      "same-entity",
+      "s19c"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 1,
+  "topic": "「获批」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "批-01 :ARG1 申请",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 批-01"
+   },
+   {
+    "label": "批准-01 :ARG1 申请",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 批准-01"
+   },
+   {
+    "label": "获批-01",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "/ 获批-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 没有「获批」，不能编 -01；批-01（ARG0 agent、ARG1 entity given permission）或批准-01（ARG0 agent、ARG1 theme）都能表达「申请获批」。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 2,
+  "topic": "「申请」作事件还是名词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "名词 申请",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "/ 申请)"
+   },
+   {
+    "label": "申请-01 事件",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 申请-01"
+   }
+  ],
+  "best": null,
+  "text": "这里的申请指上一句的申请行为（事件名词），按 abridged 2.1 作事件也可以；两种都能和第19句的申请-01 做事件共指。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 3,
+  "topic": "申请与第19句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "s19 申请 :same-event 申请",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "方向反（本句在前）",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":same-event s19"
+   },
+   {
+    "label": "另连到第9句世界电视的申请",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "(s9s :same-event s20s)"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "s19 申请 :same-event 申请",
+  "text": "获批的是第19句城市电视 2000 年的申请；前一处在前（abridged 5.3）。第9句是 1983 年世界电视的另一次申请，不是同一事件。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 4,
+  "topic": "「开始全国播放」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "开始-01 :ARG1 播放",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 开始-01"
+   },
+   {
+    "label": "播放 :mod 开始",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":mod (s20k / 开始)"
+   }
+  ],
+  "best": null,
+  "text": "同第13句：PropBank 开始-01（ARG1 thing started）应作谓词。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 5,
+  "topic": "「同年秋季」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "date-entity :year 2001 :season 秋季",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":year 2001"
+   },
+   {
+    "label": "秋季 :mod 同年（普通概念）",
+    "systems": [
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":mod (s20"
+   }
+  ],
+  "best": null,
+  "text": "「同年」指 2001 年，日期用 date-entity，季节用 :season（abridged 2.2、guideline 3-2-2-1）；写成普通概念丢了年份。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 6,
+  "topic": "「亦」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "开始/播放 :mod 亦",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 亦)"
+   },
+   {
+    "label": "没有亦",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「亦」是原文的副词，系统常把它略去（第12、18、20句）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 7,
+  "topic": "播放的模态",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "author :full-affirmative 播放",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "播放作主事件有模态",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "播放没有模态",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "每个事件都要有模态父节点（abridged 5.2）；开始播放已经发生，播放是作者断言的事实。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 8,
+  "topic": "获批与开始播放的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "两个事件各挂在自己的日期下，彼此不连",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(批准 :before 开始) 等：方向反",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "两个事件都有日期，各自挂在日期下即可（abridged 5.1）。系统的 (批准 :before 开始)、(第19句申请 :before 批准) 方向都反，同一习惯，见第11句。",
+  "fix": null
+ }
+]

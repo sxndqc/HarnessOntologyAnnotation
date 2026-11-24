@@ -1,0 +1,8036 @@
+[
+ {
+  "sent": 13,
+  "n": 1,
+  "topic": "两个分句并列的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and :ARG1 位于 / :ARG2 建",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG1 (s",
+     "/ 位于-01"
+    ]
+   },
+   {
+    "label": "and :op1 / :op2",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   }
+  ],
+  "best": "and :op1 / :op2",
+  "text": "guideline 2.5：并列 and 用 :op1、:op2；and 没有 :ARG1/:ARG2。",
+  "fix": {
+   "title": "并列 and 的子节点：:ARG1/:ARG2 → :op1/:op2",
+   "conf": "high",
+   "why": "and 是并列概念，取 :opN，不取编号论元。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13a",
+     "r": "ARG1",
+     "t": "s13x",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s13a",
+     "r": "ARG2",
+     "t": "s13x2",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 2,
+  "topic": "「位于」的概念",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "位于-01",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "位于-01"
+   },
+   {
+    "label": "have-place-91",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "have-place-91"
+   }
+  ],
+  "best": "位于-01",
+  "text": "PropBank 有 位于-01（ARG0 entity described，ARG1 location），有词汇动词时不用抽象谓词 have-place-91（guideline 2.3 只在没有动词时用）。训练数据 chinese_umr-0004 第43句、-0016 第8句都用 位于-01。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 3,
+  "topic": "「这座」的写法",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "牌坊 :quant 这 :unit 座",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":unit (s"
+   },
+   {
+    "label": "牌坊 :mod 这（量词省掉）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ 这)"
+   },
+   {
+    "label": "牌坊 :mod 这座（不拆）",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 这座)"
+   }
+  ],
+  "best": "牌坊 :mod 这（量词省掉）",
+  "text": "指示词是 :mod（guideline 3 非论元角色：:mod 含 demonstrative），不是 :quant；量词按项目规则保留为 :unit，所以 gold 的 :unit 座 是对的，只是 这 的角色错。系统省掉量词判 minor（全篇如此）。",
+  "fix": {
+   "title": "「这」：:quant → :mod",
+   "conf": "high",
+   "why": "「这」是指示词，用 :mod；:quant 只用于数量。量词 座 的 :unit 保留。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13x13",
+     "r": "quant",
+     "t": "s13x14",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 4,
+  "topic": "「该县」的「该」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "county :quant 该",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "县/county :mod 该",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": "县/county :mod 该",
+  "text": "「该」是指示词，用 :mod，不是数量 :quant。",
+  "fix": {
+   "title": "「该」：:quant → :mod",
+   "conf": "high",
+   "why": "「该」是指示词，用 :mod；:quant 只用于数量。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s13c",
+     "r": "quant",
+     "t": "s13x19",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 5,
+  "topic": "「该县」是否带名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "county :name \"县\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"县\""
+   },
+   {
+    "label": "县 :mod 该（无名字）",
+    "systems": [
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "/ 县"
+   },
+   {
+    "label": "county :mod 该（无名字）",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ county"
+   },
+   {
+    "label": "county :name \"衡阳县\"（从上文补名字）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"衡阳县\""
+   }
+  ],
+  "best": null,
+  "text": "「县」是普通名词不是专名，gold 把它写成 name 的 :op1 是错的；「该县」指上一句的衡阳县，应靠共指表达，不该在本句图里凭空补出名字（r4）。",
+  "fix": {
+   "title": "删去「县」的 name 节点",
+   "conf": "high",
+   "why": "「该县」里的「县」不是专名，不应有 :name；指称靠共指。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s13n2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 6,
+  "topic": "柳树村、台源镇的命名实体写法",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "村 :name (柳树)：名字写成普通节点，没有 name/:op1",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 柳树)"
+   },
+   {
+    "label": "village/town :name \"柳树村\"（一个 op）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"柳树村\""
+   },
+   {
+    "label": "village :name :op1 \"柳树\" :op2 \"村\"",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"村\""
+   },
+   {
+    "label": "村/镇 :name (name :op1 \"柳树\")（类型用中文词）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "/ 村"
+   }
+  ],
+  "best": "village :name :op1 \"柳树\" :op2 \"村\"",
+  "text": "guideline 2.2：命名实体是类型概念 + :name (name :op1 … :op2 …)，按词切分；训练数据 胡佛 村 → city-district :op1 \"胡佛\" :op2 \"村\"（chinese_umr-0004 第43句）。gold 的 :name 指向一个概念为「柳树」的普通节点，格式不合法。",
+  "fix": {
+   "title": "柳树、台源改成 name 节点",
+   "conf": "high",
+   "why": "命名实体的 :name 必须指向 name 节点并用 :op1 写名字字符串；gold 把名字写成了概念。类型（村/镇 → village/town）可另议。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s13x16",
+     "concept": "name"
+    },
+    {
+     "op": "set_attr",
+     "var": "s13x16",
+     "attr": "op1",
+     "value": "\"柳树\""
+    },
+    {
+     "op": "rename",
+     "var": "s13x18",
+     "concept": "name"
+    },
+    {
+     "op": "set_attr",
+     "var": "s13x18",
+     "attr": "op1",
+     "value": "\"台源\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 7,
+  "topic": "村—镇—县的层级关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "村 :part-of 镇 :part-of 县",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "村 :place 镇 :place 县",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "村 :part-of 镇 :part-of 县",
+  "text": "行政区划的包含是部分—整体，部分为父节点用 :part-of（项目规则）；:place 是事件发生的处所，不适合表示实体之间的从属。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 8,
+  "topic": "「守节」：修饰词还是事件",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "寡妇 :mod 守节（非事件）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 守节)"
+   },
+   {
+    "label": "廖黄氏/寡妇 :ARG0-of 守节-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "守节-01"
+   }
+  ],
+  "best": "廖黄氏/寡妇 :ARG0-of 守节-01",
+  "text": "PropBank 有 守节-01（ARG0 agent）。「守节寡妇」是动词性修饰（守节的寡妇），guideline 2.1：关系从句、修饰性动词是事件，用 :ARG0-of，并带 aspect（state）和文档级 modal。",
+  "fix": {
+   "title": "「守节」改为事件 守节-01，寡妇 :ARG0-of",
+   "conf": "mid",
+   "why": "守节是动词（PropBank 守节-01，ARG0 agent），修饰寡妇时按关系从句处理为 :ARG0-of 事件；也可以把「守节寡妇」看成一个类名，故 mid。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s13x9",
+     "concept": "守节-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s13x8",
+     "r": "mod",
+     "t": "s13x9",
+     "r2": "ARG0-of"
+    },
+    {
+     "op": "set_attr",
+     "var": "s13x9",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s13x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 9,
+  "topic": "廖黄氏与寡妇的组合",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "person :name 廖黄氏 :mod 寡妇",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "寡妇 :name 廖黄氏（寡妇作类型）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"廖黄氏\""
+   }
+  ],
+  "best": "person :name 廖黄氏 :mod 寡妇",
+  "text": "命名实体的类型取 guideline 类型表（person）；「寡妇」是对这个人的描述，应作 :mod，不作实体类型。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 10,
+  "topic": "「为廖黄氏」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "建 :affectee 廖黄氏",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":affectee"
+   },
+   {
+    "label": "建 :ARG2 廖黄氏",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "建 :affectee 廖黄氏",
+  "text": "PropBank 建-01 只有 ARG0 constructor、ARG1 thing constructed，没有 ARG2；受益者用非论元角色 :affectee（guideline 表9：beneficiary or maleficiary）。训练数据 chinese_umr-0005 第5句等用 :affectee。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 11,
+  "topic": "「建」的 ARG1（牌坊）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "没有 建 :ARG1 牌坊",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "建 :ARG1 牌坊（重入）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 s"
+   }
+  ],
+  "best": "建 :ARG1 牌坊（重入）",
+  "text": "「是……所建」的被建者就是主语牌坊，PropBank 建-01 ARG1 thing constructed，应由已有的牌坊节点重入充当。",
+  "fix": {
+   "title": "补 建 :ARG1 牌坊",
+   "conf": "high",
+   "why": "「牌坊……是村民所建」，牌坊是 建-01 的 ARG1（thing constructed），gold 漏了。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s13x2",
+     "r": "ARG1",
+     "t": "s13x13"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 12,
+  "topic": "「建」上的 :degree intensifier",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "建 :degree intensifier",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":degree intensifier"
+   },
+   {
+    "label": "没有 degree",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有 degree",
+  "text": "句中没有程度词，「所」不表示强化；:degree 只用于性质的强化或弱化（项目规则）。",
+  "fix": {
+   "title": "删去 建 的 :degree intensifier",
+   "conf": "high",
+   "why": "句中没有任何程度词，:degree intensifier 没有来源。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s13x2",
+     "attr": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 13,
+  "topic": "「于1921年」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "建 :year 1921（直接挂在事件上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "建 :temporal (date-entity :year 1921)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ date-entity"
+   }
+  ],
+  "best": "建 :temporal (date-entity :year 1921)",
+  "text": "guideline 2.2：日期写成 date-entity，以 :temporal 挂在事件上（项目规则：时间用 :temporal）；:year 是 date-entity 的属性，不能直接挂在事件上。",
+  "fix": {
+   "title": "1921 年改为 :temporal date-entity",
+   "conf": "high",
+   "why": "年份要写成 (date-entity :year 1921) 以 :temporal 挂在事件上，并在文档级把事件放进这个时间。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s13x2",
+     "attr": "year"
+    },
+    {
+     "op": "add_node",
+     "parent": "s13x2",
+     "role": "temporal",
+     "var": "s13z1",
+     "concept": "date-entity",
+     "attrs": {
+      "year": 1921
+     },
+     "align": "19-20"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s13z1",
+      "contained",
+      "s13x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 14,
+  "topic": "「建」相对文档时间、相对「发现」的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 建)：建在文档时间之前",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "方向写反：(DCT :after 建)、(建 :before 发现)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":after s"
+   },
+   {
+    "label": "方向写反：(1921 :before 2015)、(建 :before 发现)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":before s12"
+   },
+   {
+    "label": "方向写反：(发现 :after 建)、(建 :before 发现)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":after s13"
+   },
+   {
+    "label": "方向写反：(建 :before 发现)、(建 :before DCT)",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":before document-creation-time"
+   },
+   {
+    "label": "方向写反：(DCT :after 1921)、(建 :before 发现)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":after s13"
+   }
+  ],
+  "best": "(document-creation-time :before 建)：建在文档时间之前",
+  "text": "guideline Part 4-2-2-1：关系是子对父，(A :before B) 表示 B 在 A 之前。建（1921）在发现（2015）和文档时间之前，应写 (document-creation-time :before 建) 或 (发现 :before 建)。5 个系统都按英语语序把 (A :before B) 读成「A 在 B 前」，全部写反；全篇如此，之后的句子不再逐一判。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 15,
+  "topic": "「位于」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :overlap 位于)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":overlap s"
+   },
+   {
+    "label": "没有标位于的时间",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(document-creation-time :overlap 位于)",
+  "text": "牌坊现在仍位于该村，是现在的状态，与文档时间 overlap；guideline 5.1 每个事件都要有时间父节点。",
+  "fix": null
+ },
+ {
+  "sent": 13,
+  "n": 16,
+  "topic": "牌坊与上句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s12 贞孝节烈 :same-entity 牌坊)：上句一端挂在修饰词上",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(s12 牌坊 :same-entity 本句牌坊)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity"
+   },
+   {
+    "label": "(本句牌坊 :same-entity s12 牌坊)：顺序后者在前",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":same-entity s12"
+   }
+  ],
+  "best": "(s12 牌坊 :same-entity 本句牌坊)",
+  "text": "「这座牌坊」指上句发现的那座牌坊，应连到 s12 的 牌坊 节点（s12x3），gold 连到了修饰词 贞孝节烈（s12x4）。guideline 5.3：较早的提及在前。",
+  "fix": {
+   "title": "共指改连 s12 的「牌坊」节点",
+   "conf": "high",
+   "why": "s12x4 是修饰词「贞孝节烈」，与本句牌坊同指的是 s12x3「牌坊」。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s12x4",
+      "same-entity",
+      "s13x13"
+     ],
+     "to": [
+      "s12x3",
+      "same-entity",
+      "s13x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 17,
+  "topic": "句内的「村 = 当地」共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(村 :same-entity 当地)：句内 coref 三元组",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "guideline 5.3：同一句里的共指用重入，不写 :coref 三元组；而且「当地」是村民的修饰词，与村的同指本身只是一种读法。",
+  "fix": {
+   "title": "删去句内的 村/当地 共指三元组",
+   "conf": "mid",
+   "why": "guideline 5.3：句内共指用重入表达，不写 :coref；「当地」作修饰语是否与村同指也不确定。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s13x7",
+      "same-entity",
+      "s13x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 13,
+  "n": 18,
+  "topic": "「该县」的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s12 文物局 :same-entity 本句县)",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":same-entity s12"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "上句的衡阳县只出现在机构名 government-organization 的名字里，没有单独的县节点；r4 把县和文物局连成同一实体，是错的。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 1,
+  "topic": "「放上」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "放上-01 :place 牌坊",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "放上-01"
+   },
+   {
+    "label": "放-01 :ARG2 牌坊",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "放-01"
+   },
+   {
+    "label": "放-01 :place 牌坊",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 放上-01（ARG0 agent、ARG1 entity placed，没有处所论元），也有 放-01（ARG2 location）。gold 取 放上-01，处所只能用 :place；系统取 放-01，处所应为 ARG2，r5 取 放-01 却用 :place 略差。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 2,
+  "topic": "「牌坊上」「石匾上」的方位词",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "牌坊 :direction 上（石匾上的「上」不建节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 上)"
+   },
+   {
+    "label": "两个「上」都不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "项目规则：方位词建节点。训练数据写法是 (上 :op1 X)（chinese_umr-0001 第46句 机身上 → (上 :op1 机身)）。gold 用 :direction 不合这个先例，且漏了「石匾上」；系统全篇不给方位词建节点（全篇如此）。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 3,
+  "topic": "「刻」的 ARG0",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "刻 :ARG0 徐世昌",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "刻 没有 ARG0",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "刻 没有 ARG0",
+  "text": "徐世昌是「题写」的施事（题写-01 ARG0），句子没说是他刻的；刻的施事未表达。",
+  "fix": {
+   "title": "删去 刻 :ARG0 徐世昌",
+   "conf": "high",
+   "why": "原文「刻有由徐世昌题写的四字」，徐世昌是题写者，不是刻字者。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s14x4",
+     "r": "ARG0",
+     "t": "s14i"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 4,
+  "topic": "「刻」的处所 石匾",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "刻 :place 石匾（另建一个石匾节点）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "刻 :ARG2 石匾（重入前一分句的石匾）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 s"
+   }
+  ],
+  "best": "刻 :ARG2 石匾（重入前一分句的石匾）",
+  "text": "PropBank 刻-01 ARG2 location，刻的处所应是核心论元 ARG2；两个分句的石匾是同一块，句内同指用重入（guideline 5.3），gold 另建了一个石匾节点。",
+  "fix": {
+   "title": "刻的处所：重入石匾，角色 :place → :ARG2",
+   "conf": "high",
+   "why": "PropBank 刻-01 的 ARG2 是 location；后一个「石匾」与前一分句放上的石匾同指，用重入。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s14x7"
+    },
+    {
+     "op": "add_rel",
+     "s": "s14x4",
+     "r": "ARG2",
+     "t": "s14x3"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 5,
+  "topic": "徐世昌职位的抽象谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-rel-role-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "have-org-role-92",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   }
+  ],
+  "best": "have-org-role-92",
+  "text": "总统是机构（国家）中的职位，用 have-org-role-92（guideline 2.3；项目规则 -91 改 -92）；have-rel-role 是亲属等人际关系。",
+  "fix": {
+   "title": "have-rel-role-91 → have-org-role-92",
+   "conf": "high",
+   "why": "「中华民国大总统」是国家中的职位，用 have-org-role-92；-91 按项目规则改 -92。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s14h",
+     "concept": "have-org-role-92"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 6,
+  "topic": "have-org-role-92 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "徐 :ARG1-of，:ARG2 总统，:ARG3 中华民国",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "徐 :ARG1-of，:ARG2 中华民国，:ARG3 大总统",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "徐 :ARG0-of，:ARG2 中华民国，:ARG3 大总统",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "徐 :ARG0-of，:ARG1 中华民国，:ARG2 大总统",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "徐 :ARG0-of，:ARG2 大总统，:ARG3 中华民国",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "徐 :ARG0-of，:ARG2 总统 :mod 中华民国",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":ARG0-of (s"
+   }
+  ],
+  "best": "徐 :ARG1-of，:ARG2 中华民国，:ARG3 大总统",
+  "text": "guideline 2.3 与 Part 1 例 (4)：have-org-role-92 的 ARG1 是任职者、ARG2 是机构、ARG3 是职位；训练数据 chinese_umr-0001 第39句同样是 ARG2 country / ARG3 总统。gold 把 ARG2/ARG3 对调；r1–r4 按 AMR have-org-role-91 的习惯用 ARG0 作任职者（全篇如此）。",
+  "fix": {
+   "title": "have-org-role 的 ARG2/ARG3 对调",
+   "conf": "high",
+   "why": "guideline 2.3：ARG2 是机构（中华民国），ARG3 是职位（总统）；gold 写反了。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s14h",
+     "r": "ARG2",
+     "t": "s14x10",
+     "r2": "ARG3"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s14h",
+     "r": "ARG3",
+     "t": "s14c",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 7,
+  "topic": "「第二任」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-rel-role :quant 第二 :unit 任",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "总统 :ord (ordinal-entity :value 2)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "ordinal-entity"
+   },
+   {
+    "label": "总统 :ord 2（没有 ordinal-entity）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":ord 2"
+   }
+  ],
+  "best": "总统 :ord (ordinal-entity :value 2)",
+  "text": "guideline Part 3-2-2-5：序数用 :ord，下面必须是 (ordinal-entity :value N)；「第二」是序数不是数量，而且修饰的是「总统」不是职位关系。量词「任」按项目规则可留作 :unit，系统省掉判略差（全篇习惯，见第13句）。",
+  "fix": {
+   "title": "「第二任」：改为 总统 :ord (ordinal-entity :value 2)，「任」移到总统下作 :unit",
+   "conf": "high",
+   "why": "「第二」是序数，用 :ord + ordinal-entity；它修饰总统，不修饰职位关系谓词。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s14x8"
+    },
+    {
+     "op": "add_node",
+     "parent": "s14x10",
+     "role": "ord",
+     "var": "s14z1",
+     "concept": "ordinal-entity",
+     "attrs": {
+      "value": 2
+     },
+     "align": "14-14"
+    },
+    {
+     "op": "del_rel",
+     "s": "s14h",
+     "r": "unit",
+     "t": "s14u"
+    },
+    {
+     "op": "add_rel",
+     "s": "s14x10",
+     "r": "unit",
+     "t": "s14u"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 8,
+  "topic": "「四字」是否拆开",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "四字（一个概念，无 quant）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ 四字"
+   },
+   {
+    "label": "字 :quant 4",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":quant 4"
+   },
+   {
+    "label": "四字 :quant 4",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "/ 四字"
+   }
+  ],
+  "best": "字 :quant 4",
+  "text": "「四字」是数词 + 名词，guideline 2.2：数字写成 :quant；不拆就丢了数量。r3 拆了数量又保留「四」在概念里，重复。",
+  "fix": {
+   "title": "四字 → 字 :quant 4",
+   "conf": "mid",
+   "why": "「四字」是「四个字」，数量应写 :quant 4；分词把它切成一个词，所以算 mid。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s14x5",
+     "concept": "字"
+    },
+    {
+     "op": "set_attr",
+     "var": "s14x5",
+     "attr": "quant",
+     "value": "4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 9,
+  "topic": "字的内容「节励松筠」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "四字 :mod \"节励松筠\"（字符串作 :mod）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":mod \"节励松筠\""
+   },
+   {
+    "label": "字 :mod (thing :name \"节励松筠\")",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": "/ thing"
+   },
+   {
+    "label": "字 :mod (\"节励松筠\")：字符串作概念",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": "/ \"节励松筠\")"
+   },
+   {
+    "label": "字 :name (name :op1 \"节励松筠\")",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"节励松筠\""
+   }
+  ],
+  "best": null,
+  "text": "字的内容是一段引文，guideline 没有专门规定；用 name 或 thing+name 表达都说得通。:mod 的取值应是概念，gold 用字符串常量不规范；r2 把字符串当概念，格式不合法。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 10,
+  "topic": "徐世昌题写在先、刻在后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(题写 :before 刻)：按 UMR 读法是刻在题写之前",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有标题写与刻的关系",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline Part 4-2-2-1：(A :before B) 是 B 在 A 之前。题写是刻字的前提，应写 (刻 :before 题写)。系统是英语语序读法写反（全篇如此，见第13句），gold 这里也写反了。",
+  "fix": {
+   "title": "题写与刻的先后改正",
+   "conf": "mid",
+   "why": "(A :before B) 表示 B 在 A 之前；先题写后刻，应为 (刻 :before 题写)。也可以只保留与文档时间的关系。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "s14x9",
+      "before",
+      "s14x4"
+     ],
+     "to": [
+      "s14x4",
+      "before",
+      "s14x9"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 14,
+  "n": 11,
+  "topic": "放石匾与刻字的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(刻 :before 放)：放在刻之前",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "(放 :before 刻)：刻在放之前",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "原文没有说明是先刻字再安放还是先安放后刻，两种先后都没有依据；guideline 5.1 只在关系清楚时标事件间关系，各自对 DCT 标 before 即可。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 12,
+  "topic": "「放」的时间父节点",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 放)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(past-reference :contained 放)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":contained s14"
+   },
+   {
+    "label": "(上句 建 :before 放)：按 UMR 读法是放在建之前",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "open",
+    "grep": ":before s14"
+   },
+   {
+    "label": "只经由「刻」间接定位",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "过去事件挂 DCT 或 past-reference 都可。r1–r3 的方向是英语语序读法写反的同一习惯（见第13句），不再另判。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 13,
+  "topic": "「题写」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative 题写)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有标题写",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(author :full-affirmative 题写)",
+  "text": "guideline 5.2：每个事件都要有 modal 父节点。",
+  "fix": null
+ },
+ {
+  "sent": 14,
+  "n": 14,
+  "topic": "牌坊与上句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s13 牌坊 :same-entity 本句牌坊)",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(本句牌坊 :same-entity s13 牌坊)",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": ":same-entity s13"
+   },
+   {
+    "label": "(石匾 :same-entity 石匾)：自指；牌坊没连",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "(s13 牌坊 :same-entity 本句牌坊)",
+  "text": "r2/r3/r5 的顺序问题与第13句同一习惯，不另判。r4 写了一个变量和自己的共指，没有意义，并漏了牌坊与上句的共指。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 1,
+  "topic": "「但」的话语关系",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "contrast-01（根）",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ contrast-01"
+   },
+   {
+    "label": "but-91（根）",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "/ but-91"
+   },
+   {
+    "label": "and :op1 :op2 :op3，没有转折",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":op3 (s"
+   },
+   {
+    "label": "and(不同, contrast-91(为, 为))：转折放到「则」上，「但」丢失",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ contrast-91"
+   }
+  ],
+  "best": "but-91（根）",
+  "text": "guideline 2.5：但是/却 → but-91（或 contrast-91）；contrast-01 是英语 PropBank 义项，训练数据里只出现 1 次，contrast-91 8 次、but-91 10 次。r1 把转折写成并列，丢了「但」。",
+  "fix": {
+   "title": "contrast-01 → but-91",
+   "conf": "mid",
+   "why": "guideline 2.5：「但」用 but-91（ARG1/ARG2 不变）；contrast-01 不是 UMR 的话语关系概念。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s15c",
+     "concept": "but-91"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 2,
+  "topic": "「一般……少数则……」两分句的连接",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and-contrast :ARG1 :ARG2",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s15"
+   },
+   {
+    "label": "and :op1 :op2",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   },
+   {
+    "label": "contrast-91 :ARG1 :ARG2",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ contrast-91"
+   },
+   {
+    "label": "与第一分句一起拍平成 and 的 :op2 :op3",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":op3 (s"
+   }
+  ],
+  "best": null,
+  "text": "guideline Part 3-1-6：and-contrast 这类合并概念取 :opX，不取 :ARGn。gold 选 and-contrast 表达「则」的对比本身可以，但角色错了。",
+  "fix": {
+   "title": "and-contrast 的子节点：:ARG1/:ARG2 → :op1/:op2",
+   "conf": "high",
+   "why": "guideline Part 3-1-6：and-contrast 取编号 :opX 角色。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s15a",
+     "r": "ARG1",
+     "t": "s15i2",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s15a",
+     "r": "ARG2",
+     "t": "s15i3",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 3,
+  "topic": "「不同」的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "同-01 :polarity -",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 同-01"
+   },
+   {
+    "label": "不同-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "不同-01"
+   }
+  ],
+  "best": "不同-01",
+  "text": "PropBank 有 不同-01（ARG0 things which are different），训练数据 chinese_umr-0003 第4句、-0007 第60句都用 不同-01；拆成 同-01 + 否定会把一个肯定的状态变成否定事件。",
+  "fix": {
+   "title": "同-01 :polarity - → 不同-01",
+   "conf": "high",
+   "why": "PropBank 有 不同-01，「略有不同」是肯定的状态，不应拆成否定的 同-01。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s15x",
+     "concept": "不同-01"
+    },
+    {
+     "op": "del_attr",
+     "var": "s15x",
+     "attr": "polarity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 4,
+  "topic": "「不同」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "不同/同 :ARG0 建筑形式",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "不同-01 :ARG1 建筑形式",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG1 (s"
+   }
+  ],
+  "best": "不同/同 :ARG0 建筑形式",
+  "text": "PropBank 不同-01 只有 ARG0（things which are different），没有 ARG1；训练数据也是 :ARG0。系统把形容词性谓词的唯一论元习惯写成 ARG1。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 5,
+  "topic": "「略有」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "不同 :mod 略有",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":mod (s15"
+   },
+   {
+    "label": "不同 :degree 略",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "不同 :degree 略",
+  "text": "「略」是弱化词，修饰「不同」的程度，项目规则：:degree 是性质的强化或弱化。",
+  "fix": {
+   "title": "略有：:mod → :degree",
+   "conf": "high",
+   "why": "「略有不同」的「略」是程度弱化，用 :degree。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s15x",
+     "r": "mod",
+     "t": "s15x15",
+     "r2": "degree"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 6,
+  "topic": "「因应各地区」的表达",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "不同 :reason (因应-01 :ARG1 地区)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":reason (s"
+   },
+   {
+    "label": "不同 :cause (因应-01 :ARG1 地区)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": [
+     ":cause (s",
+     "/ 因应-01"
+    ]
+   },
+   {
+    "label": "不同 :cause 地区（不建 因应）",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":cause (s"
+   },
+   {
+    "label": "不同 :ARG2 地区",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "不同 :cause (因应-01 :ARG1 地区)",
+  "text": "PropBank 因应-01 ARG1 thing responded to，因应是动词，保留节点更完整。地区差异造成了形式不同，是原因不是动机，按项目规则用 :cause 更合适；不同-01 没有 ARG2。",
+  "fix": {
+   "title": "因应：:reason → :cause",
+   "conf": "low",
+   "why": "地区差异是形式不同的原因，不是施事给出的动机；项目规则 :cause 是原因、:reason 是理由。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s15x",
+     "r": "reason",
+     "t": "s15x4",
+     "r2": "cause"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 7,
+  "topic": "「各地区」的「各」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "地区 :quant 各",
+    "systems": [
+     "gold",
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "地区 :mod 各",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": null,
+  "text": "训练数据里「各」多作 :mod（6 例中 5 例），也有作 :quant 的；guideline 3 :quant 包括量化词。两种都接受。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 8,
+  "topic": "「一般为」「少数则为」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "have-mod-91",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "have-mod-91"
+   },
+   {
+    "label": "为-01 :ARG0 主语 :ARG1 表语",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "为-01"
+   },
+   {
+    "label": "为-03",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "为-03"
+   },
+   {
+    "label": "为-01 :ARG1 主语 :ARG2 表语（为-01 没有 ARG2）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "为-01"
+   }
+  ],
+  "best": "identity-91",
+  "text": "这里的「为」是系词（=是），guideline 2.1：系词不是事件，转成 2.3 的抽象谓词；「形式为牌楼形式」是等同，用 identity-91。用 为-01 有 PropBank 依据但不合 guideline，判略差；r4 的论元在 为-01（ARG0 entity、ARG1 predicative）里没有 ARG2。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 9,
+  "topic": "「一般」的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity :ARG1 一般，一般 :mod-of 建筑形式",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":mod-of s"
+   },
+   {
+    "label": "谓词 :frequency 一般，主语是建筑形式",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":frequency (s"
+   },
+   {
+    "label": "identity :ARG1 (建筑 :mod 一般)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ 建筑"
+   },
+   {
+    "label": "为-03 :ARG0 (thing :quant 一般)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": "/ thing"
+   }
+  ],
+  "best": "谓词 :frequency 一般，主语是建筑形式",
+  "text": "「一般为牌楼形式」= 建筑形式通常是牌楼形式；「一般」是频度副词，修饰谓词，主语是前一分句的建筑形式（重入）。gold 把「一般」当成等同的一方，又把它挂成主分句「建筑形式」的修饰语。",
+  "fix": {
+   "title": "「一般」改为 :frequency，identity 的 ARG1 改为建筑形式",
+   "conf": "mid",
+   "why": "「一般」是副词（通常），不是被等同的对象；被等同的是建筑形式。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s15x16",
+     "r": "mod-of",
+     "t": "s15x2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s15i2",
+     "r": "ARG1",
+     "t": "s15x16",
+     "r2": "frequency"
+    },
+    {
+     "op": "add_rel",
+     "s": "s15i2",
+     "r": "ARG1",
+     "t": "s15x2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 10,
+  "topic": "「少数」分句的主语",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity :ARG1 少数，少数 :mod-of 建筑形式",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":mod-of s"
+   },
+   {
+    "label": "形式/建筑/thing :quant 少数",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":quant (s"
+   },
+   {
+    "label": "少数（单独的节点）",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": [
+     ":ARG1 (s",
+     "/ 少数)"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "「少数则为墓碑形式」的主语是「少数（建筑）」。gold 的 :mod-of 让主分句的「建筑形式」带上修饰语「少数」，意思错了。",
+  "fix": {
+   "title": "删去 少数 :mod-of 建筑形式",
+   "conf": "mid",
+   "why": "「少数」是第三分句的主语，不是第一分句「建筑形式」的修饰语。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s15x17",
+     "r": "mod-of",
+     "t": "s15x2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 11,
+  "topic": "「不同」的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :partial-affirmative 不同)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(author :full-affirmative 不同)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-affirmative 不同)",
+  "text": "原文是直陈断言「略有不同」，没有推测或情态词；「略」是程度不是确信度。guideline 5.2：作者断言的事件是 full-affirmative。",
+  "fix": {
+   "title": "不同 的 modal：partial → full-affirmative",
+   "conf": "high",
+   "why": "「略有不同」是直陈断言，没有情态词。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "partial-affirmative",
+      "s15x"
+     ],
+     "to": [
+      "author",
+      "full-affirmative",
+      "s15x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 12,
+  "topic": "「因应」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(past-reference :depends-on 因应)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有标因应（或没有因应节点）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": ":depends-on 只用于时间表达之间（guideline 5.1），因应是事件，应与所修饰的状态同时 overlap。r1 有因应节点却没标时间，但没有这个节点的 r2–r5 无从比较。",
+  "fix": {
+   "title": "因应的时间：改为 (不同 :overlap 因应)",
+   "conf": "mid",
+   "why": "guideline 5.1：:depends-on 只连时间表达；因应是与「不同」同时成立的状态。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s15x4"
+     ],
+     "to": [
+      "s15x",
+      "overlap",
+      "s15x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 15,
+  "n": 13,
+  "topic": "三个状态相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "三个状态都 (DCT :overlap)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只标了「不同」",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有 temporal",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "三个状态都 (DCT :overlap)",
+  "text": "guideline 5.1：每个事件都要有时间父节点；泛指的现在状态与 DCT overlap。r3、r4 整句没有文档级 temporal。",
+  "fix": null
+ },
+ {
+  "sent": 15,
+  "n": 14,
+  "topic": "句内的「形式 :subset-of 形式」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(建筑形式 :subset-of 牌楼形式)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "guideline 5.3：同一句里不写 :coref 三元组；而且方向也反了（牌楼形式是建筑形式的一种）。",
+  "fix": {
+   "title": "删去句内的 subset-of",
+   "conf": "high",
+   "why": "句内关系不写 coref；方向也反了。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s15x2",
+      "subset-of",
+      "s15x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 1,
+  "topic": "and / or 的子节点角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and :ARG1 :ARG2，or :ARG1 :ARG2",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG2 (s",
+     "/ or"
+    ]
+   },
+   {
+    "label": "and :op1 :op2，or :op1 :op2",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": [
+     ":op2 (s",
+     "/ or"
+    ]
+   }
+  ],
+  "best": "and :op1 :op2，or :op1 :op2",
+  "text": "guideline 2.5：并列 and、选择 or 取 :opN。gold 在第13句也这样写（同一类错）。",
+  "fix": {
+   "title": "and、or 的子节点：:ARG1/:ARG2 → :op1/:op2",
+   "conf": "high",
+   "why": "and 与 or 是并列/选择概念，取 :opN 角色。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s16a",
+     "r": "ARG1",
+     "t": "s16i2",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s16a",
+     "r": "ARG2",
+     "t": "s16o",
+     "r2": "op2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s16o",
+     "r": "ARG1",
+     "t": "s16x6",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s16o",
+     "r": "ARG2",
+     "t": "s16x",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 2,
+  "topic": "「常用」的切分",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "常用-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "常用-01"
+   },
+   {
+    "label": "用-01 :frequency 常",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "用-01"
+   }
+  ],
+  "best": "常用-01",
+  "text": "PropBank 有 常用-01（ARG0 user、ARG1 entity that is often used），整词有义项时不拆开。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 3,
+  "topic": "「四」的写法",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "字 :quant (四)：数字写成概念节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 四)"
+   },
+   {
+    "label": "字 :quant 4",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":quant 4"
+   },
+   {
+    "label": "大字 :quant 4（大字合成一个概念）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "/ 大字"
+   }
+  ],
+  "best": "字 :quant 4",
+  "text": "guideline 2.2：数字写成阿拉伯数字常量 :quant 4，不建概念节点。",
+  "fix": {
+   "title": "字 :quant 四（节点）→ :quant 4",
+   "conf": "high",
+   "why": "guideline 2.2：数量写成数字常量。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s16x13"
+    },
+    {
+     "op": "set_attr",
+     "var": "s16x11",
+     "attr": "quant",
+     "value": "4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 4,
+  "topic": "「四大字为『钦旌节孝』」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "为-01 :ARG0 字 :ARG1 钦旌节孝",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": "为-01"
+   },
+   {
+    "label": "为-01 :ARG0 字 :ARG1 (\"钦旌节孝\")：字符串作概念",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": "/ \"钦旌节孝\")"
+   },
+   {
+    "label": "为-01 :ARG1 字 :ARG2 钦旌节孝（为-01 没有 ARG2）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "为-01"
+   }
+  ],
+  "best": "identity-91",
+  "text": "系词「为」按 guideline 2.1 转成抽象谓词 identity-91（同第15句）。PropBank 为-01 只有 ARG0 entity、ARG1 predicative，r4 用 ARG1/ARG2 错；r2 把引号字符串当概念，格式不合法（同第14句）。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 5,
+  "topic": "「等」的表达",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity :ARG2 (have-example-91 :ARG1 字 :ARG2 钦旌节孝)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-example-91"
+   },
+   {
+    "label": "钦旌节孝 :mod 等",
+    "systems": [
+     "s3/r1",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 等)"
+   },
+   {
+    "label": "没有表达「等」",
+    "systems": [
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「为『钦旌节孝』等」= 例如钦旌节孝。:mod 等 是常见写法；gold 用 have-example-91 也表达了举例，但让 identity 的 ARG2 成了一个谓词，结构绕。漏掉「等」会把例子说成全部。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 6,
+  "topic": "「上面」的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "identity :place (implicit-argument :part 上面)，隐含论元与牌坊共指",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "implicit-argument"
+   },
+   {
+    "label": "用 :place 上面",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":place (s16"
+   },
+   {
+    "label": "字 :place 上面",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": [
+     ":place (s",
+     "/ 上面)"
+    ]
+   },
+   {
+    "label": "大字 :mod 上面",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": [
+     ":mod (s",
+     "/ 上面)"
+    ]
+   }
+  ],
+  "best": null,
+  "text": "「上面」是处所，挂在谓词或「字」上都说得通；gold 用隐含整体 + :part 也合规则（整体为父用 :part），训练数据有 implicit-argument 的用例。r3 用 :mod 表处所不合适。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 7,
+  "topic": "「其下」「两侧」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "记载、附都用 :place（gold 经 implicit-argument）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "记载 :place 其下，附 :ARG2 两侧",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": [
+     ":ARG2 (s",
+     "/ 两侧)"
+    ]
+   },
+   {
+    "label": "记载 :ARG2 其下，附 :ARG2 两侧",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": [
+     ":ARG2 (s",
+     "/ 其下)"
+    ]
+   }
+  ],
+  "best": "记载 :ARG2 其下，附 :ARG2 两侧",
+  "text": "PropBank 记载-01 ARG2 location arg1 is recorded，附-01 ARG2 place arg0 attached arg1；处所是核心论元时用 ARG2，不用 :place（REVIEWER「核心论元和非论元角色」）。",
+  "fix": {
+   "title": "记载、附的处所：:place → :ARG2",
+   "conf": "mid",
+   "why": "PropBank 记载-01、附-01 的 ARG2 都是处所，处所应作核心论元。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s16x6",
+     "r": "place",
+     "t": "s16i3",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s16x",
+     "r": "place",
+     "t": "s16i5",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 8,
+  "topic": "节妇与资料事迹的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "资料 :topic 节妇",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":topic (s"
+   },
+   {
+    "label": "and(资料, 事迹) :mod 节妇",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": [
+     ":mod (s",
+     "/ 节妇)"
+    ]
+   },
+   {
+    "label": "… :possessor 节妇",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "… :poss 节妇（旧名）",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": "「节妇相（关）资料事迹」：关于节妇的资料用 :topic、节妇的事迹用 :possessor 都说得通。项目规则拼写用 :possessor，:poss 判 minor（这几个运行全篇如此）。:mod 表达不出这层关系。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 9,
+  "topic": "「相关」修饰谁",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "附 :ARG0-of 相关-01（挂在事件上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG0-of (s",
+     "/ 相关-01"
+    ]
+   },
+   {
+    "label": "对联诗句 :mod 相关",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "对联诗句 :ARG1-of 相关-01",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": "对联诗句 :mod 相关",
+  "text": "「相关对联诗句」里「相关」修饰对联诗句，不是「附」这个事件。PropBank 相关-01 只有 ARG0（entities which are relevant），r3、r4 用 ARG1-of 角色号错；作修饰语用 :mod 也可（guideline 2.1 修饰性的性质词）。",
+  "fix": {
+   "title": "「相关」改挂到诗句上",
+   "conf": "high",
+   "why": "「相关对联诗句」中「相关」修饰名词，不修饰事件「附」。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s16x",
+     "r": "ARG0-of",
+     "t": "s16x5"
+    },
+    {
+     "op": "add_rel",
+     "s": "s16x3",
+     "r": "ARG0-of",
+     "t": "s16x5"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 10,
+  "topic": "记载、附的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   }
+  ],
+  "best": "state",
+  "text": "这是对牌坊通常样式的描写（下面可能记有……，两侧附有……），是存续的状态，不是已完成的具体事件；guideline 4.1 performance 用于完成的过去事件。属难定的类型，故 gold 只给 low。",
+  "fix": {
+   "title": "记载、附：performance → state",
+   "conf": "low",
+   "why": "泛指的描写，「记载」「附」表示存续状态。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s16x6",
+     "attr": "aspect",
+     "value": "state"
+    },
+    {
+     "op": "set_attr",
+     "var": "s16x",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 11,
+  "topic": "「可能」的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "记载、附都 neutral-affirmative",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative s"
+   },
+   {
+    "label": "记载 full-affirmative，附 neutral-affirmative",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "bad",
+    "grep": ":full-affirmative s16"
+   },
+   {
+    "label": "记载、附都 partial-affirmative",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":partial-affirmative s"
+   }
+  ],
+  "best": "记载、附都 neutral-affirmative",
+  "text": "guideline 5.2：可能、也许 → neutral-affirmative；「可能」管到「或」连接的两个分句。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 12,
+  "topic": "「可能」是否建节点",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "记载、附 :mod 可能",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ 可能)"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不建节点",
+  "text": "guideline 2.1：情态词（能、可以、应该、可能）不是节点，只影响 modal 强度。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 13,
+  "topic": "「常用」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :before 常用)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有标「用」的时间",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「常用」是现在仍成立的惯常事件（habitual），guideline 5.1 现在的状态/惯常与 DCT overlap，不是 before。",
+  "fix": {
+   "title": "常用：(DCT :before) → (DCT :overlap)",
+   "conf": "high",
+   "why": "「上面常用的四大字」描写的是通行的惯例，与文档时间重叠。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s16x8"
+     ],
+     "to": [
+      "document-creation-time",
+      "overlap",
+      "s16x8"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 16,
+  "n": 14,
+  "topic": "其余事件相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "记载、附、相关 overlap，identity 没有标",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "为/identity、记载、附都 overlap",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只标了 identity",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有 temporal",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": "为/identity、记载、附都 overlap",
+  "text": "guideline 5.1：每个事件都要有时间父节点。r3、r4 整句没有文档级 temporal（r3、r4 在第15句也一样）。",
+  "fix": null
+ },
+ {
+  "sent": 16,
+  "n": 15,
+  "topic": "隐含处所与牌坊的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "三个 implicit-argument 都与 s14 牌坊同指",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "（没有这些节点）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "「上面」「两侧」的整体是牌坊，没问题；「其下」的「其」更可能指上文的四大字（字的下方），gold 把它也连到牌坊，拿不准。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 1,
+  "topic": "「官方」是否命名实体",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization :name \"官方\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op1 \"官方\""
+   },
+   {
+    "label": "官方（普通概念）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 官方)"
+   }
+  ],
+  "best": "官方（普通概念）",
+  "text": "「官方」是普通名词（官府、当局），不是专名；guideline 2.2 只有专名才建 :name。",
+  "fix": {
+   "title": "官方：去掉命名实体，改为普通概念",
+   "conf": "high",
+   "why": "「官方」不是专名。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s17g",
+     "concept": "官方"
+    },
+    {
+     "op": "del_node",
+     "var": "s17n"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 2,
+  "topic": "「必须」：节点还是 modal",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "得到 :mod 必须（普通概念）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open",
+    "grep": "/ 必须)"
+   },
+   {
+    "label": "必须-01 作根，:ARG1 兴建",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": "必须-01"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "规则冲突：guideline 2.1 和 Part 3-1-3-3 说情态助动词（must、should；能、应该）不建节点，只体现在 modal 强度上；但训练数据有 必须-01 作谓词的先例（chinese_umr-0001 第25、26句，-0005 第33句）。说明里没有定这条，留待项目负责人决定。不论哪种做法，gold 把「必须」作 得到 的 :mod 都不合适：它不是性质修饰语。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 3,
+  "topic": "「才能」的「能」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "兴建 :mod 才能",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 才能)"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不建节点",
+  "text": "「才能」= 才 + 能：「能」是情态助动词，guideline 2.1 不建节点；「才」表示条件，已经由 :condition 表达。",
+  "fix": {
+   "title": "删去 兴建 :mod 才能",
+   "conf": "mid",
+   "why": "「才能」的「能」是情态词、「才」表条件，guideline 2.1 情态词不是节点，条件已由 :condition 表达。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s17x8"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 4,
+  "topic": "条件分句的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "兴建 :condition 准许，准许 :ARG1-of 得到（得到没有 ARG0）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "兴建 :condition (得到 :ARG0 牌坊 :ARG1 准许)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":condition (s17"
+   },
+   {
+    "label": "兴建 :condition 准许（不建 得到）",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":condition (s17"
+   },
+   {
+    "label": "兴建 :ARG1-of (cause-01 :ARG0 得到)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "cause-01"
+   }
+  ],
+  "best": null,
+  "text": "「必须得到官方准许才能兴建」是条件关系（guideline 2.5：只有……才 → :condition）。得到-01（ARG0 obtainer、ARG1 thing obtained）保留时得到者是牌坊（被准许建的对象），gold 漏了 ARG0 且让 准许 作条件、得到 挂在下面，结构绕但意思还在；「得到准许」也可视为接近被动的轻动词结构而省掉。r3 把条件写成原因，错。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 5,
+  "topic": "准许的对象（被准许的事）",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "准许 :ARG2 兴建（重入）",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 s"
+   },
+   {
+    "label": "准许 没有 ARG2",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "准许 :ARG2 兴建（重入）",
+  "text": "PropBank 准许-01 ARG2 predicate（被准许做的事），这里就是「兴建」。r5 另把牌坊作 ARG1 party allowed 不妥（牌坊不是被准许的一方），见原图。",
+  "fix": {
+   "title": "补 准许 :ARG2 兴建",
+   "conf": "low",
+   "why": "PropBank 准许-01 ARG2 是被准许的行为，即兴建；不过条件结构里不写也能理解。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s17x4",
+     "r": "ARG2",
+     "t": "s17x"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 6,
+  "topic": "得到/准许与兴建的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(兴建 :before 得到)：得到在兴建之前",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(得到/准许 :before 兴建)：按 UMR 读法写反",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(兴建 :before 得到)：得到在兴建之前",
+  "text": "先得到准许才兴建，(A :before B) = B 在 A 之前，gold 写对了。r1、r2 是英语语序读法的同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 7,
+  "topic": "「准许」的 :depends-on",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(document-creation-time :depends-on 准许)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "guideline 5.1：:depends-on 只用于时间表达之间，准许是事件。",
+  "fix": {
+   "title": "准许的时间：改为 (兴建 :before 准许)",
+   "conf": "mid",
+   "why": "准许是事件，不能用 :depends-on；它发生在兴建之前。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "depends-on",
+      "s17x4"
+     ],
+     "to": [
+      "s17x",
+      "before",
+      "s17x4"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 17,
+  "n": 8,
+  "topic": "兴建相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :before 兴建)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(DCT :after 兴建)：英语语序读法",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open",
+    "grep": ":after s17"
+   },
+   {
+    "label": "(DCT :overlap 兴建/必须)",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":overlap s"
+   },
+   {
+    "label": "没有与 DCT 的关系",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "这句说的是旧时（明清）的制度，可当过去看（before），也可当泛指的规则（overlap）。r1 方向问题同第13句。",
+  "fix": null
+ },
+ {
+  "sent": 17,
+  "n": 9,
+  "topic": "得到/兴建的 modal 强度",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "全部 full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "兴建 partial，得到 partial，准许 full",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":partial-affirmative s17"
+   },
+   {
+    "label": "兴建 partial，得到/准许 full",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":partial-affirmative s17"
+   },
+   {
+    "label": "必须-01 full，兴建 partial",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "open",
+    "grep": ":partial-affirmative s17"
+   },
+   {
+    "label": "必须 :partial-affirmative 兴建，准许 neutral",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": ":partial-affirmative s17"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2：must、应该 → partial-affirmative。「必须」管的是「得到准许」，所以得到至少应是 partial-affirmative；兴建在条件之下，强度取决于「必须」怎么处理（见本句「必须」条），拿不准。",
+  "fix": {
+   "title": "得到：full → partial-affirmative",
+   "conf": "low",
+   "why": "「必须得到」受义务情态「必须」管辖，guideline 5.2 must → partial-affirmative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s17x6"
+     ],
+     "to": [
+      "author",
+      "partial-affirmative",
+      "s17x6"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 1,
+  "topic": "整句的结构（掌控 + 三个步骤）",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "掌控 :consecutive (consecutive :ARG1 报告 :ARG2 上报)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":consecutive (s"
+   },
+   {
+    "label": "and(掌控, 报告, 奏请)，上报挂在奏请或礼部下",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op3 (s"
+   },
+   {
+    "label": "and(掌控, 报告, 上报, 奏请) 四项并列",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":op4 (s"
+   }
+  ],
+  "best": null,
+  "text": ":consecutive 不是 UMR 的角色；guideline 2.5 的时间先后用 :temporal (before/after …) 或抽象概念 consecutive 带 :opN。「由地方官掌控」与后面的步骤是并列的两层意思，步骤之间才是先后。",
+  "fix": {
+   "title": "改为 and(掌控, consecutive(报告, 上报))",
+   "conf": "mid",
+   "why": "「:consecutive」不是角色；把掌控和步骤序列并列，consecutive 改用 :op1/:op2。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s18x",
+     "role": "mod",
+     "var": "s18z1",
+     "concept": "and"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18z1",
+     "r": "op1",
+     "t": "s18x"
+    },
+    {
+     "op": "set_root",
+     "var": "s18z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s18x",
+     "r": "mod",
+     "t": "s18z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s18x",
+     "r": "consecutive",
+     "t": "s18c"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18z1",
+     "r": "op2",
+     "t": "s18c"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s18c",
+     "r": "ARG1",
+     "t": "s18x6",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s18c",
+     "r": "ARG2",
+     "t": "s18x14",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 2,
+  "topic": "「在查访后」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "报告 :temporal 查访，查访 :mod 后",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": [
+     ":mod (s",
+     "/ 后)"
+    ]
+   },
+   {
+    "label": "报告 :temporal (after :op1 查访)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ after"
+   }
+  ],
+  "best": "报告 :temporal (after :op1 查访)",
+  "text": "guideline 2.5：时间先后写 :temporal (after :op1 事件)；训练数据的中文写法是 :temporal (后 :op1 事件)（chinese_umr-0002 第37句等）。gold 把「后」挂成事件的修饰语，方向反了。",
+  "fix": {
+   "title": "改为 报告 :temporal (后 :op1 查访)",
+   "conf": "mid",
+   "why": "训练数据写 (后 :op1 事件)；「后」是时间方位词，事件是它的 op1，不是它修饰事件。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s18x6",
+     "r": "temporal",
+     "t": "s18x9"
+    },
+    {
+     "op": "del_rel",
+     "s": "s18x9",
+     "r": "mod",
+     "t": "s18x13"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18x6",
+     "r": "temporal",
+     "t": "s18x13"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18x13",
+     "r": "op1",
+     "t": "s18x9"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 3,
+  "topic": "「查访」的 ARG1",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "查访 :ARG1 程序",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "查访 没有 ARG1",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "查访 没有 ARG1",
+  "text": "PropBank 查访-01 ARG1 entity investigated；查访的对象是申请旌表者的事迹，不是「建造程序」，原文没有说出来。",
+  "fix": {
+   "title": "删去 查访 :ARG1 程序",
+   "conf": "mid",
+   "why": "地方官查访的是被旌表者的情况，不是程序本身；对象未表达。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s18x9",
+     "r": "ARG1",
+     "t": "s18x4"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 4,
+  "topic": "督抚下空的 have-rel-role-91",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "督抚 :ARG1-of (have-rel-role-91)，没有其他论元",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "督抚 :mod 直省（无抽象谓词）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "督抚 :mod 直省（无抽象谓词）",
+  "text": "一个只有 ARG1 的 have-rel-role-91 什么也没表达；督抚是官职，若要分解应是 have-org-role-92 :ARG3 督抚，不分解直接用 督抚 也可。",
+  "fix": {
+   "title": "删去空的 have-rel-role-91",
+   "conf": "high",
+   "why": "这个 have-rel-role-91 只有 ARG1，没有关系和对方，是多余节点。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s18h"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 5,
+  "topic": "「奏请」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "奏请-00",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "奏请-00"
+   },
+   {
+    "label": "奏请-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "奏请-01"
+   }
+  ],
+  "best": "奏请-00",
+  "text": "PropBank 没有「奏请」，guideline 2.1：不在 PropBank 的谓词写 词-00。系统凭空编了 -01（全篇如此）。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 6,
+  "topic": "「旌表」的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "旌表（名词）",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "/ 旌表)"
+   },
+   {
+    "label": "旌表-01",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": "旌表-01"
+   }
+  ],
+  "best": "旌表（名词）",
+  "text": "PropBank 没有「旌表」；作事件时应写 旌表-00，-01 是凭空编号。这里作「奏请」的对象，名词也可。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 7,
+  "topic": "上报与奏请的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "上报 :purpose 奏请",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":purpose (s"
+   },
+   {
+    "label": "奏请 :temporal (after :op1 上报)",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ after"
+   },
+   {
+    "label": "上报、奏请平列为 and 的两项",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":op4 (s"
+   },
+   {
+    "label": "礼部 :ARG1-of 上报（礼部作报告内容）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG1-of (s",
+     "/ 上报-01"
+    ]
+   },
+   {
+    "label": "没有「上报」",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad"
+   }
+  ],
+  "best": null,
+  "text": "「然后在上报礼部（时）奏请旌表」：上报是为了奏请，或奏请在上报之后，两种都说得通。PropBank 上报-01 ARG1 是 information、ARG2 是 reported to，r3 把礼部作 ARG1 错；r4 漏了上报这个事件。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 8,
+  "topic": "上报、奏请的施事",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "上报、奏请都没有 ARG0",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "上报、奏请都 :ARG0 官",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 s"
+   },
+   {
+    "label": "奏请 :ARG0 官（上报没有 ARG0 或没有上报）",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 s"
+   }
+  ],
+  "best": "上报、奏请都 :ARG0 官",
+  "text": "这几个步骤的主语都是「地方官」（零主语），PropBank 上报-01 ARG0 agent；guideline 2.4 可恢复的零主语可以重入已有节点，gold 前面的 报告、查访 已重入了 官，这里漏了。",
+  "fix": {
+   "title": "补 上报、奏请 的 ARG0 官",
+   "conf": "mid",
+   "why": "整句的施事都是地方官，后两个步骤的零主语可恢复，gold 前两步已这样写。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s18x14",
+     "r": "ARG0",
+     "t": "s18x2"
+    },
+    {
+     "op": "add_rel",
+     "s": "s18x10",
+     "r": "ARG0",
+     "t": "s18x2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 9,
+  "topic": "「在」建节点",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "上报 :mod 在",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 在)"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不建节点",
+  "text": "「在上报……」的「在」是介词（在……时），不是有内容的概念，不建节点。",
+  "fix": {
+   "title": "删去 上报 :mod 在",
+   "conf": "high",
+   "why": "「在」是介词，不是概念。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s18x11"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 10,
+  "topic": "「礼部」是否命名实体",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization :name \"礼部\"",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": "\"礼部\""
+   },
+   {
+    "label": "礼部（普通概念）",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "/ 礼部"
+   }
+  ],
+  "best": "government-organization :name \"礼部\"",
+  "text": "礼部是清代具体的中央机构名，按 guideline 2.2 作命名实体（government-organization）。",
+  "fix": null
+ },
+ {
+  "sent": 18,
+  "n": 11,
+  "topic": "程序各步骤的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "掌控 state，报告/查访/上报/奏请 performance",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "全部 habitual",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   },
+   {
+    "label": "掌控 activity，其余 performance",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": ":aspect activity"
+   },
+   {
+    "label": "掌控 state，查访/上报 process，报告/奏请 performance",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "全部 habitual",
+  "text": "这是对旧时一般程序的描写，每一步对每个牌坊都重复发生，guideline 4.1 habitual：经常或重复发生的事件。performance 指一次完成的具体事件。属难定的情况，只提 low。",
+  "fix": {
+   "title": "程序各步骤：performance → habitual",
+   "conf": "low",
+   "why": "句子描写的是通行程序，每一步都是反复发生的，按 guideline 4.1 用 habitual。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s18x6",
+     "attr": "aspect",
+     "value": "habitual"
+    },
+    {
+     "op": "set_attr",
+     "var": "s18x9",
+     "attr": "aspect",
+     "value": "habitual"
+    },
+    {
+     "op": "set_attr",
+     "var": "s18x14",
+     "attr": "aspect",
+     "value": "habitual"
+    },
+    {
+     "op": "set_attr",
+     "var": "s18x10",
+     "attr": "aspect",
+     "value": "habitual"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 12,
+  "topic": "整句的时间关系",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有任何 temporal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "步骤链方向按英语语序写反；掌控与 DCT 的关系也反",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open",
+    "grep": ":after s18"
+   },
+   {
+    "label": "步骤链方向写反；(past-reference :contained 掌控)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "open",
+    "grep": "past-reference"
+   },
+   {
+    "label": "步骤链方向写反；没有与 DCT/past 的关系",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：每个事件都要有时间父节点。旧时的程序在文档时间之前；查访先于报告，报告先于上报。按 (A :before B) = B 在 A 之前，应写 (报告 :before 查访)、(上报 :before 报告)。系统的方向问题是同一习惯（见第13句）。",
+  "fix": {
+   "title": "补整句的时间关系",
+   "conf": "mid",
+   "why": "gold 这一句没有文档级 temporal。掌控在文档时间之前；查访先于报告，报告先于上报。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s18x"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s18x",
+      "overlap",
+      "s18x6"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s18x6",
+      "before",
+      "s18x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s18x6",
+      "after",
+      "s18x14"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 18,
+  "n": 13,
+  "topic": "查访、上报的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "查访、上报都有 author full-affirmative",
+    "systems": [
+     "gold",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "漏了查访",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "查访、上报都漏了",
+    "systems": [
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "查访、上报都有 author full-affirmative",
+  "text": "guideline 5.2：每个事件都要有 modal 父节点。r4 没有上报节点，只看查访。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 1,
+  "topic": "整句结构：允许的论元与「撰」的挂接",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "允许 :ARG1 (and :ARG1 (and :ARG1 建坊) :ARG2 撰)；建坊的施事作 ARG0，撰 也在允许之下",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG2 (s",
+     "/ 撰-00"
+    ]
+   },
+   {
+    "label": "and(允许 :ARG1 人/家属/同乡 :ARG2 and(建, 立), 撰)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s19"
+   }
+  ],
+  "best": "and(允许 :ARG1 人/家属/同乡 :ARG2 and(建, 立), 撰)",
+  "text": "PropBank 允许-01：ARG1 allowed party（受褒扬人、家属、同乡），ARG2 predicate（建坊立碑）。gold 把被允许的事放在 ARG1，and 用 :ARG1/:ARG2，还套了一个只有一个子节点的 and；「地方官员亦会亲撰碑文」是另一个分句，不在「允许」之下；「立碑」被写成 建坊 的 ARG2。",
+  "fix": {
+   "title": "重画：and(允许 :ARG1 施事 :ARG2 and(建坊, 立碑), 撰)",
+   "conf": "mid",
+   "why": "允许-01 ARG1 是被允许的人、ARG2 是被允许的事；撰碑文是并列的另一分句；立碑是与建坊并列的事件，有自己的施事和 ARG1 碑。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s19x",
+     "role": "mod",
+     "var": "s19z1",
+     "concept": "and"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19z1",
+     "r": "op1",
+     "t": "s19x"
+    },
+    {
+     "op": "set_root",
+     "var": "s19z1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s19x",
+     "r": "mod",
+     "t": "s19z1"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19z1",
+     "r": "op2",
+     "t": "s19x7"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19x",
+     "r": "ARG2",
+     "t": "s19a2"
+    },
+    {
+     "op": "del_node",
+     "var": "s19a"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19x",
+     "r": "ARG1",
+     "t": "s19a3"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19a2",
+     "r": "ARG1",
+     "t": "s19x3",
+     "r2": "op1"
+    },
+    {
+     "op": "del_rel",
+     "s": "s19x3",
+     "r": "ARG2",
+     "t": "s19x4"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19a2",
+     "r": "op2",
+     "t": "s19x4"
+    },
+    {
+     "op": "add_rel",
+     "s": "s19x4",
+     "r": "ARG0",
+     "t": "s19a3"
+    },
+    {
+     "op": "add_node",
+     "parent": "s19x4",
+     "role": "ARG1",
+     "var": "s19z2",
+     "concept": "碑",
+     "align": "22-22"
+    },
+    {
+     "op": "set_attr",
+     "var": "s19x4",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 2,
+  "topic": "「建坊」的切分与义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "建坊-00（一个概念）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "建坊-00"
+   },
+   {
+    "label": "建-01 :ARG1 坊/牌坊",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "建-01"
+   }
+  ],
+  "best": "建-01 :ARG1 坊/牌坊",
+  "text": "「建」「坊」是两个词，PropBank 有 建-01（ARG0 constructor、ARG1 thing constructed），坊是 ARG1；不该合成一个 PropBank 里没有的 建坊-00。",
+  "fix": {
+   "title": "建坊-00 → 建-01 :ARG1 坊",
+   "conf": "high",
+   "why": "建 与 坊 是两个词；PropBank 建-01 ARG1 是被建之物。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s19x3",
+     "concept": "建-01"
+    },
+    {
+     "op": "add_node",
+     "parent": "s19x3",
+     "role": "ARG1",
+     "var": "s19z3",
+     "concept": "坊",
+     "align": "20-20"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 3,
+  "topic": "「北洋政府时期」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "government-organization :name \"北洋\" \"政府\" \"时期\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":op3 \"时期\""
+   },
+   {
+    "label": "时期 :mod 北洋政府（命名实体或普通名词）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 时期"
+   }
+  ],
+  "best": "时期 :mod 北洋政府（命名实体或普通名词）",
+  "text": "「时期」是普通名词，不是机构名的一部分；这是一个时间表达，不是机构。gold 第9句把北洋政府写成 (government :mod 北洋)。",
+  "fix": {
+   "title": "北洋政府时期 → 时期 :mod (government :mod 北洋)",
+   "conf": "high",
+   "why": "「时期」不是机构名的一部分；与第9句的写法一致。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s19g",
+     "concept": "时期"
+    },
+    {
+     "op": "del_node",
+     "var": "s19n"
+    },
+    {
+     "op": "add_node",
+     "parent": "s19g",
+     "role": "mod",
+     "var": "s19z4",
+     "concept": "government",
+     "align": "2-2"
+    },
+    {
+     "op": "add_node",
+     "parent": "s19z4",
+     "role": "mod",
+     "var": "s19z5",
+     "concept": "北洋",
+     "align": "1-1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 4,
+  "topic": "「贞节旌表」与「褒扬」的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "褒扬 :source 旌表",
+    "systems": [
+     "gold"
+    ],
+    "status": "open",
+    "grep": ":source (s"
+   },
+   {
+    "label": "褒扬 :ARG2 旌表",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG2 (s",
+     "/ 旌表"
+    ]
+   },
+   {
+    "label": "人 :mod 旌表/贞节旌表",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":mod (s19"
+   },
+   {
+    "label": "没有旌表",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「受贞节旌表褒扬（的）人」：旌表是褒扬的方式或来源，:source、:instrument、:manner 都有人用，拿不准。PropBank 褒扬-01 只有 ARG0、ARG1，没有 ARG2；把旌表挂成「人」的修饰语丢了它和褒扬的关系。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 5,
+  "topic": "家属、同乡与受褒扬人的关系",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "家属 :ARG4-of (have-rel-role-91 :ARG1 人)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "家属/同乡 :poss 人（旧名）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":poss s"
+   },
+   {
+    "label": "不表达",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline 2.3：亲属等关系用 have-rel-role-92，ARG1 是这个人（家属），ARG2 是对方（受褒扬人），ARG3 是关系；-91 按项目规则改 -92，have-rel-role 没有 ARG4。系统用 :poss（旧拼写）只是近似。",
+  "fix": {
+   "title": "家属、同乡：改为 :ARG1-of have-rel-role-92 :ARG2 人",
+   "conf": "high",
+   "why": "项目规则 -91 → -92；guideline 2.3 have-rel-role-92 ARG1 是关系的一方（家属/同乡），ARG2 是另一方（受褒扬人），没有 ARG4。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s19h2",
+     "concept": "have-rel-role-92"
+    },
+    {
+     "op": "rename",
+     "var": "s19h3",
+     "concept": "have-rel-role-92"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19x14",
+     "r": "ARG4-of",
+     "t": "s19h2",
+     "r2": "ARG1-of"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19x15",
+     "r": "ARG4-of",
+     "t": "s19h3",
+     "r2": "ARG1-of"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19h2",
+     "r": "ARG1",
+     "t": "s19x13",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s19h3",
+     "r": "ARG1",
+     "t": "s19x13",
+     "r2": "ARG2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 6,
+  "topic": "官员下空的 have-rel-role-91",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "官员 :ARG1-of (have-rel-role-91)，没有其他论元",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "只有 ARG1 的 have-rel-role-91 不表达任何关系（同第18句的督抚）。",
+  "fix": {
+   "title": "删去空的 have-rel-role-91",
+   "conf": "high",
+   "why": "这个节点只有 ARG1，什么也没表达。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s19h"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 7,
+  "topic": "「撰」的概念",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "撰-00",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "撰-00"
+   },
+   {
+    "label": "撰-01",
+    "systems": [
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "撰-01"
+   },
+   {
+    "label": "撰写-01（换成了另一个词）",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "撰写-01"
+   }
+  ],
+  "best": "撰-00",
+  "text": "PropBank 没有「撰」，按 guideline 2.1 写 撰-00；-01 是凭空编号。撰写-01 存在，但概念应是原文的词。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 8,
+  "topic": "「碑文」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "撰 :ARG2 碑文",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "撰/撰写 :ARG1 碑文",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG1 (s19"
+   }
+  ],
+  "best": "撰/撰写 :ARG1 碑文",
+  "text": "撰写的东西是受事，PropBank 撰写-01 ARG1 patient；撰-00 没有框架，按惯例受事也是 ARG1。",
+  "fix": {
+   "title": "碑文：:ARG2 → :ARG1",
+   "conf": "mid",
+   "why": "「撰碑文」的碑文是写出的东西，对应 撰写-01 的 ARG1；撰-00 无框架，ARG2 没有依据。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s19x7",
+     "r": "ARG2",
+     "t": "s19x19",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 9,
+  "topic": "「亦」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "撰 :mod 亦",
+    "systems": [
+     "gold",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 亦)"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "撰 :mod 亦",
+  "text": "「亦」（也）是有内容的副词，通常作 :mod 保留。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 10,
+  "topic": "「亦会亲撰」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "habitual",
+    "systems": [
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": ":aspect habitual"
+   }
+  ],
+  "best": "habitual",
+  "text": "「会」在这里表示通常会这样做，是惯常的事（guideline 4.1 habitual）；performance 指一次完成的具体事件。",
+  "fix": {
+   "title": "撰：performance → habitual",
+   "conf": "low",
+   "why": "「亦会亲撰碑文」描写的是惯常做法。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s19x7",
+     "attr": "aspect",
+     "value": "habitual"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 11,
+  "topic": "被允许的事的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "建坊等由 author full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(允许 :neutral-affirmative 建/立)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":neutral-affirmative s"
+   },
+   {
+    "label": "建/立 没有 modal",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(允许 :neutral-affirmative 建/立)",
+  "text": "guideline Part 4-3-1-6：许可类（allow）给补足事件 neutral-affirmative，父节点是 允许；gold 直接让作者断言建坊发生。",
+  "fix": {
+   "title": "建坊的 modal：(允许 :neutral-affirmative 建坊)",
+   "conf": "mid",
+   "why": "guideline Part 4-3-1-6：permission 类谓词给补足事件 neutral-affirmative。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s19x3"
+     ],
+     "to": [
+      "s19x",
+      "neutral-affirmative",
+      "s19x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 12,
+  "topic": "「撰」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative 撰)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(author :neutral-affirmative 撰)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":neutral-affirmative s19"
+   }
+  ],
+  "best": "(author :full-affirmative 撰)",
+  "text": "「会」在这里是惯常义，不表示可能；guideline 5.2 will/惯常 不降低强度。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 13,
+  "topic": "「北洋政府时期」作时间框架",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(past-reference :contained 时期)，时期 :contained 允许/撰",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "past-reference :contained"
+   },
+   {
+    "label": "时间表达没有进文档级 temporal",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(past-reference :contained 时期)，时期 :contained 允许/撰",
+  "text": "guideline 5.1：先给时间表达找父节点，事件再以它为参照（(时期 :contained 事件)）。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 14,
+  "topic": "gold 的无效 temporal 三元组",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(past-reference :depends-on 同乡的 have-rel-role)、(and :overlap 撰)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": ":depends-on 只用于时间表达；have-rel-role 不是时间表达，and 不是事件，都不该进 temporal。",
+  "fix": {
+   "title": "删去两条无效的 temporal 三元组",
+   "conf": "high",
+   "why": ":depends-on 只连时间表达；and 节点不是事件。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s19h3"
+     ]
+    },
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "s19a2",
+      "overlap",
+      "s19x7"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 19,
+  "n": 15,
+  "topic": "允许相对文档时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :before 允许)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(DCT :after 允许) / (允许 :before DCT)：英语语序读法",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "只经由「时期」定位",
+    "systems": [
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "r1、r4 的方向是同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 19,
+  "n": 16,
+  "topic": "「政府」与第9句北洋政府的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s9 政府 :same-entity 本句政府)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "ok",
+    "grep": ":same-entity s19"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(s9 政府 :same-entity 本句政府)",
+  "text": "「北洋政府时期，政府允许……」的政府就是第9句的北洋政府（gold s9x2）。",
+  "fix": {
+   "title": "补 政府 与第9句北洋政府的共指",
+   "conf": "mid",
+   "why": "本句的「政府」即第9句的「北洋政府」。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s9x2",
+      "same-entity",
+      "s19x2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 1,
+  "topic": "「如」（举例）的表达",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "根 have-example-91 :ARG1 implicit-predicate :ARG2 撰写，隐含谓词与上句「撰」同指",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": "have-example-91"
+   },
+   {
+    "label": "根 撰写，(撰写 :subset-of 上句撰写)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s19"
+   },
+   {
+    "label": "根 撰写，不表达「如」",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「如……」举上句「地方官员亲撰碑文」的一个例子。训练数据 chinese_umr-0014 第13句用 have-example-91 作根；用 :subset-of 把本句事件连到上句也表达了例子关系。完全不表达会丢掉这层话语关系。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 2,
+  "topic": "「民国十三年十一月」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-example-91 :era (民国 :year 十三 :month 十一)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":era (s"
+   },
+   {
+    "label": "撰写 :temporal (date-entity :year 1924 :month 11)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": ":year 1924"
+   },
+   {
+    "label": "date-entity :calendar 民国 :year 13 :month 11",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":calendar (s"
+   },
+   {
+    "label": "date-entity :year 13 :month 11 :mod 民国",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":year 13"
+   }
+  ],
+  "best": "撰写 :temporal (date-entity :year 1924 :month 11)",
+  "text": "guideline 2.2：日期写成 date-entity，数字用阿拉伯数字；它是撰写的时间（:temporal），不该挂在 have-example-91 上，:year/:month 也不能挂在普通概念「民国」上。民国十三年 = 1924 年；用 :calendar 标纪年也可，:mod 民国 不规范。",
+  "fix": {
+   "title": "日期改为 撰写 :temporal (date-entity :year 1924 :month 11)",
+   "conf": "high",
+   "why": "日期要写成 date-entity 挂在所修饰的事件上；民国十三年即 1924 年。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s20x7",
+     "subtree": true
+    },
+    {
+     "op": "add_node",
+     "parent": "s20x",
+     "role": "temporal",
+     "var": "s20z1",
+     "concept": "date-entity",
+     "attrs": {
+      "year": 1924,
+      "month": 11
+     },
+     "align": "2-6"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s20z1",
+      "contained",
+      "s20x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 3,
+  "topic": "黄绶职位的抽象谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "have-rel-role-91",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "have-rel-role-91"
+   },
+   {
+    "label": "have-org-role-92",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "have-org-role-92"
+   }
+  ],
+  "best": "have-org-role-92",
+  "text": "检察长是机构（检察厅）中的职位，用 have-org-role-92（guideline 2.3；项目规则 -91 改 -92）。同第14句。",
+  "fix": {
+   "title": "have-rel-role-91 → have-org-role-92",
+   "conf": "high",
+   "why": "检察长是机构职位，用 have-org-role-92。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s20h2",
+     "concept": "have-org-role-92"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 4,
+  "topic": "have-org-role-92 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "黄绶 :ARG1-of，:ARG2 检察厅，:ARG3 检察长",
+    "systems": [
+     "gold",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG3 (s"
+   },
+   {
+    "label": "黄绶 :ARG0-of，机构/职位编号各异",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":ARG0-of (s20"
+   }
+  ],
+  "best": "黄绶 :ARG1-of，:ARG2 检察厅，:ARG3 检察长",
+  "text": "guideline 2.3：ARG1 任职者、ARG2 机构、ARG3 职位。r1–r4 用 AMR 的 ARG0 写任职者，是同一习惯（见第14句）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 5,
+  "topic": "检察厅的实体类型",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "organization",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ organization"
+   },
+   {
+    "label": "government-organization",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "government-organization"
+   },
+   {
+    "label": "检察厅（中文词作类型）",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "/ 检察厅"
+   }
+  ],
+  "best": "government-organization",
+  "text": "四川高等检察厅是国家司法机关，guideline 2.2 类型表有 government-organization，比上位的 organization 具体。",
+  "fix": {
+   "title": "检察厅：organization → government-organization",
+   "conf": "low",
+   "why": "国家检察机关用更具体的 government-organization。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s20o",
+     "concept": "government-organization"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 6,
+  "topic": "「惨死」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "name 节点 :ARG0-of 惨死（挂在名字上）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "牛萧福贞（person）:ARG1-of 惨死/死",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG1-of (s20"
+   }
+  ],
+  "best": "牛萧福贞（person）:ARG1-of 惨死/死",
+  "text": "guideline 5.3、2.2：关系挂在实体节点上，不挂在 name 节点上；gold 的惨死也没有 aspect。",
+  "fix": {
+   "title": "惨死改挂到人上，补 aspect",
+   "conf": "high",
+   "why": "「惨死的寡妇」，惨死的是这个人，不是她的名字节点；事件要有 aspect。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s20n2",
+     "r": "ARG0-of",
+     "t": "s20x3"
+    },
+    {
+     "op": "add_rel",
+     "s": "s20i3",
+     "r": "ARG0-of",
+     "t": "s20x3"
+    },
+    {
+     "op": "set_attr",
+     "var": "s20x3",
+     "attr": "aspect",
+     "value": "performance"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 7,
+  "topic": "「惨死」的义项",
+  "cat": "sense",
+  "choices": [
+   {
+    "label": "惨死-01",
+    "systems": [
+     "gold",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "惨死-01"
+   },
+   {
+    "label": "死-01 :manner 惨",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "死-01"
+   }
+  ],
+  "best": "惨死-01",
+  "text": "PropBank 有 惨死-01（ARG0 entity described），整词有义项时不拆开。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 8,
+  "topic": "惨死/死的论元号",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "惨死-01 :ARG0 人",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "惨死/死 :ARG1 人",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s20"
+   }
+  ],
+  "best": "惨死-01 :ARG0 人",
+  "text": "PropBank 惨死-01、死-01 都只有 ARG0（entity described / entity who die），没有 ARG1。系统把一元谓词的唯一论元写成 ARG1（同第15句「不同」）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 9,
+  "topic": "「成都」挂在哪",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "寡妇（人）:place 成都",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "惨死 :place 成都",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "惨死 :place 成都",
+  "text": "「成都惨死的寡妇」：成都是惨死发生的地方，:place 挂在事件上更准确。",
+  "fix": {
+   "title": "成都：从人改挂到惨死上",
+   "conf": "mid",
+   "why": "成都是惨死的地点。",
+   "ops": [
+    {
+     "op": "del_rel",
+     "s": "s20i3",
+     "r": "place",
+     "t": "s20c"
+    },
+    {
+     "op": "add_rel",
+     "s": "s20x3",
+     "r": "place",
+     "t": "s20c"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 10,
+  "topic": "「为……撰写」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "撰写 :affectee 牛萧福贞",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":affectee (s"
+   },
+   {
+    "label": "撰写 :ARG2 牛萧福贞",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":ARG2 (s"
+   }
+  ],
+  "best": "撰写 :affectee 牛萧福贞",
+  "text": "PropBank 撰写-01 只有 ARG0、ARG1，受益者用 :affectee。r3、r4 是同一习惯（见第13句「为廖黄氏建」）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 11,
+  "topic": "「寡妇」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "人 :mod 寡妇",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 寡妇)"
+   },
+   {
+    "label": "人 :ARG0-of (have-role-91 :ARG3 寡妇)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "have-role-91"
+   }
+  ],
+  "best": "人 :mod 寡妇",
+  "text": "guideline 2.3：have-role-91 的 ARG1 是这个人，r3 用 ARG0-of 不对；直接 :mod 也可。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 12,
+  "topic": "惨死与撰写的先后",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(撰写 :before 惨死)：惨死在撰写之前",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(惨死 :before 撰写) 等：英语语序读法",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "(撰写 :before 惨死)：惨死在撰写之前",
+  "text": "先惨死后撰碑文，(A :before B) = B 在 A 之前，gold 写对了。系统同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 20,
+  "n": 13,
+  "topic": "have-example 的 :depends-on",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(past-reference :depends-on have-example-91)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": ":depends-on 只用于时间表达，have-example-91 是话语关系。",
+  "fix": {
+   "title": "删去 (past-reference :depends-on have-example-91)",
+   "conf": "high",
+   "why": ":depends-on 只连时间表达。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "past-reference",
+      "depends-on",
+      "s20h"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 14,
+  "topic": "「惨死」的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(author :full-affirmative 惨死/死)",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(author :full-affirmative 惨死/死)",
+  "text": "guideline 5.2：每个事件都要有 modal 父节点。",
+  "fix": {
+   "title": "补 (author :full-affirmative 惨死)",
+   "conf": "mid",
+   "why": "惨死是作者断言的事件，缺 modal。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s20x3"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 20,
+  "n": 15,
+  "topic": "跨句的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s19 撰 :same-event 隐含谓词)",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(撰写 :subset-of s19 撰写)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s19"
+   },
+   {
+    "label": "(s19 碑文 :same-entity 本句碑文)",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "bad",
+    "grep": ":same-entity s20"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "上句说的是地方官员一般会撰碑文，本句是一个具体例子：事件是上句的一例（subset），但本句的碑文不是上句泛指的碑文，r1 的 same-entity 错。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 1,
+  "topic": "两个分句并列的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and :ARG1 :ARG2",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": [
+     ":ARG2 (s",
+     "/ 列为-01"
+    ]
+   },
+   {
+    "label": "and :op1 :op2",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   }
+  ],
+  "best": "and :op1 :op2",
+  "text": "guideline 2.5：并列 and 用 :opN（同第13、16句，gold 的同一类错）。",
+  "fix": {
+   "title": "and 的子节点：:ARG1/:ARG2 → :op1/:op2",
+   "conf": "high",
+   "why": "and 取 :opN 角色。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s21a",
+     "r": "ARG1",
+     "t": "s21e",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s21a",
+     "r": "ARG2",
+     "t": "s21x",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 2,
+  "topic": "存在句「有」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "exist-91",
+    "systems": [
+     "gold",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   },
+   {
+    "label": "有-03",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": "有-03"
+   }
+  ],
+  "best": "exist-91",
+  "text": "guideline 2.3：「there is X (in L)」用 exist-91；训练数据 exist-91 有 23 句、有-03 只有 3 句。有-03（ARG0 location、ARG1 entity）也是 PropBank 里对应的义项，判略差。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 3,
+  "topic": "exist-91 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "exist-91 :ARG0 地区 :ARG1 牌坊",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "exist-91 :ARG1 地区 :ARG2 牌坊",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "有-03 :ARG0 地区 :ARG1 牌坊（按有-03 无误）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "有-03"
+   }
+  ],
+  "best": "exist-91 :ARG1 地区 :ARG2 牌坊",
+  "text": "guideline 2.3：exist-91 的 ARG1 是处所、ARG2 是存在物，没有 ARG0。",
+  "fix": {
+   "title": "exist-91：ARG0 地区 → ARG1，ARG1 牌坊 → ARG2",
+   "conf": "high",
+   "why": "guideline 2.3：exist-91 :ARG1 location :ARG2 theme。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s21e",
+     "r": "ARG1",
+     "t": "s21x19",
+     "r2": "ARG2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s21e",
+     "r": "ARG0",
+     "t": "s21x24",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 4,
+  "topic": "「台金地区内」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "地区 :mod 台金 :direction 内",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":direction (s"
+   },
+   {
+    "label": "地区 :name 台金，「内」不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"台金\""
+   }
+  ],
+  "best": null,
+  "text": "台金（台湾、金门）可作专名也可作修饰语，都接受。「内」是方位词，项目规则要建节点（系统全篇不建，见第14句）；gold 建了节点但用 :direction 不合训练数据 (方位词 :op1 X) 的写法。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 5,
+  "topic": "「至少 10 座」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "牌坊 :quant 10 :mod 至少 :unit 座",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":unit (s"
+   },
+   {
+    "label": "牌坊 :quant (at-least :op1 10) :unit 座",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":unit (s"
+   },
+   {
+    "label": "at-least 或 :mod 至少，量词省掉",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "at-least 是 AMR 写法，训练数据有 (钱 :mod 至少 :quant 50)（chinese_umr-0020 第8句），两种都接受。量词「座」按项目规则保留为 :unit，省掉判 minor。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 6,
+  "topic": "「邱良功母节孝坊」的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "牌坊 :name :op1 \"邱良功\" :op2 \"母\" :op3 \"节孝坊\"",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op3 \"节孝坊\""
+   },
+   {
+    "label": "building/节孝坊/坊 :name \"邱良功母节孝坊\"（一个 op）",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"邱良功母节孝坊\""
+   }
+  ],
+  "best": "牌坊 :name :op1 \"邱良功\" :op2 \"母\" :op3 \"节孝坊\"",
+  "text": "guideline 2.2：中文名字按词切分为 :op1 :op2 …，不整串写成一个 op。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 7,
+  "topic": "「位于金门县」的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "节孝坊 :ARG0-of 位于-01 :ARG1 金门",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":ARG0-of (s"
+   },
+   {
+    "label": "节孝坊 :ARG1-of 位于-01 :ARG1 县（两个 ARG1）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s"
+   },
+   {
+    "label": "节孝坊 :ARG1-of 位于-01，位于又 :ARG0 节孝坊",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":ARG1-of (s"
+   }
+  ],
+  "best": "节孝坊 :ARG0-of 位于-01 :ARG1 金门",
+  "text": "PropBank 位于-01：ARG0 entity described，ARG1 location。被定位的牌坊是 ARG0；系统在第13句写对了，这里把关系从句的中心语写成了 ARG1-of。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 8,
+  "topic": "「金门县」的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "county :name \"金门\"",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok",
+    "grep": ":op1 \"金门\""
+   },
+   {
+    "label": "县 :name \"金门\"",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": "/ 县"
+   },
+   {
+    "label": "county :name \"金门县\"",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"金门县\""
+   }
+  ],
+  "best": "county :name \"金门\"",
+  "text": "「县」已由类型 county 表达，名字是「金门」；guideline 类型用英语类型词。",
+  "fix": null
+ },
+ {
+  "sent": 21,
+  "n": 9,
+  "topic": "「更」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "没有「更」",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "列为 :degree 更",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   },
+   {
+    "label": "列为 :mod 更",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": "列为 :mod 更",
+  "text": "「更被列为国定古迹」的「更」是递进（还、甚至），修饰整个事件，不是性质的程度；项目规则 :degree 只用于性质的强化或弱化。",
+  "fix": {
+   "title": "补 列为 :mod 更",
+   "conf": "mid",
+   "why": "「更」是递进副词，有内容，应作 :mod 保留。",
+   "ops": [
+    {
+     "op": "add_node",
+     "parent": "s21x",
+     "role": "mod",
+     "var": "s21z1",
+     "concept": "更",
+     "align": "20-20"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 10,
+  "topic": "存在与位于的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "exist-91、位于 都没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "有/exist 有，位于 没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "有、位于 都有",
+    "systems": [
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "有、位于 都有",
+  "text": "guideline 5.2：每个事件都要有 modal 父节点。",
+  "fix": {
+   "title": "补 exist-91、位于 的 modal",
+   "conf": "high",
+   "why": "两个状态都是作者断言的，缺 modal。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s21e"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s21x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 11,
+  "topic": "「有」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "没有标 exist-91 的时间",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(DCT :overlap 有/exist)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(DCT :overlap 有/exist)",
+  "text": "现在存在的状态，与文档时间 overlap；guideline 5.1 每个事件都要有时间父节点。",
+  "fix": {
+   "title": "补 (DCT :overlap exist-91)",
+   "conf": "high",
+   "why": "现在存在的状态与文档时间重叠。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s21e"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 12,
+  "topic": "「列为」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :overlap 列为)",
+    "systems": [
+     "gold",
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(DCT :after 列为) / (列为 :before DCT)：英语语序读法",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "被列为古迹是过去完成的事件（gold 自己也标 performance），应为 (DCT :before 列为)；overlap 与 performance 不协调。r1、r4 的方向是同一习惯（见第13句）。",
+  "fix": {
+   "title": "列为：(DCT :overlap) → (DCT :before)",
+   "conf": "low",
+   "why": "列为国定古迹是已完成的事件；也可理解为现在仍是古迹的状态，故 low。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "overlap",
+      "s21x"
+     ],
+     "to": [
+      "document-creation-time",
+      "before",
+      "s21x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 13,
+  "topic": "10 座牌坊与第1句「牌坊」的关系",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s1 牌坊 :same-entity 10 座牌坊)",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(10 座牌坊 :subset-of s1 牌坊)",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s1"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(10 座牌坊 :subset-of s1 牌坊)",
+  "text": "第1句的「贞孝节烈牌坊」是泛指的这一类，台金的 10 座只是其中一部分，是 subset 不是同一实体。",
+  "fix": {
+   "title": "改为 (10 座牌坊 :subset-of s1 牌坊)",
+   "conf": "mid",
+   "why": "台金地区的 10 座是全部贞孝节烈牌坊的一部分。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s1x",
+      "same-entity",
+      "s21x19"
+     ],
+     "to": [
+      "s21x19",
+      "subset-of",
+      "s1x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 21,
+  "n": 14,
+  "topic": "「其中」：邱良功母节孝坊属于这 10 座",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有表达",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(节孝坊 :subset-of 10 座牌坊)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s21"
+   },
+   {
+    "label": "图里 牌坊 :subset 节孝坊",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":subset s21"
+   },
+   {
+    "label": "图里 牌坊 :part 节孝坊；另有自指的共指",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": ":part s21"
+   }
+  ],
+  "best": "(节孝坊 :subset-of 10 座牌坊)",
+  "text": "「其中」表示成员关系，项目规则 :subset-of 成员在前；:subset 不是 UMR 角色，:part 是部分—整体，不是成员关系；r4 还写了 (X :same-entity X)。",
+  "fix": {
+   "title": "补 (节孝坊 :subset-of 10 座牌坊)",
+   "conf": "low",
+   "why": "「其中」表示这座牌坊是那 10 座之一；句内是否写 coref 三元组 guideline 没有明说，gold 在第1句也这样用过。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s21x2",
+      "subset-of",
+      "s21x19"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 1,
+  "topic": "上句 10 座牌坊与隐含谓词的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s21 牌坊 :same-entity implicit-predicate)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有",
+  "text": "实体（牌坊）不能和一个谓词节点 same-entity；guideline 5.3 same-entity 连两个实体提及。",
+  "fix": {
+   "title": "删去 (s21 牌坊 :same-entity implicit-predicate)",
+   "conf": "high",
+   "why": "把实体和谓词节点连成同一实体没有意义。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "coref",
+     "triple": [
+      "s21x19",
+      "same-entity",
+      "s22i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 2,
+  "topic": "根节点：have-example-91 还是 包括",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "have-example-91 :ARG1 implicit-predicate :ARG2 包括",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "have-example-91"
+   },
+   {
+    "label": "包括-01 作根",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "包括-01"
+   }
+  ],
+  "best": "包括-01 作根",
+  "text": "原文没有「如、例如」，「其他有名的……包括……」由 包括-01（ARG0 thing including、ARG1 thing included）本身表达；gold 外加的举例关系和空的隐含谓词没有来源。",
+  "fix": {
+   "title": "删去多余的 have-example-91，以 包括 为根",
+   "conf": "mid",
+   "why": "句中没有表示举例的词，包括-01 已表达包含关系。",
+   "ops": [
+    {
+     "op": "set_root",
+     "var": "s22x"
+    },
+    {
+     "op": "del_node",
+     "var": "s22h",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 3,
+  "topic": "林氏贞孝坊、黄氏节孝坊",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "贞孝坊 :mod (individual-person :name 林氏)（不作专名）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": "/ individual-person"
+   },
+   {
+    "label": "牌坊 :name :op1 \"林氏\" :op2 \"贞孝坊\"",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 \"贞孝坊\""
+   },
+   {
+    "label": "building/贞孝坊/坊 :name \"林氏贞孝坊\"（一个 op）",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"林氏贞孝坊\""
+   }
+  ],
+  "best": "牌坊 :name :op1 \"林氏\" :op2 \"贞孝坊\"",
+  "text": "「林氏贞孝坊」是一座具体牌坊的名称，与第21句「邱良功母节孝坊」同类，gold 在第21句把后者作命名实体，这里却拆成「林氏（人）的贞孝坊」，前后不一致。名字按词切分（guideline 2.2）。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 4,
+  "topic": "「位于」的表达",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "坊 :place 区/公园（不建 位于）",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor",
+    "grep": ":place (s"
+   },
+   {
+    "label": "位于-01，但中心语作 ARG1-of（与处所同为 ARG1）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": "位于-01"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有 位于-01（ARG0 entity described、ARG1 location），原文有这个动词，gold 省成 :place 略差；系统的论元号问题同第21句（中心语应为 ARG0-of），同一习惯。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 5,
+  "topic": "大甲区与台中市的关系",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "区 :part-of 市",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "区 :place 市",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "open",
+    "grep": ":place (s"
+   }
+  ],
+  "best": "区 :part-of 市",
+  "text": "行政区划用 :part-of（项目规则）；r1 用 :place 是同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 6,
+  "topic": "二二八和平纪念公园的名字",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "park :name \"二二八和平纪念公园\"（一个 op）",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":op1 \"二二八和平纪念公园\""
+   },
+   {
+    "label": ":op1 \"二二八\" :op2 \"和平\" :op3 \"纪念\" :op4 \"公园\"",
+    "systems": [
+     "s3/r1",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op4 \"公园\""
+   }
+  ],
+  "best": ":op1 \"二二八\" :op2 \"和平\" :op3 \"纪念\" :op4 \"公园\"",
+  "text": "guideline 2.2：中文名字按词切分，每个词一个 :opN（欧洲议会 → :op1 \"欧洲\" :op2 \"议会\"）；原文分词是 二二八 / 和平 / 纪念 / 公园。",
+  "fix": {
+   "title": "公园名字按词切分",
+   "conf": "mid",
+   "why": "guideline 2.2：名字按分词结果写成多个 :opN。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s22n2",
+     "attr": "op1",
+     "value": "\"二二八\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s22n2",
+     "attr": "op2",
+     "value": "\"和平\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s22n2",
+     "attr": "op3",
+     "value": "\"纪念\""
+    },
+    {
+     "op": "set_attr",
+     "var": "s22n2",
+     "attr": "op4",
+     "value": "\"公园\""
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 7,
+  "topic": "「有名」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "牌坊 :mod 有名",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "牌坊 :ARG1-of 有名-01",
+    "systems": [
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": "有名-01"
+   }
+  ],
+  "best": "牌坊 :mod 有名",
+  "text": "作定语的性质词可直接 :mod（guideline 2.1）；若用 PropBank 有名-01，它只有 ARG0（entity described），应是 :ARG0-of。系统的 ARG1 是同一习惯（见第15句「不同」）。",
+  "fix": null
+ },
+ {
+  "sent": 22,
+  "n": 8,
+  "topic": "「其他牌坊」与两座坊的成员关系",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(其他牌坊 :subset-of 林氏坊)、(其他牌坊 :subset-of 黄氏坊)：方向反了",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(林氏坊/黄氏坊 :subset-of 其他牌坊)",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s22"
+   },
+   {
+    "label": "(林氏坊 :subset-of s21 10 座牌坊)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":subset-of s21"
+   },
+   {
+    "label": "(其他牌坊 :subset-of s1 牌坊)",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s1"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "(林氏坊/黄氏坊 :subset-of 其他牌坊)",
+  "text": "项目规则：:subset-of 成员在前。两座坊是「其他有名牌坊」中的成员，gold 写反了。r3 把它归入上句台金的 10 座，原文说的是「其他」的，不对。",
+  "fix": {
+   "title": "subset-of 方向改正",
+   "conf": "high",
+   "why": "项目规则：(成员 :subset-of 集合)；林氏坊、黄氏坊是「其他有名牌坊」的成员。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s22x5",
+      "subset-of",
+      "s22x4"
+     ],
+     "to": [
+      "s22x4",
+      "subset-of",
+      "s22x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s22x5",
+      "subset-of",
+      "s22x2"
+     ],
+     "to": [
+      "s22x2",
+      "subset-of",
+      "s22x5"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 22,
+  "n": 9,
+  "topic": "「包括」的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "(DCT :overlap 包括)",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "没有 temporal",
+    "systems": [
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": "(DCT :overlap 包括)",
+  "text": "现在成立的状态，与文档时间 overlap。r3、r4 在第15、16句也整句漏标。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 1,
+  "topic": "「根据……报道」的结构",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and-contrast :source (报道 :source 晚报)，报道不作事件",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":source (s"
+   },
+   {
+    "label": "报道-01 作根：:ARG0 晚报 :ARG1 and(有, 有)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "报道-01"
+   },
+   {
+    "label": "and :ARG1-of (根据-01 :ARG2 (报道 :poss 晚报))",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": "根据-01"
+   }
+  ],
+  "best": "报道-01 作根：:ARG0 晚报 :ARG1 and(有, 有)",
+  "text": "PropBank 报道-01：ARG0 reporter、ARG1 thing reported；guideline 3：被报道的内容是报道动词的 ARG1，报道是事件名词，应作事件（guideline 2.1）。gold 用两层 :source 表达不了报道者与内容的关系。PropBank 根据-01 只有 ARG0、ARG1，r3 的 ARG2 错。",
+  "fix": {
+   "title": "改为 报道-01 作根，晚报为 ARG0、两个「有」为 ARG1",
+   "conf": "mid",
+   "why": "PropBank 报道-01 ARG0 reporter、ARG1 thing reported；报道是事件，句子的内容是它的 ARG1。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s23x13",
+     "concept": "报道-01"
+    },
+    {
+     "op": "set_attr",
+     "var": "s23x13",
+     "attr": "aspect",
+     "value": "performance"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s23x13",
+     "r": "source",
+     "t": "s23n2",
+     "r2": "ARG0"
+    },
+    {
+     "op": "set_root",
+     "var": "s23x13"
+    },
+    {
+     "op": "del_rel",
+     "s": "s23a",
+     "r": "source",
+     "t": "s23x13"
+    },
+    {
+     "op": "add_rel",
+     "s": "s23x13",
+     "r": "ARG1",
+     "t": "s23a"
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s23x13"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s23x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 2,
+  "topic": "「2013 年」的写法",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and-contrast :year 2013",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":year 2013"
+   },
+   {
+    "label": "报道 :temporal (date-entity :year 2013)",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ date-entity"
+   }
+  ],
+  "best": "报道 :temporal (date-entity :year 2013)",
+  "text": "guideline 2.2：日期写成 date-entity，以 :temporal 挂在事件（2013 年的报道）上（同第13句 gold 的错）。",
+  "fix": {
+   "title": "2013 年改为 报道 :temporal (date-entity :year 2013)",
+   "conf": "high",
+   "why": "年份应是 date-entity，修饰的是报道，不是两个「有」的并列。",
+   "ops": [
+    {
+     "op": "del_attr",
+     "var": "s23a",
+     "attr": "year"
+    },
+    {
+     "op": "add_node",
+     "parent": "s23x13",
+     "role": "temporal",
+     "var": "s23z1",
+     "concept": "date-entity",
+     "attrs": {
+      "year": 2013
+     },
+     "align": "2-3"
+    },
+    {
+     "op": "doc_add",
+     "kind": "temporal",
+     "triple": [
+      "s23z1",
+      "contained",
+      "s23x13"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 3,
+  "topic": "「福建省厦门市」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "place :name (name :op1 (province…) :op2 (city…))：name 的 op 是节点",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ place"
+   },
+   {
+    "label": "city 厦门市 :part-of province 福建省",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":part-of (s"
+   },
+   {
+    "label": "city :name :op1 \"福建省\" :op2 \"厦门市\"",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor",
+    "grep": ":op2 \"厦门市\""
+   }
+  ],
+  "best": "city 厦门市 :part-of province 福建省",
+  "text": "guideline 2.2：name 的 :opN 只取字符串，不能是实体节点；「福建省厦门市」是两个地名，城市是省的一部分，用 :part-of（项目规则）。r1 把两个地名并成一个名字略差。",
+  "fix": {
+   "title": "改为 city 厦门市 :part-of province 福建省",
+   "conf": "high",
+   "why": "name 的 op 只能是字符串；省市关系用 :part-of。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s23p2",
+     "concept": "city"
+    },
+    {
+     "op": "add_rel",
+     "s": "s23p2",
+     "r": "part-of",
+     "t": "s23p"
+    },
+    {
+     "op": "del_rel",
+     "s": "s23n",
+     "r": "op1",
+     "t": "s23p"
+    },
+    {
+     "op": "del_rel",
+     "s": "s23n",
+     "r": "op2",
+     "t": "s23c"
+    },
+    {
+     "op": "set_attr",
+     "var": "s23n",
+     "attr": "op1",
+     "value": "\"厦门市\""
+    },
+    {
+     "op": "del_node",
+     "var": "s23c",
+     "subtree": true
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 4,
+  "topic": "有-03 的论元",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "有-03 :ARG1 处所 :ARG2 牌坊",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "有-03 :ARG0 处所 :ARG1 牌坊",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":ARG0 (s"
+   },
+   {
+    "label": "exist-91 :ARG1 处所 :ARG2 牌坊",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": "exist-91"
+   }
+  ],
+  "best": null,
+  "text": "PropBank 有-03：ARG0 location/domain described、ARG1 entity that exists，没有 ARG2。gold 用的是 exist-91 的论元号（第21句 gold 又把 exist-91 写成 有-03 的论元号），两者混了。",
+  "fix": {
+   "title": "有-03：ARG1 → ARG0，ARG2 → ARG1",
+   "conf": "high",
+   "why": "PropBank 有-03 ARG0 是处所、ARG1 是存在物。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s23x",
+     "r": "ARG1",
+     "t": "s23p2",
+     "r2": "ARG0"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s23x",
+     "r": "ARG2",
+     "t": "s23x2",
+     "r2": "ARG1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s23x9",
+     "r": "ARG1",
+     "t": "s23p3",
+     "r2": "ARG0"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s23x9",
+     "r": "ARG2",
+     "t": "s23x10",
+     "r2": "ARG1"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 23,
+  "n": 5,
+  "topic": "「还」「总共」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "有 :mod 还，牌坊 :mod 总共",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 还)"
+   },
+   {
+    "label": "还、总共 都在",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "/ 总共)"
+   },
+   {
+    "label": "没有「还」",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "没有「总共」",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "两个都没有",
+    "systems": [
+     "s3/r1"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "「还」（仍然）和「总共」都是有内容的副词，作 :mod 保留；漏掉会丢信息。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 6,
+  "topic": "两处「座」",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "两处都 :unit 座",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":unit (s"
+   },
+   {
+    "label": "量词省掉",
+    "systems": [
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open"
+   }
+  ],
+  "best": "两处都 :unit 座",
+  "text": "项目规则：量词保留为 :unit。系统省量词是同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 7,
+  "topic": "两个「有」的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "(author :full-affirmative 有) ×2",
+    "systems": [
+     "gold",
+     "s3/r3"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "(报道 :full-affirmative 有) ×2",
+    "systems": [
+     "s3/r1",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":full-affirmative s23"
+   },
+   {
+    "label": "(晚报 :full-affirmative 有) ×2",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":full-affirmative s23"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2：转述的内容以说话者为 conceiver（作者确信报道者，报道者确信内容）；「根据厦门晚报的报道」把信息来源交给报道，用报道事件或晚报作 conceiver 都可。gold 直接由作者断言略差，但 gold 没有报道事件，不单独改。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 8,
+  "topic": "报道的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "（gold 没有报道事件）",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "方向按英语语序写反：(DCT :after 报道) / (报道 :before DCT) 等",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "没有标",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "2013 年的报道在文档时间之前，应为 (DCT :before 报道)（已并入本句第1条的 fix）。系统的方向是同一习惯（见第13句）。",
+  "fix": null
+ },
+ {
+  "sent": 23,
+  "n": 9,
+  "topic": "厦门、湖南的牌坊与第1句「牌坊」",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "(s1 牌坊 :subset-of 11 座)、(s1 牌坊 :subset-of 1 座)：方向反了",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(11 座 :subset-of s1 牌坊)",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":subset-of s1"
+   },
+   {
+    "label": "(s21 10 座 :subset-of 11 座)",
+    "systems": [
+     "s3/r3"
+    ],
+    "status": "bad",
+    "grep": ":subset-of s23"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "项目规则：(成员或子集 :subset-of 集合)。厦门的 11 座、湖南的 1 座都是全部贞孝节烈牌坊的一部分，gold 写反了。台金的 10 座和厦门的 11 座没有包含关系，r3 错。",
+  "fix": {
+   "title": "subset-of 方向改正",
+   "conf": "high",
+   "why": "项目规则：子集在前；各地的牌坊是第1句泛指的贞孝节烈牌坊的子集。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s1x",
+      "subset-of",
+      "s23x2"
+     ],
+     "to": [
+      "s23x2",
+      "subset-of",
+      "s1x"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "coref",
+     "triple": [
+      "s1x",
+      "subset-of",
+      "s23x10"
+     ],
+     "to": [
+      "s23x10",
+      "subset-of",
+      "s1x"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 1,
+  "topic": "认为的内容：两个分句的并列",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "and :ARG1 (and :ARG1 束缚) :ARG2 identity：and 用 ARG 角色并多套一层",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "and :op1 束缚 :op2 是/identity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   }
+  ],
+  "best": "and :op1 束缚 :op2 是/identity",
+  "text": "guideline 2.5：and 取 :opN；只有一个子节点的 and 没有意义（同第19句）。",
+  "fix": {
+   "title": "去掉多余的 and，子节点改为 :op1/:op2",
+   "conf": "high",
+   "why": "and 用 :opN；内层只有一个子节点的 and 是多余的。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s24a",
+     "r": "op1",
+     "t": "s24x5"
+    },
+    {
+     "op": "del_node",
+     "var": "s24a2"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s24a",
+     "r": "ARG2",
+     "t": "s24i2",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 2,
+  "topic": "「是封建社会的糟粕」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "是-01 :ARG0 牌坊 :ARG1 糟粕",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor",
+    "grep": "是-01"
+   },
+   {
+    "label": "是-01 :ARG1 牌坊 :ARG2 糟粕（是-01 没有 ARG2）",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "bad",
+    "grep": "是-01"
+   }
+  ],
+  "best": "identity-91",
+  "text": "guideline 2.1：系词「是」不是事件，转成 2.3 的抽象谓词（identity-91）。PropBank 是-01 为 ARG0 entity、ARG1 predicative，r4 的 ARG2 不存在。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 3,
+  "topic": "「封建」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "社会 :era 封建",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":era (s"
+   },
+   {
+    "label": "社会 :mod 封建",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   }
+  ],
+  "best": "社会 :mod 封建",
+  "text": ":era 是 date-entity 的属性（guideline 2.2），不是概念之间的角色；「封建社会」的封建是类别修饰语，用 :mod。",
+  "fix": {
+   "title": "封建：:era → :mod",
+   "conf": "high",
+   "why": ":era 只用在 date-entity 里；「封建」是修饰语。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24x11",
+     "r": "era",
+     "t": "s24x12",
+     "r2": "mod"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 4,
+  "topic": "「女子的自由」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "自由 :possessor-of 女子（方向反了）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":possessor-of (s"
+   },
+   {
+    "label": "自由 :possessor 女子",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "自由 :poss 女子（旧名）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": "自由 :possessor 女子",
+  "text": "「女子的自由」：女子是领有者，应是 (自由 :possessor 女子)；gold 的 :possessor-of 等于说自由领有女子。:poss 是旧拼写，同一习惯（见第16句）。",
+  "fix": {
+   "title": "自由 :possessor-of 女子 → :possessor",
+   "conf": "high",
+   "why": "女子是自由的领有者，方向反了。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24x13",
+     "r": "possessor-of",
+     "t": "s24x14",
+     "r2": "possessor"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 5,
+  "topic": "「社会的糟粕」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "糟粕 :mod 社会",
+    "systems": [
+     "gold",
+     "s3/r1",
+     "s3/r3"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "糟粕 :possessor 社会",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":possessor (s"
+   },
+   {
+    "label": "糟粕 :poss 社会（旧名）",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":poss (s"
+   }
+  ],
+  "best": null,
+  "text": ":mod 与 :possessor 都说得通。:poss 是旧拼写，同一习惯（见第16句）。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 6,
+  "topic": "「普遍」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "认为 :mod 普遍",
+    "systems": [
+     "gold",
+     "s3/r3"
+    ],
+    "status": "minor",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "认为 :manner 普遍",
+    "systems": [
+     "s3/r1",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":manner (s"
+   },
+   {
+    "label": "认为 :degree 普遍",
+    "systems": [
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "认为 :manner 普遍",
+  "text": "「普遍认为」的普遍是副词性修饰事件，用 :manner（REVIEWER 判断标准）；它不是性质的强化或弱化，不用 :degree（项目规则）。",
+  "fix": {
+   "title": "普遍：:mod → :manner",
+   "conf": "mid",
+   "why": "副词性修饰事件用 :manner。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s24x",
+     "r": "mod",
+     "t": "s24x17",
+     "r2": "manner"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 7,
+  "topic": "「束缚」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "state",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":aspect state"
+   },
+   {
+    "label": "activity",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":aspect activity"
+   }
+  ],
+  "best": null,
+  "text": "「贞节牌坊束缚女子的自由」是对牌坊性质的一般评价，是持续的状态或活动，不是一次完成的事件（guideline 4.1）。",
+  "fix": {
+   "title": "束缚：performance → state",
+   "conf": "low",
+   "why": "泛指的评价，不是完成的具体事件；state 和 activity 都说得通。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s24x5",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 8,
+  "topic": "「认为」内容的 modal 父节点",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "内容由 author 直接 full-affirmative",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(认为 :full-affirmative 内容)",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":full-affirmative s24"
+   },
+   {
+    "label": "(author :full-affirmative 社会)(社会 :full-affirmative 内容)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":full-affirmative s24"
+   },
+   {
+    "label": "(社会 :full-affirmative 认为)(认为 :unspecified 内容)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":unspecified s24"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.2：转述的言语或想法，作者确信说话者/想法事件，内容的 conceiver 是持这个看法的人（或认为事件）。这是「现代社会」的看法，作者没有直接断言；gold 写成作者的断言。认为是确信的看法，r5 的 unspecified 偏弱。",
+  "fix": {
+   "title": "内容的 conceiver 改为 认为",
+   "conf": "high",
+   "why": "guideline 5.2：被认为的内容以认为事件（或认为者）为 conceiver，不是作者直接断言。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s24x5"
+     ],
+     "to": [
+      "s24x",
+      "full-affirmative",
+      "s24x5"
+     ]
+    },
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s24i2"
+     ],
+     "to": [
+      "s24x",
+      "full-affirmative",
+      "s24i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 24,
+  "n": 9,
+  "topic": "内容事件的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "束缚、identity 都 (DCT :overlap)",
+    "systems": [
+     "gold",
+     "s3/r4"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(认为 :overlap 束缚/是)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只标了「认为」",
+    "systems": [
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：每个事件都要有时间父节点；补足语事件也可以以认为为父节点。",
+  "fix": null
+ },
+ {
+  "sent": 24,
+  "n": 10,
+  "topic": "贞节牌坊的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "与第1句或第17句的牌坊同指",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "same-entity"
+   },
+   {
+    "label": "没有",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "这里的贞节牌坊是泛指这一类，与第1句的泛指同指；连到最近的泛指提及更好（guideline 5.3），先后顺序的问题同第13句。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 1,
+  "topic": "认为内容两分句的连接",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "and-contrast :ARG1 :ARG2（另有 :topic 贞节牌坊）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": ":ARG2 (s"
+   },
+   {
+    "label": "and :op1 :op2",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":op2 (s"
+   }
+  ],
+  "best": "and :op1 :op2",
+  "text": "guideline Part 3-1-6：and-contrast 取 :opX（同第15句）。「是……工具，并未……关怀」是递进并列，用 and 或 and-contrast 都可，问题在角色。",
+  "fix": {
+   "title": "and-contrast：:ARG1/:ARG2 → :op1/:op2",
+   "conf": "high",
+   "why": "and-contrast 取 :opN 角色。",
+   "ops": [
+    {
+     "op": "mod_rel",
+     "s": "s25a",
+     "r": "ARG1",
+     "t": "s25i2",
+     "r2": "op1"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s25a",
+     "r": "ARG2",
+     "t": "s25x9",
+     "r2": "op2"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 2,
+  "topic": "「其实是……工具」的谓词",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "identity-91",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "identity-91"
+   },
+   {
+    "label": "是-01 :ARG0 :ARG1",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "open",
+    "grep": "是-01"
+   },
+   {
+    "label": "是-01 :ARG1 :ARG2",
+    "systems": [
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": "是-01"
+   }
+  ],
+  "best": "identity-91",
+  "text": "系词「是」用抽象谓词（guideline 2.1、2.3）；是-01 没有 ARG2。系统的同一习惯，见第15、24句。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 3,
+  "topic": "「富有」",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "人家 :mod 富有",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": "/ 富有)"
+   },
+   {
+    "label": "人家 :ARG1-of 富有-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": "富有-01"
+   }
+  ],
+  "best": "人家 :mod 富有",
+  "text": "定语性质词直接 :mod 即可；若用 PropBank 富有-01，被描述者是 ARG0（theme），不是 ARG1。系统一元谓词写 ARG1 的同一习惯（见第15句）。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 4,
+  "topic": "「其显赫地位」的领有者",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "地位 没有领有者",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "地位 :possessor 人家",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":possessor s"
+   },
+   {
+    "label": "地位 :poss 人家（旧名）",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "open",
+    "grep": ":poss s"
+   }
+  ],
+  "best": "地位 :possessor 人家",
+  "text": "「其」回指大户人家，句内同指用重入（guideline 5.3）作 :possessor。:poss 是旧拼写，同一习惯（见第16句）。",
+  "fix": {
+   "title": "补 地位 :possessor 人家",
+   "conf": "mid",
+   "why": "「其显赫地位」的「其」指大户人家，gold 漏了这个代词。",
+   "ops": [
+    {
+     "op": "add_rel",
+     "s": "s25x24",
+     "r": "possessor",
+     "t": "s25x21"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 5,
+  "topic": "「守节妇女」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "妇女 :mod 守节（非事件）",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 守节)"
+   },
+   {
+    "label": "妇女 :ARG0-of 守节-01",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "守节-01"
+   }
+  ],
+  "best": "妇女 :ARG0-of 守节-01",
+  "text": "同第13句：PropBank 守节-01（ARG0 agent），修饰性的动词按关系从句处理为事件。",
+  "fix": {
+   "title": "「守节」改为事件 守节-01，妇女 :ARG0-of",
+   "conf": "mid",
+   "why": "守节是动词（PropBank 守节-01），作定语时按关系从句处理；也可视作类名，故 mid。",
+   "ops": [
+    {
+     "op": "rename",
+     "var": "s25x7",
+     "concept": "守节-01"
+    },
+    {
+     "op": "mod_rel",
+     "s": "s25x6",
+     "r": "mod",
+     "t": "s25x7",
+     "r2": "ARG0-of"
+    },
+    {
+     "op": "set_attr",
+     "var": "s25x7",
+     "attr": "aspect",
+     "value": "state"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 6,
+  "topic": "轻动词「进行」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "关怀 :ARG1-of 进行-01",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "进行-01"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不建节点",
+  "text": "guideline 2.1：轻动词不建节点（进行访问 → 访问-01）；「进行关怀」就是 关怀-01。",
+  "fix": {
+   "title": "删去轻动词 进行-01",
+   "conf": "high",
+   "why": "guideline 2.1：「进行 + 动名词」的进行是轻动词。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s25x11"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 7,
+  "topic": "「并未」",
+  "cat": "structure",
+  "choices": [
+   {
+    "label": "关怀 :mod 并未 且 :polarity -",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad",
+    "grep": "/ 并未)"
+   },
+   {
+    "label": "只有 :polarity -",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":polarity -"
+   }
+  ],
+  "best": "只有 :polarity -",
+  "text": "guideline 4.2：否定用 :polarity -；「并」只是加强语气，「并未」不再另建概念节点，否则否定表达了两次。",
+  "fix": {
+   "title": "删去 关怀 :mod 并未",
+   "conf": "mid",
+   "why": "否定已由 :polarity - 表达。",
+   "ops": [
+    {
+     "op": "del_node",
+     "var": "s25x18"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 8,
+  "topic": "「真正」的角色",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "关怀 :mod 真正",
+    "systems": [
+     "gold",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": ":mod (s"
+   },
+   {
+    "label": "关怀 :degree 真正",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": ":degree (s"
+   }
+  ],
+  "best": "关怀 :mod 真正",
+  "text": "「真正进行关怀」的真正修饰事件，不是性质的强化或弱化，项目规则下不用 :degree。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 9,
+  "topic": "关怀的施事",
+  "cat": "role",
+  "choices": [
+   {
+    "label": "关怀 没有 ARG0",
+    "systems": [
+     "gold"
+    ],
+    "status": "open"
+   },
+   {
+    "label": "关怀 :ARG0 人家",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "open",
+    "grep": ":ARG0 s"
+   }
+  ],
+  "best": null,
+  "text": "「（贞节牌坊）……并未对守节妇女真正进行关怀」的零主语可以是贞节牌坊（话题）也可以是大户人家，原文不明确。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 10,
+  "topic": "「有现代学者」的「有」",
+  "cat": "concept",
+  "choices": [
+   {
+    "label": "学者 :quant 有",
+    "systems": [
+     "s3/r1",
+     "s3/r4"
+    ],
+    "status": "minor",
+    "grep": "/ 有)"
+   },
+   {
+    "label": "不建节点",
+    "systems": [
+     "gold",
+     "s3/r2",
+     "s3/r3",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "不建节点",
+  "text": "「有现代学者认为」的「有」是引入不定指主语的存在用法（= 一些），不是数量词；:quant 只放数字或量化词。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 11,
+  "topic": "「炫耀」的 aspect",
+  "cat": "attr",
+  "choices": [
+   {
+    "label": "performance",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "process / activity",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": null,
+  "text": "「炫耀……的工具」是泛指的用途，不是一次完成的事件（guideline 4.1）。",
+  "fix": {
+   "title": "炫耀：performance → activity",
+   "conf": "low",
+   "why": "作工具的用途是泛指的活动；process 也说得通。",
+   "ops": [
+    {
+     "op": "set_attr",
+     "var": "s25x17",
+     "attr": "aspect",
+     "value": "activity"
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 12,
+  "topic": "「认为」内容的 modal",
+  "cat": "doc-modal",
+  "choices": [
+   {
+    "label": "关怀由 author full-affirmative（否定事件却是肯定），identity 没有 modal",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "(认为 :full-affirmative 是)、(认为 :full-negative 关怀)",
+    "systems": [
+     "s3/r1",
+     "s3/r3",
+     "s3/r4"
+    ],
+    "status": "ok",
+    "grep": ":full-negative s"
+   },
+   {
+    "label": "(学者 :full-affirmative 是)、(学者 :full-negative 关怀)",
+    "systems": [
+     "s3/r2"
+    ],
+    "status": "ok",
+    "grep": ":full-negative s"
+   },
+   {
+    "label": "(认为 :unspecified identity)、(认为 :full-negative 关怀)",
+    "systems": [
+     "s3/r5"
+    ],
+    "status": "minor",
+    "grep": ":unspecified s25"
+   }
+  ],
+  "best": "(认为 :full-affirmative 是)、(认为 :full-negative 关怀)",
+  "text": "guideline 5.2：否定事件是 full-negative；被认为的内容以认为（或学者）为 conceiver，作者不直接断言（同第24句）。",
+  "fix": {
+   "title": "关怀改为 (认为 :full-negative)，补 identity 的 modal",
+   "conf": "high",
+   "why": "guideline 5.2：否定事件是 full-negative；学者认为的内容以认为事件为 conceiver；identity 缺 modal。",
+   "ops": [
+    {
+     "op": "doc_mod",
+     "kind": "modal",
+     "triple": [
+      "author",
+      "full-affirmative",
+      "s25x9"
+     ],
+     "to": [
+      "s25x",
+      "full-negative",
+      "s25x9"
+     ]
+    },
+    {
+     "op": "doc_add",
+     "kind": "modal",
+     "triple": [
+      "s25x",
+      "full-affirmative",
+      "s25i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 13,
+  "topic": "identity 的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "同时有 (DCT :overlap identity) 和 (DCT :before identity)",
+    "systems": [
+     "gold"
+    ],
+    "status": "bad"
+   },
+   {
+    "label": "没有矛盾",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok"
+   }
+  ],
+  "best": "没有矛盾",
+  "text": "一个事件不能同时与文档时间 overlap 又在它之前；「是……工具」是学者现在的看法，保留 overlap。",
+  "fix": {
+   "title": "删去矛盾的 (DCT :before identity)",
+   "conf": "high",
+   "why": "同一事件对 DCT 不能既 overlap 又 before。",
+   "ops": [
+    {
+     "op": "doc_del",
+     "kind": "temporal",
+     "triple": [
+      "document-creation-time",
+      "before",
+      "s25i2"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "sent": 25,
+  "n": 14,
+  "topic": "内容事件的时间",
+  "cat": "doc-temporal",
+  "choices": [
+   {
+    "label": "identity、关怀都与 DCT 有关系",
+    "systems": [
+     "gold"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "(认为 :overlap 是/关怀)",
+    "systems": [
+     "s3/r1",
+     "s3/r2"
+    ],
+    "status": "ok"
+   },
+   {
+    "label": "只标了 是 或 认为",
+    "systems": [
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "minor"
+   }
+  ],
+  "best": null,
+  "text": "guideline 5.1：每个事件都要有时间父节点。r3、r5 只标了认为，r4 漏了关怀。",
+  "fix": null
+ },
+ {
+  "sent": 25,
+  "n": 15,
+  "topic": "贞节牌坊的共指",
+  "cat": "doc-coref",
+  "choices": [
+   {
+    "label": "没有",
+    "systems": [
+     "gold"
+    ],
+    "status": "minor"
+   },
+   {
+    "label": "与第24句或第1句的牌坊同指",
+    "systems": [
+     "s3/r1",
+     "s3/r2",
+     "s3/r3",
+     "s3/r4",
+     "s3/r5"
+    ],
+    "status": "ok",
+    "grep": "same-entity"
+   }
+  ],
+  "best": null,
+  "text": "与上句泛指的贞节牌坊同指，guideline 5.3 连到最近的提及（第24句）。先后顺序问题同第13句。",
+  "fix": {
+   "title": "补与第24句贞节牌坊的共指",
+   "conf": "mid",
+   "why": "两句说的都是泛指的贞节牌坊。",
+   "ops": [
+    {
+     "op": "doc_add",
+     "kind": "coref",
+     "triple": [
+      "s24x15",
+      "same-entity",
+      "s25x20"
+     ]
+    }
+   ]
+  }
+ }
+]
