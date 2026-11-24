@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMR 第三轮：AnCast 分数、统计检验、skill 的演变</title>
+<style>
+:root{--ink:#1f1f1c;--mute:#6b6962;--line:#e3e1da;--bg:#faf9f6;--card:#fff;--up:#1d6b3a;--down:#a23a2a;--weak:#8a6a00}
+@media (prefers-color-scheme: dark){:root{--ink:#ecebe6;--mute:#a3a199;--line:#3a3935;--bg:#1b1a18;--card:#242321;--up:#7fd19b;--down:#f09a8a;--weak:#d9b84a}}
+*{box-sizing:border-box}
+body{font:15px/1.65 -apple-system,"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;color:var(--ink);background:var(--bg);margin:0;padding:28px 20px 60px}
+main{max-width:1100px;margin:0 auto}
+h1{font-size:24px;margin:0 0 6px}
+h2{font-size:19px;margin:38px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:22px 0 8px}
+p,li{max-width:900px}
+.lead,.note{color:var(--mute)} .note{font-size:13.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;margin:8px 0 14px;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--mute);font-size:12.5px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td small{color:var(--mute);font-weight:400}
+tr.top td{border-top:2px solid var(--line)}
+td.up{color:var(--up);font-weight:600} td.down{color:var(--down);font-weight:600} td.weak{color:var(--weak)} td.flat{color:var(--mute)}
+code{font:13px ui-monospace,Menlo,Consolas,monospace}
+nav a{margin-right:14px;color:inherit}
+</style>
+</head>
+<body>
+<main>
+<h1>UMR 第三轮：AnCast 分数、统计检验、skill 的演变</h1>
+<p class="lead">在上一份汇报的同一批运行上重新用 AnCast++ 打分，并加上运行之间的统计检验。修订版 gold 和“谁对”的判断都出自模型审阅，没有经过人工确认。</p>
+<nav class="note"><a href="#summary">结论</a><a href="#method">算法和检验</a><a href="#evo">skill 的演变</a><a href="#test">测试集对比</a><a href="#train">训练集</a><a href="#caveats">注意事项</a></nav>
+
+<h2 id="summary">一、结论</h2>
+{{SUMMARY}}
+
+<h2 id="method">二、分数和检验是怎么算的</h2>
+{{METHOD}}
+<p class="note">{{ERRORS}}</p>
+
+<h2 id="evo">三、skill 的演变：无 skill、第 1 轮、第 2 轮</h2>
+<p class="note">每格是 5 次运行的平均（测试集的“无 skill”是 10 次），± 后面是各次之间的样本标准差；鼠标停在格上可以看每次运行的分数。每种方法的“无 skill”是同一批运行。</p>
+<h3>训练集 4 篇，对修订版 gold（反思用的就是这批文档）</h3>
+<div class="scroll">{{EVO_TRAIN_REV}}</div>
+<h3>测试集 4 篇</h3>
+<div class="scroll">{{EVO_TEST}}</div>
+<h3>测试集中文 2 篇</h3>
+<div class="scroll">{{EVO_TEST_ZH}}</div>
+<h3>测试集英语 2 篇</h3>
+<div class="scroll">{{EVO_TEST_EN}}</div>
+
+<h3>每一步变化的检验</h3>
+<p class="note">每格是后者减前者的平均差和置换检验的 p 值。<b>**</b>（绿或红，粗体）表示同一列 9 个比较做 Holm 校正后 p 仍小于 0.05；<b>*</b>（黄）表示未校正 p 小于 0.05、校正后不显著；灰色表示不显著。鼠标停在格上可以看 95% 区间和校正后的 p。</p>
+<h4>训练集，对修订版 gold</h4>
+<div class="scroll">{{TS_TRAIN_REV}}</div>
+<h4>测试集 4 篇</h4>
+<div class="scroll">{{TS_TEST}}</div>
+<h4>测试集中文 2 篇</h4>
+<div class="scroll">{{TS_TEST_ZH}}</div>
+<h4>测试集英语 2 篇</h4>
+<div class="scroll">{{TS_TEST_EN}}</div>
+
+<h2 id="test">四、测试集上全部 11 个设定的对比</h2>
+<h3>4 篇合计</h3>
+<div class="scroll">{{ALL_TEST}}</div>
+<h3>中文 2 篇</h3>
+<div class="scroll">{{ALL_TEST_ZH}}</div>
+<h3>英语 2 篇</h3>
+<div class="scroll">{{ALL_TEST_EN}}</div>
+<h3>五个基本设定之间的检验（各 10 次运行）</h3>
+<p class="note">标记的含义同上；Holm 校正在同一列的 7 个比较之间做。</p>
+<div class="scroll">{{TF_TEST}}</div>
+<h4>中文 2 篇</h4>
+<div class="scroll">{{TF_TEST_ZH}}</div>
+<h4>英语 2 篇</h4>
+<div class="scroll">{{TF_TEST_EN}}</div>
+
+<h2 id="train">五、训练集上的分数</h2>
+<h3>对修订版 gold</h3>
+<div class="scroll">{{ALL_TRAIN_REV}}</div>
+<h3>对原 gold</h3>
+<div class="scroll">{{ALL_TRAIN}}</div>
+<h4>对原 gold 的检验</h4>
+<div class="scroll">{{TS_TRAIN}}</div>
+
+<h2 id="caveats">六、注意事项</h2>
+{{CAVEATS}}
+</main>
+</body>
+</html>
