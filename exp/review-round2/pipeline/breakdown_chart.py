@@ -25,9 +25,9 @@ for G in B["groups"]:
         if any(v is None for vs in runs.values() for v in vs):
             continue
         mean = {c: sum(v) / len(v) for c, v in runs.items()}
-        rows.append({"name": name, "n": G["systems"][ref + "/r1"].get(key + "_n"), "ref": round(mean[ref], 1),
+        rows.append({"name": name, "n": next(iter(G["systems"].values())).get(key + "_n"), "ref": round(mean[ref], 1),
                      "cells": [{"d": round(mean[c] - mean[ref], 1), "v": round(mean[c], 1), "runs": runs[c]} for c in conds[1:]]})
-    panels.append({"id": G["id"], "title": G["title"], "ref": NAMES[ref], "cols": [NAMES[c] for c in conds[1:]], "rows": rows, "ndocs": len(G["docs"])})
+    panels.append({"id": G["id"], "title": G["title"], "ref": NAMES.get(ref, ref), "cols": [NAMES.get(c, c) for c in conds[1:]], "rows": rows, "ndocs": len(G["docs"])})
 HTML = r"""<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>GPT-6.1 Sol：分项 F1 在各设定下的变化</title>
 <style>
 body{font:14px/1.5 -apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#1f1f1c;background:#faf9f6;margin:24px}
@@ -46,8 +46,7 @@ td.c{height:26px;border-radius:5px;text-align:center;font-variant-numeric:tabula
 </style>
 <h1>GPT-6.1 Sol：分项 F1 相对基准设定的变化（分）</h1>
 <p class="note">每格是该设定两次运行的平均 F1 减去基准设定两次运行的平均 F1；格里的数字是差值，鼠标停在格上可以看两次运行各自的 F1。"基准 F1"一列是基准设定的绝对分数。
-中文 31 篇的基准是 full（s1-full，完整 guideline、无工具），因为 baseline 没有跑非测试文档；测试集的基准是 s0 baseline（一句话 guideline、无工具）。这一轮没有跑 abridged 无工具、+search、+PropBank、+gold、a1 这几个设定，所以没有这些列。
-分项是这次新写的脚本算的（节点按对齐的词对应），和你那张图的打分器不是同一个，绝对数值不能直接对比。</p>
+__NOTE__</p>
 <div class="legend">−20 更低 __LEGEND__ +20 更高</div>
 <div class="grid" id="g"></div>
 <script>
@@ -59,6 +58,11 @@ document.getElementById("g").innerHTML=P.map((p,k)=>'<div class="card'+(k<2?' wi
  p.rows.map(r=>'<tr><td class="l">'+r.name+'</td><td class="r">'+r.ref.toFixed(1)+'</td>'+r.cells.map(c=>'<td class="c" style="background:'+col(c.d)+';color:'+ink(c.d)+'" title="F1 '+c.v.toFixed(1)+'（两次运行：'+c.runs.join('、')+'）'+(r.n!=null?'；gold 里 '+r.n+' 个':'')+'">'+(c.d>0?'+':c.d<0?'−':'')+Math.abs(c.d).toFixed(1)+'</td>').join('')+'</tr>').join('')+'</table></div>').join('');
 </script></html>"""
 ramp = ["#d6604d", "#e07f72", "#e8a097", "#edbcb5", "#f0d8d3", "#efeeea", "#d3dbe9", "#b3c4e3", "#8eaadb", "#6a90d4", "#4376cc"]
+ROUND2 = ("中文 31 篇的基准是 full（s1-full，完整 guideline、无工具），因为 baseline 没有跑非测试文档；测试集的基准是 s0 baseline（一句话 guideline、无工具）。"
+          "这一轮没有跑 abridged 无工具、+search、+PropBank、+gold、a1 这几个设定，所以没有这些列。\n"
+          "分项由 pipeline/breakdown.py 计算（节点按对齐的词对应），和 exp/scripts/breakdown.py（umrjudge）不是同一个打分器，绝对数值不能直接对比。")
+OTHER = "基准是 config.json 里的第一个设定。分项由 pipeline/breakdown.py 计算（节点按对齐的词对应）。"
+HTML = HTML.replace("__NOTE__", ROUND2 if os.path.isdir(os.path.join(C.PKG, "data", "gold_st22")) else OTHER)
 html = HTML.replace("__DATA__", json.dumps(panels, ensure_ascii=False)).replace("__LEGEND__", "".join('<i style="background:%s"></i>' % c for c in ramp))
 out = os.path.join(C.ANALYSIS, "breakdown.html")
 open(out, "w", encoding="utf-8").write(html)
