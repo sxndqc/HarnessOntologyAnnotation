@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMR Gold 审校</title>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#ffffff; --panel2:#f8f9fb; --ink:#1c2128; --ink2:#57606a; --ink3:#8c959f; --line:#d8dee4; --line2:#eaeef2;
+  --accent:#0b5cad; --accent-bg:#e7f1fb;
+  --add:#116329; --add-bg:#dafbe1; --add-line:#aceebb;
+  --del:#a40e26; --del-bg:#ffebe9; --del-line:#ffcecb;
+  --mod:#7d4e00; --mod-bg:#fff4c2; --mod-line:#f0d77a;
+  --fable:#6639ba; --fable-bg:#f1eafd; --astra:#0a6b7c; --astra-bg:#e2f5f8;
+  --ok:#1a7f37; --no:#cf222e; --hl:#fff8c5;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "PingFang SC", "Noto Sans CJK SC", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --ink:#e6edf3; --ink2:#9da7b3; --ink3:#6e7781; --line:#30363d; --line2:#21262d;
+    --accent:#6cb6ff; --accent-bg:#152a43;
+    --add:#7ee787; --add-bg:#12301c; --add-line:#1f5a31;
+    --del:#ffa198; --del-bg:#3d1519; --del-line:#6e2227;
+    --mod:#f2cc60; --mod-bg:#3a2d05; --mod-line:#6b5310;
+    --fable:#c9a7ff; --fable-bg:#2a1f45; --astra:#76d9e6; --astra-bg:#0f3138;
+    --ok:#56d364; --no:#ff7b72; --hl:#3a2d05;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --ink:#e6edf3; --ink2:#9da7b3; --ink3:#6e7781; --line:#30363d; --line2:#21262d;
+  --accent:#6cb6ff; --accent-bg:#152a43;
+  --add:#7ee787; --add-bg:#12301c; --add-line:#1f5a31;
+  --del:#ffa198; --del-bg:#3d1519; --del-line:#6e2227;
+  --mod:#f2cc60; --mod-bg:#3a2d05; --mod-line:#6b5310;
+  --fable:#c9a7ff; --fable-bg:#2a1f45; --astra:#76d9e6; --astra-bg:#0f3138;
+  --ok:#56d364; --no:#ff7b72; --hl:#3a2d05;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans);display:flex;flex-direction:column}
+button{font:inherit;color:inherit;cursor:pointer}
+code,pre{font-family:var(--mono)}
+
+/* top bar */
+#top{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+#top h1{font-size:15px;margin:0 6px 0 0;font-weight:650;white-space:nowrap}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1 1 100%;order:9}
+.tab{border:1px solid var(--line);background:var(--panel2);padding:3px 7px;border-radius:6px;display:flex;gap:5px;align-items:center;font-size:12px;white-space:nowrap}
+.tab.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.tab small{font-family:var(--mono);font-size:11px;color:var(--ink2);font-weight:400}
+.tab small b.a{color:var(--ok)} .tab small b.r{color:var(--no)}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel2);padding:4px 10px;border-radius:6px;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--ink3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0d1117}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0d1117}}
+
+/* sentence strip */
+#strip{display:flex;gap:6px;padding:6px 14px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;align-items:center}
+#strip .lab{font-size:12px;color:var(--ink2);white-space:nowrap}
+.sbtn{border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:2px 8px;font-size:12px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.sbtn.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.dots{display:inline-flex;gap:2px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line);display:inline-block}
+.dot.a{background:var(--ok)} .dot.r{background:var(--no)}
+
+/* panels */
+#main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(190px,.62fr) minmax(250px,.95fr) minmax(480px,2.6fr);gap:1px;background:var(--line)}
+.panel{background:var(--panel);min-width:0;min-height:0;display:flex;flex-direction:column}
+.phead{padding:7px 12px;border-bottom:1px solid var(--line2);font-size:12px;font-weight:650;color:var(--ink2);letter-spacing:.02em;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel2)}
+.phead .cnt{font-weight:400;color:var(--ink3)}
+.pbody{flex:1;overflow:auto;padding:10px 12px}
+@media (max-width: 1000px){
+  html,body{height:auto} body{display:block}
+  #main{display:block} .panel{border-bottom:1px solid var(--line)} .pbody{overflow:visible}
+}
+
+/* sentence */
+.sid{font-size:12px;color:var(--ink2);margin-bottom:6px}
+.sent{font-size:16px;line-height:1.7;margin:0 0 12px}
+.toks{display:flex;flex-wrap:wrap;gap:4px 3px}
+.tok{display:inline-flex;flex-direction:column;align-items:center;padding:1px 4px;border-radius:4px;background:var(--panel2);border:1px solid var(--line2);font-size:14px;line-height:1.3}
+.tok i{font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--ink3)}
+.tok.hl{background:var(--hl);border-color:var(--mod-line)}
+.hint{font-size:12px;color:var(--ink3);margin-top:12px;line-height:1.5}
+.navrow{display:flex;gap:6px;margin-top:12px}
+
+/* parses */
+details.parse{border:1px solid var(--line);border-radius:6px;margin-bottom:6px;background:var(--panel)}
+details.parse>summary{padding:5px 10px;cursor:pointer;font-size:13px;display:flex;gap:8px;align-items:center;list-style:none;user-select:none}
+details.parse>summary::-webkit-details-marker{display:none}
+details.parse>summary::before{content:"▸";color:var(--ink3);font-size:11px;width:10px}
+details.parse[open]>summary::before{content:"▾"}
+details.parse[open]>summary{border-bottom:1px solid var(--line2)}
+details.parse.gold>summary{font-weight:650}
+details.parse.flash{box-shadow:0 0 0 2px var(--accent)}
+.tag{font-size:11px;padding:0 6px;border-radius:9px;border:1px solid var(--line);color:var(--ink2);font-family:var(--mono);white-space:nowrap}
+.tag.cond{background:var(--panel2)}
+pre.umr{margin:0;padding:8px 10px;font-size:12px;line-height:1.45;overflow-x:auto;white-space:pre;tab-size:4}
+.sub{font-size:11px;color:var(--ink3);padding:4px 10px 0;font-weight:600}
+.r{color:var(--accent)} .c{font-weight:600} .v{color:var(--ink3)}
+.altxt{font-family:var(--mono);font-size:11.5px;color:var(--ink2);padding:4px 10px 8px;line-height:1.5;word-break:break-word}
+
+/* cards: 问题 + 修改方案 */
+.filters{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.chip{font-size:11.5px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--panel);font-weight:400;color:var(--ink2)}
+.chip.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.card{border:1px solid var(--line);border-left:4px solid var(--ink3);border-radius:8px;margin-bottom:14px;background:var(--panel);scroll-margin-top:8px}
+.card.accept{border-left-color:var(--ok)} .card.reject{border-left-color:var(--no)}
+.card.reject .cbody{opacity:.55}
+.ch{padding:9px 12px 6px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ch .num{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.ch .pt{font-weight:650;font-size:15px;flex:1;min-width:160px}
+.conf{font-size:11px;border-radius:9px;padding:0 7px;border:1px solid var(--line);white-space:nowrap}
+.conf.high{color:var(--ok);border-color:var(--ok)} .conf.mid{color:var(--mod);border-color:var(--mod-line)}
+.state{font-size:11.5px;font-weight:650;border-radius:9px;padding:0 8px;color:#fff}
+.state.accept{background:var(--ok)} .state.reject{background:var(--no)}
+.cbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0 14px;padding:0 12px 8px}
+@media (max-width: 1250px){.cbody{grid-template-columns:1fr}}
+.lab{font-size:11px;font-weight:650;color:var(--ink3);letter-spacing:.04em;margin:2px 0 4px}
+.q{border-left:3px solid var(--line);padding:1px 0 1px 9px;margin-bottom:8px;font-size:13px;line-height:1.6;word-break:break-word}
+.q.F{border-left-color:var(--fable)} .q.A{border-left-color:var(--astra)}
+.q .body.clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.src{font-family:var(--mono);font-size:11px;font-weight:700;border-radius:4px;padding:0 6px;margin-right:4px}
+.src.F{background:var(--fable-bg);color:var(--fable)} .src.A{background:var(--astra-bg);color:var(--astra)}
+.card code,.md code,.other code{font-size:12px;background:var(--panel2);border:1px solid var(--line2);border-radius:3px;padding:0 3px}
+.more{border:0;background:none;color:var(--accent);font-size:12px;padding:0;margin-top:2px}
+.vt{font-size:11.5px;border-radius:4px;padding:0 4px;font-weight:600}
+.vt.g{background:var(--del-bg);color:var(--del)} .vt.s{background:var(--accent-bg);color:var(--accent)} .vt.q{background:var(--mod-bg);color:var(--mod)} .vt.o{background:var(--panel2);color:var(--ink2)}
+.why{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:6px}
+.sups{font-size:12px;color:var(--ink3);margin-bottom:6px;display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.sup{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;background:var(--panel2)}
+.note{font-size:12px;color:var(--mod);margin-bottom:6px}
+/* inline-marked graph: 划掉旧的，标出新的 */
+.mk{border:1px solid var(--line2);border-radius:6px;background:var(--panel2);padding:7px 10px;font-family:var(--mono);font-size:12.5px;line-height:1.6;overflow-x:auto;white-space:pre}
+.mk .ln{display:block;min-width:max-content}
+.mk .gap{display:block;color:var(--ink3);font-size:11px;line-height:1.2}
+.mk .sec{display:block;font-family:var(--sans);font-size:11px;font-weight:650;color:var(--ink3);margin:6px 0 1px;white-space:normal}
+.mk .sec:first-child{margin-top:0}
+.mk-add{color:var(--add);font-weight:650;background:var(--add-bg);border-radius:3px;padding:0 2px}
+.mk-del{color:var(--del);text-decoration:line-through;text-decoration-thickness:1.5px;background:var(--del-bg);border-radius:3px;padding:0 2px}
+.mk-add .r,.mk-add .v,.mk-add .c,.mk-del .r,.mk-del .v,.mk-del .c{color:inherit}
+.mk-del .c{font-weight:400}
+.legend{font-size:11.5px;color:var(--ink3);margin:4px 0 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.acts{display:flex;gap:8px;padding:8px 12px 10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line2)}
+.act{border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:4px 18px;font-size:13px}
+.act.acc:hover,.act.acc.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.act.rej:hover,.act.rej.on{background:var(--no);border-color:var(--no);color:#fff}
+.act.lite{margin-left:auto;font-size:12px;padding:3px 9px;color:var(--ink2)}
+.act.lite+.act.lite{margin-left:0}
+details.opsd{margin-top:6px} details.opsd>summary{font-size:12px;color:var(--ink3);cursor:pointer}
+.opl{font-family:var(--mono);font-size:11.5px;padding:1px 0;color:var(--ink2);white-space:pre-wrap;word-break:break-word}
+.opl b{font-family:var(--sans);font-weight:650;margin-right:6px}
+.opl.add b{color:var(--add)} .opl.del b{color:var(--del)} .opl.mod b{color:var(--mod)}
+.merge{border:1px dashed var(--ink3);border-radius:8px;padding:10px 12px;margin:4px 0 14px;background:var(--panel)}
+.merge h3{margin:0 0 4px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ovsw{display:inline-flex;gap:4px}
+.merge p{margin:2px 0 6px;font-size:12.5px;color:var(--ink2)}
+.merge .bad{color:var(--no)}
+details.other{border:1px solid var(--line);border-radius:8px;background:var(--panel);margin-bottom:14px}
+details.other>summary{padding:8px 12px;cursor:pointer;font-size:13px;color:var(--ink2);user-select:none}
+details.other[open]>summary{border-bottom:1px solid var(--line2)}
+.other .q{margin:10px 12px}
+.empty{color:var(--ink3);font-size:13px;padding:14px 4px}
+.scores{border:1px solid var(--line);border-radius:8px;background:var(--panel);margin:0 0 14px;padding:10px 12px}
+.scores h3{margin:0 0 2px;font-size:14px}
+.scores p{margin:2px 0 8px;font-size:12.5px;color:var(--ink2)}
+table.sc{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+table.sc th,table.sc td{padding:3px 10px;text-align:right;border-bottom:1px solid var(--line2);white-space:nowrap}
+table.sc th{font-weight:650;color:var(--ink2);font-size:11.5px;background:var(--panel2)}
+table.sc th:first-child,table.sc td:first-child{text-align:left;font-family:var(--mono)}
+table.sc th.grp{text-align:center;border-left:1px solid var(--line)} table.sc td.b,table.sc th.b{border-left:1px solid var(--line)}
+table.sc tr.avg td{font-weight:650;border-top:1px solid var(--line);border-bottom:0}
+.up{color:var(--ok);font-weight:650} .down{color:var(--no);font-weight:650} .flat{color:var(--ink3)}
+.scwrap{overflow-x:auto}
+.gvg{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin:0 0 10px}
+.gvg .stat{border:1px solid var(--line);border-radius:6px;padding:5px 12px;background:var(--panel2);min-width:96px}
+.gvg .stat b{display:block;font-size:19px;font-weight:650;font-variant-numeric:tabular-nums;line-height:1.25}
+.gvg .stat span{font-size:11.5px;color:var(--ink2)}
+.gvg .cap{font-size:12.5px;color:var(--ink2);align-self:center;max-width:340px;line-height:1.5}
+.scores h4{margin:10px 0 4px;font-size:12.5px;color:var(--ink2)}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+#modal.on{display:flex}
+#mbox{background:var(--panel);border-radius:10px;border:1px solid var(--line);width:min(1100px,100%);max-height:92vh;display:flex;flex-direction:column}
+#mhead{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+#mhead h2{font-size:14px;margin:0 8px 0 0}
+#mbody{overflow:auto;padding:12px 16px}
+.md h1,.md h2,.md h3,.md h4{margin:14px 0 6px;font-size:15px} .md h4{font-size:13.5px}
+.md p{margin:6px 0} .md ul{margin:6px 0;padding-left:20px}
+.md table{border-collapse:collapse;font-size:12.5px;margin:8px 0;display:block;overflow-x:auto}
+.md td,.md th{border:1px solid var(--line);padding:3px 7px;vertical-align:top;text-align:left}
+.md th{background:var(--panel2)}
+pre.out{font-size:12px;line-height:1.45;margin:0;white-space:pre;overflow-x:auto}
+.sumlist{font-size:13px;margin:0 0 10px;padding-left:18px}
+</style>
+</head>
+<body>
+<div id="top">
+  <h1>UMR Gold 审校</h1>
+  <div class="tabs" id="tabs"></div>
+  <div class="spacer"></div>
+  <button class="btn" id="bScores">整篇分数</button>
+  <button class="btn primary" id="bExtras">总结：错误在哪里</button>
+  <button class="btn" id="bImport">导入决定</button>
+  <button class="btn" id="bDecisions">导出决定 JSON</button>
+  <button class="btn" id="bPreview">预览合并结果</button>
+  <button class="btn primary" id="bExport">导出本文档 .umr</button>
+  <input type="file" id="fImport" accept=".json,application/json" hidden>
+</div>
+<div id="strip"></div>
+<div id="main">
+  <section class="panel"><div class="phead">句子</div><div class="pbody" id="pSent"></div></section>
+  <section class="panel"><div class="phead">标注 <span class="cnt">gold 与各份模型输出，点开查看</span></div><div class="pbody" id="pParse"></div></section>
+  <section class="panel"><div class="phead">问题与 gold 修改方案 <span class="cnt" id="cProp"></span><div class="filters" id="fProp"></div></div><div class="pbody" id="pProp"></div></section>
+</div>
+<div id="modal"><div id="mbox"><div id="mhead"></div><div id="mbody"></div></div></div>
+
+<script>/*__ENGINE__*/</script>
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function(){
+const E = window.UMR, D = JSON.parse(document.getElementById('data').textContent);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SYS = D.sys || ['s1/opus','s1/gpt','s3/opus','s3/gpt','a1/opus','a1/gpt','a2/opus','a2/gpt'];
+const COND = D.cond || {s1:'s1-abridged', s3:'s3-all', a1:'a1-sentence-propbank', a2:'a2-sentence-all'};
+const SRC = D.srcNames || {F:'fable', A:'astra'};
+const LS = D.storageKey || 'umr-gold-review-v1';
+
+/* ---------- prepare ---------- */
+for (const doc of D.docs) {
+  doc.split = E.splitDoc(doc.gold); doc.blocks = {};
+  for (const b of doc.split.blocks) {
+    try { b.state = E.loadState(b); } catch (e) { b.state = E.loadState(Object.assign({}, b, { graph: '(s' + b.n + 'unreadable / unreadable-gold-graph)', al: '', doc: '' })); b.unreadable = true; doc.proposals[b.n] = []; }
+    b.base = E.serState(b.state); b.baseErr = new Set(E.validate(b.state, b.n));
+    b.props = (doc.proposals[b.n] || []).map(p => { const r = E.applyOps(b.state, p.ops); return Object.assign({}, p, { res: r, after: E.serState(r.state), newErr: E.validate(r.state, b.n).filter(e => !b.baseErr.has(e)) }); });
+    b.issues = doc.issues[b.n] || [];
+    doc.blocks[b.n] = b;
+  }
+}
+let store = { dec: {}, doc: D.docs[0].id, sent: {}, fsrc: { F: true, A: true }, onlyGold: false, pfilter: 'all' };
+try { const s = JSON.parse(localStorage.getItem(LS) || 'null'); if (s && s.dec) store = Object.assign(store, s); } catch (e) {}
+const save = () => { try { localStorage.setItem(LS, JSON.stringify(store)); } catch (e) {} };
+const curDoc = () => D.docs.find(d => d.id === store.doc) || D.docs[0];
+const curBlock = () => { const d = curDoc(); return d.blocks[store.sent[d.id]] || d.split.blocks[0]; };
+const dec = p => store.dec[p.id];
+
+/* ---------- helpers ---------- */
+function hl(s) { // PENMAN highlight on escaped text
+  return esc(s).replace(/(\()([^\s()\/]+)( \/ )([^\s()]+)/g, '$1<span class="v">$2</span>$3<span class="c">$4</span>').replace(/(^|\s)(:[A-Za-z][\w-]*)/g, '$1<span class="r">$2</span>');
+}
+function inline(s) {
+  return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/【([^】]*)】/g, (m, t) => { const k = /gold/.test(t) && /问题|欠缺|错/.test(t) ? 'g' : /标注有问题|标注更好/.test(t) ? 's' : /商榷/.test(t) ? 'q' : 'o'; return '<span class="vt ' + k + '">' + t + '</span>'; })
+    .replace(/\n/g, '<br>');
+}
+function md(src) {
+  const L = src.split('\n'); let h = '', i = 0;
+  while (i < L.length) {
+    const l = L[i];
+    if (/^\s*\|/.test(l)) { const rows = []; while (i < L.length && /^\s*\|/.test(L[i])) rows.push(L[i++]); h += '<table>' + rows.filter(r => !/^\s*\|[\s:|-]+\|\s*$/.test(r)).map((r, k) => '<tr>' + r.trim().replace(/^\||\|$/g, '').split('|').map(c => (k ? '<td>' : '<th>') + inline(c.trim()) + (k ? '</td>' : '</th>')).join('') + '</tr>').join('') + '</table>'; continue; }
+    if (/^#{1,6}\s/.test(l)) { const n = Math.min(4, l.match(/^#+/)[0].length + 1); h += '<h' + n + '>' + inline(l.replace(/^#+\s*/, '')) + '</h' + n + '>'; i++; continue; }
+    if (/^\s*[-*]\s/.test(l) || /^\s*\d+\.\s/.test(l)) { h += '<ul>'; while (i < L.length && (/^\s*[-*]\s/.test(L[i]) || /^\s*\d+\.\s/.test(L[i]) || /^\s{2,}\S/.test(L[i]))) { h += '<li>' + inline(L[i].replace(/^\s*([-*]|\d+\.)\s/, '').trim()) + '</li>'; i++; } h += '</ul>'; continue; }
+    if (l.trim() === '' || l.trim() === '---') { i++; continue; }
+    h += '<p>' + inline(l.replace(/^>\s?/, '')) + '</p>'; i++;
+  }
+  return '<div class="md">' + h + '</div>';
+}
+/* 把修改直接标在图上：旧的划掉（mk-del），新的标绿（mk-add） */
+const A = t => '<span class="mk-add">' + t + '</span>', X = t => '<span class="mk-del">' + t + '</span>';
+function unionGraph(b0, b1) {
+  const used = new Array(b1.edges.length).fill(false), U = [];
+  const take = f => { const k = b1.edges.findIndex((e, i) => !used[i] && f(e)); if (k >= 0) used[k] = true; return k < 0 ? null : b1.edges[k]; };
+  const rest = [];
+  for (const e of b0.edges) { const m = take(x => x.s === e.s && x.r === e.r && x.t === e.t && x.v === e.v); if (m) U.push({ s: e.s, r: e.r, t: e.t, v: m.v, st: 'keep', def: m.def }); else { const u = { s: e.s, r: e.r, t: e.t, v: e.v, st: 'del', def: e.def }; U.push(u); rest.push(u); } }
+  for (const u of rest) { // 同一对节点只换了角色名 / 同一属性只换了值
+    const m = u.v ? take(x => x.v && x.s === u.s && x.t === u.t) : take(x => !x.v && x.s === u.s && x.r === u.r);
+    if (m) { if (u.v) { u.st = 'role'; u.r2 = m.r; } else { u.st = 'val'; u.t2 = m.t; } u.def = m.def; }
+  }
+  b1.edges.forEach((e, i) => { if (!used[i]) U.push({ s: e.s, r: e.r, t: e.t, v: e.v, st: 'add', def: e.def }); });
+  return U;
+}
+function markGraph(b0, b1, full, always) {
+  const U = unionGraph(b0, b1), nst = v => !(v in b1.nodes) ? 'del' : !(v in b0.nodes) ? 'add' : b0.nodes[v] !== b1.nodes[v] ? 'chg' : 'keep';
+  const live = E.reachable(b1).size;
+  function run(useDef) {
+    const seen = new Set(), L = []; let nLive = 0;
+    const head = (v, mode) => { const st = nst(v), c0 = esc(b0.nodes[v] || ''), c1 = esc(b1.nodes[v] || '');
+      const vv = '<span class="v">' + esc(v) + '</span>';
+      if (mode === 'del' || st === 'del') return '(' + vv + ' / ' + c0;
+      if (mode === 'add' || st === 'add') return '(' + vv + ' / ' + c1;
+      return '(' + vv + ' / ' + (st === 'chg' ? X(c0) + ' ' + A(c1) : '<span class="c">' + c1 + '</span>'); };
+    function rec(v, ind, par, mode) { // mode: '' | 'add' | 'del' (整棵子树)
+      seen.add(v); if (v in b1.nodes) nLive++;
+      const edges = U.filter(e => e.s === v);
+      for (const e of edges) {
+        const em = mode || (e.st === 'add' ? 'add' : e.st === 'del' ? 'del' : '');
+        let h = e.st === 'role' && !mode ? X(esc(e.r)) + ' ' + A(esc(e.r2)) : '<span class="r">' + esc(e.r) + '</span>';
+        const ln = { ind: ind + 4, html: '', chg: !!em || e.st === 'role' || e.st === 'val', par, mode: em }; L.push(ln); const me = L.length - 1;
+        if (!e.v) { ln.html = h + ' ' + (e.st === 'val' && !mode ? X(esc(e.t)) + ' ' + A(esc(e.t2)) : esc(e.t)); continue; }
+        const t = e.t, tdel = !(t in b1.nodes);
+        let nest = !seen.has(t) && (t in b0.nodes || t in b1.nodes);
+        if (nest && em === 'del' && !tdel) nest = false;                       // 节点还在，只是这条边被删：只写变量名
+        if (nest && em !== 'del' && useDef && !e.def && U.some(x => x !== e && x.st !== 'del' && x.def && x.v && x.t === t && x.s in b1.nodes)) nest = false;
+        if (nest && tdel && em !== 'del') nest = false;
+        if (!nest) { ln.html = h + ' ' + esc(t); continue; }
+        if (nst(t) === 'chg' && !em) ln.chg = true;
+        if (em === 'add' && nst(t) !== 'add') { ln.mode = ''; ln.html = A(h) + ' ' + head(t, ''); rec(t, ind + 4, me, ''); }   // 已有节点挪到新位置：只有这条边是新的
+        else { const cm = em || (nst(t) === 'add' ? 'add' : ''); ln.html = h + ' ' + head(t, cm); rec(t, ind + 4, me, cm); }
+        L[L.length - 1].html += ')';
+      }
+    }
+    const root = b1.root, top = { ind: 0, html: head(root, ''), chg: nst(root) === 'chg' || b0.root !== b1.root, par: -1, mode: '' }; L.push(top);
+    rec(root, 0, 0, ''); L[L.length - 1].html += ')';
+    return { L, nLive };
+  }
+  let r = run(true); if (r.nLive < live) r = run(false);
+  const L = r.L, keep = L.map(l => full || l.chg);
+  if (!full) L.forEach((l, i) => { if (l.chg) { let p = l.par; while (p >= 0 && !keep[p]) { keep[p] = true; p = L[p].par; } } });
+  if (!always && !keep.some((k, i) => k && L[i].chg)) return '';
+  let h = '', gap = false;
+  L.forEach((l, i) => { if (!keep[i]) { if (!gap) { h += '<span class="gap">' + ' '.repeat(l.ind) + '⋯</span>'; gap = true; } return; } gap = false;
+    const body = l.mode === 'add' ? A(l.html) : l.mode === 'del' ? X(l.html) : l.html; h += '<span class="ln">' + ' '.repeat(l.ind) + body + '</span>'; });
+  return h;
+}
+function markDoc(d0, d1, full) {
+  let h = '';
+  for (const k of E.KINDS) {
+    const a = (d0.lists[k] || []).map(t => t.join(' ')), b = (d1.lists[k] || []).map(t => t.join(' ')), B = new Set(b), A0 = new Set(a);
+    const gone = a.filter(x => !B.has(x)), neu = b.filter(x => !A0.has(x)); if (!gone.length && !neu.length && !full) continue; if (!a.length && !b.length) continue;
+    const child = x => x.split(' ')[2], usedN = new Set(); let rows = '';
+    for (const x of a) { if (B.has(x)) { if (full) rows += '<span class="ln">    (' + esc(x) + ')</span>'; continue; }
+      const m = neu.find(y => !usedN.has(y) && child(y) === child(x)); if (m) usedN.add(m);
+      rows += '<span class="ln">    ' + X('(' + esc(x) + ')') + (m ? '  ' + A('(' + esc(m) + ')') : '') + '</span>'; }
+    for (const y of neu) if (!usedN.has(y)) rows += '<span class="ln">    ' + A('(' + esc(y) + ')') + '</span>';
+    h += '<span class="ln"><span class="r">:' + k + '</span></span>' + rows;
+  }
+  return h;
+}
+function markAl(a0, a1) {
+  const m0 = new Map(a0), m1 = new Map(a1); let h = '';
+  for (const [v, s] of a0) { if (!m1.has(v)) h += '<span class="ln">' + X(esc(v + ': ' + s)) + '</span>'; else if (m1.get(v) !== s) h += '<span class="ln">' + esc(v) + ': ' + X(esc(s)) + ' ' + A(esc(m1.get(v))) + '</span>'; }
+  for (const [v, s] of a1) if (!m0.has(v)) h += '<span class="ln">' + A(esc(v + ': ' + s)) + '</span>';
+  return h;
+}
+function markHtml(s0, s1, full, always) {
+  const g = markGraph(s0.g, s1.g, full, always), d = markDoc(s0.doc, s1.doc, full), a = markAl(s0.al, s1.al);
+  const h = (g ? '<span class="sec">句子级图</span>' + g : '') + (d ? '<span class="sec">文档级标注</span>' + d : '') + (a ? '<span class="sec">对齐</span>' + a : '');
+  return h ? '<div class="mk">' + h + '</div>' : '<div class="empty">没有变化</div>';
+}
+function merged(b, all) {
+  let st = E.clone(b.state); const applied = [], conflicts = [], seen = new Set();
+  for (const p of b.props) {
+    if (all) { if (dec(p) === 'reject') continue; if (p.excl) { if (seen.has(p.excl)) continue; if (dec(p) !== 'accept' && b.props.some(q => q.excl === p.excl && dec(q) === 'accept')) continue; seen.add(p.excl); } }
+    else if (dec(p) !== 'accept') continue;
+    const r = E.applyOps(st, p.ops); if (r.failed) conflicts.push({ p, msg: r.log.filter(l => l.status === 'fail').map(l => l.text).join('；') }); else { st = r.state; applied.push(p); } }
+  return { st, applied, conflicts, errs: E.validate(st, b.n).filter(e => !b.baseErr.has(e)) };
+}
+function docText(doc) {
+  let out = doc.split.prefix;
+  for (const b of doc.split.blocks) { const m = merged(b); out += m.applied.length ? E.serBlock(b, m.st) : b.raw; }
+  return out;
+}
+function download(name, text, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type || 'text/plain;charset=utf-8' })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const counts = props => { const c = { a: 0, r: 0, p: 0 }; for (const p of props) c[dec(p) === 'accept' ? 'a' : dec(p) === 'reject' ? 'r' : 'p']++; return c; };
+
+/* ---------- render ---------- */
+function renderTop() {
+  $('tabs').innerHTML = D.docs.map(d => { const c = counts(d.split.blocks.flatMap(b => b.props)); return '<button class="tab' + (d.id === curDoc().id ? ' on' : '') + '" data-doc="' + d.id + '" title="' + d.id + '：已接受 ' + c.a + '，已反对 ' + c.r + '，待定 ' + c.p + '">' + d.id + ' <small>' + (c.a ? '<b class="a">✓' + c.a + '</b> ' : '') + (c.r ? '<b class="r">✗' + c.r + '</b> ' : '') + c.p + '</small></button>'; }).join('');
+  const d = curDoc(), cur = curBlock();
+  $('strip').innerHTML = '<span class="lab">句子</span>' + d.split.blocks.map(b => '<button class="sbtn' + (b === cur ? ' on' : '') + '" data-sent="' + b.n + '">' + b.n + '<span class="dots">' + b.props.map(p => '<span class="dot ' + (dec(p) === 'accept' ? 'a' : dec(p) === 'reject' ? 'r' : '') + '"></span>').join('') + '</span></button>').join('');
+}
+function renderSent() {
+  const d = curDoc(), b = curBlock(), i = d.split.blocks.indexOf(b);
+  $('pSent').innerHTML = '<div class="sid">' + d.id + ' · 第 ' + b.n + ' 句 / 共 ' + d.split.blocks.length + ' 句　<span class="tag">gold/' + d.goldName + '.umr</span></div>' +
+    '<p class="sent">' + esc(b.words.join(d.id.startsWith('zh') ? '' : ' ')) + '</p>' +
+    '<div class="toks">' + b.words.map((w, k) => '<span class="tok" data-i="' + (k + 1) + '">' + esc(w) + '<i>' + (k + 1) + '</i></span>').join('') + '</div>' +
+    '<div class="navrow"><button class="btn" id="bPrev"' + (i ? '' : ' disabled') + '>← 上一句</button><button class="btn" id="bNext"' + (i < d.split.blocks.length - 1 ? '' : ' disabled') + '>下一句 →</button></div>' +
+    '<div class="hint">词下方的数字是对齐用的词序号。键盘 ← → 切换句子。<br>右栏每张卡片是一个问题和对应的 gold 修改：<b>划掉</b>的是要删去的，<b>绿色</b>的是新加的。每项修改都针对原始 gold 单独给出；右栏最上面是本句全部修改标在 gold 上的总览，下面逐项说明；最后用右上角按钮导出新文件。决定自动保存在本浏览器。</div>';
+  $('bPrev').onclick = () => go(-1); $('bNext').onclick = () => go(1);
+}
+function parseBox(cls, key, title, tags, g, al, doc, open) {
+  return '<details class="parse ' + cls + '" data-sys="' + key + '"' + (open ? ' open' : '') + '><summary>' + title + tags + '</summary>' +
+    '<div class="sub">句子级图</div><pre class="umr">' + hl(g) + '</pre>' + (al ? '<div class="sub">对齐</div><div class="altxt">' + esc(al) + '</div>' : '') +
+    (doc ? '<div class="sub">文档级标注</div><pre class="umr">' + hl(doc) + '</pre>' : '') + '</details>';
+}
+function renderParse() {
+  const d = curDoc(), b = curBlock(), m = merged(b);
+  let h = parseBox('gold', 'gold', 'gold（原始）', '', b.graphText, b.alText.split('\n').map(s => s.trim()).join(' | '), b.docText, false);
+  if (m.applied.length) { const s = E.serState(m.st); h += parseBox('gold', 'merged', 'gold（合并已接受的 ' + m.applied.length + ' 项后）', '', s.graph, s.al.split('\n').join(' | '), s.doc, false); }
+  for (const k of SYS) { const s = (d.systems[k] || {})[b.n]; if (!s) continue; const [c, mo] = k.split('/'); h += parseBox('', k, k, ' <span class="tag cond">' + COND[c] + '</span><span class="tag">' + mo + '</span>', s.graph, s.al, s.doc, false); }
+  $('pParse').innerHTML = h;
+}
+const f1 = v => v == null ? '–' : v.toFixed(1);
+const delta = (a, b) => { if (a == null || b == null) return '<td class="flat">–</td>'; const d = Math.round((b - a) * 10) / 10; return '<td class="' + (d > 0 ? 'up' : d < 0 ? 'down' : 'flat') + '">' + (d > 0 ? '+' : '') + d.toFixed(1) + '</td>'; };
+function scoreTable(rows, cols) { // rows: {sys: {orig:{}, rev:{}}}; cols: [[key, label]]
+  const avg = (ver, k) => { const v = SYS.map(s => rows[s] && rows[s][ver] ? rows[s][ver][k] : null).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const line = (name, get, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + name + '</td>' + cols.map(c => { const a = get('orig', c[0]), b = get('rev', c[0]); return '<td class="b">' + f1(a) + '</td><td>' + f1(b) + '</td>' + delta(a, b); }).join('') + '</tr>';
+  return '<div class="scwrap"><table class="sc"><tr><th rowspan="2">模型输出</th>' + cols.map(c => '<th class="grp" colspan="3">' + c[1] + '</th>').join('') + '</tr><tr>' + cols.map(() => '<th class="b">原始 gold</th><th>全部接受后</th><th>变化</th>').join('') + '</tr>' +
+    SYS.filter(s => rows[s]).map(s => line(s, (ver, k) => rows[s][ver] ? rows[s][ver][k] : null)).join('') + line(SYS.length + ' 份平均', avg, 'avg') + '</table></div>';
+}
+function gvg(g, cols, cap) { if (!g) return ''; return '<div class="gvg">' + cols.map(c => '<div class="stat"><b>' + f1(g[c[0]]) + '</b><span>' + c[1] + '</span></div>').join('') + '<div class="cap">' + cap + '</div></div>'; }
+function sentScores(d, b) {
+  const rows = ((d.scores || {}).sent || {})[b.n]; if (!rows) return '';
+  const g = (((d.scores || {}).gold || {}).sent || {})[b.n];
+  return '<div class="scores"><h3>本句分数</h3><h4>原始 gold 对 改后 gold</h4>' +
+    gvg(g, [['ancast', 'AnCast'], ['smatch', 'Smatch']], '把原始 gold 当作待评分的一方，和"本句修改全部接受后"的 gold 比。100 表示这一句没有改动；越低说明修改幅度越大。') +
+    '<h4>各份模型输出 对 两版 gold</h4><p>分数越高表示模型与该版 gold 越一致。AnCast 取句子级 labeled relation F1，Smatch 由 AnCast 工具同时给出。"全部接受后"固定算一次，不随你的接受/反对变化。</p>' +
+    scoreTable(rows, [['ancast', 'AnCast'], ['smatch', 'Smatch']]) + '</div>';
+}
+function issueKey(x) { return x.src + x.n; }
+function quote(x, limit) { const long = x.text.length > limit;
+  return '<div class="q ' + x.src + '"><span class="src ' + x.src + '">' + (SRC[x.src] || x.src) + ' (' + x.n + ')</span><div class="body' + (long ? ' clamp' : '') + '">' + inline(x.text) + '</div>' + (long ? '<button class="more">展开</button>' : '') + '</div>'; }
+const LEGEND = '<div class="legend"><span><span class="mk-del">划掉</span> = 从 gold 删去</span><span><span class="mk-add">绿色</span> = 新加入</span><span>⋯ = 省略未改动的部分</span></div>';
+function renderProps() {
+  const b = curBlock(), c = counts(b.props), byKey = {}; for (const x of b.issues) byKey[issueKey(x)] = x;
+  $('cProp').textContent = b.props.length + ' 项修改 · 接受 ' + c.a + ' · 反对 ' + c.r + ' · 待定 ' + c.p;
+  $('fProp').innerHTML = ['all:全部', 'pending:待定', 'accept:已接受', 'reject:已反对'].map(s => { const [k, t] = s.split(':'); return '<button class="chip' + (store.pfilter === k ? ' on' : '') + '" data-pf="' + k + '">' + t + '</button>'; }).join('') + '<button class="chip" data-bulk="high">接受本句全部"把握高"</button><button class="chip" data-bulk="clear">清空本句决定</button>';
+  const list = b.props.filter(p => store.pfilter === 'all' || (store.pfilter === 'pending' ? !dec(p) : dec(p) === store.pfilter)), usedKeys = new Set();
+  for (const p of b.props) for (const r of p.refs || []) usedKeys.add(r);
+  const all = store.ov !== 'acc', m = merged(b, all), nums = m.applied.map(p => b.props.indexOf(p) + 1).join('、');
+  let h = '<div class="merge"><h3>本句 gold 修改一览 <span class="ovsw"><button class="chip' + (all ? ' on' : '') + '" data-ov="all">全部提出的修改</button><button class="chip' + (all ? '' : ' on') + '" data-ov="acc">只看已接受的</button></span></h3>' +
+    (b.props.length ? '<p>' + (all ? '下面是把本句提出的修改都改上去之后的完整 gold（已反对的不计入；同一问题有两种改法时取已接受的那个，否则取第一个）。' : '下面是只应用已接受修改后的完整 gold，也就是导出时这一句的样子。') + (m.applied.length ? '共 ' + m.applied.length + ' 项：第 ' + nums + ' 项。' : '目前没有应用任何修改。') + '每一项的理由见下方卡片。</p>' : '<p>这一句没有需要改 gold 的地方，下面是原始 gold。</p>') +
+    m.conflicts.map(x => '<p class="bad">⚠ 第 ' + (b.props.indexOf(x.p) + 1) + ' 项（' + esc(x.p.title) + '）与前面的修改冲突，未计入：' + esc(x.msg) + '</p>').join('') +
+    m.errs.map(e => '<p class="bad">⚠ 合并后校验：' + esc(e) + '</p>').join('') + markHtml(b.state, m.st, true, true) + LEGEND + '</div>' +
+    sentScores(curDoc(), b) + (b.props.length ? '<div class="lab" style="margin:2px 2px 8px">逐项说明</div>' : '');
+  h += list.map(p => {
+    const st = dec(p) || '', alts = p.excl ? b.props.filter(q => q !== p && q.excl === p.excl) : [], num = b.props.indexOf(p) + 1;
+    const qs = (p.refs || []).map(r => byKey[r]).filter(Boolean), app = (p.refs || []).filter(r => r.includes('§'));
+    return '<div class="card ' + st + '" id="prop-' + p.id + '" data-id="' + p.id + '">' +
+      '<div class="ch"><span class="num">' + num + '/' + b.props.length + '</span><span class="pt">' + inline(p.title) + '</span>' + (st ? '<span class="state ' + st + '">' + (st === 'accept' ? '已接受' : '已反对') + '</span>' : '') + '<span class="conf ' + p.conf + '">' + ({ high: '把握高', mid: '把握中' }[p.conf] || p.conf) + '</span></div>' +
+      '<div class="cbody"><div><div class="lab">问题</div>' + (qs.map(x => quote(x, 260)).join('') || '') +
+      (app.length ? '<div class="q A"><span class="src A">' + (SRC.A || 'A') + ' 附录 ' + app.map(r => r.slice(1)).join('、') + '</span><div class="body">见"报告总结 / 附录"中的对齐与覆盖核查。</div></div>' : '') + '</div>' +
+      '<div><div class="lab">gold 修改方案</div><div class="why">' + inline(p.why) + '</div>' +
+      (alts.length ? '<div class="note">与第 ' + alts.map(q => b.props.indexOf(q) + 1).join('、') + ' 项是同一问题的两种改法，接受其一会自动反对另一个。</div>' : '') +
+      (p.res.failed || p.newErr.length ? '<div class="note">⚠ 该方案在原始 gold 上无法干净应用：' + esc(p.res.log.filter(l => l.status === 'fail').map(l => l.text).concat(p.newErr).join('；')) + '</div>' : '') +
+      '<div class="dbox" data-full="0">' + markHtml(b.state, p.res.state, false) + '</div>' +
+      (p.support && p.support.length ? '<div class="sups" style="margin-top:6px">已这样标的模型 ' + p.support.map(s => '<button class="sup" data-sup="' + s + '">' + s + '</button>').join('') + '</div>' : '') +
+      '<details class="opsd"><summary>操作明细（' + p.res.log.length + ' 步）</summary>' + p.res.log.map(l => '<div class="opl ' + l.kind + '"><b>' + esc(l.label) + '</b>' + esc(l.text) + '</div>').join('') + '</details>' +
+      '</div></div>' +
+      '<div class="acts"><button class="act acc' + (st === 'accept' ? ' on' : '') + '" data-act="accept">✓ 接受修改</button><button class="act rej' + (st === 'reject' ? ' on' : '') + '" data-act="reject">✗ 反对，保持 gold</button>' + (st ? '<button class="act" data-act="">撤销</button>' : '') + '<button class="act lite" data-act="full">显示完整图</button></div></div>';
+  }).join('') || (b.props.length ? '<div class="empty">没有符合筛选条件的修改。</div>' : '');
+  const rest = b.issues.filter(x => !usedKeys.has(issueKey(x)));
+  if (rest.length) h += '<details class="other" open><summary>其余 ' + rest.length + ' 条报告内容：值得商榷，或只是模型标注的问题，不涉及修改 gold</summary>' + rest.map(x => quote(x, 400)).join('') + '</details>';
+  $('pProp').innerHTML = h;
+}
+function renderAll() { renderTop(); renderSent(); renderParse(); renderProps(); }
+function go(delta) { const d = curDoc(), i = d.split.blocks.indexOf(curBlock()) + delta; if (i < 0 || i >= d.split.blocks.length) return; store.sent[d.id] = d.split.blocks[i].n; save(); renderAll(); document.querySelectorAll('.pbody').forEach(x => x.scrollTop = 0); }
+function flash(el, cls) { if (!el) return; el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 1600); }
+
+/* ---------- events ---------- */
+$('tabs').onclick = e => { const t = e.target.closest('[data-doc]'); if (!t) return; store.doc = t.dataset.doc; save(); renderAll(); };
+$('strip').onclick = e => { const t = e.target.closest('[data-sent]'); if (!t) return; store.sent[curDoc().id] = +t.dataset.sent; save(); renderAll(); document.querySelectorAll('.pbody').forEach(x => x.scrollTop = 0); };
+document.addEventListener('keydown', e => { if (e.target.closest('input,textarea') || $('modal').classList.contains('on') || e.metaKey || e.ctrlKey || e.altKey) return; if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });
+$('fProp').onclick = e => {
+  const t = e.target.closest('[data-pf]'); if (t) { store.pfilter = t.dataset.pf; save(); renderProps(); return; }
+  const k = e.target.closest('[data-bulk]'); if (!k) return; const b = curBlock();
+  if (k.dataset.bulk === 'high') { const seen = new Set(); for (const p of b.props) { if (p.conf !== 'high' || dec(p) || p.res.failed) continue; if (p.excl) { if (seen.has(p.excl) || b.props.some(q => q.excl === p.excl && dec(q) === 'accept')) continue; seen.add(p.excl); } store.dec[p.id] = 'accept'; } }
+  else for (const p of b.props) delete store.dec[p.id];
+  save(); renderTop(); renderParse(); renderProps();
+};
+$('pProp').onclick = e => {
+  const ov = e.target.closest('[data-ov]'); if (ov) { store.ov = ov.dataset.ov; save(); renderProps(); return; }
+  const mo = e.target.closest('.more'); if (mo) { const bd = mo.previousElementSibling; bd.classList.toggle('clamp'); mo.textContent = bd.classList.contains('clamp') ? '展开' : '收起'; return; }
+  const card = e.target.closest('.card'); if (!card) return; const b = curBlock(), p = b.props.find(x => x.id === card.dataset.id);
+  const a = e.target.closest('[data-act]');
+  if (a) {
+    if (a.dataset.act === 'full') { const box = card.querySelector('.dbox'), full = box.dataset.full !== '1'; box.dataset.full = full ? '1' : '0'; box.innerHTML = markHtml(b.state, p.res.state, full); a.textContent = full ? '只显示改动处' : '显示完整图'; return; }
+    const top = $('pProp').scrollTop;
+    if (a.dataset.act) { store.dec[p.id] = a.dataset.act; if (a.dataset.act === 'accept' && p.excl) for (const q of b.props) if (q !== p && q.excl === p.excl && dec(q) === 'accept') store.dec[q.id] = 'reject'; } else delete store.dec[p.id];
+    save(); renderTop(); renderParse(); renderProps(); $('pProp').scrollTop = top; return;
+  }
+  const s = e.target.closest('[data-sup]');
+  if (s) { const el = document.querySelector('details.parse[data-sys="' + s.dataset.sup + '"]'); if (el) { el.open = true; flash(el, 'flash'); } }
+};
+
+/* ---------- modal ---------- */
+function modal(headHtml, bodyHtml) { $('mhead').innerHTML = headHtml + '<div class="spacer"></div><button class="btn" id="mClose">关闭</button>'; $('mbody').innerHTML = bodyHtml; $('modal').classList.add('on'); $('mClose').onclick = () => $('modal').classList.remove('on'); $('mbody').scrollTop = 0; }
+$('modal').onclick = e => { if (e.target === $('modal')) $('modal').classList.remove('on'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('modal').classList.remove('on'); });
+function openExtras(prefer) {
+  const d = curDoc(), items = (D.extras || []).concat(d.summaries.map(s => ({ title: d.id + '：' + s[0], md: s[1] })));
+  let cur = Math.max(0, items.findIndex(x => prefer && x.title.startsWith(prefer) && /4\.|核查/.test(x.title)));
+  const draw = () => { modal('<h2>总结</h2>' + items.map((x, i) => '<button class="chip' + (i === cur ? ' on' : '') + '" data-x="' + i + '">' + esc(x.title) + '</button>').join(''), md(items[cur].md)); $('mhead').onclick = e => { const t = e.target.closest('[data-x]'); if (t) { cur = +t.dataset.x; draw(); } }; };
+  draw();
+}
+$('bExtras').onclick = () => openExtras();
+$('bScores').onclick = () => {
+  const d = curDoc(), rows = (d.scores || {}).doc || {}, gd = ((d.scores || {}).gold || {}).doc;
+  modal('<h2>' + d.id + ' 整篇分数（AnCast++ 文档级）</h2>', '<div class="scores" style="border:0;padding:0"><h4>原始 gold 对 改后 gold</h4>' + gvg(gd, [['comp', 'Comprehensive'], ['sent', '句子级'], ['modal', 'Modality'], ['temporal', 'Temporal'], ['coref', 'Coref']], '原始 gold 和"全部修改都接受后"的 gold 之间的一致度。') + '<h4>各份模型输出 对 两版 gold</h4><p>各份模型输出分别对原始 gold 和"全部修改都接受后"的 gold。Comprehensive 是 AnCast++ 的综合分；句子级为各句 micro F1；Modality / Temporal / Coref 是文档级三类依存的 F1。</p>' +
+    scoreTable(rows, [['comp', 'Comprehensive'], ['sent', '句子级']]) + '<div style="height:14px"></div>' + scoreTable(rows, [['modal', 'Modality'], ['temporal', 'Temporal'], ['coref', 'Coref']]) + '</div>');
+};
+$('bPreview').onclick = () => {
+  const d = curDoc(); let sum = '';
+  for (const b of d.split.blocks) { const m = merged(b); if (!m.applied.length && !m.conflicts.length) continue; sum += '<li>第 ' + b.n + ' 句：应用 ' + m.applied.length + ' 项' + (m.conflicts.length ? '，<b style="color:var(--no)">' + m.conflicts.length + ' 项冲突未应用</b>' : '') + (m.errs.length ? '，<b style="color:var(--no)">校验提示 ' + m.errs.length + ' 条</b>' : '') + '</li>'; }
+  modal('<h2>' + d.id + ' 合并结果预览</h2><button class="btn primary" id="mDl">下载 ' + d.goldName + '.revised.umr</button>',
+    (sum ? '<ul class="sumlist">' + sum + '</ul>' : '<p>还没有接受任何方案，导出的文件与原始 gold 相同。</p>') + '<pre class="out">' + hl(docText(d)) + '</pre>');
+  $('mDl').onclick = () => download(d.goldName + '.revised.umr', docText(d));
+};
+$('bExport').onclick = () => { const d = curDoc(); download(d.goldName + '.revised.umr', docText(d)); };
+$('bDecisions').onclick = () => {
+  const out = { exported: new Date().toISOString(), decisions: {}, detail: [] };
+  for (const d of D.docs) for (const b of d.split.blocks) for (const p of b.props) if (dec(p)) { out.decisions[p.id] = dec(p); out.detail.push({ id: p.id, doc: d.id, sentence: b.n, decision: dec(p), title: p.title, refs: p.refs, ops: p.ops }); }
+  download('umr-gold-review-decisions.json', JSON.stringify(out, null, 2), 'application/json');
+};
+$('bImport').onclick = () => $('fImport').click();
+$('fImport').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const j = JSON.parse(rd.result); Object.assign(store.dec, j.decisions || j.dec || {}); save(); renderAll(); } catch (err) { alert('无法读取这个文件：' + err.message); } }; rd.readAsText(f); e.target.value = ''; };
+
+renderAll();
+if (D.extras && D.extras.length) { let seen = false; try { seen = localStorage.getItem(LS + ':seen') === '1'; localStorage.setItem(LS + ':seen', '1'); } catch (e) {} if (!seen) openExtras(); }
+})();
+</script>
+</body>
+</html>

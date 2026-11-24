@@ -1,0 +1,83 @@
+{
+ "_comment": "Round 3: Claude Sonnet 5.5 (effort medium) through the claude CLI of the subscription, whole documents in one prompt. Every condition is run with each of the five instruction wordings (same meaning; the guideline text itself is never reworded), twice.",
+ "model": "claude-sonnet-5-5",
+ "effort": "medium",
+ "max_sentences": 25,
+ "conditions": [
+  {
+   "name": "s0-oneline",
+   "guideline": "umr_guidelines_oneline.md",
+   "tools": []
+  },
+  {
+   "name": "s1-abridged",
+   "guideline": "umr_guidelines_abridged.md",
+   "tools": []
+  },
+  {
+   "name": "s2-guideline-search",
+   "guideline": "umr_guidelines_oneline.md",
+   "tools": [
+    "search_guidelines"
+   ]
+  },
+  {
+   "name": "s2-propbank-search",
+   "guideline": "umr_guidelines_oneline.md",
+   "tools": [
+    "propbank_lookup"
+   ]
+  },
+  {
+   "name": "s3-full-two-tool",
+   "guideline": "umr_guidelines_oneline.md",
+   "tools": [
+    "search_guidelines",
+    "propbank_lookup"
+   ]
+  }
+ ],
+ "instructions": [
+  "Annotate the whole document under Input in Uniform Meaning Representation (UMR): the sentence-level graph of every sentence, then all the document-level relations (temporal, modal, coreference) of the document, and make the annotation as correct as you can.",
+  "Produce the Uniform Meaning Representation (UMR) annotation of the entire document given under Input: first a sentence-level graph for each sentence, then every document-level relation (temporal, modal, coreference) of the document; aim for the most accurate annotation you can.",
+  "Your task is to write the UMR (Uniform Meaning Representation) of the complete document under Input, that is, each sentence's sentence-level graph followed by all of the document's document-level relations (temporal, modal and coreference), as correctly as you are able to.",
+  "For the full document under Input, give its annotation in Uniform Meaning Representation (UMR): a sentence-level graph for every sentence and after them all document-level relations of the document (temporal, modal, coreference). Be as accurate as possible.",
+  "Please annotate the document under Input, all of it, in Uniform Meaning Representation (UMR), giving the sentence-level graph of each sentence and then the document-level relations of the whole document (temporal, modal, coreference), and get the annotation as right as you can."
+ ],
+ "tool_sentences": {
+  "search_guidelines": "You have one tool, `search_guidelines`, which searches the full UMR guidelines, and you must use it: before you write the answer, call it for each kind of construction, attribute and relation in the document that the guidelines above do not settle (many calls are expected), and only then write the answer.",
+  "propbank_lookup": "You have one tool, `propbank_lookup`, which gives the PropBank rolesets (the senses and their numbered roles) of a lemma, and you must use it: before you write the answer, call it for the predicates of every sentence (up to 20 lemmas per call), and only then write the answer.",
+  "search_guidelines,propbank_lookup": "You have two tools, `search_guidelines`, which searches the full UMR guidelines, and `propbank_lookup`, which gives the PropBank rolesets (the senses and their numbered roles) of a lemma, and you must use both: before you write the answer, call `propbank_lookup` for the predicates of every sentence (up to 20 lemmas per call) and `search_guidelines` for each kind of construction, attribute and relation that the guidelines above do not settle (many calls are expected), and only then write the answer."
+ },
+ "groups": {
+  "test": [
+   "zh-0029",
+   "zh-0035",
+   "en-0005",
+   "en-0006"
+  ],
+  "train": [
+   "zh-0003",
+   "zh-0011",
+   "zh-0016",
+   "zh-0018"
+  ]
+ },
+ "tool_sentences_neutral_trial": {
+  "search_guidelines": "You have one tool and may call it as often as you need: `search_guidelines` searches the full UMR guidelines.",
+  "propbank_lookup": "You have one tool and may call it as often as you need: `propbank_lookup` gives the PropBank rolesets (the senses and their numbered roles) of a lemma.",
+  "search_guidelines,propbank_lookup": "You have two tools and may call them as often as you need: `search_guidelines` searches the full UMR guidelines, and `propbank_lookup` gives the PropBank rolesets (the senses and their numbered roles) of a lemma."
+ },
+ "_comment_tools": "Two earlier wordings of this sentence led to no lookup at all: 'may call them as often as you need' (4 of 4 trial runs, runs-trial/neutral-tool-sentence) and 'you should use them before and while you annotate' (3 of 3, runs-trial/should-use-sentence). The sentence now says the tools must be used before the answer is written.",
+ "tool_sentences_should_trial": {
+  "search_guidelines": "You have one tool, and you should use it before and while you annotate, as often as needed: `search_guidelines` searches the full UMR guidelines (look up each kind of construction, attribute and relation you are not sure of).",
+  "propbank_lookup": "You have one tool, and you should use it before and while you annotate, as often as needed: `propbank_lookup` gives the PropBank rolesets, that is the senses and their numbered roles, of a lemma (look up every predicate).",
+  "search_guidelines,propbank_lookup": "You have two tools, and you should use them before and while you annotate, as often as needed: `search_guidelines` searches the full UMR guidelines (look up each kind of construction, attribute and relation you are not sure of), and `propbank_lookup` gives the PropBank rolesets, that is the senses and their numbered roles, of a lemma (look up every predicate)."
+ },
+ "train_gold": {
+  "zh-0003": "chinese_umr-0003",
+  "zh-0011": "chinese_umr-0011",
+  "zh-0016": "chinese_umr-0016",
+  "zh-0018": "chinese_umr-0018"
+ }
+}
