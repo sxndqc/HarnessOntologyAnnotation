@@ -37,6 +37,8 @@ FIVE = ["s0-oneline", "s1-abridged", "s2-guideline-search", "s2-propbank-search"
 NAME = {"s0-oneline": "s0 一句话", "s1-abridged": "s1 精简版", "s2-guideline-search": "s2 查 guideline",
         "s2-propbank-search": "s2 查 PropBank", BASE: "s3 两个工具（无 skill）"}
 NAME.update({"%s+m%d-r%d" % (BASE, m, r): "方法 %d 第 %d 轮" % (m, r) for m in (1, 2, 3) for r in (1, 2)})
+PM = ["%s+pm-h%d" % (BASE, n) for n in (1, 2, 3, 4)]
+NAME.update({"%s+pm-h%d" % (BASE, n): "论文方法，第 %d 篇之后" % n for n in (1, 2, 3, 4)})
 E_ = html.escape
 
 
@@ -144,8 +146,11 @@ def main():
     for mth in (1, 2, 3):
         r1, r2 = "%s+m%d-r1" % (BASE, mth), "%s+m%d-r2" % (BASE, mth)
         skill_pairs += [(BASE, r1), (BASE, r2), (r1, r2)]
+    best1 = "%s+m1-r1" % BASE
+    pm_pairs = [(BASE, c) for c in PM] + [(PM[k], PM[k + 1]) for k in range(3)] + [(best1, PM[3])]
     for gid, _, _, _ in groups:
-        out["tests"][gid] = {"five": tests(gid, five_pairs) if gid.startswith("test") else {}, "skill": tests(gid, skill_pairs)}
+        out["tests"][gid] = {"five": tests(gid, five_pairs) if gid.startswith("test") else {}, "skill": tests(gid, skill_pairs),
+                             "pm": tests(gid, pm_pairs)}
     json.dump(out, open(os.path.join(HERE, "analysis", "ancast.json"), "w"), ensure_ascii=False, indent=1)
 
     # ------------------------------------------------------------ the page
@@ -196,17 +201,56 @@ def main():
                 h += "<tr%s><td>%s</td><td>%s</td><td class=n>%s</td>" % (" class=top" if k == 0 else "", "方法 %d" % mth if k == 0 else "", stage, ln)
                 h += "".join(ms(gid, c, m) for m, _ in METRICS) + "</tr>"
         return h + "</table>"
+    def evolution_pm(gid):
+        h = "<table><tr><th>阶段</th><th>skill 长度</th><th>运行数</th>" + "".join("<th>%s</th>" % n for _, n in METRICS) + "</tr>"
+        for k, c in enumerate([BASE] + PM):
+            if c not in data[gid]:
+                continue
+            ln = "–"
+            mp = os.path.join(HERE, "skills", "pm-h%d.meta.json" % k)
+            if k and os.path.exists(mp):
+                j = json.load(open(mp))
+                ln = "%d 条 / %d 字符" % (j["bullets"], j["chars"])
+            h += "<tr><td>%s</td><td class=n>%s</td><td class=n>%d</td>" % ("无 skill" if k == 0 else "第 %d 篇之后（%d 轮）" % (k, 3 * k), ln, len(data[gid][c]["comp"]))
+            h += "".join(ms(gid, c, m) for m, _ in METRICS) + "</tr>"
+        return h + "</table>"
+
+    def rounds_pm():
+        h = "<table><tr><th>文档</th><th>轮</th><th>有错的句子</th><th>问题数</th><th>其中判为 gold 错</th><th>其中判为个例</th><th>采纳的修改（增/改/删）</th><th>被拒的修改</th><th>skill 条数</th><th>skill 字符数</th></tr>"
+        for doc in CONFIG["groups"]["train"]:
+            for r in (1, 2, 3):
+                p = os.path.join(HERE, "skills", "pm", "%s-r%d" % (doc, r), "round.json")
+                if not os.path.exists(p):
+                    continue
+                j = json.load(open(p, encoding="utf-8"))
+                ok = [e for e in j["edits"] if e["applied"]]
+                h += "<tr><td>%s</td><td class=n>%d</td><td class=n>%d</td><td class=n>%d</td><td class=n>%d</td><td class=n>%d</td><td class=n>%d / %d / %d</td><td class=n>%d</td><td class=n>%d</td><td class=n>%d</td></tr>" % (
+                    doc, r, j["sentences_with_errors"], j["problems"], j["gold_errors"], j["one_offs"],
+                    sum(1 for e in ok if e["action"] == "add"), sum(1 for e in ok if e["action"] == "modify"),
+                    sum(1 for e in ok if e["action"] == "delete"), len(j["edits"]) - len(ok), j["skill_bullets"], j["skill_chars"])
+        return h + "</table>"
+
+    def skill_texts():
+        o = ""
+        for n in (1, 2, 3, 4):
+            p = os.path.join(HERE, "skills", "pm-h%d.md" % n)
+            if os.path.exists(p):
+                o += "<details><summary>第 %d 篇之后的 skill</summary><pre>%s</pre></details>" % (n, E_(open(p, encoding="utf-8").read()))
+        return o
     notes = json.load(open(os.path.join(HERE, "analysis", "ancast_notes.json"), encoding="utf-8")) if os.path.exists(
         os.path.join(HERE, "analysis", "ancast_notes.json")) else {}
     page = open(os.path.join(HERE, "ancast_template.html"), encoding="utf-8").read()
     fill = {"SUMMARY": notes.get("summary", ""), "METHOD": notes.get("method", ""), "CAVEATS": notes.get("caveats", ""),
             "ERRORS": "没有打不了分的文件。" if not errors else "AnCast 打不了分的文件 %d 个（所在的运行不计入该组）：%s" % (len(errors), "、".join(errors[:12]))}
-    order = FIVE + ["%s+m%d-r%d" % (BASE, m, r) for m in (1, 2, 3) for r in (1, 2)]
+    fill.update({"PM_SUMMARY": notes.get("pm_summary", ""), "PM_ROUNDS": rounds_pm(), "PM_SKILLS": skill_texts()})
+    order = FIVE + ["%s+m%d-r%d" % (BASE, m, r) for m in (1, 2, 3) for r in (1, 2)] + PM
     for gid, _, _, _ in groups:
         key = gid.upper().replace("-", "_")
         fill["ALL_" + key] = score_table(gid, order)
         fill["EVO_" + key] = evolution(gid)
         fill["TS_" + key] = test_table(gid, "skill", skill_pairs)
+        fill["PMEVO_" + key] = evolution_pm(gid)
+        fill["PMTS_" + key] = test_table(gid, "pm", pm_pairs)
         fill["TF_" + key] = test_table(gid, "five", five_pairs) if gid.startswith("test") else ""
     for k, v in fill.items():
         page = page.replace("{{%s}}" % k, v)
